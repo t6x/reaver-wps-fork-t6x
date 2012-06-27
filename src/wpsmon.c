@@ -295,7 +295,8 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
         }
 
 	rt_header = (struct radio_tap_header *) radio_header(packet, header->len);
-	frame_header = (struct dot11_frame_header *) (packet + rt_header->len);
+	size_t rt_header_len = __le16_to_cpu(rt_header->len);
+	frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
 
 	/* If a specific BSSID was specified, only parse packets from that BSSID */
 	if(!is_target(frame_header))
@@ -323,15 +324,17 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				channel_changed = 1;
 			}
 
-			if(frame_header->fc.sub_type == PROBE_RESPONSE ||
-                                   frame_header->fc.sub_type == SUBTYPE_BEACON)
+			unsigned fsub_type = frame_header->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE);
+
+			if(fsub_type == __cpu_to_le16(IEEE80211_STYPE_PROBE_RESP) ||
+			   fsub_type == __cpu_to_le16(IEEE80211_STYPE_BEACON))
 			{
 				wps_parsed = parse_wps_parameters(packet, header->len, wps);
 			}
 	
 			if(!is_done(bssid) && (get_channel() == channel || source == PCAP_FILE))
 			{
-				if(frame_header->fc.sub_type == SUBTYPE_BEACON && 
+				if(fsub_type == __cpu_to_le16(IEEE80211_STYPE_BEACON) && 
 				   mode == SCAN && 
 				   !passive && 
 				   should_probe(bssid))
@@ -369,7 +372,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				 * If there was no WPS information, then the AP does not support WPS and we should ignore it from here on.
 				 * If this was a probe response, then we've gotten all WPS info we can get from this AP and should ignore it from here on.
 				 */
-				if(!wps_parsed || frame_header->fc.sub_type == PROBE_RESPONSE)
+				if(!wps_parsed || fsub_type == __cpu_to_le16(IEEE80211_STYPE_PROBE_RESP))
 				{
 					mark_ap_complete(bssid);
 				}

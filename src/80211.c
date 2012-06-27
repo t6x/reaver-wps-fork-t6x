@@ -90,17 +90,19 @@ void read_ap_beacon()
                 if(header.len >= MIN_BEACON_SIZE)
                 {
                         rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-                        frame_header = (struct dot11_frame_header *) (packet + rt_header->len);
-
+			size_t rt_header_len = __le16_to_cpu(rt_header->len);
+			frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
+			
 			if(is_target(frame_header))
 			{
-                                if(frame_header->fc.type == MANAGEMENT_FRAME && frame_header->fc.sub_type == SUBTYPE_BEACON)
+                                if((frame_header->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
+				   __cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
                                 {
-                                       	beacon = (struct beacon_management_frame *) (packet + rt_header->len + sizeof(struct dot11_frame_header));
+                                       	beacon = (struct beacon_management_frame *) (packet + rt_header_len + sizeof(struct dot11_frame_header));
                                        	set_ap_capability(beacon->capability);
 
 					/* Obtain the SSID and channel number from the beacon packet */
-					tag_offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
+					tag_offset = rt_header_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
 					channel = parse_beacon_tags(packet, header.len);
 					
 					/* If no channel was manually specified, switch to the AP's current channel */
@@ -135,29 +137,31 @@ int8_t signal_strength(const u_char *packet, size_t len)
 	{
 		header = (struct radio_tap_header *) packet;
 
-		if((header->flags & SSI_FLAG) == SSI_FLAG)
+		uint32_t flags = __le32_to_cpu(header->flags);
+		
+		if((flags & SSI_FLAG) == SSI_FLAG)
 		{
-			if((header->flags & TSFT_FLAG) == TSFT_FLAG)
+			if((flags & TSFT_FLAG) == TSFT_FLAG)
 			{
 				offset += TSFT_SIZE;
 			}
 
-			if((header->flags & FLAGS_FLAG) == FLAGS_FLAG)
+			if((flags & FLAGS_FLAG) == FLAGS_FLAG)
 			{
 				offset += FLAGS_SIZE;
 			}
 	
-			if((header->flags & RATE_FLAG) == RATE_FLAG)
+			if((flags & RATE_FLAG) == RATE_FLAG)
 			{
 				offset += RATE_SIZE;
 			}
 
-			if((header->flags & CHANNEL_FLAG) == CHANNEL_FLAG)
+			if((flags & CHANNEL_FLAG) == CHANNEL_FLAG)
 			{
 				offset += CHANNEL_SIZE;
 			}
 
-			if((header->flags & FHSS_FLAG) == FHSS_FLAG)
+			if((flags & FHSS_FLAG) == FHSS_FLAG)
 			{
 				offset += FHSS_FLAG;
 			}
@@ -196,11 +200,13 @@ int is_wps_locked()
 		if(header.len >= MIN_BEACON_SIZE)
 		{
 			rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-			frame_header = (struct dot11_frame_header *) (packet + rt_header->len);
+			size_t rt_header_len = __le16_to_cpu(rt_header->len);
+			frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
 
 			if(memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN) == 0)
 			{
-				if(frame_header->fc.type == MANAGEMENT_FRAME && frame_header->fc.sub_type == SUBTYPE_BEACON)
+                                if((frame_header->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
+				   __cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
 				{
 					if(parse_wps_parameters(packet, header.len, &wps))
 					{
@@ -411,24 +417,30 @@ int associate_recv_loop()
                 if(header.len >= MIN_AUTH_SIZE)
                 {
 			rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-                        dot11_frame = (struct dot11_frame_header *) (packet + rt_header->len);
+			size_t rt_header_len = __le16_to_cpu(rt_header->len);
+			dot11_frame = (struct dot11_frame_header *) (packet + rt_header_len);
 
                         if((memcmp(dot11_frame->addr3, get_bssid(), MAC_ADDR_LEN) == 0) &&
                            (memcmp(dot11_frame->addr1, get_mac(), MAC_ADDR_LEN) == 0))
                         {
-				if(dot11_frame->fc.type == MANAGEMENT_FRAME)
+                                if((dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
+				   __cpu_to_le16(IEEE80211_FTYPE_MGMT))
 				{
-                                	auth_frame = (struct authentication_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header->len);
-                                	assoc_frame = (struct association_response_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header->len);
+                                	auth_frame = (struct authentication_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header_len);
+                                	assoc_frame = (struct association_response_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header_len);
 
 					/* Did we get an authentication packet with a successful status? */
-					if((dot11_frame->fc.sub_type == SUBTYPE_AUTHENTICATION) && (auth_frame->status == AUTHENTICATION_SUCCESS))
+					if((dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) ==
+					   __cpu_to_le16(IEEE80211_STYPE_AUTH)
+					   && (auth_frame->status == __cpu_to_le16(AUTHENTICATION_SUCCESS)))
                                		{
                                	        	ret_val = AUTH_OK;
                                	        	break;
                                		}
 					/* Did we get an association packet with a successful status? */
-                               		else if((dot11_frame->fc.sub_type == SUBTYPE_ASSOCIATION) && (assoc_frame->status == ASSOCIATION_SUCCESS))
+                               		else if((dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) ==
+						__cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP)
+						&& (assoc_frame->status == __cpu_to_le16(ASSOCIATION_SUCCESS)))
 					{
 						ret_val = ASSOCIATE_OK;
 						break;
@@ -455,13 +467,14 @@ enum encryption_type supported_encryption(const u_char *packet, size_t len)
 	if(len > MIN_BEACON_SIZE)
 	{
 		rt_header = (struct radio_tap_header *) radio_header(packet, len);
-		beacon = (struct beacon_management_frame *) (packet + rt_header->len + sizeof(struct dot11_frame_header));
-		offset = tag_offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
+		size_t rt_header_len = __le16_to_cpu(rt_header->len);
+		beacon = (struct beacon_management_frame *) (packet + rt_header_len + sizeof(struct dot11_frame_header));
+		offset = tag_offset = rt_header_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
 		
 		tag_len = len - tag_offset;
 		tag_data = (const u_char *) (packet + tag_offset);
 
-		if((beacon->capability & CAPABILITY_WEP) == CAPABILITY_WEP)
+		if((__le16_to_cpu(beacon->capability) & CAPABILITY_WEP) == CAPABILITY_WEP)
 		{
 			enc = WEP;
 
@@ -509,7 +522,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 	struct radio_tap_header *rt_header = NULL;
 
 	rt_header = (struct radio_tap_header *) radio_header(packet, len);
-	tag_offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
+	tag_offset = __le16_to_cpu(rt_header->len) + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
 
 	if(tag_offset < len)
 	{
@@ -548,7 +561,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 		{
 			if(ie_len  == 1)
 			{
-				memcpy((int *) &channel, channel_data, ie_len);
+				channel = *(uint8_t*)channel_data;
 			}
 			free(channel_data);
 		}
@@ -603,13 +616,13 @@ int check_fcs(const u_char *packet, size_t len)
 	if(len > 4)
 	{
 		/* Get the packet's reported FCS (last 4 bytes of the packet) */
-		memcpy((uint32_t *) &fcs, (packet + (len-4)), 4);
+		fcs = __le32_to_cpu(*(uint32_t*)(packet + (len-4)));
 
 		/* FCS is not calculated over the radio tap header */
 		if(has_rt_header())
 		{
 			rt_header = (struct radio_tap_header *) packet;
-			offset += rt_header->len;
+			offset += __le16_to_cpu(rt_header->len);
 		}
 
 		if(len > offset)

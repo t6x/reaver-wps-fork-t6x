@@ -306,26 +306,27 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 
 	/* Cast the radio tap and 802.11 frame headers and parse out the Frame Control field */
 	rt_header = (struct radio_tap_header *) packet;
-	frame_header = (struct dot11_frame_header *) (packet+rt_header->len);
+	size_t rt_header_len = __le16_to_cpu(rt_header->len);
+	frame_header = (struct dot11_frame_header *) (packet+rt_header_len);
 
 	/* Does the BSSID/source address match our target BSSID? */
 	if(memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN) == 0)
 	{
 		/* Is this a data packet sent to our MAC address? */
-		if(frame_header->fc.type == DATA_FRAME && 
-			frame_header->fc.sub_type == SUBTYPE_DATA && 
-			(memcmp(frame_header->addr1, get_mac(), MAC_ADDR_LEN) == 0)) 
+		if (((frame_header->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
+		     __cpu_to_le16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA)) &&
+		    (memcmp(frame_header->addr1, get_mac(), MAC_ADDR_LEN) == 0)) 
 		{
 			llc = (struct llc_header *) (packet +
-							rt_header->len +
+							rt_header_len +
 							sizeof(struct dot11_frame_header)
 			);
 
 			/* All packets in our exchanges will be 802.1x */
-			if(llc->type == DOT1X_AUTHENTICATION)
+			if(llc->type == __cpu_to_be16(DOT1X_AUTHENTICATION))
 			{
 				dot1x = (struct dot1X_header *) (packet +
-								rt_header->len +
+								rt_header_len +
 								sizeof(struct dot11_frame_header) +
 								sizeof(struct llc_header)
 				);
@@ -334,7 +335,7 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 				if(dot1x->type == DOT1X_EAP_PACKET && (header->len >= EAP_PACKET_SIZE))
 				{
 					eap = (struct eap_header *) (packet +
-									rt_header->len +
+									rt_header_len +
 									sizeof(struct dot11_frame_header) +
 									sizeof(struct llc_header) +
 									sizeof(struct dot1X_header)
@@ -366,7 +367,7 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 						else if((eap->type == EAP_EXPANDED) && (header->len > WFA_PACKET_SIZE))
 						{
 							wfa = (struct wfa_expanded_header *) (packet +
-											rt_header->len +
+											rt_header_len +
 											sizeof(struct dot11_frame_header) +
 											sizeof(struct llc_header) +
 											sizeof(struct dot1X_header) +
@@ -374,14 +375,14 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 							);
 						
 							/* Verify that this is a WPS message */
-							if(wfa->type == SIMPLE_CONFIG)
+							if(wfa->type == __cpu_to_be32(SIMPLE_CONFIG))
 							{
 								wps_msg_len = 	(size_t) ntohs(eap->len) - 
 										sizeof(struct eap_header) - 
 										sizeof(struct wfa_expanded_header);
 
 								wps_msg = (const void *) (packet +
-											rt_header->len +
+											rt_header_len +
                                                                        	                sizeof(struct dot11_frame_header) +
                                                                                	        sizeof(struct llc_header) +
                                                                                        	sizeof(struct dot1X_header) +
