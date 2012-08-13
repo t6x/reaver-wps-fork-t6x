@@ -2478,7 +2478,7 @@ static enum wps_process_res wps_process_wsc_msg(struct wps_data *wps,
 	if (*attr.msg_type != WPS_M1 &&
 	    (attr.registrar_nonce == NULL ||
 	     os_memcmp(wps->nonce_r, attr.registrar_nonce,
-		       WPS_NONCE_LEN != 0))) {
+		       WPS_NONCE_LEN) != 0)) {
 		wpa_printf(MSG_DEBUG, "WPS: Mismatch in registrar nonce");
 		return WPS_FAILURE;
 	}
@@ -2573,14 +2573,14 @@ static enum wps_process_res wps_process_wsc_ack(struct wps_data *wps,
 #endif /* CONFIG_WPS_UPNP */
 
 	if (attr.registrar_nonce == NULL ||
-	    os_memcmp(wps->nonce_r, attr.registrar_nonce, WPS_NONCE_LEN != 0))
+	    os_memcmp(wps->nonce_r, attr.registrar_nonce, WPS_NONCE_LEN) != 0)
 	{
 		wpa_printf(MSG_DEBUG, "WPS: Mismatch in registrar nonce");
 		return WPS_FAILURE;
 	}
 
 	if (attr.enrollee_nonce == NULL ||
-	    os_memcmp(wps->nonce_e, attr.enrollee_nonce, WPS_NONCE_LEN != 0)) {
+	    os_memcmp(wps->nonce_e, attr.enrollee_nonce, WPS_NONCE_LEN) != 0) {
 		wpa_printf(MSG_DEBUG, "WPS: Mismatch in enrollee nonce");
 		return WPS_FAILURE;
 	}
@@ -2647,14 +2647,14 @@ static enum wps_process_res wps_process_wsc_nack(struct wps_data *wps,
 #endif /* CONFIG_WPS_UPNP */
 
 	if (attr.registrar_nonce == NULL ||
-	    os_memcmp(wps->nonce_r, attr.registrar_nonce, WPS_NONCE_LEN != 0))
+	    os_memcmp(wps->nonce_r, attr.registrar_nonce, WPS_NONCE_LEN) != 0)
 	{
 		wpa_printf(MSG_DEBUG, "WPS: Mismatch in registrar nonce");
 		return WPS_FAILURE;
 	}
 
 	if (attr.enrollee_nonce == NULL ||
-	    os_memcmp(wps->nonce_e, attr.enrollee_nonce, WPS_NONCE_LEN != 0)) {
+	    os_memcmp(wps->nonce_e, attr.enrollee_nonce, WPS_NONCE_LEN) != 0) {
 		wpa_printf(MSG_DEBUG, "WPS: Mismatch in enrollee nonce");
 		return WPS_FAILURE;
 	}
@@ -2734,14 +2734,14 @@ static enum wps_process_res wps_process_wsc_done(struct wps_data *wps,
 #endif /* CONFIG_WPS_UPNP */
 
 	if (attr.registrar_nonce == NULL ||
-	    os_memcmp(wps->nonce_r, attr.registrar_nonce, WPS_NONCE_LEN != 0))
+	    os_memcmp(wps->nonce_r, attr.registrar_nonce, WPS_NONCE_LEN) != 0)
 	{
 		wpa_printf(MSG_DEBUG, "WPS: Mismatch in registrar nonce");
 		return WPS_FAILURE;
 	}
 
 	if (attr.enrollee_nonce == NULL ||
-	    os_memcmp(wps->nonce_e, attr.enrollee_nonce, WPS_NONCE_LEN != 0)) {
+	    os_memcmp(wps->nonce_e, attr.enrollee_nonce, WPS_NONCE_LEN) != 0) {
 		wpa_printf(MSG_DEBUG, "WPS: Mismatch in enrollee nonce");
 		return WPS_FAILURE;
 	}
