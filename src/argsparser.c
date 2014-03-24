@@ -50,7 +50,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:p:s:C:O:KZA5ELfnqvDShwN6JFu";
+	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:p:s:C:O:KZA5ELfnqvDShwN6JFuM";
 	struct option long_options[] = {
 		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
@@ -84,6 +84,7 @@ int process_arguments(int argc, char **argv)
 		{ "timeout-is-nack", no_argument, NULL, 'J' },
 		{ "ignore-fcs", no_argument, NULL, 'F' },
 		{ "output-file", required_argument, NULL, 'O'},
+		{ "mac-changer", no_argument, NULL, 'M' },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -202,6 +203,9 @@ int process_arguments(int argc, char **argv)
 			case 'F':
 				set_validate_fcs(0);
 				break;
+			case 'M':
+				set_mac_changer(1);
+				break;
                         default:
                                 ret_val = EXIT_FAILURE;
                 }
@@ -230,6 +234,7 @@ void init_default_settings(void)
 	set_validate_fcs(1);
 	pixie.do_pixie = 0;
 	set_pin_string_mode(0);
+	set_mac_changer(0);
 }
 
 /* Parses the recurring delay optarg */
