@@ -1,6 +1,6 @@
 
 #Overview
-	reaver-wps-fork-t6x is a modification done from a fork of recover (https://code.google.com/p/reaver-wps/)
+	reaver-wps-fork-t6x is a modification done from a fork of recover (https://code.google.com/p/reaver-wps-fork/)
 	This modified version uses the attack Pixie Dust to find the correct pin number of wps
 	The attack used in this version was developed by Wiire (https://github.com/wiire/pixiewps)
 
