@@ -31,6 +31,8 @@
  *  files in the program, then also delete it here.
  */
 
+//#include "globule.h";
+//#include "wps/t6.h";
 #include "wpscrack.h"
 
 int main(int argc, char **argv)
@@ -39,13 +41,22 @@ int main(int argc, char **argv)
     time_t start_time = 0, end_time = 0;
     struct wps_data *wps = NULL;
 
+
     globule_init();
     sql_init();
     init_default_settings();
 
-    fprintf(stderr, "\nReaver v%s WiFi Protected Setup Attack Tool\n", PACKAGE_VERSION);
-    fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
-    fprintf(stderr, "mod by t6_x <t6_x@hotmail.com>\n\n");
+    int cont_arg_rev;
+    for(cont_arg_rev=0; cont_arg_rev < argc; cont_arg_rev++)
+    {
+        strcat(globule->cmd_reaver_test,argv[cont_arg_rev]);
+        strcat(globule->cmd_reaver_test," ");
+    }
+    //set_cmd_reaver_test(rv_t);
+
+    printf("\nReaver v%s WiFi Protected Setup Attack Tool\n", PACKAGE_VERSION);
+    printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
+    printf("mod by t6_x <t6_x@hotmail.com>\n\n");
 
     if(argc < 2)
     {

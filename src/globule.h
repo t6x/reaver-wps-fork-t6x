@@ -141,6 +141,8 @@ struct globals
                                      * function calls.
                                      */
     int op_pixie;
+    char cmd_reaver_test[4000];
+
 } *globule;
 
 

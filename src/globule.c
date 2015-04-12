@@ -599,3 +599,20 @@ void set_op_pixie(int index)
 {
     globule->op_pixie = index;
 }
+
+void set_cmd_reaver_test(char *string)
+{
+/*
+    if(globule->cmd_reaver_test)
+    {
+        free(globule->cmd_reaver_test);
+        globule->cmd_reaver_test = NULL;
+    }
+
+
+    if(string)
+    {
+        globule->cmd_reaver_test = strdup(string);
+    }
+*/
+}

