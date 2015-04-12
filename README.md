@@ -15,16 +15,16 @@
 
 #Compile and Install
 
-  Build Reaver
+	Build Reaver
+	
+		cd reaver-1.4
+		cd src
+		./configure
+		make
 
-    cd reaver-1.4
-    cd src
-    ./configure
-    make
-
-  Install Reaver
-
-    sudo make install
+	Install Reaver
+	
+	sudo make install
     
 #Usage
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
