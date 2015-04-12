@@ -6,11 +6,11 @@
 
 #Install Required Libraries and Tools
 
-  Libraries for reaver
-    sudo apt-get install libpcap-dev aircrack-ng sqlite3 libsqlite3-dev
+	Libraries for reaver
+		sudo apt-get install libpcap-dev aircrack-ng sqlite3 libsqlite3-dev
     
-  Tools
-    You must have installed the pixiewps created by Wiire (https://github.com/wiire/pixiewps)
+	Tools
+		You must have installed the pixiewps created by Wiire (https://github.com/wiire/pixiewps)
 
 
 #Compile and Install
