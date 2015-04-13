@@ -600,6 +600,11 @@ void set_op_pixie(int index)
     globule->op_pixie = index;
 }
 
+void set_op_autopass(int index)
+{
+    globule->op_autopass = index;
+}
+
 void set_cmd_reaver_test(char *string)
 {
 /*

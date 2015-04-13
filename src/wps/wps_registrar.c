@@ -1884,7 +1884,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             //return -1;
         }
 
-        if(pixie_test == 1)
+        if((pixie_test == 1) && (globule->op_autopass==1))
         {
             //here will make the test to get pass
 
@@ -1899,7 +1899,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             memset(cmd_reaver_test_aux, 0, sizeof(cmd_reaver_test_aux));
             memset(cmd_buf_c, 0, sizeof(cmd_buf_c));
             
-            strcat(cmd_reaver_test_aux,"./reaver -i ");
+            strcat(cmd_reaver_test_aux,"reaver -i ");
             strcat(cmd_reaver_test_aux,get_iface());
 
             strcat(cmd_reaver_test_aux," -b ");

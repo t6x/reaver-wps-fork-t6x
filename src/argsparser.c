@@ -41,9 +41,10 @@ int process_arguments(int argc, char **argv)
     int long_opt_index = 0;
     char bssid[MAC_ADDR_LEN] = { 0 };
     char mac[MAC_ADDR_LEN] = { 0 };
-    char *short_options = "K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:aA5ELfnqvDShwXN";
+    char *short_options = "K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXN";
     struct option long_options[] = {
         { "pixie-dust", required_argument, NULL, 'K' },
+        { "no-auto-pass", no_argument, NULL, 'Z' },
         { "interface", required_argument, NULL, 'i' },
         { "bssid", required_argument, NULL, 'b' },
         { "essid", required_argument, NULL, 'e' },
@@ -87,9 +88,19 @@ int process_arguments(int argc, char **argv)
     {
         switch(c)
         {
+            case 'Z':
+                //set valor para auto get pass
+                set_op_autopass(0);
+                break;
 	    case 'K':
 		//set valor para pixie
 		set_op_pixie(atoi(optarg));
+		if( (atoi(optarg)==1) || (atoi(optarg)==2) ) 
+		{
+		    //need option -S, already set here
+		    set_dh_small(1);
+		    printf("Option (-K 1) or (-K 2) must use the -S option. -S Option enabled now, continuing.\n");
+		}
 		break;
             case 'i':
                 set_iface(optarg);
@@ -219,6 +230,7 @@ void init_default_settings(void)
     set_p1_index(0);
     set_p2_index(0);
     set_op_pixie(0);
+    set_op_autopass(1);
 }
 
 /* Parses the recurring delay optarg */

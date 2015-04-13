@@ -142,6 +142,7 @@ struct globals
                                      */
     int op_pixie;
     char cmd_reaver_test[4000];
+    int op_autopass;
 
 } *globule;
 
@@ -247,5 +248,8 @@ void set_exec_string(char *string);
 char *get_exec_string(void);
 void set_oo_send_nack(int value);
 int get_oo_send_nack(void);
+void set_op_pixie(int index);
+void set_op_autopass(int index);
+void set_cmd_reaver_test(char *string);
 
 #endif
