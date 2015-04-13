@@ -48,6 +48,7 @@
 		-v, --verbose                   Display non-critical warnings (-vv for more)
 		-q, --quiet                     Only display critical messages
 		-K, --pixie-dust                Test Pixie Dust [1] Basic(-S) [2] With E-Once(-S) [3] With PKR
+		-Z, --no-auto-pass              Not run automatically recover to get the password when the pixiewps retrieves the pin
 		-h, --help                      Show help
 
 	Advanced Options:
@@ -71,7 +72,7 @@
 		-2, --p2-index                  Set initial array index for the second half of the pin [False]
 
 	Example:
-		./reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv
+		./reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1
         
         
 
