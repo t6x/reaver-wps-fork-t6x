@@ -133,7 +133,8 @@ int main(int argc, char *argv[])
 	{
 		printf("\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
 		printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
-		printf("mod by t6_x <t6_x@hotmail.com>\n\n");
+		printf("mod by t6_x <t6_x@hotmail.com>\n");
+		printf("mod by DataHead\n\n");
 	}	
 
     /* The interface value won't be set if capture files were specified; else, there should have been an interface specified */

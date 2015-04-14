@@ -41,7 +41,7 @@ int process_arguments(int argc, char **argv)
     int long_opt_index = 0;
     char bssid[MAC_ADDR_LEN] = { 0 };
     char mac[MAC_ADDR_LEN] = { 0 };
-    char *short_options = "K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXN";
+    char *short_options = "K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXNP";
     struct option long_options[] = {
         { "pixie-dust", required_argument, NULL, 'K' },
         { "no-auto-pass", no_argument, NULL, 'Z' },
@@ -78,6 +78,7 @@ int process_arguments(int argc, char **argv)
         { "win7", no_argument, NULL, 'w' },
         { "exhaustive", no_argument, NULL, 'X' },
         { "help", no_argument, NULL, 'h' },
+		{ "pixiepust-loop", no_argument, NULL, 'P' },
         { 0, 0, 0, 0 }
     };
 
@@ -201,6 +202,9 @@ int process_arguments(int argc, char **argv)
             case 'N':
                 set_oo_send_nack(0);
                 break;
+			case 'P':
+                set_pixie_loop(1);
+                break;
             default:
                 ret_val = EXIT_FAILURE;
         }
@@ -231,6 +235,7 @@ void init_default_settings(void)
     set_p2_index(0);
     set_op_pixie(0);
     set_op_autopass(1);
+	set_pixie_loop(0);
 }
 
 /* Parses the recurring delay optarg */

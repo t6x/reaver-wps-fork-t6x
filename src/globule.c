@@ -246,6 +246,12 @@ void set_max_pin_attempts(int value)
 {
     globule->max_pin_attempts = value;
 }
+
+void set_pixie_loop(int value)
+{
+    globule->pixie_loop = value;
+}
+
 int get_max_pin_attempts()
 {
     return globule->max_pin_attempts;
