@@ -82,3 +82,11 @@
 	The -K option 3 runs pixiewps with PKR and the hash1 = hash2 = e-once
 
 	**Use the reaver with the option -S when you take your test without the pkr
+
+
+
+#Contribution
+	Modifications made by t6_x
+	Modifications made by DataHead
+
+	Some ideas made by nooro

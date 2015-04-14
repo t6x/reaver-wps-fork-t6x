@@ -78,7 +78,7 @@ int process_arguments(int argc, char **argv)
         { "win7", no_argument, NULL, 'w' },
         { "exhaustive", no_argument, NULL, 'X' },
         { "help", no_argument, NULL, 'h' },
-		{ "pixiepust-loop", no_argument, NULL, 'P' },
+	{ "pixiepust-loop", no_argument, NULL, 'P' },
         { 0, 0, 0, 0 }
     };
 
@@ -202,7 +202,7 @@ int process_arguments(int argc, char **argv)
             case 'N':
                 set_oo_send_nack(0);
                 break;
-			case 'P':
+	    case 'P':
                 set_pixie_loop(1);
                 break;
             default:
@@ -235,7 +235,7 @@ void init_default_settings(void)
     set_p2_index(0);
     set_op_pixie(0);
     set_op_autopass(1);
-	set_pixie_loop(0);
+    set_pixie_loop(0);
 }
 
 /* Parses the recurring delay optarg */

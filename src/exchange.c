@@ -104,16 +104,16 @@ enum wps_result do_wps_exchange()
                 cprintf(VERBOSE, "[+] Received M3 message\n");
                 if(m2_sent && !m4_sent)
                 {
-			if(globule->pixie_loop == 1)
-			{
-                    		tx_type = IDENTITY_REQUEST;
-                    		m4_sent = 0;
-			}
-                    	else if (globule->pixie_loop == 0)
-			{
-				tx_type = SEND_M4;
-				m4_sent = 1;
-			}
+		    if(globule->pixie_loop == 1)
+		    {
+                    	tx_type = IDENTITY_REQUEST;
+                    	m4_sent = 0;
+		    }
+                    else if (globule->pixie_loop == 0)
+		    {
+			tx_type = SEND_M4;
+			m4_sent = 1;
+		    }
                     //tx_type = SEND_M4;
                     //m4_sent = 1;
                 }
