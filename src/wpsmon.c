@@ -33,6 +33,8 @@
 
 #include "wpsmon.h"
 
+int o_file_p = 0;
+
 int main(int argc, char *argv[])
 {
     int c = 0;
@@ -41,8 +43,9 @@ int main(int argc, char *argv[])
     int source = INTERFACE, ret_val = EXIT_FAILURE;
     struct bpf_program bpf = { 0 };
     char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
-    char *short_options = "i:c:n:o:b:5sfuCDh";
+    char *short_options = "i:c:n:o:b:5sfuCDhP";
     struct option long_options[] = {
+	{ "file-output-piped", no_argument, NULL, 'P' },
         { "bssid", required_argument, NULL, 'b' },
         { "interface", required_argument, NULL, 'i' },
         { "channel", required_argument, NULL, 'c' },
@@ -57,10 +60,7 @@ int main(int argc, char *argv[])
         { "help", no_argument, NULL, 'h' },
         { 0, 0, 0, 0 }
     };
-
-    fprintf(stderr, "\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
-    fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n\n");
-
+	
     globule_init();
     sql_init();
     create_ap_table();
@@ -75,6 +75,9 @@ int main(int argc, char *argv[])
     {
         switch(c)
         {
+			case 'P':
+                o_file_p = 1;
+                break;
             case 'f':
                 source = PCAP_FILE;
                 break;
@@ -125,6 +128,13 @@ int main(int argc, char *argv[])
             last_optarg = strdup(optarg);
         }
     }
+	
+	if (o_file_p == 0)
+	{
+		printf("\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
+		printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
+		printf("mod by t6_x <t6_x@hotmail.com>\n\n");
+	}	
 
     /* The interface value won't be set if capture files were specified; else, there should have been an interface specified */
     if(!get_iface() && source != PCAP_FILE)
@@ -154,12 +164,14 @@ int main(int argc, char *argv[])
     /* Open the output file, if any. If none, write to stdout. */
     if(out_file)
     {
-        fp = fopen(out_file, "wb");
-        if(!fp)
-        {
-            cprintf(CRITICAL, "[X] ERROR: Failed to open '%s' for writing\n", out_file);
-            goto end;
-        }
+	
+		fp = fopen(out_file, "wb");
+		if(!fp)
+		{
+			cprintf(CRITICAL, "[X] ERROR: Failed to open '%s' for writing\n", out_file);
+			goto end;
+		}
+		
 
         set_log_file(fp);
     }
@@ -262,9 +274,13 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 
     if(!header_printed)
     {
-        cprintf(INFO, "BSSID                  Channel       RSSI       WPS Version       WPS Locked        ESSID\n");
-        cprintf(INFO, "---------------------------------------------------------------------------------------------------------------\n");
-        header_printed = 1;
+		if (o_file_p == 0)
+		{
+			cprintf(INFO, "BSSID                  Channel       RSSI       WPS Version       WPS Locked        ESSID\n");
+			cprintf(INFO, "---------------------------------------------------------------------------------------------------------------\n");
+			header_printed = 1;
+		}
+		
     }
 
     while((packet = next_packet(&header)))
@@ -356,8 +372,15 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                             lock_display = NO;
                             break;
                     }
-
-                    cprintf(INFO, "%17s      %2d            %.2d        %d.%d               %s               %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+					
+					if (o_file_p == 0)
+					{
+						cprintf(INFO, "%17s      %2d            %.2d        %d.%d               %s               %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+					}
+					else
+					{
+						cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+					}
                 }
 
                 if(probe_sent)
@@ -431,6 +454,7 @@ void usage(char *prog)
     fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
     fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
     fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
+    fprintf(stderr, "\t-P, --file-output-piped              Output Piped (x|y|z)");
     fprintf(stderr, "\t-h, --help                           Show help\n");
 
     fprintf(stderr, "\nExample:\n");
