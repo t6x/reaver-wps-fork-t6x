@@ -274,6 +274,15 @@ static int wps_process_serial_number(struct wps_device_data *dev,
     }
 
     wpa_hexdump_ascii(MSG_DEBUG, "WPS: Serial Number", str, str_len);
+	
+	/****** ADD THIS PART ******/
+    printf("[P] WPS Model Serial Number: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < str_len; pixiecnt++) {
+	printf("%c", (char *) str[pixiecnt]);
+    }
+    printf("\n");
+    /******/
 
     os_free(dev->serial_number);
     dev->serial_number = os_malloc(str_len + 1);
