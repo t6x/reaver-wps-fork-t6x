@@ -34,6 +34,10 @@
 #include "wpsmon.h"
 
 int o_file_p = 0;
+int get_chipset_output = 0;
+int c_fix = 0;
+char info_manufac[1000];
+char info_modelnum[1000];
 
 int main(int argc, char *argv[])
 {
@@ -43,8 +47,9 @@ int main(int argc, char *argv[])
     int source = INTERFACE, ret_val = EXIT_FAILURE;
     struct bpf_program bpf = { 0 };
     char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
-    char *short_options = "i:c:n:o:b:5sfuCDhP";
+    char *short_options = "i:c:n:o:b:5sfuCDhPg";
     struct option long_options[] = {
+		{ "get-chipset", no_argument, NULL, 'g' },
 	{ "file-output-piped", no_argument, NULL, 'P' },
         { "bssid", required_argument, NULL, 'b' },
         { "interface", required_argument, NULL, 'i' },
@@ -75,6 +80,10 @@ int main(int argc, char *argv[])
     {
         switch(c)
         {
+			case 'g':
+                get_chipset_output = 1;
+				o_file_p = 1;
+                break;
 			case 'P':
                 o_file_p = 1;
                 break;
@@ -90,6 +99,7 @@ int main(int argc, char *argv[])
             case 'c':
                 channel = atoi(optarg);
                 set_fixed_channel(1);
+				c_fix = 1;
                 break;
             case '5':
                 set_wifi_band(AN_BAND);
@@ -374,13 +384,108 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                             break;
                     }
 					
+					//ideas made by kcdtv
+					
+					if(get_chipset_output == 1)
+					//if(1)
+					{
+						if (c_fix == 0)
+						{
+							//no use a fixed channel
+							cprintf(INFO,"This option needs a fixed channel (-c option)\n");
+							exit(0);
+						}
+						
+						FILE *fgchipset=NULL;
+						char cmd_chipset[4000];
+						char cmd_chipset_buf[4000];
+						char buffint[5];
+						
+						char *aux_cmd_chipset=NULL;
+						
+
+						
+						memset(cmd_chipset, 0, sizeof(cmd_chipset));
+						memset(cmd_chipset_buf, 0, sizeof(cmd_chipset_buf));
+						memset(info_manufac, 0, sizeof(info_manufac));
+						memset(info_modelnum, 0, sizeof(info_modelnum));
+						
+
+						
+						strcat(cmd_chipset,"reaver -0 -s y -vv -i "); //need option to stop reaver in m1 stage
+						strcat(cmd_chipset,get_iface());
+						
+						strcat(cmd_chipset, " -b ");
+						strcat(cmd_chipset, mac2str(get_bssid(),':'));
+						
+						strcat(cmd_chipset," -c ");
+						snprintf(buffint, sizeof(buffint), "%d",channel);
+						strcat(cmd_chipset, buffint);
+						
+						//cprintf(INFO,"\n%s\n",cmd_chipset);
+
+						if ((fgchipset = popen(cmd_chipset, "r")) == NULL) {
+							printf("Error opening pipe!\n");
+							//return -1;
+						}
+						
+						
+
+						while (fgets(cmd_chipset_buf, 4000, fgchipset) != NULL) 
+						{
+							//[P] WPS Manufacturer: xxx
+							//[P] WPS Model Number: yyy
+							//cprintf(INFO,"\n%s\n",cmd_chipset_buf);
+
+							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Manufacturer:");
+							if(aux_cmd_chipset != NULL)
+							{
+								//md_chipset_buf
+								strncpy(info_manufac, aux_cmd_chipset+21, sizeof(cmd_chipset_buf));
+							}
+
+							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Model Number:");
+							if(aux_cmd_chipset != NULL)
+							{
+								strncpy(info_modelnum, aux_cmd_chipset+21, sizeof(cmd_chipset_buf));
+								
+							}
+
+
+
+
+						}
+						
+						//cprintf(INFO,"\n%s\n",info_manufac);
+						info_manufac[strcspn ( info_manufac, "\n" )] = '\0';
+						info_modelnum[strcspn ( info_modelnum, "\n" )] = '\0';
+
+						if(pclose(fgchipset))  {
+						//printf("Command not found or exited with error status\n");
+						//return -1;
+						}
+						
+					
+
+					}
+					
+					
 					if (o_file_p == 0)
 					{
 						cprintf(INFO, "%17s      %2d            %.2d        %d.%d               %s               %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
 					}
 					else
 					{
-						cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+						if(get_chipset_output == 1)
+						{
+							cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid,info_manufac,info_modelnum);
+							
+						}else
+						{
+							cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+							
+						}
+						
 					}
                 }
 
@@ -455,7 +560,8 @@ void usage(char *prog)
     fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
     fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
     fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
-    fprintf(stderr, "\t-P, --file-output-piped              Output Piped (x|y|z)");
+    fprintf(stderr, "\t-P, --file-output-piped              Output Piped x|y|z...\n");
+	fprintf(stderr, "\t-g, --get-chipset                    Output Piped and tries to read the chipset with reaver\n");
     fprintf(stderr, "\t-h, --help                           Show help\n");
 
     fprintf(stderr, "\nExample:\n");

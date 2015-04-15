@@ -12,6 +12,8 @@
  * See README and COPYING for more details.
  */
 
+ #include "globule.h"
+ 
 #include "includes.h"
 
 #include "common.h"
@@ -245,6 +247,12 @@ static int wps_process_model_number(struct wps_device_data *dev, const u8 *str,
     }
     printf("\n");
     /******/
+	
+	if(globule->stop_in_m1 == 1)
+	{
+		//exit reaver, need this to get manufac and model for the wash option
+		exit(0);
+	}
 
     os_free(dev->model_number);
     dev->model_number = os_malloc(str_len + 1);
