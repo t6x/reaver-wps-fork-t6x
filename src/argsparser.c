@@ -78,7 +78,7 @@ int process_arguments(int argc, char **argv)
         { "win7", no_argument, NULL, 'w' },
         { "exhaustive", no_argument, NULL, 'X' },
         { "help", no_argument, NULL, 'h' },
-	{ "pixiepust-loop", no_argument, NULL, 'P' },
+	{ "pixiedust-loop", no_argument, NULL, 'P' },
         { 0, 0, 0, 0 }
     };
 
