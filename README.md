@@ -132,3 +132,4 @@
 #Special thanks
 	Soxrok2212 for all work done to help in the development of tools
 	Wiire for developing the pixiewps
+	Craig Heffner for creating the reaver
