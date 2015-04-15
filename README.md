@@ -17,7 +17,7 @@
 
 	Build Reaver
 	
-		cd reaver-1.4
+		cd reaver-wps-fork-t6x-master
 		cd src
 		./configure
 		make
@@ -126,7 +126,7 @@
 	Modifications made by t6_x
 	Modifications made by DataHead
 
-	Some ideas made by nooro
+	Some ideas made by nuroo
 	Some ideas made by kcdtv
 
 #Special thanks
