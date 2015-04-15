@@ -126,5 +126,5 @@
 	Modifications made by t6_x
 	Modifications made by DataHead
 
-	Some ideas made by nooro
+	Some ideas made by nuroo
 	Some ideas made by kcdtv
