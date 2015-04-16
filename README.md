@@ -50,9 +50,10 @@
 			-5, --5ghz                      Use 5GHz 802.11 channels
 			-v, --verbose                   Display non-critical warnings (-vv for more)
 			-q, --quiet                     Only display critical messages
-			-K, --pixie-dust                [-K 1]PKE & E-Hash1/2, No E-Nonce ( implies -S)
-							[-K 2]PKE & E-Hash1, E-Hash2 & E-Nonce ( implies -S)
-							[-K 3]PKE, PKR & E-Hash1, E-Hash2 & E-Nonce
+			-K, --pixie-dust=<number>       [1] PKE & E-Hash1, E-Hash2 ( implies -S)
+							[2] PKE & E-Hash1, E-Hash2 & E-Nonce ( implies -S)
+							[3] PKE, PKR & E-Hash1, E-Hash2 & E-Nonce
+							
 			-Z, --no-auto-pass              Do NOT run retrieve WPA password if PixieWps attack is successful 
 			-h, --help                      Show help
 
@@ -75,6 +76,7 @@
 			-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]
 			-1, --p1-index                  Set initial array index for the first half of the pin [False]
 			-2, --p2-index                  Set initial array index for the second half of the pin [False]
+			
 			-P, --pixiedust-loop            Set into PixieLoop mode (doesn't send M4, and loops through to M3) [False]
 
 	Example:
