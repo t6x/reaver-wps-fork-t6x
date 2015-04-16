@@ -145,6 +145,7 @@ struct globals
     int op_pixie;					/*make pixiewps*/	
     char cmd_reaver_test[4000];		/*auto reaver with pin */
     int op_autopass;				/*auto reaver with pin*/
+	int stop_in_m1;
 
 } *globule;
 

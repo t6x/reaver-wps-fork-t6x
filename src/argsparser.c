@@ -41,8 +41,9 @@ int process_arguments(int argc, char **argv)
     int long_opt_index = 0;
     char bssid[MAC_ADDR_LEN] = { 0 };
     char mac[MAC_ADDR_LEN] = { 0 };
-    char *short_options = "K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXNP";
+    char *short_options = "K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXNP0";
     struct option long_options[] = {
+		{ "stop-in-m1", no_argument, NULL, '0' },
         { "pixie-dust", required_argument, NULL, 'K' },
         { "no-auto-pass", no_argument, NULL, 'Z' },
         { "interface", required_argument, NULL, 'i' },
@@ -78,7 +79,7 @@ int process_arguments(int argc, char **argv)
         { "win7", no_argument, NULL, 'w' },
         { "exhaustive", no_argument, NULL, 'X' },
         { "help", no_argument, NULL, 'h' },
-	{ "pixiepust-loop", no_argument, NULL, 'P' },
+	{ "pixiedust-loop", no_argument, NULL, 'P' },
         { 0, 0, 0, 0 }
     };
 
@@ -89,6 +90,10 @@ int process_arguments(int argc, char **argv)
     {
         switch(c)
         {
+			case '0':
+                //set valor para auto get pass
+                set_stop_in_m1(1);
+                break;
             case 'Z':
                 //set valor para auto get pass
                 set_op_autopass(0);
@@ -236,6 +241,7 @@ void init_default_settings(void)
     set_op_pixie(0);
     set_op_autopass(1);
     set_pixie_loop(0);
+	set_stop_in_m1(0);
 }
 
 /* Parses the recurring delay optarg */

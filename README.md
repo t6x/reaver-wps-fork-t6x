@@ -17,7 +17,7 @@
 
 	Build Reaver
 	
-		cd reaver-1.4
+		cd reaver-wps-fork-t6x-master
 		cd src
 		./configure
 		make
@@ -26,7 +26,8 @@
 	
 	sudo make install
     
-#Usage
+#Usage Reaver
+
 	Reaver v1.5.1 WiFi Protected Setup Attack Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
 	mod by t6_x <t6_x@hotmail.com>
@@ -72,24 +73,63 @@
 			-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]
 			-1, --p1-index                  Set initial array index for the first half of the pin [False]
 			-2, --p2-index                  Set initial array index for the second half of the pin [False]
-			-P, --pixiepust-loop            Set Into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]
+			-P, --pixiedust-loop            Set Into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]
 
 	Example:
 			reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1
-        
-        
-
+			
 #Option (K)
+
 	The -K option 1 run pixiewps without PKR and the hash1 = hash2 = 0
 	The -K option 2 runs pixiewps without PKR and the hash1 = hash2 = 0 but using the -n option of pixiewps (E-Once)
-	The -K option 3 runs pixiewps with PKR and the hash1 = hash2 = e-once
+	The -K option 3 runs pixiewps with PKR and the hash1 = hash2 = e-once	
 
-	**Use the reaver with the option -S when you take your test without the pkr
+	**Use the reaver with the option -S when you take your test without the PKR	
 
 
+#Usage Wash
+
+	Wash v1.5.1 WiFi Protected Setup Scan Tool
+	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+	mod by t6_x <t6_x@hotmail.com>
+	mod by DataHead
+
+	Required Arguments:
+			-i, --interface=<iface>              Interface to capture packets on
+			-f, --file [FILE1 FILE2 FILE3 ...]   Read packets from capture files
+
+	Optional Arguments:
+			-c, --channel=<num>                  Channel to listen on [auto]
+			-o, --out-file=<file>                Write data to file
+			-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [15]
+			-D, --daemonize                      Daemonize wash
+			-C, --ignore-fcs                     Ignore frame checksum errors
+			-5, --5ghz                           Use 5GHz 802.11 channels
+			-s, --scan                           Use scan mode
+			-u, --survey                         Use survey mode [default]
+			-P, --file-output-piped              Output Piped x|y|z...
+			-g, --get-chipset                    Output Piped and tries to read the chipset with reaver
+			-h, --help                           Show help
+
+	Example:
+			wash -i mon0
+			
+			
+#Option (g)
+		The option -g of wash, automatically runs the reaver to receive the chipset data. 
+		If the AP does not respond to them quickly, this option will be slow to display the data,
+		because the reaver will stay running until getting the data or until you reach your timeout limit (30 secs)		
+			
+			
 
 #Contribution
 	Modifications made by t6_x
 	Modifications made by DataHead
 
-	Some ideas made by nooro
+	Some ideas made by nuroo
+	Some ideas made by kcdtv
+
+#Special thanks
+	Soxrok2212 for all work done to help in the development of tools
+	Wiire for developing the pixiewps
+	Craig Heffner for creating the reaver

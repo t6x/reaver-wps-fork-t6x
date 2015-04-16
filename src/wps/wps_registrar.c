@@ -1842,6 +1842,8 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
     {
         
         FILE *fpixe;
+		
+		//printf(" -- cmd pixie : %s",cmd_pixie);
 
         if ((fpixe = popen(cmd_pixie, "r")) == NULL) {
             printf("Error opening pipe!\n");
@@ -1994,7 +1996,7 @@ static int wps_process_e_snonce1(struct wps_data *wps, const u8 *e_snonce1)
     addr[3] = wpabuf_head(wps->dh_pubkey_r);
     len[3] = wpabuf_len(wps->dh_pubkey_r);
     hmac_sha256_vector(wps->authkey, WPS_AUTHKEY_LEN, 4, addr, len, hash);
-
+	
     if (os_memcmp(wps->peer_hash1, hash, WPS_HASH_LEN) != 0) {
         wpa_printf(MSG_DEBUG, "WPS: E-Hash1 derived from E-S1 does "
                 "not match with the pre-committed value");

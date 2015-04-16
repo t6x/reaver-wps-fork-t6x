@@ -611,6 +611,11 @@ void set_op_autopass(int index)
     globule->op_autopass = index;
 }
 
+void set_stop_in_m1(int index)
+{
+    globule->stop_in_m1 = index;
+}
+
 void set_cmd_reaver_test(char *string)
 {
 /*
