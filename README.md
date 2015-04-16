@@ -50,8 +50,8 @@
 			-5, --5ghz                      Use 5GHz 802.11 channels
 			-v, --verbose                   Display non-critical warnings (-vv for more)
 			-q, --quiet                     Only display critical messages
-			-K, --pixie-dust                Test Pixie Dust [1] Basic(-S) [2] With E-Once(-S) [3] With PKR
-			-Z, --no-auto-pass              Not run automatically reaver to get the password when the pixiewps retrieves the pin
+			-K, --pixie-dust                Test Pixie Dust [-K 1], DH-Small keys(-S) [-K 2], With E-Nonce(-S) [-K 3] With PKR
+			-Z, --no-auto-pass              Do NOT run retrieve WPA password if PixieWps attack is successful 
 			-h, --help                      Show help
 
 	Advanced Options:
@@ -73,7 +73,7 @@
 			-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]
 			-1, --p1-index                  Set initial array index for the first half of the pin [False]
 			-2, --p2-index                  Set initial array index for the second half of the pin [False]
-			-P, --pixiedust-loop            Set Into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]
+			-P, --pixiedust-loop            Set into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]
 
 	Example:
 			reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1
@@ -91,8 +91,7 @@
 
 	Wash v1.5.1 WiFi Protected Setup Scan Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-	mod by t6_x <t6_x@hotmail.com>
-	mod by DataHead
+	mod by t6_x <t6_x@hotmail.com> & DataHead
 
 	Required Arguments:
 			-i, --interface=<iface>              Interface to capture packets on
@@ -107,8 +106,8 @@
 			-5, --5ghz                           Use 5GHz 802.11 channels
 			-s, --scan                           Use scan mode
 			-u, --survey                         Use survey mode [default]
-			-P, --file-output-piped              Output Piped x|y|z...
-			-g, --get-chipset                    Output Piped and tries to read the chipset with reaver
+			-P, --file-output-piped              Allows Wash output to be piped. Example. wash x|y|z...
+			-g, --get-chipset                    Pipes output and runs reaver alongside to get chipset
 			-h, --help                           Show help
 
 	Example:
