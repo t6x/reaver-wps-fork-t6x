@@ -50,7 +50,7 @@
 			-5, --5ghz                      Use 5GHz 802.11 channels
 			-v, --verbose                   Display non-critical warnings (-vv for more)
 			-q, --quiet                     Only display critical messages
-			-K, --pixie-dust                Test Pixie Dust [-K 1], DH-Small keys(-S) [-K 2], With E-Nonce(-S) [-K 3] With PKR
+			-K, --pixie-dust                Test Pixie Dust [-K 1], DH-Small keys(-S) [-K 2], With E-Nonce [-K 3]
 			-Z, --no-auto-pass              Do NOT run retrieve WPA password if PixieWps attack is successful 
 			-h, --help                      Show help
 
@@ -82,7 +82,7 @@
 
 	The -K option 1 run pixiewps without PKR and the hash1 = hash2 = 0
 	The -K option 2 runs pixiewps without PKR and the hash1 = hash2 = 0 but using the -n option of pixiewps (E-Once)
-	The -K option 3 runs pixiewps with PKR and the hash1 = hash2 = e-once	
+	The -K option 3 runs pixiewps with PKR and the hash1 = hash2 = e-Nonce	
 
 	**Use the reaver with the option -S when you take your test without the PKR	
 
@@ -116,8 +116,8 @@
 			
 #Option (g)
 		The option -g of wash, automatically runs the reaver to receive the chipset data. 
-		If the AP does not respond to them quickly, this option will be slow to display the data,
-		because the reaver will stay running until getting the data or until you reach your timeout limit (30 secs)		
+		If the AP does not respond to them quickly, this option will be slower to display the data,
+		because reaver will stay running until it gets the data or until you reach your timeout limit (30 secs)		
 			
 			
 
