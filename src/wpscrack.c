@@ -171,8 +171,8 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-5, --5ghz                      Use 5GHz 802.11 channels\n");
     fprintf(stderr, "\t-v, --verbose                   Display non-critical warnings (-vv for more)\n");
     fprintf(stderr, "\t-q, --quiet                     Only display critical messages\n");
-    fprintf(stderr, "\t-K, --pixie-dust                Test Pixie Dust [-K 1], DH-Small keys(-S) [-K 2], With E-Nonce [-K 3] \n");
-    fprintf(stderr, "\t-Z, --no-auto-pass              Do NOT run retrieve WPA password if pixiewps attack is successful\n");
+    fprintf(stderr, "\t-K, --pixie-dust                Test Pixie Dust [-K 1], DH-Small keys(-S) [-K 2], With E-Nonce & PKR [-K 3] \n");
+    fprintf(stderr, "\t-Z, --no-auto-pass              Do NOT run reaver to auto retrieve WPA password if pixiewps attack is successful\n");
     fprintf(stderr, "\t-h, --help                      Show help\n");
 
     fprintf(stderr, "\nAdvanced Options:\n");
