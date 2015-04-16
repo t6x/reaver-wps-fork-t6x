@@ -171,8 +171,8 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-5, --5ghz                      Use 5GHz 802.11 channels\n");
     fprintf(stderr, "\t-v, --verbose                   Display non-critical warnings (-vv for more)\n");
     fprintf(stderr, "\t-q, --quiet                     Only display critical messages\n");
-    fprintf(stderr, "\t-K, --pixie-dust                Test Pixie Dust [1] Basic(-S) [2] With E-Once(-S) [3] With PKR \n");
-    fprintf(stderr, "\t-Z, --no-auto-pass              Not run automatically reaver to get the password when the pixiewps retrieves the pin\n");
+    fprintf(stderr, "\t-K, --pixie-dust                Test Pixie Dust [-K 1], DH-Small keys(-S) [-K 2], With E-Nonce [-K 3] \n");
+    fprintf(stderr, "\t-Z, --no-auto-pass              Do NOT run retrieve WPA password if pixiewps attack is successful\n");
     fprintf(stderr, "\t-h, --help                      Show help\n");
 
     fprintf(stderr, "\nAdvanced Options:\n");
@@ -194,7 +194,7 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]\n");
     fprintf(stderr, "\t-1, --p1-index                  Set initial array index for the first half of the pin [False]\n");
     fprintf(stderr, "\t-2, --p2-index                  Set initial array index for the second half of the pin [False]\n");
-    fprintf(stderr, "\t-P, --pixiedust-loop            Set Into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]\n");
+    fprintf(stderr, "\t-P, --pixiedust-loop            Set Into PixieLoop mode (doesn't send M4, and loops through to M3) [False]\n");
 
     fprintf(stderr, "\nExample:\n\t%s -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1\n\n", prog_name);
 
