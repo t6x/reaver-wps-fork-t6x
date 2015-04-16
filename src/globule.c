@@ -616,6 +616,11 @@ void set_stop_in_m1(int index)
     globule->stop_in_m1 = index;
 }
 
+void set_op_gen_pin(int index)
+{
+    globule->op_gen_pin = index;
+}
+
 void set_cmd_reaver_test(char *string)
 {
 /*

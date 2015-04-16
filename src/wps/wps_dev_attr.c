@@ -196,6 +196,8 @@ static int wps_process_manufacturer(struct wps_device_data *dev, const u8 *str,
     }
     printf("\n");
     /******/
+	
+
 
     os_free(dev->manufacturer);
     dev->manufacturer = os_malloc(str_len + 1);
@@ -248,12 +250,6 @@ static int wps_process_model_number(struct wps_device_data *dev, const u8 *str,
     printf("\n");
     /******/
 	
-	if(globule->stop_in_m1 == 1)
-	{
-		//exit reaver, need this to get manufac and model for the wash option
-		exit(0);
-	}
-
     os_free(dev->model_number);
     dev->model_number = os_malloc(str_len + 1);
     if (dev->model_number == NULL)
@@ -283,6 +279,30 @@ static int wps_process_serial_number(struct wps_device_data *dev,
     }
     printf("\n");
     /******/
+	
+	if(globule->stop_in_m1 == 1)
+	{
+		//exit reaver, need this to get manufac and model for the wash option
+		exit(0);
+	}
+	
+	//generate pin, created by http://www.devttys0.com/ team
+	//https://github.com/devttys0/wps/tree/master/pingens/belkin
+	if(globule->op_gen_pin == 1)
+	{
+		printf("[Pin Gen] Belkin Default Pin Generator by devttys0 team\n");
+		printf("[Pin Gen] Pin Generated : %08d\n\n",pingen_belkin(mac2str(get_bssid(),'\0'),str));
+		exit(0);
+	}	
+	
+	//generate pin, created by http://www.devttys0.com/ team
+	//https://github.com/devttys0/wps/tree/master/pingens/dlink
+	if(globule->op_gen_pin == 2)
+	{
+		printf("[Pin Gen] D-Link Default Pin Generator by devttys0 team\n");
+		printf("[Pin Gen] Pin Generated : %08d\n\n",pingen_dlink(mac2str(get_bssid(),'\0'),str));
+		exit(0);
+	}		
 
     os_free(dev->serial_number);
     dev->serial_number = os_malloc(str_len + 1);

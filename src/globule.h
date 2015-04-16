@@ -146,6 +146,7 @@ struct globals
     char cmd_reaver_test[4000];		/*auto reaver with pin */
     int op_autopass;				/*auto reaver with pin*/
 	int stop_in_m1;
+	int op_gen_pin;
 
 } *globule;
 
@@ -255,6 +256,7 @@ void set_op_pixie(int index);
 void set_op_autopass(int index);
 void set_cmd_reaver_test(char *string);
 void set_pixie_loop(int value);
+void set_stop_in_m1(int index);
 //int pixie_loop();
 
 #endif

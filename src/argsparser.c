@@ -41,8 +41,9 @@ int process_arguments(int argc, char **argv)
     int long_opt_index = 0;
     char bssid[MAC_ADDR_LEN] = { 0 };
     char mac[MAC_ADDR_LEN] = { 0 };
-    char *short_options = "K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXNP0";
+    char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXNP0";
     struct option long_options[] = {
+		{ "generate-pin", required_argument, NULL, 'W' },
 		{ "stop-in-m1", no_argument, NULL, '0' },
         { "pixie-dust", required_argument, NULL, 'K' },
         { "no-auto-pass", no_argument, NULL, 'Z' },
@@ -90,7 +91,11 @@ int process_arguments(int argc, char **argv)
     {
         switch(c)
         {
-			case '0':
+			case 'W':
+                //set valor para auto get pass
+                set_op_gen_pin(atoi(optarg));
+                break;
+            case '0':
                 //set valor para auto get pass
                 set_stop_in_m1(1);
                 break;
@@ -242,6 +247,7 @@ void init_default_settings(void)
     set_op_autopass(1);
     set_pixie_loop(0);
 	set_stop_in_m1(0);
+	set_op_gen_pin(0);
 }
 
 /* Parses the recurring delay optarg */
