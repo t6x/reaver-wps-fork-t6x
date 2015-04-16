@@ -50,7 +50,9 @@
 			-5, --5ghz                      Use 5GHz 802.11 channels
 			-v, --verbose                   Display non-critical warnings (-vv for more)
 			-q, --quiet                     Only display critical messages
-			-K, --pixie-dust                Test Pixie Dust [-K 1], DH-Small keys(-S) [-K 2], With E-Nonce [-K 3]
+			-K, --pixie-dust                [-K 1]PKE & E-Hash1/2, No E-Nonce ( implies -S)
+							[-K 2]PKE & E-Hash1, E-Hash2 & E-Nonce ( implies -S)
+							[-K 3]PKE, PKR & E-Hash1, E-Hash2 & E-Nonce
 			-Z, --no-auto-pass              Do NOT run retrieve WPA password if PixieWps attack is successful 
 			-h, --help                      Show help
 
@@ -73,7 +75,7 @@
 			-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]
 			-1, --p1-index                  Set initial array index for the first half of the pin [False]
 			-2, --p2-index                  Set initial array index for the second half of the pin [False]
-			-P, --pixiedust-loop            Set into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]
+			-P, --pixiedust-loop            Set into PixieLoop mode (doesn't send M4, and loops through to M3) [False]
 
 	Example:
 			reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1
@@ -81,8 +83,8 @@
 #Option (K)
 
 	The -K option 1 run pixiewps without PKR and the hash1 = hash2 = 0
-	The -K option 2 runs pixiewps without PKR and the hash1 = hash2 = 0 but using the -n option of pixiewps (E-Once)
-	The -K option 3 runs pixiewps with PKR and the hash1 = hash2 = e-Nonce	
+	The -K option 2 runs pixiewps without PKR and the hash1 = hash2 = 0 but using the -n option of pixiewps (E-Nonce)
+	The -K option 3 runs pixiewps with PKE, PKR and the hash1 = hash2 = e-Nonce	
 
 	**Use the reaver with the option -S when you take your test without the PKR	
 
