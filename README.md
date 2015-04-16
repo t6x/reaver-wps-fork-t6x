@@ -123,13 +123,12 @@
 			
 
 #Contribution
-	Modifications made by t6_x
-	Modifications made by DataHead
+	Modifications made by t6_x, DataHead
 
-	Some ideas made by nuroo
-	Some ideas made by kcdtv
+	Some ideas made by nuroo, kcdtv
 
 #Special thanks
 	Soxrok2212 for all work done to help in the development of tools
 	Wiire for developing the pixiewps
 	Craig Heffner for creating the reaver
+	devttys0 (http://www.devttys0.com/) for the creation of default pin generators (D-Link, Belkin)
