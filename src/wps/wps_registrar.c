@@ -1923,7 +1923,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             }
             
 
-            printf("Running the reaver with the correct pin, wait ...\n");
+            printf("Running reaver with the correct pin, wait ...\n");
             printf("Cmd : %s\n\n",cmd_reaver_test_aux);
             printf("[Reaver Test] BSSID: %s\n", mac2str(get_bssid(),':'));
             printf("[Reaver Test] Channel: %s\n", cmd_buf_c);
