@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     char *short_options = "i:c:n:o:b:5sfuCDhPg";
     struct option long_options[] = {
 		{ "get-chipset", no_argument, NULL, 'g' },
-	{ "file-output-piped", no_argument, NULL, 'P' },
+	{ "output-piped", no_argument, NULL, 'P' },
         { "bssid", required_argument, NULL, 'b' },
         { "interface", required_argument, NULL, 'i' },
         { "channel", required_argument, NULL, 'c' },
@@ -143,8 +143,7 @@ int main(int argc, char *argv[])
 	{
 		printf("\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
 		printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
-		printf("mod by t6_x <t6_x@hotmail.com>\n");
-		printf("mod by DataHead\n\n");
+		printf("mod by t6_x <t6_x@hotmail.com> & DataHead\n\n");
 	}	
 
     /* The interface value won't be set if capture files were specified; else, there should have been an interface specified */
@@ -392,7 +391,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						if (c_fix == 0)
 						{
 							//no use a fixed channel
-							cprintf(INFO,"This option needs a fixed channel (-c option)\n");
+							cprintf(INFO,"Option (-g) REQUIRES a channel channel to be set with (-c)\n");
 							exit(0);
 						}
 						
@@ -560,8 +559,8 @@ void usage(char *prog)
     fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
     fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
     fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
-    fprintf(stderr, "\t-P, --file-output-piped              Output Piped x|y|z...\n");
-	fprintf(stderr, "\t-g, --get-chipset                    Output Piped and tries to read the chipset with reaver\n");
+    fprintf(stderr, "\t-P, --output-piped              Allows Wash output to be piped. Example. wash x|y|z...\n");
+    fprintf(stderr, "\t-g, --get-chipset                    Pipes output and runs reaver alongside to get chipset\n");
     fprintf(stderr, "\t-h, --help                           Show help\n");
 
     fprintf(stderr, "\nExample:\n");
