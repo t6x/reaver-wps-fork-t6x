@@ -129,7 +129,7 @@
 #Contribution
 	Modifications made by t6_x, DataHead
 
-	Some ideas made by nuroo, kcdtv
+	Some ideas made by nuroo, kcdtv, Soxrok2212
 
 #Special thanks
 	Soxrok2212 for all work done to help in the development of tools

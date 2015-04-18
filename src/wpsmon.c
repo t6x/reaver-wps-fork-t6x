@@ -36,8 +36,6 @@
 int o_file_p = 0;
 int get_chipset_output = 0;
 int c_fix = 0;
-char info_manufac[1000];
-char info_modelnum[1000];
 
 int main(int argc, char *argv[])
 {
@@ -66,6 +64,7 @@ int main(int argc, char *argv[])
         { 0, 0, 0, 0 }
     };
 	
+
     globule_init();
     sql_init();
     create_ap_table();
@@ -311,6 +310,10 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
     char *bssid = NULL, *ssid = NULL, *lock_display = NULL;
     int wps_parsed = 0, probe_sent = 0, channel = 0, rssi = 0;
     static int channel_changed = 0;
+    
+    char info_manufac[500];
+    char info_modelnum[500];
+    char info_modelserial[500];
 
     wps = malloc(sizeof(struct libwps_data));
     memset(wps, 0, sizeof(struct libwps_data));
@@ -407,7 +410,8 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						memset(cmd_chipset, 0, sizeof(cmd_chipset));
 						memset(cmd_chipset_buf, 0, sizeof(cmd_chipset_buf));
 						memset(info_manufac, 0, sizeof(info_manufac));
-						memset(info_modelnum, 0, sizeof(info_modelnum));
+                        memset(info_modelnum, 0, sizeof(info_modelnum));
+                        memset(info_modelserial, 0, sizeof(info_modelserial));
 						
 
 						
@@ -434,6 +438,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						{
 							//[P] WPS Manufacturer: xxx
 							//[P] WPS Model Number: yyy
+							//[P] WPS Model Serial Number: zzz
 							//cprintf(INFO,"\n%s\n",cmd_chipset_buf);
 
 							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Manufacturer:");
@@ -441,6 +446,8 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 							{
 								//md_chipset_buf
 								strncpy(info_manufac, aux_cmd_chipset+21, sizeof(cmd_chipset_buf));
+								//cprintf(INFO,"%s\n",info_manufac);
+								
 							}
 
 							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Model Number:");
@@ -450,20 +457,27 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 								
 							}
 
-
-
+							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Model Serial Number:");
+							if(aux_cmd_chipset != NULL)
+							{
+								strncpy(info_modelserial, aux_cmd_chipset+28, sizeof(cmd_chipset_buf));
+								
+							}
 
 						}
 						
 						//cprintf(INFO,"\n%s\n",info_manufac);
 						info_manufac[strcspn ( info_manufac, "\n" )] = '\0';
 						info_modelnum[strcspn ( info_modelnum, "\n" )] = '\0';
-
-						if(pclose(fgchipset))  {
-						//printf("Command not found or exited with error status\n");
-						//return -1;
-						}
+						info_modelserial[strcspn ( info_modelserial, "\n" )] = '\0';
 						
+
+
+                        if(pclose(fgchipset))  {
+                        //printf("Command not found or exited with error status\n");
+                        //return -1;
+                        }
+
 					
 
 					}
@@ -477,7 +491,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					{
 						if(get_chipset_output == 1)
 						{
-							cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid,info_manufac,info_modelnum);
+							cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s|%s|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid, info_manufac, info_modelnum, info_modelserial);
 							
 						}else
 						{
