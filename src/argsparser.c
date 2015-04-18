@@ -103,16 +103,18 @@ int process_arguments(int argc, char **argv)
                 //set valor para auto get pass
                 set_op_autopass(0);
                 break;
-	    case 'K':
-		//set valor para pixie
-		set_op_pixie(atoi(optarg));
-		if( (atoi(optarg)==1) || (atoi(optarg)==2) ) 
-		{
-		    //need option -S, already set here
-		    set_dh_small(1);
-		    printf("Option (-K 1) or (-K 2) must use the -S option. -S Option enabled now, continuing.\n");
-		}
-		break;
+            case 'K':
+                //set valor para pixie
+                set_op_pixie(atoi(optarg));
+                /*
+                if( (atoi(optarg)==1) || (atoi(optarg)==2) ) 
+                {
+                    //need option -S, already set here
+                    set_dh_small(1);
+                    printf("Option (-K 1) or (-K 2) must use the -S option. -S Option enabled now, continuing.\n");
+                }
+                */
+            break;
             case 'i':
                 set_iface(optarg);
                 break;

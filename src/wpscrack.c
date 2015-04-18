@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
     printf("\nReaver v%s WiFi Protected Setup Attack Tool\n", PACKAGE_VERSION);
     printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
-    printf("mod by t6_x <t6_x@hotmail.com> & DataHead\n\n");
+    printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212\n\n");
 
     if(argc < 2)
     {
@@ -171,9 +171,7 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-v, --verbose                   Display non-critical warnings (-vv for more)\n");
     fprintf(stderr, "\t-q, --quiet                     Only display critical messages\n");
     //fprintf(stderr, "\t-K, --pixie-dust                Test Pixie Dust [1] Basic(-S) [2] With E-Once(-S) [3] With PKR \n");
-    fprintf(stderr, "\t-K  --pixie-dust=<number>       [1] PKE & E-Hash1, E-Hash2 (implies -S)\n");
-    fprintf(stderr, "\t                                [2] PKE & E-Hash1, E-Hash2 & E-Nonce (implies -S)\n");
-    fprintf(stderr, "\t                                [3] PKE, PKR & E-Hash1, E-Hash2 & E-Nonce\n");
+    fprintf(stderr, "\t-K  --pixie-dust=<number>       [1] Run pixiewps with PKE, PKR, E-Hash1, E-Hash2 and E-Nonce (Ralink, Broadcom, Realtek)\n");
     fprintf(stderr, "\t-Z, --no-auto-pass              Do NOT run reaver to auto retrieve WPA password if pixiewps attack is successful\n");
     fprintf(stderr, "\t-h, --help                      Show help\n");
 

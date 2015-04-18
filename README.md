@@ -28,9 +28,9 @@
     
 #Usage Reaver
 
-	Reaver v1.5.1 WiFi Protected Setup Attack Tool
+	Reaver v1.5.2 WiFi Protected Setup Attack Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-	mod by t6_x <t6_x@hotmail.com> & DataHead
+	mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212
 
 	Required Arguments:
 			-i, --interface=<wlan>          Name of the monitor-mode interface to use
@@ -49,9 +49,7 @@
 			-5, --5ghz                      Use 5GHz 802.11 channels
 			-v, --verbose                   Display non-critical warnings (-vv for more)
 			-q, --quiet                     Only display critical messages
-			-K  --pixie-dust=<number>       [1] PKE & E-Hash1, E-Hash2 (implies -S)
-											[2] PKE & E-Hash1, E-Hash2 & E-Nonce (implies -S)
-											[3] PKE, PKR & E-Hash1, E-Hash2 & E-Nonce
+			-K  --pixie-dust=<number>       [1] Run pixiewps with PKE, PKR, E-Hash1, E-Hash2 and E-Nonce (Ralink, Broadcom, Realtek)
 			-Z, --no-auto-pass              Do NOT run reaver to auto retrieve WPA password if pixiewps attack is successful
 			-h, --help                      Show help
 
@@ -78,25 +76,18 @@
 			-W, --generate-pin              Default Pin Generator by devttys0 team [1] Belkin [2] D-Link
 
 	Example:
-			./reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1
-
-	Example:
-			reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1
+			reaver -i mon0 -b 00:AA:BB:11:22:33 -vv -K 1
 			
 #Option (K)
 
-	The -K option 1 run pixiewps without PKR and the hash1 = hash2 = 0
-	The -K option 2 runs pixiewps without PKR and the hash1 = hash2 = 0 but using the -n option of pixiewps (E-Nonce)
-	The -K option 3 runs pixiewps with PKE, PKR and the hash1 = hash2 = e-once	
-
-	**Use the reaver with the option -S when you take your test without the PKR	
+	The -K option 1 runs pixiewps with PKE, PKR, E-Hash1, E-Hash2 and E-Nonce, pixiewps will try to attack ralink, Broadcom and Realtek	
 
 
 #Usage Wash
 
-	Wash v1.5.1 WiFi Protected Setup Scan Tool
+	Wash v1.5.2 WiFi Protected Setup Scan Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-	mod by t6_x <t6_x@hotmail.com> & DataHead
+	mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212
 
 	Required Arguments:
 			-i, --interface=<iface>              Interface to capture packets on
@@ -127,9 +118,9 @@
 			
 
 #Contribution
-	Modifications made by t6_x, DataHead
+	Modifications made by t6_x, DataHead, Soxrok2212
 
-	Some ideas made by nuroo, kcdtv, Soxrok2212
+	Some ideas made by nuroo, kcdtv
 
 #Special thanks
 	Soxrok2212 for all work done to help in the development of tools
