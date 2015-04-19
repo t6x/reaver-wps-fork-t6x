@@ -50,7 +50,7 @@
 			-5, --5ghz                      Use 5GHz 802.11 channels
 			-v, --verbose                   Display non-critical warnings (-vv for more)
 			-q, --quiet                     Only display critical messages
-			-K  --pixie-dust=<number>       [1] Run pixiewps with PKE, PKR, E-Hash1, E-Hash2 and E-Nonce (Ralink, Broadcom, Realtek)
+			-K  --pixie-dust=<number>       [1] Run pixiewps with PKE, PKR, E-Hash1, E-Hash2, E-Nonce and Authkey (Ralink, Broadcom, Realtek)
 			-Z, --no-auto-pass              Do NOT run reaver to auto retrieve WPA password if pixiewps attack is successful
 			-h, --help                      Show help
 
@@ -73,7 +73,7 @@
 			-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]
 			-1, --p1-index                  Set initial array index for the first half of the pin [False]
 			-2, --p2-index                  Set initial array index for the second half of the pin [False]
-			-P, --pixiedust-loop            Set into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]
+			-P, --pixiedust-loop            Set into PixieLoop mode (doesn't send M4, and loops through to M3) [False]
 			-W, --generate-pin              Default Pin Generator by devttys0 team [1] Belkin [2] D-Link
 
 	Example:
@@ -82,7 +82,7 @@
 #Option (K)
 
 	The -K option 1 runs Pixiewps with PKE, PKR, E-Hash1, E-Hash2, E-Nonce and the Authkey. Pixiewps will try to attack Ralink, Broadcom and Realtek	
-
+	*Special note: if you are attacking a Realtek AP, do NOT use small DH Keys (-S)
 
 #Wash Usage
 
