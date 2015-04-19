@@ -27,7 +27,7 @@
 	
 	sudo make install
     
-#Usage Reaver
+#Reaver Usage
 
 	Reaver v1.5.2 WiFi Protected Setup Attack Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
@@ -84,7 +84,7 @@
 	The -K option 1 runs pixiewps with PKE, PKR, E-Hash1, E-Hash2 and E-Nonce, pixiewps will try to attack ralink, Broadcom and Realtek	
 
 
-#Usage Wash
+#Wash Usage
 
 	Wash v1.5.2 WiFi Protected Setup Scan Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
@@ -123,8 +123,8 @@
 
 	Some ideas made by nuroo, kcdtv
 
-#Special thanks
+#Special Thanks
 	Soxrok2212 for all work done to help in the development of tools
-	Wiire for developing the pixiewps
+	Wiire for developing Pixiewps
 	Craig Heffner for creating Reaver and for the creation of default pin generators (D-Link, Belkin)
 	(http://www.devttys0.com/)
