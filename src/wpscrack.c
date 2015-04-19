@@ -172,7 +172,7 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-q, --quiet                     Only display critical messages\n");
     //fprintf(stderr, "\t-K, --pixie-dust                Test Pixie Dust [1] Basic(-S) [2] With E-Once(-S) [3] With PKR \n");
     fprintf(stderr, "\t-K  --pixie-dust=<number>       [1] Run pixiewps with PKE, PKR, E-Hash1, E-Hash2 and E-Nonce (Ralink, Broadcom, Realtek)\n");
-    fprintf(stderr, "\t-Z, --no-auto-pass              Do NOT run reaver to auto retrieve WPA password if pixiewps attack is successful\n");
+    fprintf(stderr, "\t-Z, --no-auto-pass              Do NOT run reaver to auto retrieve WPA password if Pixiewps attack is successful\n");
     fprintf(stderr, "\t-h, --help                      Show help\n");
 
     fprintf(stderr, "\nAdvanced Options:\n");
@@ -194,7 +194,7 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]\n");
     fprintf(stderr, "\t-1, --p1-index                  Set initial array index for the first half of the pin [False]\n");
     fprintf(stderr, "\t-2, --p2-index                  Set initial array index for the second half of the pin [False]\n");
-    fprintf(stderr, "\t-P, --pixiedust-loop            Set into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]\n");
+    fprintf(stderr, "\t-P, --pixiedust-loop            Set into PixieLoop mode (doesn't send M4, and loops through to M3) [False]\n");
     fprintf(stderr, "\t-W, --generate-pin              Default Pin Generator by devttys0 team [1] Belkin [2] D-Link\n");
 
 	
