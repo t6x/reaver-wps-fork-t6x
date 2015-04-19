@@ -394,7 +394,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						if (c_fix == 0)
 						{
 							//no use a fixed channel
-							cprintf(INFO,"Option (-g) REQUIRES a channel channel to be set with (-c)\n");
+							cprintf(INFO,"Option (-g) REQUIRES a channel to be set with (-c)\n");
 							exit(0);
 						}
 						
