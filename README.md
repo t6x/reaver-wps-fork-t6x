@@ -1,7 +1,8 @@
 
 #Overview
 	reaver-wps-fork-t6x is a modification done from a fork of reaver (https://code.google.com/p/reaver-wps-fork/)
-	This modified version uses the attack Pixie Dust to find the correct pin number of wps
+	This modified version uses the Pixie Dust Attack to find the correct WPS PIN.
+	This attack works against many Ralink, Broadcom, and Realtek APs
 	The attack used in this version was developed by Wiire (https://github.com/wiire/pixiewps)
 
 #Install Required Libraries and Tools
@@ -10,7 +11,7 @@
 		sudo apt-get install libpcap-dev aircrack-ng sqlite3 libsqlite3-dev
     
 	Tools
-		You must have installed the pixiewps created by Wiire (https://github.com/wiire/pixiewps)
+		You must install Pixiewps by Wiire (https://github.com/wiire/pixiewps)
 
 
 #Compile and Install
@@ -107,7 +108,7 @@
 			-h, --help                           Show help
 
 	Example:
-			./wash -i mon0
+			wash -i mon0
 			
 			
 #Option (g)
@@ -125,5 +126,5 @@
 #Special thanks
 	Soxrok2212 for all work done to help in the development of tools
 	Wiire for developing the pixiewps
-	Craig Heffner for creating the reaver
-	devttys0 (http://www.devttys0.com/) for the creation of default pin generators (D-Link, Belkin)
+	Craig Heffner for creating Reaver and for the creation of default pin generators (D-Link, Belkin)
+	(http://www.devttys0.com/)
