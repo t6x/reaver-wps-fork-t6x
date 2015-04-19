@@ -81,7 +81,7 @@
 			
 #Option (K)
 
-	The -K option 1 runs pixiewps with PKE, PKR, E-Hash1, E-Hash2 and E-Nonce, pixiewps will try to attack ralink, Broadcom and Realtek	
+	The -K option 1 runs Pixiewps with PKE, PKR, E-Hash1, E-Hash2, E-Nonce and the Authkey. Pixiewps will try to attack Ralink, Broadcom and Realtek	
 
 
 #Wash Usage
