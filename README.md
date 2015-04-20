@@ -85,15 +85,15 @@
 	*Special note: if you are attacking a Realtek AP, do NOT use small DH Keys (-S)
 
 #Option (P) in reaver
-        Option (-P) in reaver puts reaver into a loop mode that does not do the WPS protocol to or past the M4 message to hopefully avoid lockouts. This is to ONLY be used for PixieHash collecting to use with pixiewps, NOT to 'online' bruteforce pins. 
+   Option (-P) in reaver puts reaver into a loop mode that does not do the WPS protocol to or past the M4 message to hopefully avoid lockouts. This is to ONLY be used for PixieHash collecting to use with pixiewps, NOT to 'online' bruteforce pins. 
 
-This option was made with intent of:
+    This option was made with intent of:
 
-----Collecting repetitive hashes for further comparison and or analysis / discovery of new vulnerable chipsets , routers etc..
+    ----Collecting repetitive hashes for further comparison and or analysis / discovery of new vulnerable chipsets , routers etc..
 
-----Time sensistive attacks where the hash collecting continues repetitively until your time frame is met.
+    ----Time sensistive attacks where the hash collecting continues repetitively until your time frame is met.
 
-----For scripting purposes of whom want to use a possible lockout preventable way of PixieHash gathering for your Use case.
+    ----For scripting purposes of whom want to use a possible lockout preventable way of PixieHash gathering for your Use case.
 
 #Wash Usage
 
