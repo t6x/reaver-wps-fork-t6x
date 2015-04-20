@@ -84,6 +84,17 @@
 	The -K option 1 runs pixiewps with PKE, PKR, E-Hash1, E-Hash2, E-Nonce and the Authkey. pixiewps will try to attack Ralink, Broadcom and Realtek	
 	*Special note: if you are attacking a Realtek AP, do NOT use small DH Keys (-S)
 
+#Option (P) in reaver
+        Option (-P) in reaver puts reaver into a loop mode that does not do the WPS protocol to or past the M4 message to hopefully avoid lockouts. This is to ONLY be used for PixieHash collecting to use with pixiewps, NOT to 'online' bruteforce pins. 
+
+This option was made with intent of:
+
+----Collecting repetitive hashes for further comparison and or analysis / discovery of new vulnerable chipsets , routers etc..
+
+----Time sensistive attacks where the hash collecting continues repetitively until your time frame is met.
+
+----For scripting purposes of whom want to use a possible lockout preventable way of PixieHash gathering for your Use case.
+
 #Wash Usage
 
 	Wash v1.5.2 WiFi Protected Setup Scan Tool
@@ -116,18 +127,6 @@
 		If the AP does not respond to them quickly, this option will be slow to display the data,
 		because the reaver will stay running until getting the data or until you reach your timeout limit (30 secs)		
 			
-			
-#Option (P) in reaver
-        Option (-P) in reaver puts reaver into a loop mode that does not do the WPS protocol to or past the M4 message to hopefully avoid lockouts. This is to ONLY be used for PixieHash collecting to use with pixiewps, NOT to 'online' bruteforce pins. 
-
-This option was made with intent of:
-
-----Collecting repetitive hashes for further comparison and or analysis / discovery of new vulnerable chipsets , routers etc..
-
-----Time sensistive attacks where the hash collecting continues repetitively until your time frame is met.
-
-----For scripting purposes of whom want to use a possible lockout preventable way of PixieHash gathering for your Use case.
-
 
 #Contribution
 	Modifications made by t6_x, DataHead, Soxrok2212
