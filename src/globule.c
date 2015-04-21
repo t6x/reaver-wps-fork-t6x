@@ -247,14 +247,19 @@ void set_max_pin_attempts(int value)
     globule->max_pin_attempts = value;
 }
 
+int get_max_pin_attempts()
+{
+    return globule->max_pin_attempts;
+}
+
 void set_pixie_loop(int value)
 {
     globule->pixie_loop = value;
 }
 
-int get_max_pin_attempts()
+int get_pixie_loop()
 {
-    return globule->max_pin_attempts;
+    return globule->pixie_loop;
 }
 
 void set_max_num_probes(int value)
