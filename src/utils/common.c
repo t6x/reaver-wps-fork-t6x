@@ -453,26 +453,37 @@ return result;
 /* Belkin Default Pin generator created by devttys0 team */
 /* http://www.devttys0.com/2015/04/reversing-belkins-wps-pin-algorithm/ */ 
 /* Munges the MAC and serial numbers to create a WPS pin */
-int pingen_belkin(char *mac, char *serial)
+int pingen_belkin(char *mac, char *serial, int len_serial, int add)
 {
-#define NIC_NIBBLE_0    0
-#define NIC_NIBBLE_1    1
-#define NIC_NIBBLE_2    2
-#define NIC_NIBBLE_3    3
+    #define NIC_NIBBLE_0    0
+    #define NIC_NIBBLE_1    1
+    #define NIC_NIBBLE_2    2
+    #define NIC_NIBBLE_3    3
 
-#define SN_DIGIT_0      0
-#define SN_DIGIT_1      1
-#define SN_DIGIT_2      2
-#define SN_DIGIT_3      3
+    #define SN_DIGIT_0      0
+    #define SN_DIGIT_1      1
+    #define SN_DIGIT_2      2
+    #define SN_DIGIT_3      3
 
     int sn[4], nic[4];
     int mac_len, serial_len;
     int k1, k2, pin;
     int p1, p2, p3;
     int t1, t2;
+    char buff_mac[24];
+    int buff_mac_i;
 
     mac_len = strlen(mac);
-    serial_len = strlen(serial);
+    serial_len = len_serial;
+	
+	//serial[len_serial] = '\0';
+
+    buff_mac_i = hexToInt(mac);
+    buff_mac_i = buff_mac_i + add;
+    sprintf(buff_mac,"%X",buff_mac_i);
+
+	mac_len = strlen(buff_mac);
+
 
     /* Get the four least significant digits of the serial number */
     sn[SN_DIGIT_0] = char2int(serial[serial_len-1]);
@@ -481,10 +492,10 @@ int pingen_belkin(char *mac, char *serial)
     sn[SN_DIGIT_3] = char2int(serial[serial_len-4]);
 
     /* Get the four least significant nibbles of the MAC address */
-    nic[NIC_NIBBLE_0] = char2int(mac[mac_len-1]);
-    nic[NIC_NIBBLE_1] = char2int(mac[mac_len-2]);
-    nic[NIC_NIBBLE_2] = char2int(mac[mac_len-3]);
-    nic[NIC_NIBBLE_3] = char2int(mac[mac_len-4]);
+    nic[NIC_NIBBLE_0] = char2int(buff_mac[mac_len-1]);
+    nic[NIC_NIBBLE_1] = char2int(buff_mac[mac_len-2]);
+    nic[NIC_NIBBLE_2] = char2int(buff_mac[mac_len-3]);
+    nic[NIC_NIBBLE_3] = char2int(buff_mac[mac_len-4]);
 
     k1 = (sn[SN_DIGIT_2] + 
           sn[SN_DIGIT_3] +
@@ -515,6 +526,9 @@ int pingen_belkin(char *mac, char *serial)
     pin = (pin + k1) * 16;
     pin += p3;
     pin = (pin % 10000000) - (((pin % 10000000) / 10000000) * k1);
+	
+	//pingen mac init c83a35
+	//printf("WPS PIN is: %07d%d\n",4402328%10000000,wps_checksum(4402328%10000000));
     
     return (pin * 10) + wps_checksum(pin);
 }
@@ -529,28 +543,30 @@ Tactical Network Solutions
 http://www.devttys0.com/2014/10/reversing-d-links-wps-pin-algorithm/
 */
 
-int pingen_dlink(char *mac, char *serial)
+int pingen_dlink(char *mac, char *serial, int len_serial, int add)
 {
     int mac_len=0, serial_len=0, nic=0, pin=0;
-	char buff[10];
+    char buff[10];
 
     mac_len = strlen(mac);
-    serial_len = strlen(serial);
-	nic = hexToInt(strncpy(buff, mac+6, sizeof(buff)));
+    serial_len = len_serial;
 
-	pin = nic ^ 0x55AA55;
-	pin = pin ^ (((pin & 0x0F) << 4) +
-				 ((pin & 0x0F) << 8) +
-				 ((pin & 0x0F) << 12) +
-				 ((pin & 0x0F) << 16) +
+    nic = hexToInt(strncpy(buff, mac+6, sizeof(buff)));
+    nic = nic + add;
+
+    pin = nic ^ 0x55AA55;
+    pin = pin ^ (((pin & 0x0F) << 4) +
+		 ((pin & 0x0F) << 8) +
+		 ((pin & 0x0F) << 12) +
+		 ((pin & 0x0F) << 16) +
 				 ((pin & 0x0F) << 20));
-	pin = pin % (int) 10e6;
+    pin = pin % (int) 10e6;
 	
-	if (pin < (int) 10e5)
-	{
-		pin += ((pin % 9) * (int)10e5) + (int)10e5;
+    if (pin < (int) 10e5)
+    {
+    	pin += ((pin % 9) * (int)10e5) + (int)10e5;
 		
-	}
+    }
 
     return (pin * 10) + wps_checksum(pin);
 }

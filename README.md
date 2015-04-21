@@ -1,7 +1,8 @@
 
 #Overview
 	reaver-wps-fork-t6x is a modification done from a fork of reaver (https://code.google.com/p/reaver-wps-fork/)
-	This modified version uses the attack Pixie Dust to find the correct pin number of wps
+	This modified version uses the Pixie Dust Attack to find the correct WPS PIN.
+	This attack works against many Ralink, Broadcom, and Realtek APs
 	The attack used in this version was developed by Wiire (https://github.com/wiire/pixiewps)
 
 #Install Required Libraries and Tools
@@ -10,7 +11,7 @@
 		sudo apt-get install libpcap-dev aircrack-ng sqlite3 libsqlite3-dev
     
 	Tools
-		You must have installed the pixiewps created by Wiire (https://github.com/wiire/pixiewps)
+		You must install Pixiewps by Wiire (https://github.com/wiire/pixiewps)
 
 
 #Compile and Install
@@ -26,11 +27,11 @@
 	
 	sudo make install
     
-#Usage Reaver
+#Reaver Usage
 
-	Reaver v1.5.1 WiFi Protected Setup Attack Tool
+	Reaver v1.5.2 WiFi Protected Setup Attack Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-	mod by t6_x <t6_x@hotmail.com> & DataHead
+	mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212
 
 	Required Arguments:
 			-i, --interface=<wlan>          Name of the monitor-mode interface to use
@@ -49,9 +50,7 @@
 			-5, --5ghz                      Use 5GHz 802.11 channels
 			-v, --verbose                   Display non-critical warnings (-vv for more)
 			-q, --quiet                     Only display critical messages
-			-K  --pixie-dust=<number>       [1] PKE & E-Hash1, E-Hash2 (implies -S)
-											[2] PKE & E-Hash1, E-Hash2 & E-Nonce (implies -S)
-											[3] PKE, PKR & E-Hash1, E-Hash2 & E-Nonce
+			-K  --pixie-dust=<number>       [1] Run pixiewps with PKE, PKR, E-Hash1, E-Hash2, E-Nonce and Authkey (Ralink, Broadcom, Realtek)
 			-Z, --no-auto-pass              Do NOT run reaver to auto retrieve WPA password if pixiewps attack is successful
 			-h, --help                      Show help
 
@@ -74,29 +73,33 @@
 			-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]
 			-1, --p1-index                  Set initial array index for the first half of the pin [False]
 			-2, --p2-index                  Set initial array index for the second half of the pin [False]
-			-P, --pixiedust-loop            Set into PixieLoop mode ( doesnt send M4, and loops through to M3 [False]
+			-P, --pixiedust-loop            Set into PixieLoop mode (doesn't send M4, and loops through to M3) [False]
 			-W, --generate-pin              Default Pin Generator by devttys0 team [1] Belkin [2] D-Link
 
 	Example:
-			./reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1
-
-	Example:
-			reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1
+			reaver -i mon0 -b 00:AA:BB:11:22:33 -vv -K 1
 			
 #Option (K)
 
-	The -K option 1 run pixiewps without PKR and the hash1 = hash2 = 0
-	The -K option 2 runs pixiewps without PKR and the hash1 = hash2 = 0 but using the -n option of pixiewps (E-Nonce)
-	The -K option 3 runs pixiewps with PKE, PKR and the hash1 = hash2 = e-once	
+	The -K option 1 runs pixiewps with PKE, PKR, E-Hash1, E-Hash2, E-Nonce and the Authkey. pixiewps will try to attack Ralink, Broadcom and Realtek	
+	*Special note: if you are attacking a Realtek AP, do NOT use small DH Keys (-S)
 
-	**Use the reaver with the option -S when you take your test without the PKR	
+#Option (P) in reaver
+   Option (-P) in reaver puts reaver into a loop mode that does not do the WPS protocol to or past the M4 message to hopefully avoid lockouts. This is to ONLY be used for PixieHash collecting to use with pixiewps, NOT to 'online' bruteforce pins. 
 
+    This option was made with intent of:
 
-#Usage Wash
+    ----Collecting repetitive hashes for further comparison and or analysis / discovery of new vulnerable chipsets , routers etc..
 
-	Wash v1.5.1 WiFi Protected Setup Scan Tool
+    ----Time sensistive attacks where the hash collecting continues repetitively until your time frame is met.
+
+    ----For scripting purposes of whom want to use a possible lockout preventable way of PixieHash gathering for your Use case.
+
+#Wash Usage
+
+	Wash v1.5.2 WiFi Protected Setup Scan Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-	mod by t6_x <t6_x@hotmail.com> & DataHead
+	mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212
 
 	Required Arguments:
 			-i, --interface=<iface>              Interface to capture packets on
@@ -116,7 +119,7 @@
 			-h, --help                           Show help
 
 	Example:
-			./wash -i mon0
+			wash -i mon0
 			
 			
 #Option (g)
@@ -124,15 +127,14 @@
 		If the AP does not respond to them quickly, this option will be slow to display the data,
 		because the reaver will stay running until getting the data or until you reach your timeout limit (30 secs)		
 			
-			
 
 #Contribution
-	Modifications made by t6_x, DataHead
+	Modifications made by t6_x, DataHead, Soxrok2212
 
 	Some ideas made by nuroo, kcdtv
 
-#Special thanks
+#Special Thanks
 	Soxrok2212 for all work done to help in the development of tools
-	Wiire for developing the pixiewps
-	Craig Heffner for creating the reaver
-	devttys0 (http://www.devttys0.com/) for the creation of default pin generators (D-Link, Belkin)
+	Wiire for developing Pixiewps
+	Craig Heffner for creating Reaver and for the creation of default pin generators (D-Link, Belkin)
+	(http://www.devttys0.com/)
