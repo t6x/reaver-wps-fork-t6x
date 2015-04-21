@@ -256,7 +256,8 @@ void set_op_pixie(int index);
 void set_op_autopass(int index);
 void set_cmd_reaver_test(char *string);
 void set_pixie_loop(int value);
+int get_pixie_loop();
 void set_stop_in_m1(int index);
-//int pixie_loop();
+
 
 #endif
