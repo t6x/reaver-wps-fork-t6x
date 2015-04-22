@@ -106,8 +106,8 @@ enum wps_result do_wps_exchange()
                 {
 		    if(globule->pixie_loop == 1)
 		    {
-                    	tx_type = IDENTITY_REQUEST;
-                    	m4_sent = 0;
+		        tx_type = SEND_WSC_NACK;
+                        terminated = 1;
 		    }
                     else if (globule->pixie_loop == 0)
 		    {
