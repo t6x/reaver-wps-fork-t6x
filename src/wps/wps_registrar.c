@@ -1738,43 +1738,11 @@ static int wps_process_registrar_nonce(struct wps_data *wps, const u8 *r_nonce)
         wpa_printf(MSG_DEBUG, "WPS: No Registrar Nonce received");
         return -1;
     }
-
-    os_memcpy(wps->nonce_r, r_nonce, WPS_NONCE_LEN);
-    wpa_hexdump(MSG_DEBUG, "WPS: Registrar Nonce",
-            wps->nonce_r, WPS_NONCE_LEN);
-
-    /****** ADD THIS PART ******/
-    memset(cmd_pixie,0,sizeof(cmd_pixie));
-    memset(cmd_pixie_aux,0,sizeof(cmd_pixie_aux));
-    strcat(cmd_pixie,"pixiewps ");
-   
-    if(globule->op_pixie==1 || globule->op_pixie==2 || globule->op_pixie==3)
-    {
-      strcat(cmd_pixie," -m "); 
+    if (os_memcmp(wps->nonce_r, r_nonce, WPS_NONCE_LEN) != 0) {
+        wpa_printf(MSG_DEBUG, "WPS: Invalid Registrar Nonce received");
+        return -1;
     }
-    printf("[P] R-Nonce: ");
-    int pixiecnt = 0;
-    for (; pixiecnt < WPS_NONCE_LEN; pixiecnt++) 
-    {
-        printf("%02x", wps->nonce_r[pixiecnt]);
-        if(globule->op_pixie==1 || globule->op_pixie==2 || globule->op_pixie==3)
-        {
-            sprintf(cmd_pixie_aux, "%02x",  wps->nonce_r[pixiecnt]);
-            strcat(cmd_pixie,cmd_pixie_aux);
-        }
-        if (pixiecnt != WPS_NONCE_LEN - 1) {
-            printf(":");
-            if(globule->op_pixie==1 || globule->op_pixie==2 || globule->op_pixie==3)
-            {
-                strcat(cmd_pixie,":");
-            }
-        }
-    }
-    printf("\n");
-    /******/
-
-
-    return 0;
+        return 0;
 }
 
 
