@@ -1909,7 +1909,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             snprintf(cmd_buf_c, sizeof(cmd_buf_c), "%d",get_channel());
             strcat(cmd_reaver_test_aux,cmd_buf_c);
 
-            strcat(cmd_reaver_test_aux," -s y -p ");
+            strcat(cmd_reaver_test_aux," -s -vv -p ");
             strcat(cmd_reaver_test_aux,pixie_pin);
             //printf("-- %s\n",cmd_reaver_test_aux);
 
