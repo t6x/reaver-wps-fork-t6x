@@ -1394,6 +1394,20 @@ static struct wpabuf * wps_build_m2(struct wps_data *wps)
     wpa_hexdump(MSG_DEBUG, "WPS: Registrar Nonce",
             wps->nonce_r, WPS_NONCE_LEN);
     wpa_hexdump(MSG_DEBUG, "WPS: UUID-R", wps->uuid_r, WPS_UUID_LEN);
+    
+    
+    printf("[P] R-Nonce: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < WPS_NONCE_LEN; pixiecnt++) 
+    {
+        printf("%02x", wps->nonce_r[pixiecnt]);
+        if (pixiecnt != WPS_NONCE_LEN - 1) {
+            printf(":");
+        }
+    }
+    printf("\n");
+    /******/
+    
 
     wpa_printf(MSG_DEBUG, "WPS: Building Message M2");
     msg = wpabuf_alloc(1000);
