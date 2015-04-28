@@ -219,6 +219,15 @@ static int wps_process_model_name(struct wps_device_data *dev, const u8 *str,
     }
 
     wpa_hexdump_ascii(MSG_DEBUG, "WPS: Model Name", str, str_len);
+    
+    /****** ADD THIS PART ******/
+    printf("[P] WPS Model Name: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < str_len; pixiecnt++) {
+	printf("%c", (char *) str[pixiecnt]);
+    }
+    printf("\n");
+    /******/
 
     os_free(dev->model_name);
     dev->model_name = os_malloc(str_len + 1);
