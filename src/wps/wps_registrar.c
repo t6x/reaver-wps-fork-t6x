@@ -1888,7 +1888,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
                 pixie_test = 1;
                 //exit(0);
                 //here will get the pin
-                strncpy(pixie_pin, aux_pixie_pin+9, 8);
+                strncpy(pixie_pin, aux_pixie_pin + 12, 8);
             }
             
         }
