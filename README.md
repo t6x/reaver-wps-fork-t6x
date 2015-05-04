@@ -18,8 +18,8 @@
 
 	Build Reaver
 	
-		cd reaver-wps-fork-t6x-master
-		cd src
+		cd /reaver-wps-fork-t6x-master/src
+		chmod 777 ./configure
 		./configure
 		make
 
