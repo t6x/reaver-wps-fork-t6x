@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
     printf("\nReaver v%s WiFi Protected Setup Attack Tool\n", PACKAGE_VERSION);
     printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
-    printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212\n\n");
+    printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire\n\n");
 
     if(argc < 2)
     {
