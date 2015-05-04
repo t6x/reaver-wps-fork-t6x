@@ -25,7 +25,7 @@
 
 	Install Reaver
 	
-	sudo make install
+		sudo make install
     
 #Reaver Usage
 
