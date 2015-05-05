@@ -1868,6 +1868,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
         int pixie_test=0;
         char pixie_pin[16];
         char *aux_pixie_pin;
+        int i=0;
         
         memset(pixie_pin, 0, sizeof(pixie_pin));
         
@@ -1883,19 +1884,33 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             if(aux_pixie_pin != NULL)
             {
                 pixie_test = 0;
-                //exit(0);
+                break;
             }
+            
             
             aux_pixie_pin = strstr(pixie_buf_aux,"WPS pin:");
             if(aux_pixie_pin != NULL)
             {
                 pixie_test = 1;
-                //exit(0);
                 //here will get the pin
-                strncpy(pixie_pin, aux_pixie_pin + 12, 8);
+                               
+                //a slightly better way to locate the pin
+                //thx offensive-security by attention
+                
+                for(i=0;i<strlen(aux_pixie_pin);i++)
+                {
+                    if(isdigit(aux_pixie_pin[i]))
+                    {
+                        strncpy(pixie_pin, aux_pixie_pin + i, 8);
+                        break;
+                    }
+                }
+                
+                break;
             }
             
         }
+        printf("[Pixie-Dust]\n");
 
         if(pclose(fpixe))  {
             //printf("Command not found or exited with error status\n");
@@ -1926,19 +1941,33 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
                 if(aux_pixie_pin != NULL)
                 {
                     pixie_test = 0;
-                    //exit(0);
+                    break;
                 }
                 
                 aux_pixie_pin = strstr(pixie_buf_aux,"WPS pin:");
                 if(aux_pixie_pin != NULL)
                 {
                     pixie_test = 1;
-                    //exit(0);
+                    
                     //here will get the pin
-                    strncpy(pixie_pin, aux_pixie_pin + 12, 8);
+                    
+                    //a slightly better way to locate the pin
+                    //thx offensive-security by attention
+                    
+                    for(i=0;i<strlen(aux_pixie_pin);i++)
+                    {
+                        if(isdigit(aux_pixie_pin[i]))
+                        {
+                            strncpy(pixie_pin, aux_pixie_pin + i, 8);
+                            break;
+                        }
+                    }
+                    
+                    break;
                 }
                 
             }
+            printf("[Pixie-Dust]\n");
 
             if(pclose(fpixe))  {
                 //printf("Command not found or exited with error status\n");
@@ -1982,8 +2011,8 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             }
             
 
-            printf("Running reaver with the correct pin, wait ...\n");
-            printf("Cmd : %s\n\n",cmd_reaver_test_aux);
+            printf("[+] Running reaver with the correct pin, wait ...\n");
+            printf("[+] Cmd : %s\n",cmd_reaver_test_aux);
             printf("[Reaver Test] [+] BSSID: %s\n", mac2str(get_bssid(),':'));
             printf("[Reaver Test] [+] Channel: %s\n", cmd_buf_c);
             //printf("Command : \n", globule->cmd_reaver_test);
