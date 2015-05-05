@@ -545,26 +545,6 @@ printf("------------------------------------------------------------------------
     if (wps_derive_keys(wps) < 0)
         return -1;
 
-
-    /****** ADD THIS PART ******/
-	
-	
-    printf("[P] PKR: ");
-    int pixiecnt = 0;
-    for (; pixiecnt < 192; pixiecnt++) {
-        printf("%02x", pk[pixiecnt]);
-        if (pixiecnt != 191) {
-            printf(":");
-        }
-    }
-    printf("\n");
-    /******/
-
-
-
-
-
-
     return 0;
 }
 

@@ -92,11 +92,11 @@ int process_arguments(int argc, char **argv)
         switch(c)
         {
 			case 'W':
-                //set valor para auto get pass
+                //set default pin generator
                 set_op_gen_pin(atoi(optarg));
                 break;
             case '0':
-                //set valor para auto get pass
+                //set stop in m1
                 set_stop_in_m1(1);
                 break;
             case 'Z':
