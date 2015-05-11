@@ -132,6 +132,8 @@
 	Modifications made by t6_x, DataHead, Soxrok2212
 
 	Some ideas made by nuroo, kcdtv
+	
+	Bug fix made by alxchk
 
 #Special Thanks
 	Soxrok2212 for all work done to help in the development of tools

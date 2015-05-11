@@ -444,23 +444,23 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Manufacturer:");
 							if(aux_cmd_chipset != NULL)
 							{
-								//md_chipset_buf
-								strncpy(info_manufac, aux_cmd_chipset+21, sizeof(cmd_chipset_buf));
-								//cprintf(INFO,"%s\n",info_manufac);
-								
+								//bug fix by alxchk
+								strncpy(info_manufac, aux_cmd_chipset+21, sizeof(info_manufac));							
 							}
 
 							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Model Number:");
 							if(aux_cmd_chipset != NULL)
 							{
-								strncpy(info_modelnum, aux_cmd_chipset+21, sizeof(cmd_chipset_buf));
+                                //bug fix by alxchk
+								strncpy(info_modelnum, aux_cmd_chipset+21, sizeof(info_modelnum));
 								
 							}
 
 							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Model Serial Number:");
 							if(aux_cmd_chipset != NULL)
 							{
-								strncpy(info_modelserial, aux_cmd_chipset+28, sizeof(cmd_chipset_buf));
+                                //bug fix by alxchk
+								strncpy(info_modelserial, aux_cmd_chipset+28, sizeof(info_modelserial));
 								
 							}
 

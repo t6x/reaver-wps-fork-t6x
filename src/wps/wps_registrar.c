@@ -1884,7 +1884,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             if(aux_pixie_pin != NULL)
             {
                 pixie_test = 0;
-                break;
+                //break;
             }
             
             
@@ -1906,11 +1906,12 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
                     }
                 }
                 
+                printf("[Pixie-Dust]\n");
                 break;
             }
             
         }
-        printf("[Pixie-Dust]\n");
+        
 
         if(pclose(fpixe))  {
             //printf("Command not found or exited with error status\n");
