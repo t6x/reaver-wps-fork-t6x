@@ -133,7 +133,7 @@
 
 	Some ideas made by nuroo, kcdtv
 	
-	Bug fix made by alxchk, flatr0ze
+	Bug fix made by alxchk, flatr0ze, USUARIONUEVO
 
 #Special Thanks
 	Soxrok2212 for all work done to help in the development of tools
