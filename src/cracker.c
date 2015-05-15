@@ -251,10 +251,9 @@ void crack()
             pin = NULL;
 
             /* If we've hit our max number of pin attempts, quit */
-            if((get_max_pin_attempts() > 0) && 
-                    (get_pin_count() == get_max_pin_attempts()))
+            if( (get_max_pin_attempts() > 0) && (get_pin_count() == get_max_pin_attempts()) )
             {
-                if(get_exhaustive()){
+                if(get_exhaustive()==0){   
                     cprintf(WARNING, "[+] Quitting after %d crack attempts\n", get_max_pin_attempts());
                     break;
                 }
@@ -307,6 +306,11 @@ int get_pin_count()
     else if(get_key_status() == KEY2_WIP)
     {
         pin_count = P1_SIZE + get_p2_index();
+    }
+     
+    if(get_max_pin_attempts() > 0 && get_max_pin_attempts() < 10000 )
+    {
+        pin_count = get_p1_index() + get_p2_index();
     }
     return pin_count;
 }

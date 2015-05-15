@@ -142,6 +142,12 @@ enum wps_result do_wps_exchange()
                 break;
             case M7:
                 cprintf(VERBOSE, "[+] Received M7 message\n");
+                //bug fix made by flatr0ze
+                if(!m6_sent)
+        		{
+        			tx_type = SEND_WSC_NACK;
+        			terminated = 1;
+        		}
                 /* Fall through */
             case DONE:
                 if(get_key_status() == KEY2_WIP) 
@@ -245,7 +251,8 @@ enum wps_result do_wps_exchange()
          * Only treat the timeout as a NACK if this feature is enabled.
          */
         if(get_timeout_is_nack() &&
-                (last_msg == M3 || last_msg == M5))
+                //(last_msg == M3 || last_msg == M5))
+                ((last_msg == M3 && (get_key_status() == KEY1_WIP)) || last_msg == M5))  //bug fix made by flatr0ze
         {
             ret_val = KEY_REJECTED;
         }

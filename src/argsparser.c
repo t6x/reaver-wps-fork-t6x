@@ -250,6 +250,7 @@ void init_default_settings(void)
     set_pixie_loop(0);
 	set_stop_in_m1(0);
 	set_op_gen_pin(0);
+    set_exhaustive(0);
 }
 
 /* Parses the recurring delay optarg */
@@ -282,6 +283,7 @@ void parse_static_pin(char *pin)
     if(pin)
     {
         len = strlen(pin);
+        //set_max_pin_attempts(1);
 
         if(len == 4 || len == 7 || len == 8)
         {
