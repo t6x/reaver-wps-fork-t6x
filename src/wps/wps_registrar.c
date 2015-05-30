@@ -1838,8 +1838,12 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
     
     strcat(cmd_pixie,"pixiewps -e ");
     strcat(cmd_pixie,pixie_pke);
-    strcat(cmd_pixie," -r ");
-    strcat(cmd_pixie,pixie_pkr);
+
+    if(globule->dh_small != 1){
+        strcat(cmd_pixie," -r ");
+        strcat(cmd_pixie,pixie_pkr);
+    }
+
     strcat(cmd_pixie," -s ");
     strcat(cmd_pixie,pixie_ehash1);
     strcat(cmd_pixie," -z ");
