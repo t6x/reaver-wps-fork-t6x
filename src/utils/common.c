@@ -569,7 +569,6 @@ int pingen_dlink(char *mac, int add)
 }
 
 //Zhaochunsheng algorithm/
-//mac to decimal by kib0rg
 int pingen_zhaochunsheng(char *mac, int add)
 {
     int default_pin=0, pin=0, i=0, pin_len = 9;
@@ -598,4 +597,19 @@ int pingen_zhaochunsheng(char *mac, int add)
     snprintf(pin, pin_len, "%08d", (default_pin * 10) + wps_checksum(default_pin));
 
     return pin;
+}
+
+//mac to decimal by kib0rg
+int pingen_zyxel(char *mac, int add)
+{
+    //pingen make by kib0rg, a little change by t6x
+    int pin;
+
+    char mac_address[7] = {0};
+ 
+    sprintf(mac_address, "%c%c%c%c%c%c", mac[6], mac[7], mac[8], mac[9], mac[10], mac[11]);
+
+    pin = (hexToInt(mac_address) + add) % 10000000;
+
+    return (pin * 10) + wps_pin_checksum(pin);
 }
