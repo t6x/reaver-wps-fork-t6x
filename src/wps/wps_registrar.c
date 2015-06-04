@@ -1818,6 +1818,8 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
     os_memcpy(wps->peer_hash2, e_hash2, WPS_HASH_LEN);
     wpa_hexdump(MSG_DEBUG, "WPS: E-Hash2", wps->peer_hash2, WPS_HASH_LEN);
 
+    //get_debug() = 4(-vvv), use this to verbose all pixie msg
+    
     /****** ADD THIS PART ******/
     memset(pixie_ehash2,0,sizeof(pixie_ehash2));
     printf("[P] E-Hash2: ");

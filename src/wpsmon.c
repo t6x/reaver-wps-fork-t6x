@@ -285,8 +285,8 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
     {
 		if (o_file_p == 0)
 		{
-			cprintf(INFO, "BSSID                  Channel       RSSI       WPS Version       WPS Locked        ESSID\n");
-			cprintf(INFO, "---------------------------------------------------------------------------------------------------------------\n");
+			cprintf(INFO, "BSSID              Channel  RSSI  WPS Version  WPS Locked  ESSID\n");
+			cprintf(INFO, "--------------------------------------------------------------------------------------\n");
 			header_printed = 1;
 		}
 		
@@ -324,6 +324,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
     }
 
     rt_header = (struct radio_tap_header *) radio_header(packet, header->len);
+    
     frame_header = (struct dot11_frame_header *) (packet + rt_header->len);
 
     /* If a specific BSSID was specified, only parse packets from that BSSID */
@@ -351,6 +352,10 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                 change_channel(channel);
                 channel_changed = 1;
             }
+            
+            
+            
+            
 
             if(frame_header->fc.sub_type == PROBE_RESPONSE ||
                     frame_header->fc.sub_type == SUBTYPE_BEACON)
@@ -360,7 +365,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
             if(!is_done(bssid) && (get_channel() == channel || source == PCAP_FILE))
             {
-                if(frame_header->fc.sub_type == SUBTYPE_BEACON && 
+                if(frame_header->fc.sub_type == SUBTYPE_BEACON &&
                         mode == SCAN && 
                         !passive && 
                         should_probe(bssid))
@@ -485,7 +490,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					
 					if (o_file_p == 0)
 					{
-						cprintf(INFO, "%17s      %2d            %.2d        %d.%d               %s               %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+						cprintf(INFO, "%17s    %2d       %.2d   %d.%d          %s         %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
 					}
 					else
 					{
@@ -507,7 +512,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                     update_probe_count(bssid);
                 }
 
-                /* 
+                /*
                  * If there was no WPS information, then the AP does not support WPS and we should ignore it from here on.
                  * If this was a probe response, then we've gotten all WPS info we can get from this AP and should ignore it from here on.
                  */
@@ -573,7 +578,7 @@ void usage(char *prog)
     fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
     fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
     fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
-    fprintf(stderr, "\t-P, --output-piped              Allows Wash output to be piped. Example. wash x|y|z...\n");
+    fprintf(stderr, "\t-P, --output-piped                   Allows Wash output to be piped. Example. wash x|y|z...\n");
     fprintf(stderr, "\t-g, --get-chipset                    Pipes output and runs reaver alongside to get chipset\n");
     fprintf(stderr, "\t-h, --help                           Show help\n");
 

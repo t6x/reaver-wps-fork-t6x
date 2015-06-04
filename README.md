@@ -129,7 +129,7 @@
 			
 
 #Contribution
-	Modifications made by t6_x, DataHead, Soxrok2212
+	Modifications made by t6_x, DataHead, Soxrok2212, Wiire
 
 	Some ideas made by nuroo, kcdtv
 	

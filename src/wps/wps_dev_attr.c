@@ -316,9 +316,9 @@ static int wps_process_serial_number(struct wps_device_data *dev,
 	if(globule->op_gen_pin == 2)
 	{
 		printf("[Pin Gen] D-Link Default Pin Generator by devttys0 team\n");
-		printf("[Pin Gen] Pin Generated : %08d\n",pingen_dlink(mac2str(get_bssid(),'\0'), str, str_len, 0));
-		printf("[Pin Gen] Pin Generated (+1): %08d\n",pingen_dlink(mac2str(get_bssid(),'\0'), str, str_len, 1));
-		printf("[Pin Gen] Pin Generated (-1): %08d\n\n",pingen_dlink(mac2str(get_bssid(),'\0'), str, str_len, -1));
+		printf("[Pin Gen] Pin Generated : %08d\n",pingen_dlink(mac2str(get_bssid(),'\0'), 0));
+		printf("[Pin Gen] Pin Generated (+1): %08d\n",pingen_dlink(mac2str(get_bssid(),'\0'), 1));
+		printf("[Pin Gen] Pin Generated (-1): %08d\n\n",pingen_dlink(mac2str(get_bssid(),'\0'), -1));
 		exit(0);
 	}		
 
