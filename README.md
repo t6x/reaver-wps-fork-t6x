@@ -78,7 +78,7 @@
 			-H, --pixiedust-log             Enables logging of sequence completed PixieHashes
 
 	Example:
-			reaver -i mon0 -b 00:AA:BB:11:22:33 -vvv -K 1
+			reaver -i mon0 -b 00:AA:BB:11:22:33 -vvv -K 1 
 			
 #Option (H)
 	The -H option is a switch to enable logging of PixieHashes, saved hashes will be saved in the executing directory.
