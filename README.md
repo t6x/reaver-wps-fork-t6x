@@ -104,7 +104,7 @@ Advanced Options:
 		-H, --pixiedust-log             Enables logging of sequence completed PixieHashes
 
 Example:
-		reaver -i mon0 -b 00:AA:BB:11:22:33 -vvv -K 1
+		reaver -i wlan0mon -b 00:AA:BB:11:22:33 -vvv -K 1
 ```
 
 ## -K // --pixie-dust
