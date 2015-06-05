@@ -262,6 +262,16 @@ int get_pixie_loop()
     return globule->pixie_loop;
 }
 
+void set_pixie_log(int value)
+{
+    globule->pixie_log = value;
+}
+
+int get_pixie_log()
+{
+    return globule->pixie_log;
+}
+
 void set_max_num_probes(int value)
 {
     globule->max_num_probes = value;

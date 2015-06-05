@@ -75,10 +75,20 @@
 			-2, --p2-index                  Set initial array index for the second half of the pin [False]
 			-P, --pixiedust-loop            Set into PixieLoop mode (doesn't send M4, and loops through to M3) [False]
 			-W, --generate-pin              Default Pin Generator by devttys0 team [1] Belkin [2] D-Link
+			-H, --pixiedust-log             Enables logging of sequence completed PixieHashes
 
 	Example:
 			reaver -i mon0 -b 00:AA:BB:11:22:33 -vv -K 1
 			
+#Option (H)
+	The -H option is a switch to enable logging of PixieHashes, saved hashes will be saved in the executing directory.
+	This option requires you to have at the least, (-vvv) switch on. and will work with -K 1, -P, appropriately.
+	
+	The files saved are named after the bssid (MAC) of the target, and with an extention of .pixie.
+	On the inside of these saved logs, you will find all the required PixieDust hashes, along with a quick copy & paste ready
+	full command line to use it on pixiewps. If you like, you also have the option to execute it as a script, just pop in the file into
+	your favorite shell, and execute it. (chmod +x may be required)
+
 #Option (K)
 
 	The -K option 1 runs pixiewps with PKE, PKR, E-Hash1, E-Hash2, E-Nonce and the Authkey. pixiewps will try to attack Ralink, Broadcom and Realtek	

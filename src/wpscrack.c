@@ -196,6 +196,7 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-2, --p2-index                  Set initial array index for the second half of the pin [False]\n");
     fprintf(stderr, "\t-P, --pixiedust-loop            Set into PixieLoop mode (doesn't send M4, and loops through to M3) [False]\n");
     fprintf(stderr, "\t-W, --generate-pin              Default Pin Generator [1] Belkin [2] D-Link [3] Zyxel\n");
+    fprintf(stderr, "\t-H, --pixiedust-log             Enables logging of sequence completed PixieHashes\n");
 
 	
     fprintf(stderr, "\nExample:\n\t%s -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1\n\n", prog_name);
