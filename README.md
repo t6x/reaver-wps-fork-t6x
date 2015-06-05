@@ -77,7 +77,7 @@
 			-W, --generate-pin              Default Pin Generator by devttys0 team [1] Belkin [2] D-Link
 
 	Example:
-			reaver -i mon0 -b 00:AA:BB:11:22:33 -vv -K 1
+			reaver -i mon0 -b 00:AA:BB:11:22:33 -vvv -K 1
 			
 #Option (K)
 

@@ -1,5 +1,15 @@
 ## Change Log
 
+## (04/06/2015)
+- [89288d9](https://github.com/t6x/reaver-wps-fork-t6x/commit/89288d983b9057b3124718d4edd4983a7114d333) Added -H PixieHash logging option in reaver (@d8tahead)
+- [ea796ee](https://github.com/t6x/reaver-wps-fork-t6x/commit/ea796ee05b0ac712477d8adc6e79c347c2a57635) Reaver pixie data in new verbose mode (-vvv) (@t6x)
+- [f26803e](https://github.com/t6x/reaver-wps-fork-t6x/commit/f26803e9fc9f656d7d26d822fb6d6de830dcd8ad) Zyxel default pin generator (@kib0rg)
+- [845501b](https://github.com/t6x/reaver-wps-fork-t6x/commit/845501b351fca4c16b7a460b857c28b73302ee10) Makefile Cflag, parallel fix (@t6x)
+- [845501b](https://github.com/t6x/reaver-wps-fork-t6x/commit/845501b351fca4c16b7a460b857c28b73302ee10) Fix some compiler warnings (@t6x)
+- [845501b](https://github.com/t6x/reaver-wps-fork-t6x/commit/845501b351fca4c16b7a460b857c28b73302ee10) Fix drop faulty (@t6x)
+- [845501b](https://github.com/t6x/reaver-wps-fork-t6x/commit/845501b351fca4c16b7a460b857c28b73302ee10) Wpsmon use less space in output (@t6x)
+- [845501b](https://github.com/t6x/reaver-wps-fork-t6x/commit/845501b351fca4c16b7a460b857c28b73302ee10) Fix wash probe request (@t6x)
+
 ## (31/05/2015)
 - [a41ae4f](https://github.com/t6x/reaver-wps-fork-t6x/commit/a41ae4fd3ee4f9091d74a2ea8f2a9f4227b66c9c) Bug Fix, Pixewps mutual exclusivity with -r and -S options (@ldm314)
 
