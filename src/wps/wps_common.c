@@ -131,18 +131,30 @@ int wps_derive_keys(struct wps_data *wps)
     /****** ADD THIS PART ******/
 
     memset(pixie_authkey,0,sizeof(pixie_authkey));
-    printf("[P] AuthKey: ");
+    if ( get_debug()==4 )
+    { //verbose (-vvv)
+        printf("[P] AuthKey: ");
+    }
     int pixiecnt = 0;
     for (; pixiecnt < WPS_AUTHKEY_LEN; pixiecnt++) {
-        printf("%02x", wps->authkey[pixiecnt]);
+        if ( get_debug()==4 )
+        { //verbose (-vvv)
+            printf("%02x", wps->authkey[pixiecnt]);
+        }
         sprintf(cmd_pixie_aux, "%02x",  wps->authkey[pixiecnt]);
         strcat(pixie_authkey, cmd_pixie_aux);
         if (pixiecnt != WPS_AUTHKEY_LEN - 1) {
-            printf(":");
+            if ( get_debug()==4 )
+            { //verbose (-vvv)
+                printf(":");
+            }
             strcat(pixie_authkey,":");
         }
     }
-    printf("\n");
+    if ( get_debug()==4 )
+    { //verbose (-vvv)
+        printf("\n");
+    }
     /******/
 
     return 0;

@@ -66,18 +66,30 @@ int wps_build_public_key(struct wps_data *wps, struct wpabuf *msg)
         v = wpabuf_mhead_u8(pubkey);
         
         memset(pixie_pkr,0,sizeof(pixie_pkr));
-        printf("[P] PKR: ");
+        if ( get_debug()==4 )
+        { //verbose (-vvv)
+            printf("[P] PKR: ");
+        }
         int pixiecnt = 0;
         for (; pixiecnt < 192; pixiecnt++) {
-            printf("%02x", v[pixiecnt]);
+            if ( get_debug()==4 )
+            { //verbose (-vvv)
+                printf("%02x", v[pixiecnt]);
+            }
             sprintf(cmd_pixie_aux, "%02x",  v[pixiecnt]);
             strcat(pixie_pkr, cmd_pixie_aux);
             if (pixiecnt != 191) {
-                printf(":");
+                if ( get_debug()==4 )
+                { //verbose (-vvv)
+                    printf(":");
+                }
                 strcat(pixie_pkr,":");
             }
         }
-        printf("\n");
+        if ( get_debug()==4 )
+        { //verbose (-vvv)
+            printf("\n");
+        }
 
 
 

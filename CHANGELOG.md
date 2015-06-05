@@ -1,13 +1,16 @@
 ## Change Log
 
+## (31/05/2015)
+- [a41ae4f](https://github.com/t6x/reaver-wps-fork-t6x/commit/a41ae4fd3ee4f9091d74a2ea8f2a9f4227b66c9c) Bug Fix, Pixewps mutual exclusivity with -r and -S options (@ldm314)
+
 ## (15/05/2015)
-- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Bug Fix, reaver -g option
-- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Bug Fix, reaver -p option
-- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Bug Fix, fix M7 Message
-- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Bug Fix, fix time out in M3 or M5 message
-- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Ignore FCS by default
-- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Credits
-- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Change Log
+- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Bug Fix, reaver -g option (@t6x)
+- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Bug Fix, reaver -p option (@t6x)
+- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Bug Fix, fix M7 Message (@t6x)
+- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Bug Fix, fix time out in M3 or M5 message (@t6x)
+- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Wash Ignore FCS by default (-C option)(@t6x)
+- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Credits (@t6x)
+- [63c5c02](https://github.com/t6x/reaver-wps-fork-t6x/commit/63c5c02bfc44e732399118d844906b0708e8e28c) Change Log (@t6x)
 
 ## (11/05/2015)
 - [ead842c](https://github.com/t6x/reaver-wps-fork-t6x/commit/ead842cf17a160e6fcc0f396066c4da758912593) Bug Fix (@t6x)

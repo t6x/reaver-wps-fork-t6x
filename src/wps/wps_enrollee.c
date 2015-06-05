@@ -514,7 +514,7 @@ static int wps_process_uuid_r(struct wps_data *wps, const u8 *uuid_r)
 static int wps_process_pubkey(struct wps_data *wps, const u8 *pk,
         size_t pk_len)
 {
-printf("--------------------------------------------------------------------------------------");
+
     if (pk == NULL || pk_len == 0) {
         wpa_printf(MSG_DEBUG, "WPS: No Public Key received");
         return -1;

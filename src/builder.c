@@ -44,9 +44,8 @@ const void *build_radio_tap_header(size_t *len)
         memset((void *) buf, 0, sizeof(struct radio_tap_header));
         rt_header = (struct radio_tap_header *) buf;
 
-        rt_header->len = sizeof(struct radio_tap_header);
-
-        *len = rt_header->len;
+		*len = sizeof(struct radio_tap_header);
+		rt_header->len = __cpu_to_le16(*len);
     }
 
     return buf;
@@ -67,9 +66,9 @@ const void *build_dot11_frame_header(uint16_t fc, size_t *len)
 
         frag_seq += SEQ_MASK;
 
-        header->duration = DEFAULT_DURATION;
-        memcpy((void *) &header->fc, (void *) &fc, sizeof(struct frame_control));
-        header->frag_seq = frag_seq;
+		header->duration = __cpu_to_le16(DEFAULT_DURATION);
+		header->fc = __cpu_to_le16(fc);
+		header->frag_seq = __cpu_to_le16(frag_seq);
 
         memcpy((void *) header->addr1, get_bssid(), MAC_ADDR_LEN);
         memcpy((void *) header->addr2, get_mac(), MAC_ADDR_LEN);
@@ -91,8 +90,8 @@ const void *build_authentication_management_frame(size_t *len)
         memset((void *) buf, 0, *len);
         frame = (struct authentication_management_frame *) buf;
 
-        frame->algorithm = OPEN_SYSTEM;
-        frame->sequence = 1;
+		frame->algorithm = __cpu_to_le16(OPEN_SYSTEM);
+		frame->sequence = __cpu_to_le16(1);
         frame->status = 0;
     }
 
@@ -111,8 +110,8 @@ const void *build_association_management_frame(size_t *len)
         memset((void *) buf, 0, *len);
         frame = (struct association_request_management_frame *) buf;
 
-        frame->capability = get_ap_capability();
-        frame->listen_interval = LISTEN_INTERVAL;
+		frame->capability = __cpu_to_le16(get_ap_capability());
+		frame->listen_interval = __cpu_to_le16(LISTEN_INTERVAL);
     }
 
     return buf;
@@ -133,7 +132,7 @@ const void *build_llc_header(size_t *len)
         header->dsap = LLC_SNAP;
         header->ssap = LLC_SNAP;
         header->control_field = UNNUMBERED_FRAME;
-        header->type = DOT1X_AUTHENTICATION;
+		header->type = __cpu_to_be16(DOT1X_AUTHENTICATION);
 
     }
 
@@ -279,7 +278,7 @@ const void *build_wfa_header(uint8_t op_code, size_t *len)
         header = (struct wfa_expanded_header *) buf;
 
         memcpy(header->id, WFA_VENDOR_ID, sizeof(header->id));
-        header->type = SIMPLE_CONFIG;
+		header->type = __cpu_to_be32(SIMPLE_CONFIG);
         header->opcode = op_code;
     }
 

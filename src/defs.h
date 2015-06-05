@@ -41,6 +41,7 @@
 #include <string.h>
 #include <time.h>
 #include <pcap.h>
+#include <asm/byteorder.h>
 
 #include "wps.h"
 
@@ -65,10 +66,10 @@
 #define MANAGEMENT_FRAME	0x00
 #define SUBTYPE_BEACON		0x08
 
-#define DOT1X_AUTHENTICATION	0x8E88
+#define DOT1X_AUTHENTICATION	0x888E
 #define DOT1X_EAP_PACKET	0x00
 
-#define SIMPLE_CONFIG		0x01000000
+#define SIMPLE_CONFIG		0x00000001
 
 #define P1_SIZE			10000
 #define P2_SIZE			1000
@@ -282,66 +283,111 @@ enum wfa_elements
     WEP_TRANSMIT_KEY = 0x10064
 };
 
+#define IEEE80211_FCTL_VERS		0x0003
+#define IEEE80211_FCTL_FTYPE		0x000c
+#define IEEE80211_FCTL_STYPE		0x00f0
+#define IEEE80211_FCTL_TODS		0x0100
+#define IEEE80211_FCTL_FROMDS		0x0200
+#define IEEE80211_FCTL_MOREFRAGS	0x0400
+#define IEEE80211_FCTL_RETRY		0x0800
+#define IEEE80211_FCTL_PM		0x1000
+#define IEEE80211_FCTL_MOREDATA		0x2000
+#define IEEE80211_FCTL_PROTECTED	0x4000
+#define IEEE80211_FCTL_ORDER		0x8000
+
+#define IEEE80211_SCTL_FRAG		0x000F
+#define IEEE80211_SCTL_SEQ		0xFFF0
+
+#define IEEE80211_FTYPE_MGMT		0x0000
+#define IEEE80211_FTYPE_CTL		0x0004
+#define IEEE80211_FTYPE_DATA		0x0008
+
+/* management */
+#define IEEE80211_STYPE_ASSOC_REQ	0x0000
+#define IEEE80211_STYPE_ASSOC_RESP	0x0010
+#define IEEE80211_STYPE_REASSOC_REQ	0x0020
+#define IEEE80211_STYPE_REASSOC_RESP	0x0030
+#define IEEE80211_STYPE_PROBE_REQ	0x0040
+#define IEEE80211_STYPE_PROBE_RESP	0x0050
+#define IEEE80211_STYPE_BEACON		0x0080
+#define IEEE80211_STYPE_ATIM		0x0090
+#define IEEE80211_STYPE_DISASSOC	0x00A0
+#define IEEE80211_STYPE_AUTH		0x00B0
+#define IEEE80211_STYPE_DEAUTH		0x00C0
+#define IEEE80211_STYPE_ACTION		0x00D0
+
+/* control */
+#define IEEE80211_STYPE_BACK_REQ	0x0080
+#define IEEE80211_STYPE_BACK		0x0090
+#define IEEE80211_STYPE_PSPOLL		0x00A0
+#define IEEE80211_STYPE_RTS		0x00B0
+#define IEEE80211_STYPE_CTS		0x00C0
+#define IEEE80211_STYPE_ACK		0x00D0
+#define IEEE80211_STYPE_CFEND		0x00E0
+#define IEEE80211_STYPE_CFENDACK	0x00F0
+
+/* data */
+#define IEEE80211_STYPE_DATA			0x0000
+#define IEEE80211_STYPE_DATA_CFACK		0x0010
+#define IEEE80211_STYPE_DATA_CFPOLL		0x0020
+#define IEEE80211_STYPE_DATA_CFACKPOLL		0x0030
+#define IEEE80211_STYPE_NULLFUNC		0x0040
+#define IEEE80211_STYPE_CFACK			0x0050
+#define IEEE80211_STYPE_CFPOLL			0x0060
+#define IEEE80211_STYPE_CFACKPOLL		0x0070
+#define IEEE80211_STYPE_QOS_DATA		0x0080
+#define IEEE80211_STYPE_QOS_DATA_CFACK		0x0090
+#define IEEE80211_STYPE_QOS_DATA_CFPOLL		0x00A0
+#define IEEE80211_STYPE_QOS_DATA_CFACKPOLL	0x00B0
+#define IEEE80211_STYPE_QOS_NULLFUNC		0x00C0
+#define IEEE80211_STYPE_QOS_CFACK		0x00D0
+#define IEEE80211_STYPE_QOS_CFPOLL		0x00E0
+#define IEEE80211_STYPE_QOS_CFACKPOLL		0x00F0
+
 #pragma pack(1)
 struct radio_tap_header
 {
     uint8_t revision;	
     uint8_t pad;
-    uint16_t len;
-    uint32_t flags;
-};
-
-struct frame_control
-{
-    unsigned version : 2;
-    unsigned type : 2;
-    unsigned sub_type : 4;
-
-    unsigned to_ds : 1;
-    unsigned from_ds : 1;
-    unsigned more_frag : 1;
-    unsigned retry : 1;
-    unsigned pwr_mgt : 1;
-    unsigned more_data : 1;
-    unsigned protected_frame : 1;
-    unsigned order : 1;
+	__le16 len;
+	__le32 flags;
 };
 
 struct dot11_frame_header
 {
-    struct frame_control fc;
-    uint16_t duration;
+	__le16 fc;
+	__le16 duration;
     unsigned char addr1[MAC_ADDR_LEN];
     unsigned char addr2[MAC_ADDR_LEN];
     unsigned char addr3[MAC_ADDR_LEN];
-    uint16_t frag_seq;
+	__le16 frag_seq;
 };
 
 struct authentication_management_frame
 {
-    uint16_t algorithm;
-    uint16_t sequence;
-    uint16_t status;
+	__le16 algorithm;
+	__le16 sequence;
+	__le16 status;
 };
 
 struct association_request_management_frame
 {
-    uint16_t capability;
-    uint16_t listen_interval;
+	__le16 capability;
+	__le16 listen_interval;
 };
 
 struct association_response_management_frame
 {
-    uint16_t capability;
-    uint16_t status;
-    uint16_t id;
+	__le16 capability;
+	__le16 status;
+	__le16 id;
 };
 
 struct beacon_management_frame
 {
     unsigned char timestamp[TIMESTAMP_LEN];
-    uint16_t beacon_interval;
-    uint16_t capability;
+	__le16 beacon_interval;
+	__le16 capability;
 };
 
 struct llc_header
@@ -350,7 +396,7 @@ struct llc_header
     uint8_t ssap;
     uint8_t control_field;
     unsigned char org_code[3];
-    uint16_t type;
+	__be16 type;
 };
 
 struct dot1X_header
@@ -371,7 +417,7 @@ struct eap_header
 struct wfa_expanded_header
 {
     unsigned char id[3];
-    uint32_t type;
+	__be32 type;
     uint8_t opcode;
     uint8_t flags;
 };

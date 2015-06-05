@@ -31,7 +31,7 @@
 
 	Reaver v1.5.2 WiFi Protected Setup Attack Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-	mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire
+	mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & kib0rg
 
 	Required Arguments:
 			-i, --interface=<wlan>          Name of the monitor-mode interface to use
@@ -99,7 +99,7 @@
 
 	Wash v1.5.2 WiFi Protected Setup Scan Tool
 	Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-	mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire
+	mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & kib0rg
 
 	Required Arguments:
 			-i, --interface=<iface>              Interface to capture packets on
@@ -129,11 +129,11 @@
 			
 
 #Contribution
-	Modifications made by t6_x, DataHead, Soxrok2212
+	Modifications made by t6_x, DataHead, Soxrok2212, Wiire, kib0rg
 
 	Some ideas made by nuroo, kcdtv
 	
-	Bug fix made by alxchk, flatr0ze, USUARIONUEVO
+	Bug fix made by alxchk, flatr0ze, USUARIONUEVO, ldm314
 
 #Special Thanks
 	Soxrok2212 for all work done to help in the development of tools
