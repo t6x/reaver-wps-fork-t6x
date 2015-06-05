@@ -41,7 +41,7 @@ int process_arguments(int argc, char **argv)
     int long_opt_index = 0;
     char bssid[MAC_ADDR_LEN] = { 0 };
     char mac[MAC_ADDR_LEN] = { 0 };
-    char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXNP0";
+    char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:ZaA5ELfnqvDShwXNPH0";
     struct option long_options[] = {
 		{ "generate-pin", required_argument, NULL, 'W' },
 		{ "stop-in-m1", no_argument, NULL, '0' },
@@ -81,6 +81,7 @@ int process_arguments(int argc, char **argv)
         { "exhaustive", no_argument, NULL, 'X' },
         { "help", no_argument, NULL, 'h' },
 	{ "pixiedust-loop", no_argument, NULL, 'P' },
+	{ "pixiedust-log", no_argument, NULL, 'H' },
         { 0, 0, 0, 0 }
     };
 
@@ -217,6 +218,9 @@ int process_arguments(int argc, char **argv)
 	    case 'P':
                 set_pixie_loop(1);
                 break;
+	    case 'H':
+                set_pixie_log(1);
+                break;
             default:
                 ret_val = EXIT_FAILURE;
         }
@@ -248,6 +252,7 @@ void init_default_settings(void)
     set_op_pixie(0);
     set_op_autopass(1);
     set_pixie_loop(0);
+    set_pixie_log(0);
 	set_stop_in_m1(0);
 	set_op_gen_pin(0);
     set_exhaustive(0);
