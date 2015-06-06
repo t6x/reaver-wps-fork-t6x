@@ -81,9 +81,9 @@ int wps_build_public_key(struct wps_data *wps, struct wpabuf *msg)
             if (pixiecnt != 191) {
                 if ( get_debug()==4 )
                 { //verbose (-vvv)
-                    printf(":");
+                    printf("");
                 }
-                strcat(pixie_pkr,":");
+                strcat(pixie_pkr,"");
             }
         }
         if ( get_debug()==4 )

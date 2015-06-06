@@ -146,9 +146,9 @@ int wps_derive_keys(struct wps_data *wps)
         if (pixiecnt != WPS_AUTHKEY_LEN - 1) {
             if ( get_debug()==4 )
             { //verbose (-vvv)
-                printf(":");
+                printf("");
             }
-            strcat(pixie_authkey,":");
+            strcat(pixie_authkey,"");
         }
     }
     if ( get_debug()==4 )

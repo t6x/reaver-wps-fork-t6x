@@ -407,8 +407,8 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						}
 						
 						FILE *fgchipset=NULL;
-						char cmd_chipset[4000];
-						char cmd_chipset_buf[4000];
+						char cmd_chipset[770];
+						char cmd_chipset_buf[770];
 						char buffint[5];
 						
 						char *aux_cmd_chipset=NULL;
@@ -442,7 +442,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						
 						
 
-						while (fgets(cmd_chipset_buf, 4000, fgchipset) != NULL) 
+						while (fgets(cmd_chipset_buf, 770, fgchipset) != NULL)
 						{
 							//[P] WPS Manufacturer: xxx
 							//[P] WPS Model Number: yyy

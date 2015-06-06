@@ -1409,7 +1409,7 @@ static struct wpabuf * wps_build_m2(struct wps_data *wps)
         if (pixiecnt != WPS_NONCE_LEN - 1) {
             if ( get_debug()==4 )
             { //verbose (-vvv)
-                printf(":");
+                printf("");
             }
         }
     }
@@ -1742,9 +1742,9 @@ static int wps_process_enrollee_nonce(struct wps_data *wps, const u8 *e_nonce)
         if (pixiecnt != WPS_NONCE_LEN - 1) {
             if ( get_debug()==4 )
             { //verbose (-vvv)
-                printf(":");
+                printf("");
             }
-            strcat(pixie_enonce,":");
+            strcat(pixie_enonce,"");
         }
     }
     if ( get_debug()==4 )
@@ -1828,9 +1828,9 @@ static int wps_process_e_hash1(struct wps_data *wps, const u8 *e_hash1)
         if (pixiecnt != WPS_HASH_LEN - 1) {
             if ( get_debug()==4 )
             { //verbose (-vvv)
-                printf(":");
+                printf("");
             }
-            strcat(pixie_ehash1,":");
+            strcat(pixie_ehash1,"");
         }
     }
     if ( get_debug()==4 )
@@ -1874,9 +1874,9 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
         if (pixiecnt != WPS_HASH_LEN - 1) {
             if ( get_debug()==4 )
             { //verbose (-vvv)
-                printf(":");
+                printf("");
             }
-            strcat(pixie_ehash2,":");
+            strcat(pixie_ehash2,"");
         }
     }
     if ( get_debug()==4 )
@@ -2009,7 +2009,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
         }        
         //printf("Cmd : %s\n",cmd_pixie);
 
-        while (fgets(pixie_buf_aux, 4000, fpixe) != NULL) 
+        while (fgets(pixie_buf_aux, 770, fpixe) != NULL) 
         {
             if ( get_debug() >= 1 )
             { //verbose (-vvv)
@@ -2078,7 +2078,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
                 //return -1;
             }
             
-            while (fgets(pixie_buf_aux, 4000, fpixe) != NULL) 
+            while (fgets(pixie_buf_aux, 770, fpixe) != NULL) 
             {
                 if ( get_debug()>=1 )
                 { //verbose (-vvv)
@@ -2136,7 +2136,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
 
             FILE *fpixe_test;
             
-            char cmd_reaver_test_aux[4000];
+            char cmd_reaver_test_aux[770];
             char cmd_buf_c[5];
             
             memset(cmd_reaver_test_aux, 0, sizeof(cmd_reaver_test_aux));
@@ -2173,7 +2173,7 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
             printf("[Reaver Test] [+] Channel: %s\n", cmd_buf_c);
             
             //printf("Command : \n", globule->cmd_reaver_test);
-            while (fgets(pixie_buf_aux2, 4000, fpixe_test) != NULL) 
+            while (fgets(pixie_buf_aux2, 770, fpixe_test) != NULL) 
             {
                 
                 if(strstr(pixie_buf_aux2,"[+] WPS PIN:")!=NULL)
@@ -2357,9 +2357,9 @@ static int wps_process_pubkey(struct wps_data *wps, const u8 *pk,
         if (pixiecnt != 191) {
             if ( get_debug()==4 )
             { //verbose (-vvv)
-                printf(":");
+                printf("");
             }
-            strcat(pixie_pke,":");
+            strcat(pixie_pke,"");
         }
     }
     if ( get_debug()==4 )
