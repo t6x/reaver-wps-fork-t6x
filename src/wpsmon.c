@@ -586,7 +586,7 @@ void usage(char *prog)
     fprintf(stderr, "\t-h, --help                           Show help\n");
 
     fprintf(stderr, "\nExample:\n");
-    fprintf(stderr, "\t%s -i mon0\n\n", prog);
+    fprintf(stderr, "\t%s -i wlan0mon\n\n", prog);
 
     return;
 }

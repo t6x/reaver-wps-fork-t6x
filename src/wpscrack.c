@@ -199,7 +199,7 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-H, --pixiedust-log             Enables logging of sequence completed PixieHashes\n");
 
 	
-    fprintf(stderr, "\nExample:\n\t%s -i mon0 -b 00:90:4C:C1:AC:21 -vv -K 1\n\n", prog_name);
+    fprintf(stderr, "\nExample:\n\t%s -i wlan0mon -b 00:90:4C:C1:AC:21 -vvv -K 1\n\n", prog_name);
 
     return EXIT_FAILURE;
 }
