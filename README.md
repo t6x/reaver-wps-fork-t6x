@@ -11,7 +11,7 @@ When using the **offline attack**, **if** the AP is vulnerable, it may take only
 * The original Reaver (v1.4) can be found here: [https://code.google.com/p/reaver-wps/](https://code.google.com/p/reaver-wps/).
 * The discontinued community edition of Reaver (v1.5) that was used as the starting point: [https://code.google.com/p/reaver-wps/](https://code.google.com/p/reaver-wps/).
 * reaver-wps-fork-t6x community edition of Reaver (which includes the Pixie Dust attack): [https://github.com/t6x/reaver-wps-fork-t6x](https://github.com/t6x/reaver-wps-fork-t6x).
-* For more information about the Pixie Dust attack (including **which APs are vulnerable**) can be found here: [https://github.com/wiire/pixiewps](https://github.com/wiire/pixiewps) & [https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)).
+* For more information about the Pixie Dust attack (including **which APs are vulnerable**) can be found here: [https://github.com/wiire/pixiewps](https://github.com/wiire/pixiewps), [https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)) & [https://docs.google.com/spreadsheets/d/1tSlbqVQ59kGn8hgmwcPTHUECQ3o9YhXR91A_p7Nnj5Y/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1tSlbqVQ59kGn8hgmwcPTHUECQ3o9YhXR91A_p7Nnj5Y/edit?usp=sharing)
 
 - - -
 
