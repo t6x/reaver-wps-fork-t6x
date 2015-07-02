@@ -5,14 +5,22 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CONFDIR=@sysconfdir@/@target@
 CFLAGS=-DCONF_DIR='"$(CONFDIR)"' -DREAVER_DATABASE='"$(CONFDIR)/reaver.db"' @CFLAGS@
+UNAME := $(shell uname)
+ifeq ($(UNAME), Linux)
 LDFLAGS=$(LIBWPS_DIR)/*.o wps/*.o tls/bignum.o tls/libtls.a utils/libutils.a crypto/libcrypto.a lwe/libiw.a @LDFLAGS@
+LIBIWNAME=libiw
+endif
+ifeq ($(UNAME), Darwin)
+LIBIWNAME=
+LDFLAGS=$(LIBWPS_DIR)/*.o wps/*.o tls/bignum.o tls/libtls.a utils/libutils.a crypto/libcrypto.a @LDFLAGS@
+endif
 
 all: wash reaver
 
-wash: wps libiw libwps.o argsparser.o globule.o init.o misc.o 80211.o iface.o
+wash: wps $(LIBIWNAME) libwps.o argsparser.o globule.o init.o misc.o 80211.o iface.o
 	$(CC) $(CFLAGS) $(INC) wpsmon.c *.o $(LDFLAGS) -o wash
 
-reaver: wps libiw libwps.o argsparser.o globule.o init.o sigint.o sigalrm.o misc.o cracker.o
+reaver: wps $(LIBIWNAME) libwps.o argsparser.o globule.o init.o sigint.o sigalrm.o misc.o cracker.o
 	$(CC) $(CFLAGS) $(INC) wpscrack.c *.o $(LDFLAGS) -o reaver
 
 libwps.o:
