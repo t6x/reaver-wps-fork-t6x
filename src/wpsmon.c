@@ -66,7 +66,11 @@ int main(int argc, char *argv[])
 
 
     globule_init();
-    sql_init();
+//    sql_init();
+    if (!sql_init()) {
+                fprintf(stderr, "[X] ERROR: sql_init failed\n");
+                goto end;
+    }
     create_ap_table();
     set_auto_channel_select(0);
     set_wifi_band(BG_BAND);
@@ -295,7 +299,9 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
     while((packet = next_packet(&header)))
     {
         parse_wps_settings(packet, &header, bssid, passive, mode, source);
+#ifndef __APPLE__
         memset((void *) packet, 0, header.len);
+#endif
     }
 
     return;
@@ -368,7 +374,12 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                 if(frame_header->fc.sub_type == SUBTYPE_BEACON &&
                         mode == SCAN &&
                         !passive &&
-                        should_probe(bssid))
+//                        should_probe(bssid))
+                        should_probe(bssid)
+                    #ifdef __APPLE__
+                                       && 0
+                    #endif
+                                       )
                 {
                     send_probe_request(get_bssid(), get_ssid());
                     probe_sent = 1;
