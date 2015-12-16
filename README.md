@@ -124,7 +124,7 @@ On the inside of these saved logs, you will find all the required **PixieDust ha
 ## -P // --pixiedust-loop
 
 When using the `-P` option, Reaver goes into a loop mode that breaks the WPS protocol by not using M4 message to **hopefully avoid lockouts**.
-This is to **ONLY** be used for PixieHash collecting to use with `pixiewps`, **NOT** to brute forcing 'online' pins.
+This is to **ONLY** be used for PixieHash collecting to use with `pixiewps`, **NOT** to brute force 'online' pins.
 
 This option was made with intent of:
 
@@ -165,7 +165,7 @@ Example:
 ## -g // --get-chipset
 
 The option `-g` of Wash, automatically runs Reaver to receive the chipset data.
-**If** the AP does not respond to them quickly, this option will be **slow to display the data**, because Reaver will stay running until getting the data or until you reach your timeout limit (30 seconds).
+**If** the AP does not respond to them quickly, this option will be **slow to display the data**, because Reaver will stay running until it receives the data or until you reach your timeout limit (30 seconds).
 
 - - -
 
@@ -179,7 +179,7 @@ Modifications made by:
 Some ideas made by:
 `nuroo`, `kcdtv`
 
-Bug fix made by:
+Bug fixes made by:
 `alxchk`, `flatr0ze`, `USUARIONUEVO`, `ldm314`
 
 ## Special Thanks
