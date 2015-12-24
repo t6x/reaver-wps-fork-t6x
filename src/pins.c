@@ -79,7 +79,7 @@ char *build_wps_pin()
         else
         {
             /* Generate a 7-digit pin from the given key index values */
-            snprintf(key, pin_len, "%s%s", p1_value, p2_value);
+            snprintf(key, pin_len-1, "%s%s", p1_value, p2_value);
 
             /* Generate and append the pin checksum digit */
             snprintf(pin, pin_len, "%s%d", key, wps_pin_checksum(atoi(key)));
