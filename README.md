@@ -58,7 +58,7 @@ make
 ```
 Reaver v1.5.2 WiFi Protected Setup Attack Tool
 Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & kib0rg
+mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY
 
 Required Arguments:
 		-i, --interface=<wlan>          Name of the monitor-mode interface to use
@@ -139,7 +139,7 @@ This option was made with intent of:
 ```
 Wash v1.5.2 WiFi Protected Setup Scan Tool
 Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & kib0rg
+mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY
 
 Required Arguments:
 		-i, --interface=<iface>              Interface to capture packets on
@@ -174,7 +174,7 @@ The option `-g` of Wash, automatically runs Reaver to receive the chipset data.
 ## Contribution
 
 Modifications made by:
-`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `kib0rg`
+`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`
 
 Some ideas made by:
 `nuroo`, `kcdtv`
