@@ -549,11 +549,11 @@ int get_external_association(void)
     return globule->external_association;
 }
 
-void set_nack_reason(enum nack_code value)
+void set_nack_reason(uint16_t value)
 {
     globule->nack_reason = value;
 }
-enum nack_code get_nack_reason()
+uint16_t get_nack_reason()
 {
     return globule->nack_reason;
 }

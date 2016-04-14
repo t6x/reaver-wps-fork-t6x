@@ -314,10 +314,10 @@ struct dot11_frame_header
 {
     struct frame_control fc;
     uint16_t duration;
-    unsigned char addr1[MAC_ADDR_LEN];
-    unsigned char addr2[MAC_ADDR_LEN];
-    unsigned char addr3[MAC_ADDR_LEN];
-    uint16_t frag_seq;
+    unsigned char addr1[MAC_ADDR_LEN];	//Destnation address
+    unsigned char addr2[MAC_ADDR_LEN];	//Transmiter address
+    unsigned char addr3[MAC_ADDR_LEN];	//Source address
+    uint16_t frag_seq;			// Fragment : 4; Sequence : 12
 };
 
 struct authentication_management_frame

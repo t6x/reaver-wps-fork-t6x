@@ -137,7 +137,7 @@ struct globals
 
     char *exec_string;		/* Pointer to user-supplied command to execute upon success */
 
-    enum nack_code nack_reason;     /* Stores the nack code for the last received WSC_NACK message */
+    uint16_t nack_reason;     /* Stores the nack code for the last received WSC_NACK message */
 
     pcap_t *handle;                 /* Pcap handle */
 
@@ -247,8 +247,8 @@ void set_dh_small(int value);
 int get_dh_small(void);
 void set_external_association(int value);
 int get_external_association(void);
-void set_nack_reason(enum nack_code value);
-enum nack_code get_nack_reason();
+void set_nack_reason(uint16_t value);
+uint16_t get_nack_reason();
 void set_handle(pcap_t *value);
 pcap_t *get_handle();
 void set_wps(struct wps_data *value);
