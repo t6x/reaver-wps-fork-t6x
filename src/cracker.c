@@ -213,7 +213,7 @@ void crack()
                 case FAKE_NACK:
                     cprintf(WARNING, "[!] WARNING: Detected fake NACK, waiting %d seconds before re-checking\n", get_fake_nack_delay());
                     pcap_sleep(get_fake_nack_delay());
-                    fail_count++;
+                    fail_count = 0;
                     break;
                     /* Unexpected timeout or EAP failure...try this pin again */
                 default:
