@@ -1,6 +1,7 @@
 /*
  * Reaver - Main cracking functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+ * Copyright (c) 2016, Koko Software, Adrian Warecki <bok@kokosoftware.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -208,6 +209,11 @@ void crack()
                     break;
                     /* Got it!! */
                 case KEY_ACCEPTED:
+                    break;
+                case FAKE_NACK:
+                    cprintf(WARNING, "[!] WARNING: Detected fake NACK, waiting %d seconds before re-checking\n", get_fake_nack_delay());
+                    pcap_sleep(get_fake_nack_delay());
+                    fail_count++;
                     break;
                     /* Unexpected timeout or EAP failure...try this pin again */
                 default:

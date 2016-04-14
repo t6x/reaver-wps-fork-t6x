@@ -1,6 +1,7 @@
 /*
  * Reaver - Global variable access functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+ * Copyright (c) 2016, Koko Software, Adrian Warecki <bok@kokosoftware.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,6 +76,8 @@ struct globals
     int lock_delay;			/* Sleep lock_delay seconds when wpscrack detects that the AP has locked WPS pin attempts */
 
     int ignore_locks;		/* Ignore locked state */
+
+    int fake_nack_delay;        /* Seconds to sleep after received fake NACK. */
 
     int recurring_delay_count;	/* Enter a recurring delay after recurring_delay_count pin attempts */
 
@@ -186,6 +189,8 @@ void set_lock_delay(int value);
 int get_lock_delay();
 void set_ignore_locks(int value);
 int get_ignore_locks();
+void set_fake_nack_delay(int delay);
+int get_fake_nack_delay();
 void set_eap_terminate(int value);
 int get_eap_terminate();
 void set_max_pin_attempts(int value);

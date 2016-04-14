@@ -1,6 +1,7 @@
 /*
  * Reaver - Global variable access functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+ * Copyright (c) 2016, Koko Software, Adrian Warecki <bok@kokosoftware.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -231,6 +232,15 @@ void set_ignore_locks(int value)
 int get_ignore_locks()
 {
     return globule->ignore_locks;
+}
+
+void set_fake_nack_delay(int delay)
+{
+    globule->fake_nack_delay = delay;
+}
+int get_fake_nack_delay()
+{
+    return globule->fake_nack_delay;
 }
 
 void set_eap_terminate(int value)

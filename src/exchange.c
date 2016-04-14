@@ -1,6 +1,7 @@
 /*
  * Reaver - WPS exchange functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+ * Copyright (c) 2016, Koko Software, Adrian Warecki <bok@kokosoftware.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -218,10 +219,11 @@ enum wps_result do_wps_exchange()
     /*
      * There are four states that can signify a pin failure:
      *
-     * 	o Got NACK instead of an M5 message			(first half of pin wrong)
-     * 	o Got NACK instead of an M7 message			(second half of pin wrong)
-     * 	o Got receive timeout while waiting for an M5 message	(first half of pin wrong)
-     * 	o Got receive timeout while waiting for an M7 message	(second half of pin wrong)
+     * 	o Got NACK instead of an M5 message				(first half of pin wrong)
+     * 	o Got NACK instead of an M5 message, when cracking second half	(fake NACK)
+     * 	o Got NACK instead of an M7 message				(second half of pin wrong)
+     * 	o Got receive timeout while waiting for an M5 message		(first half of pin wrong)
+     * 	o Got receive timeout while waiting for an M7 message		(second half of pin wrong)
      */
     if(got_nack)
     {
@@ -230,12 +232,14 @@ enum wps_result do_wps_exchange()
          * SEND_WSC_NACK, indicating that we need to reply with a NACK. So check the
          * previous state to see what state we were in when the NACK was received.
          */
-        if(last_msg == M3 || last_msg == M5)
+
+        if ((last_msg == M3) || (last_msg == M5))
         {
             /* The AP is properly sending WSC_NACKs, so don't treat future timeouts as pin failures. */
             set_timeout_is_nack(0);
 
-            ret_val = KEY_REJECTED;
+            /* bug fix made by KokoSoft */
+            ret_val = ((last_msg == M3) && (get_key_status() == KEY2_WIP)) ? FAKE_NACK : KEY_REJECTED;
         }
         else
         {
