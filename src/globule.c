@@ -106,7 +106,7 @@ char *get_session()
 
 void set_p1_index(int index)
 {
-    if(index < P1_SIZE)
+    if(index <= P1_SIZE)
     {
         cprintf(VERBOSE,"[+] p1_index set to %i\n",index);
         globule->p1_index = index;
@@ -119,7 +119,7 @@ int get_p1_index()
 
 void set_p2_index(int index)
 {
-    if(index <= P2_SIZE + globule->exhaustive*(P1_SIZE - P2_SIZE))
+    if(index <= P2_SIZE + (globule->exhaustive ? (P1_SIZE - P2_SIZE) : 0) )
     {
         cprintf(VERBOSE,"[+] p2_index set to %i\n",index);
         globule->p2_index = index;
@@ -520,9 +520,9 @@ int get_win7_compat(void)
 void set_exhaustive(int value)
 {
     globule->exhaustive = value;
-    if(value == 1)
+    if(value)
     {
-        globule->max_pin_attempts=P1_SIZE+P1_SIZE;
+        set_max_pin_attempts(P1_SIZE + P1_SIZE);
     }
 }
 

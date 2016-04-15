@@ -65,7 +65,8 @@ struct globals
 
     int win7_compat;		/* Set to 1 to make WPS messages mimic Windows 7 settings. */
 
-    int exhaustive;		/* Set to 1 to use exhaustive pin generation instead of checksum the last digit */
+    int exhaustive;		/* Set to 1 to use exhaustive pin generation instead of checksum the last digit, and restart if pin wasn't found.
+						 * Automatically set to 2, when checksum mode was not successful. */
 
     int delay;                      /* Seconds to sleep in between key attempts */
 

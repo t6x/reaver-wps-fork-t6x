@@ -257,18 +257,10 @@ void crack()
             pin = NULL;
 
             /* If we've hit our max number of pin attempts, quit */
-            if( (get_max_pin_attempts() > 0) && (get_pin_count() == get_max_pin_attempts()) )
+            if (get_cracking_done())
             {
-                if(get_exhaustive()==0){   
-                    cprintf(WARNING, "[+] Quitting after %d crack attempts\n", get_max_pin_attempts());
-                    break;
-                }
-                else
-                {
-                    cprintf(WARNING, "[+] Checksum mode was not successful. Starting exhaustive attack\n");
-                    set_exhaustive(1);
-                    set_p2_index(0);
-                }
+                cprintf(WARNING, "[+] Quitting after %d crack attempts\n", get_max_pin_attempts());
+                break;
             }
         }
 
@@ -319,6 +311,53 @@ int get_pin_count()
         pin_count = get_p1_index() + get_p2_index();
     }
     return pin_count;
+}
+
+/* Return non zero to quit reaver. */
+int get_cracking_done()
+{
+            if(get_key_status() == KEY1_WIP)
+            {
+                if (get_pin_count() == P1_SIZE)
+                {
+                    if(get_exhaustive()){
+                        cprintf(WARNING, "[+] First half of pin was not found. Restarting attack.\n");
+                        set_p1_index(0);
+                        return 0;
+                    }
+                    else
+                    {
+                        return 1;
+                    }
+                }
+            }
+            else if(get_key_status() == KEY2_WIP)
+            {
+                if( (get_max_pin_attempts() > 0) && (get_pin_count() == get_max_pin_attempts()) )
+                {
+                    /* Exhaustive mode isn't enabled. */
+                    if(get_exhaustive() == 0)
+                    {
+                        cprintf(WARNING, "[+] Checksum mode was not successful. Starting exhaustive attack\n");
+                        set_exhaustive(2);
+                        set_p2_index(0);
+                        return 0;
+                    } else
+                    /* User activated exhaustive mode. */
+                    if(get_exhaustive() == 1)
+                    {
+                        cprintf(WARNING, "[+] Second half of pin was not found. Restarting attack.\n");
+                        set_p2_index(0);
+                        return 0;
+                    } else
+                    /* Automatic exhaustive mode. */
+                    if (get_exhaustive() == 2)
+                    {
+                        return 1;
+                    }
+                }
+            }
+    return 0;
 }
 
 char *get_max_time_remaining(int average, int attempts_remaining)
