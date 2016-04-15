@@ -181,6 +181,8 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-d, --delay=<seconds>           Set the delay between pin attempts [%d]\n", DEFAULT_DELAY);
     fprintf(stderr, "\t-l, --lock-delay=<seconds>      Set the time to wait if the AP locks WPS pin attempts [%d]\n", DEFAULT_LOCK_DELAY);
     fprintf(stderr, "\t-F, --fake-delay=<seconds>      Set the time to sleep after received fake NACK [%d]\n",DEFAULT_FK_NACK_DELAY);
+    fprintf(stderr, "\t-R, --fake-reason=<nack reason> Specifies the reason code for NACK used in the FAKE NACK\n");
+    fprintf(stderr, "\t-I, --ignore-reason             Ignore change of reason code for NACK\n");
     fprintf(stderr, "\t-g, --max-attempts=<num>        Quit after num pin attempts\n");
     fprintf(stderr, "\t-x, --fail-wait=<seconds>       Set the time to sleep after %d unexpected failures [0]\n", WARN_FAILURE_COUNT);
     fprintf(stderr, "\t-r, --recurring-delay=<x:y>     Sleep for y seconds every x pin attempts\n");

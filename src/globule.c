@@ -558,6 +558,33 @@ uint16_t get_nack_reason()
     return globule->nack_reason;
 }
 
+void set_last_nack_reason(int value)
+{
+    globule->last_nack_reason = value;
+}
+int get_last_nack_reason()
+{
+    return globule->last_nack_reason;
+}
+
+void set_fake_nack_reason(int value)
+{
+    globule->fake_nack_reason = value;
+}
+int get_fake_nack_reason()
+{
+    return globule->fake_nack_reason;
+}
+
+void set_ignore_nack_reason(int value)
+{
+    globule->ignore_nack_reason = value;
+}
+int get_ignore_nack_reason()
+{
+    return globule->ignore_nack_reason;
+}
+
 void set_handle(pcap_t *value)
 {
     globule->handle = value;

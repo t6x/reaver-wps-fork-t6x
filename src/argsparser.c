@@ -42,7 +42,7 @@ int process_arguments(int argc, char **argv)
     int long_opt_index = 0;
     char bssid[MAC_ADDR_LEN] = { 0 };
     char mac[MAC_ADDR_LEN] = { 0 };
-    char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:F:ZaA5ELfnqvDShwXNPH0";
+    char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:F:R:ZaA5ELfnqvDShwXNPH0I";
     struct option long_options[] = {
 		{ "generate-pin", required_argument, NULL, 'W' },
 		{ "stop-in-m1", no_argument, NULL, '0' },
@@ -57,6 +57,8 @@ int process_arguments(int argc, char **argv)
         { "delay", required_argument, NULL, 'd' },
         { "lock-delay", required_argument, NULL, 'l' },
         { "fake-delay", required_argument, NULL, 'F' },
+        { "fake-reason", required_argument, NULL, 'R' },
+        { "ignore-reason", no_argument, NULL, 'I' },
         { "fail-wait", required_argument, NULL, 'x' },
         { "channel", required_argument, NULL, 'c' },
         { "session", required_argument, NULL, 's' },
@@ -225,7 +227,14 @@ int process_arguments(int argc, char **argv)
                 set_pixie_log(1);
                 break;
             case 'F':
-                set_fake_nack_delay(atoi(optarg));
+                set_fake_nack_delay( atoi(optarg) );
+                break;
+            case 'I':
+                set_ignore_nack_reason(1);
+                break;
+            case 'R':
+                set_fake_nack_reason( strtol(optarg, NULL, 0) );
+                set_ignore_nack_reason(1);
                 break;
             default:
                 ret_val = EXIT_FAILURE;
@@ -248,6 +257,9 @@ void init_default_settings(void)
     set_delay(DEFAULT_DELAY);
     set_lock_delay(DEFAULT_LOCK_DELAY);
     set_fake_nack_delay(DEFAULT_FK_NACK_DELAY);
+    set_last_nack_reason(-1);
+    set_fake_nack_reason(-1);
+    set_ignore_nack_reason(0);
     set_key_status(KEY1_WIP);
     set_debug(INFO);
     set_auto_channel_select(1);

@@ -233,17 +233,34 @@ enum wps_result do_wps_exchange()
          * previous state to see what state we were in when the NACK was received.
          */
 
-        if ((last_msg == M3) || (last_msg == M5))
-        {
-            /* The AP is properly sending WSC_NACKs, so don't treat future timeouts as pin failures. */
-            set_timeout_is_nack(0);
 
-            /* bug fix made by KokoSoft */
-            ret_val = ((last_msg == M3) && (get_key_status() == KEY2_WIP)) ? FAKE_NACK : KEY_REJECTED;
-        }
-        else
+        /* Warning the user about change of reason code for the received NACK message. */
+        if (!get_ignore_nack_reason())
         {
-            ret_val = UNKNOWN_ERROR;
+            if ((get_last_nack_reason() >= 0) && (get_nack_reason() != get_last_nack_reason()))
+            {
+                cprintf(WARNING, "[!] WARNING: The reason code for NACK has been changed. Potential FAKE NACK!\n");
+            }
+            set_last_nack_reason( get_nack_reason() );
+        }
+
+        /* Check NACK reason code for */
+        if ((get_fake_nack_reason() >= 0) && (get_nack_reason() == get_fake_nack_reason()))
+        {
+            ret_val = FAKE_NACK;
+        } else {
+            if ((last_msg == M3) || (last_msg == M5))
+            {
+                /* The AP is properly sending WSC_NACKs, so don't treat future timeouts as pin failures. */
+                set_timeout_is_nack(0);
+
+                /* bug fix made by KokoSoft */
+                ret_val = ((last_msg == M3) && (get_key_status() == KEY2_WIP)) ? FAKE_NACK : KEY_REJECTED;
+            }
+            else
+            {
+                ret_val = UNKNOWN_ERROR;
+            }
         }
     }
     else if(premature_timeout)

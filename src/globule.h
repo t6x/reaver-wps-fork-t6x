@@ -137,7 +137,10 @@ struct globals
 
     char *exec_string;		/* Pointer to user-supplied command to execute upon success */
 
-    uint16_t nack_reason;     /* Stores the nack code for the last received WSC_NACK message */
+    uint16_t nack_reason;           /* Stores the nack code for the last received WSC_NACK message */
+    int last_nack_reason;           /* Stores the nack code for the previously received WSC_NACK message */
+    int fake_nack_reason;           /* The nack code used in FAKE NACK message */
+    int ignore_nack_reason;        /* Ignore the nack code for received WSC_NACK message */
 
     pcap_t *handle;                 /* Pcap handle */
 
@@ -249,6 +252,12 @@ void set_external_association(int value);
 int get_external_association(void);
 void set_nack_reason(uint16_t value);
 uint16_t get_nack_reason();
+void set_last_nack_reason(int value);
+int get_last_nack_reason();
+void set_fake_nack_reason(int value);
+int get_fake_nack_reason();
+void set_ignore_nack_reason(int value);
+int get_ignore_nack_reason();
 void set_handle(pcap_t *value);
 pcap_t *get_handle();
 void set_wps(struct wps_data *value);

@@ -211,7 +211,7 @@ void crack()
                 case KEY_ACCEPTED:
                     break;
                 case FAKE_NACK:
-                    cprintf(WARNING, "[!] WARNING: Detected fake NACK, waiting %d seconds before re-checking\n", get_fake_nack_delay());
+                    cprintf(WARNING, "[!] WARNING: Fake NACK detected, waiting %d seconds before re-checking\n", get_fake_nack_delay());
                     pcap_sleep(get_fake_nack_delay());
                     fail_count = 0;
                     break;
