@@ -42,7 +42,7 @@ void crack()
 {
     unsigned char *bssid = NULL;
     char *pin = NULL;
-    int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
+    int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0, pin_attempts = 0;
     time_t start_time = 0;
     enum wps_result result = 0;
 
@@ -125,11 +125,6 @@ void crack()
         /* Main cracking loop */
         for(loop_count=0, sleep_count=0; get_key_status() != KEY_DONE; loop_count++, sleep_count++)
         {
-            /* 
-             * Some APs may do brute force detection, or might not be able to handle an onslaught of WPS
-             * registrar requests. Using a delay here can help prevent the AP from locking us out.
-             */
-            pcap_sleep(get_delay());
 
             /* Users may specify a delay after x number of attempts */
             if((get_recurring_delay() > 0) && (sleep_count == get_recurring_delay_count()))
@@ -195,6 +190,24 @@ void crack()
              */
             result = do_wps_exchange();
 
+            /*
+             * The WPA key and other settings are stored in the globule->wps structure. If we've
+             * recovered the WPS pin and parsed these settings, don't free this structure. It
+             * will be freed by wpscrack_free() at the end of main().
+             */
+            if(get_key_status() != KEY_DONE)
+            {
+                // We have to free wps, before making any call to pcap_sleep! Otherwise we should except Segmentation fault on SIGINT.
+                wps_deinit(get_wps());
+                set_wps(NULL);
+            }
+            /* If we have cracked the pin, save a copy */
+            else
+            {
+                set_pin(pin);
+            }
+
+
             switch(result)
             {
                 /* 
@@ -205,6 +218,7 @@ void crack()
                 case KEY_REJECTED:
                     fail_count = 0;
                     advance_pin_count();
+                    pin_attempts++;
                     cprintf(WARNING, "[+] Pin count advanced: %i. Max pin attempts: %i\n", get_pin_count(), get_max_pin_attempts());
                     break;
                     /* Got it!! */
@@ -239,27 +253,19 @@ void crack()
             }
 
             /* 
-             * The WPA key and other settings are stored in the globule->wps structure. If we've 
-             * recovered the WPS pin and parsed these settings, don't free this structure. It 
-             * will be freed by wpscrack_free() at the end of main().
+             * Some APs may do brute force detection, or might not be able to handle an onslaught of WPS
+             * registrar requests. Using a delay here can help prevent the AP from locking us out.
              */
             if(get_key_status() != KEY_DONE)
-            {
-                wps_deinit(get_wps());
-                set_wps(NULL);
-            }
-            /* If we have cracked the pin, save a copy */
-            else
-            {
-                set_pin(pin);
-            }
+                pcap_sleep(get_delay());
+
             free(pin);
             pin = NULL;
 
             /* If we've hit our max number of pin attempts, quit */
-            if (get_cracking_done())
+            if (get_cracking_done() || (pin_attempts == get_quit_pin_attempts()) )
             {
-                cprintf(WARNING, "[+] Quitting after %d crack attempts\n", get_max_pin_attempts());
+                cprintf(WARNING, "[+] Quitting after %d crack attempts\n", pin_attempts);
                 break;
             }
         }

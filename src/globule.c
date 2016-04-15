@@ -262,6 +262,16 @@ int get_max_pin_attempts()
     return globule->max_pin_attempts;
 }
 
+void set_quit_pin_attempts(int value)
+{
+    globule->quit_pin_attempts = value;
+}
+
+int get_quit_pin_attempts()
+{
+    return globule->quit_pin_attempts;
+}
+
 void set_pixie_loop(int value)
 {
     globule->pixie_loop = value;

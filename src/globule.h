@@ -86,6 +86,8 @@ struct globals
 
     int max_pin_attempts;           /* Maximum number of pin attempts */
 
+    int quit_pin_attempts;          /* Number of pin attempts to quit */
+
     int rx_timeout;                 /* Receive timeout period (seconds) */
 
     int timeout_is_nack;            /* Treat M5/M7 receive timeouts as NACKs (only needed for shoddy WPS implementations) */

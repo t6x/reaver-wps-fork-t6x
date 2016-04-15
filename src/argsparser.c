@@ -188,7 +188,7 @@ int process_arguments(int argc, char **argv)
                 parse_recurring_delay(optarg);
                 break;
             case 'g':
-                set_max_pin_attempts(atoi(optarg));
+                set_quit_pin_attempts(atoi(optarg));
                 break;
             case 'D':
                 daemonize();
@@ -275,6 +275,7 @@ void init_default_settings(void)
     set_stop_in_m1(0);
     set_op_gen_pin(0);
     set_exhaustive(0);
+    set_quit_pin_attempts(-1);
 }
 
 /* Parses the recurring delay optarg */
