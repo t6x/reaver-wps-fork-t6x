@@ -1,6 +1,7 @@
 /*
  * Reaver - Common definitions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+ * Copyright (c) 2016, Koko Software, Adrian Warecki <bok@kokosoftware.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -85,6 +86,7 @@
 #define DEFAULT_DELAY           1               /* Seconds */
 #define DEFAULT_TIMEOUT         5               /* Seconds */
 #define DEFAULT_LOCK_DELAY      60              /* Seconds */
+#define DEFAULT_FK_NACK_DELAY   0               /* Seconds */
 #define SEC_TO_US               1000000         /* uSeconds in a Second */
 
 #define TSFT_SIZE 		8
@@ -137,7 +139,8 @@ enum wps_result
     KEY_REJECTED = 1,
     RX_TIMEOUT = 2,
     EAP_FAIL = 3,
-    UNKNOWN_ERROR = 4
+    UNKNOWN_ERROR = 4,
+    FAKE_NACK = 5
 };
 
 enum nack_code
@@ -311,10 +314,10 @@ struct dot11_frame_header
 {
     struct frame_control fc;
     uint16_t duration;
-    unsigned char addr1[MAC_ADDR_LEN];
-    unsigned char addr2[MAC_ADDR_LEN];
-    unsigned char addr3[MAC_ADDR_LEN];
-    uint16_t frag_seq;
+    unsigned char addr1[MAC_ADDR_LEN];	//Destnation address
+    unsigned char addr2[MAC_ADDR_LEN];	//Transmiter address
+    unsigned char addr3[MAC_ADDR_LEN];	//Source address
+    uint16_t frag_seq;			// Fragment : 4; Sequence : 12
 };
 
 struct authentication_management_frame

@@ -1,6 +1,7 @@
 /*
  * Reaver - Global variable access functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+ * Copyright (c) 2016, Koko Software, Adrian Warecki <bok@kokosoftware.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -105,7 +106,7 @@ char *get_session()
 
 void set_p1_index(int index)
 {
-    if(index < P1_SIZE)
+    if(index <= P1_SIZE)
     {
         cprintf(VERBOSE,"[+] p1_index set to %i\n",index);
         globule->p1_index = index;
@@ -118,7 +119,7 @@ int get_p1_index()
 
 void set_p2_index(int index)
 {
-    if(index <= P2_SIZE + globule->exhaustive*(P1_SIZE - P2_SIZE))
+    if(index <= P2_SIZE + (globule->exhaustive ? (P1_SIZE - P2_SIZE) : 0) )
     {
         cprintf(VERBOSE,"[+] p2_index set to %i\n",index);
         globule->p2_index = index;
@@ -233,6 +234,15 @@ int get_ignore_locks()
     return globule->ignore_locks;
 }
 
+void set_fake_nack_delay(int delay)
+{
+    globule->fake_nack_delay = delay;
+}
+int get_fake_nack_delay()
+{
+    return globule->fake_nack_delay;
+}
+
 void set_eap_terminate(int value)
 {
     globule->eap_terminate = value;
@@ -250,6 +260,16 @@ void set_max_pin_attempts(int value)
 int get_max_pin_attempts()
 {
     return globule->max_pin_attempts;
+}
+
+void set_quit_pin_attempts(int value)
+{
+    globule->quit_pin_attempts = value;
+}
+
+int get_quit_pin_attempts()
+{
+    return globule->quit_pin_attempts;
 }
 
 void set_pixie_loop(int value)
@@ -510,9 +530,9 @@ int get_win7_compat(void)
 void set_exhaustive(int value)
 {
     globule->exhaustive = value;
-    if(value == 1)
+    if(value)
     {
-        globule->max_pin_attempts=P1_SIZE+P1_SIZE;
+        set_max_pin_attempts(P1_SIZE + P1_SIZE);
     }
 }
 
@@ -539,13 +559,40 @@ int get_external_association(void)
     return globule->external_association;
 }
 
-void set_nack_reason(enum nack_code value)
+void set_nack_reason(uint16_t value)
 {
     globule->nack_reason = value;
 }
-enum nack_code get_nack_reason()
+uint16_t get_nack_reason()
 {
     return globule->nack_reason;
+}
+
+void set_last_nack_reason(int value)
+{
+    globule->last_nack_reason = value;
+}
+int get_last_nack_reason()
+{
+    return globule->last_nack_reason;
+}
+
+void set_fake_nack_reason(int value)
+{
+    globule->fake_nack_reason = value;
+}
+int get_fake_nack_reason()
+{
+    return globule->fake_nack_reason;
+}
+
+void set_ignore_nack_reason(int value)
+{
+    globule->ignore_nack_reason = value;
+}
+int get_ignore_nack_reason()
+{
+    return globule->ignore_nack_reason;
 }
 
 void set_handle(pcap_t *value)

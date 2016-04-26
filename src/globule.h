@@ -1,6 +1,7 @@
 /*
  * Reaver - Global variable access functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+ * Copyright (c) 2016, Koko Software, Adrian Warecki <bok@kokosoftware.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,7 +65,8 @@ struct globals
 
     int win7_compat;		/* Set to 1 to make WPS messages mimic Windows 7 settings. */
 
-    int exhaustive;		/* Set to 1 to use exhaustive pin generation instead of checksum the last digit */
+    int exhaustive;		/* Set to 1 to use exhaustive pin generation instead of checksum the last digit, and restart if pin wasn't found.
+						 * Automatically set to 2, when checksum mode was not successful. */
 
     int delay;                      /* Seconds to sleep in between key attempts */
 
@@ -76,11 +78,15 @@ struct globals
 
     int ignore_locks;		/* Ignore locked state */
 
+    int fake_nack_delay;        /* Seconds to sleep after received fake NACK. */
+
     int recurring_delay_count;	/* Enter a recurring delay after recurring_delay_count pin attempts */
 
     int eap_terminate;              /* Experimental */
 
     int max_pin_attempts;           /* Maximum number of pin attempts */
+
+    int quit_pin_attempts;          /* Number of pin attempts to quit */
 
     int rx_timeout;                 /* Receive timeout period (seconds) */
 
@@ -134,7 +140,10 @@ struct globals
 
     char *exec_string;		/* Pointer to user-supplied command to execute upon success */
 
-    enum nack_code nack_reason;     /* Stores the nack code for the last received WSC_NACK message */
+    uint16_t nack_reason;           /* Stores the nack code for the last received WSC_NACK message */
+    int last_nack_reason;           /* Stores the nack code for the previously received WSC_NACK message */
+    int fake_nack_reason;           /* The nack code used in FAKE NACK message */
+    int ignore_nack_reason;        /* Ignore the nack code for received WSC_NACK message */
 
     pcap_t *handle;                 /* Pcap handle */
 
@@ -186,6 +195,8 @@ void set_lock_delay(int value);
 int get_lock_delay();
 void set_ignore_locks(int value);
 int get_ignore_locks();
+void set_fake_nack_delay(int delay);
+int get_fake_nack_delay();
 void set_eap_terminate(int value);
 int get_eap_terminate();
 void set_max_pin_attempts(int value);
@@ -242,8 +253,14 @@ void set_dh_small(int value);
 int get_dh_small(void);
 void set_external_association(int value);
 int get_external_association(void);
-void set_nack_reason(enum nack_code value);
-enum nack_code get_nack_reason();
+void set_nack_reason(uint16_t value);
+uint16_t get_nack_reason();
+void set_last_nack_reason(int value);
+int get_last_nack_reason();
+void set_fake_nack_reason(int value);
+int get_fake_nack_reason();
+void set_ignore_nack_reason(int value);
+int get_ignore_nack_reason();
 void set_handle(pcap_t *value);
 pcap_t *get_handle();
 void set_wps(struct wps_data *value);

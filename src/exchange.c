@@ -1,6 +1,7 @@
 /*
  * Reaver - WPS exchange functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
+ * Copyright (c) 2016, Koko Software, Adrian Warecki <bok@kokosoftware.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -157,7 +158,7 @@ enum wps_result do_wps_exchange()
                 tx_type = SEND_WSC_NACK;
                 break;
             case NACK:
-                cprintf(VERBOSE, "[+] Received WSC NACK\n");
+                cprintf(VERBOSE, "[+] Received WSC NACK (reason: 0x%04X)\n",get_nack_reason());
                 got_nack = 1;
                 break;
             case TERMINATE:
@@ -218,10 +219,11 @@ enum wps_result do_wps_exchange()
     /*
      * There are four states that can signify a pin failure:
      *
-     * 	o Got NACK instead of an M5 message			(first half of pin wrong)
-     * 	o Got NACK instead of an M7 message			(second half of pin wrong)
-     * 	o Got receive timeout while waiting for an M5 message	(first half of pin wrong)
-     * 	o Got receive timeout while waiting for an M7 message	(second half of pin wrong)
+     * 	o Got NACK instead of an M5 message				(first half of pin wrong)
+     * 	o Got NACK instead of an M5 message, when cracking second half	(fake NACK)
+     * 	o Got NACK instead of an M7 message				(second half of pin wrong)
+     * 	o Got receive timeout while waiting for an M5 message		(first half of pin wrong)
+     * 	o Got receive timeout while waiting for an M7 message		(second half of pin wrong)
      */
     if(got_nack)
     {
@@ -230,16 +232,35 @@ enum wps_result do_wps_exchange()
          * SEND_WSC_NACK, indicating that we need to reply with a NACK. So check the
          * previous state to see what state we were in when the NACK was received.
          */
-        if(last_msg == M3 || last_msg == M5)
-        {
-            /* The AP is properly sending WSC_NACKs, so don't treat future timeouts as pin failures. */
-            set_timeout_is_nack(0);
 
-            ret_val = KEY_REJECTED;
-        }
-        else
+
+        /* Warning the user about change of reason code for the received NACK message. */
+        if (!get_ignore_nack_reason())
         {
-            ret_val = UNKNOWN_ERROR;
+            if ((get_last_nack_reason() >= 0) && (get_nack_reason() != get_last_nack_reason()))
+            {
+                cprintf(WARNING, "[!] WARNING: The reason code for NACK has been changed. Potential FAKE NACK!\n");
+            }
+            set_last_nack_reason( get_nack_reason() );
+        }
+
+        /* Check NACK reason code for */
+        if ((get_fake_nack_reason() >= 0) && (get_nack_reason() == get_fake_nack_reason()))
+        {
+            ret_val = FAKE_NACK;
+        } else {
+            if ((last_msg == M3) || (last_msg == M5))
+            {
+                /* The AP is properly sending WSC_NACKs, so don't treat future timeouts as pin failures. */
+                set_timeout_is_nack(0);
+
+                /* bug fix made by KokoSoft */
+                ret_val = ((last_msg == M3) && (get_key_status() == KEY2_WIP)) ? FAKE_NACK : KEY_REJECTED;
+            }
+            else
+            {
+                ret_val = UNKNOWN_ERROR;
+            }
         }
     }
     else if(premature_timeout)
@@ -465,6 +486,11 @@ enum wps_type process_wps_message(const void *data, size_t data_size)
                 {
                     case MESSAGE_TYPE:
                         type = (uint8_t) element_data[0];
+                        break;
+                    case CONFIGURATION_ERROR:
+                        /* Check element_data length */
+                        if ( element.length == 2)
+			    set_nack_reason( htons( *( (uint16_t*) element_data) ) );
                         break;
                     default:
                         break;
