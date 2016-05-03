@@ -271,14 +271,17 @@ void set_exec_string(char *string);
 char *get_exec_string(void);
 void set_oo_send_nack(int value);
 int get_oo_send_nack(void);
+int get_quit_pin_attempts();
 void set_op_pixie(int index);
 void set_op_autopass(int index);
+void set_op_gen_pin(int index);
 void set_cmd_reaver_test(char *string);
 void set_pixie_loop(int value);
 int get_pixie_loop();
 void set_pixie_log(int value);
 int get_pixie_log();
 void set_stop_in_m1(int index);
+void set_quit_pin_attempts(int value);
 
 
 #endif

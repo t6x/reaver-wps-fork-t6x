@@ -87,7 +87,6 @@ void read_ap_beacon()
     struct dot11_frame_header *frame_header = NULL;
     struct beacon_management_frame *beacon = NULL;
     int channel = 0;
-    size_t tag_offset = 0;
     time_t start_time = 0;
 
     set_ap_capability(0);
@@ -114,7 +113,6 @@ void read_ap_beacon()
                     set_ap_capability(beacon->capability);
 
                     /* Obtain the SSID and channel number from the beacon packet */
-                    tag_offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
                     channel = parse_beacon_tags(packet, header.len);
 
                     /* If no channel was manually specified, switch to the AP's current channel */

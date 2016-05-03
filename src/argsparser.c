@@ -33,6 +33,7 @@
  */
 
 #include "argsparser.h"
+#include "globule.h"
 
 /* Processes Reaver command line options */
 int process_arguments(int argc, char **argv)

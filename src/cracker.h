@@ -49,6 +49,7 @@
 
 void crack();
 void advance_pin_count();
+int get_cracking_done();
 int get_pin_count();
 void display_status(time_t start_time);
 

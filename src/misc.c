@@ -34,12 +34,12 @@
 #include "misc.h"
 
 /* Converts a raw MAC address to a colon-delimited string */
-unsigned char *mac2str(unsigned char *mac, char delim)
+char *mac2str(unsigned char *mac, char delim)
 {
     int i = 0, str_len = 0;
     int str_mult = 3;
     int buf_size = str_mult+1;
-    unsigned char *str = NULL;
+    char *str = NULL;
     unsigned char buf[4] = { 0 };	/* 4 == buf_size */
 
     str_len = (MAC_ADDR_LEN * str_mult) + 1;
