@@ -105,6 +105,12 @@ int next_channel()
     int an_channels[] = AN_CHANNELS;
     int *channels = NULL;
 
+    /* Only switch channels if fixed channel operation is disabled */
+    if(get_fixed_channel())
+    {
+        return 0;
+    }
+
     /* Select the appropriate channels for the target 802.11 band */
     if(get_wifi_band() == AN_BAND)
     {
@@ -117,20 +123,14 @@ int next_channel()
         n = sizeof(bg_channels) / sizeof(int);
     }
 
-    /* Only switch channels if fixed channel operation is disabled */
-    if(!get_fixed_channel())
+    i++;
+
+    if((i >= n) || i < 0)
     {
-        i++;
-
-        if((i >= n) || i < 0)
-        {
-            i = 0;
-        }
-
-        return change_channel(channels[i]);
+        i = 0;
     }
 
-    return 0;
+    return change_channel(channels[i]);
 }
 
 /* Sets the 802.11 channel for the selected interface */
