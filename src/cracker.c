@@ -33,6 +33,7 @@
  */
 
 #include "cracker.h"
+#include "globule.h"
 
 time_t last_display = 0;
 int last_attempts = 0;
@@ -40,7 +41,7 @@ int last_attempts = 0;
 /* Brute force all possible WPS pins for a given access point */
 void crack()
 {
-    unsigned char *bssid = NULL;
+    char *bssid = NULL;
     char *pin = NULL;
     int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0, pin_attempts = 0;
     time_t start_time = 0;

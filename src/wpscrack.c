@@ -38,7 +38,7 @@
 
 int main(int argc, char **argv)
 {
-    int ret_val = EXIT_FAILURE, r = 0;
+    int ret_val = EXIT_FAILURE;
     time_t start_time = 0, end_time = 0;
     struct wps_data *wps = NULL;
 
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
         /* Run user-supplied command */
         if(get_exec_string())
         {
-            r = system(get_exec_string());
+            system(get_exec_string());
         }
 
         ret_val = EXIT_SUCCESS;
