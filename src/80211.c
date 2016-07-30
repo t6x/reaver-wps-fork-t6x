@@ -169,11 +169,14 @@ int8_t signal_strength(const u_char *packet, size_t len)
             {
                 offset += CHANNEL_SIZE;
             }
-            int ath9k = 0;
+
             if((header->flags & FHSS_FLAG) == FHSS_FLAG)
             {
                 offset += FHSS_FLAG;
-            } else {
+            } 
+            
+            int ath9k = 0;
+            if (packet[offset] == 0) { //no data. ath9k
                 offset += 12;
                 ath9k = 1;
             }
