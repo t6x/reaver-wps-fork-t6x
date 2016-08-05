@@ -183,7 +183,7 @@ Some ideas made by:
 `nuroo`, `kcdtv`
 
 Bug fixes made by:
-`alxchk`, `flatr0ze`, `USUARIONUEVO`, `ldm314`
+`alxchk`, `flatr0ze`, `USUARIONUEVO`, `ldm314`, `vk496`
 
 ## Special Thanks
 
