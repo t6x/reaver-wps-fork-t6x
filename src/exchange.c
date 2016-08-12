@@ -245,7 +245,7 @@ enum wps_result do_wps_exchange()
         }
 
         /* Check NACK reason code for */
-        if ((get_fake_nack_reason() >= 0) && (get_nack_reason() == get_fake_nack_reason()))
+        if ((get_fake_nack_reason() >= 0) && (get_nack_reason() == get_fake_nack_reason()) && (!get_timeout_is_nack()))
         {
             ret_val = FAKE_NACK;
         } else {

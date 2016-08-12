@@ -201,7 +201,7 @@ int process_arguments(int argc, char **argv)
                 set_dh_small(1);
                 break;
             case 'n':
-                set_timeout_is_nack(0);
+                set_timeout_is_nack(1); //when use this arg, you enable the function, not disable
                 break;
             case 'f':
                 set_fixed_channel(1);
