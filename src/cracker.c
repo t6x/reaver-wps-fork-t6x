@@ -264,7 +264,7 @@ void crack()
             pin = NULL;
 
             /* If we've hit our max number of pin attempts, quit */
-            if (get_cracking_done() || (pin_attempts == get_quit_pin_attempts()) )
+            if (get_cracking_done() || (pin_attempts >= get_quit_pin_attempts()) )
             {
                 cprintf(WARNING, "[+] Quitting after %d crack attempts\n", pin_attempts);
                 break;
