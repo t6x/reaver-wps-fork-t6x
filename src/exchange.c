@@ -245,7 +245,7 @@ enum wps_result do_wps_exchange()
         }
 
         /* Check NACK reason code for */
-        if ((get_fake_nack_reason() >= 0) && (get_nack_reason() == get_fake_nack_reason()) && (!get_timeout_is_nack()))
+        if ((get_fake_nack_reason() >= 0) && (get_nack_reason() == get_fake_nack_reason()) && (get_timeout_is_nack()))
         {
             ret_val = FAKE_NACK;
         } else {
@@ -255,7 +255,7 @@ enum wps_result do_wps_exchange()
                 set_timeout_is_nack(0);
 
                 /* bug fix made by KokoSoft */
-                ret_val = ((last_msg == M3) && (get_key_status() == KEY2_WIP)) ? FAKE_NACK : KEY_REJECTED;
+                ret_val = ((last_msg == M3) && (get_key_status() == KEY2_WIP) && (get_timeout_is_nack())) ? FAKE_NACK : KEY_REJECTED;
             }
             else
             {
