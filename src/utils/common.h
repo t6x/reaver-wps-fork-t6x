@@ -443,7 +443,7 @@ int wpa_snprintf_hex_uppercase(char *buf, size_t buf_size, const u8 *data,
 
 int pingen_belkin(char *mac, const char *serial, int len_serial, int add);
 int pingen_dlink(char *mac, int add);
-
+int pingen_zyxel(char *mac, int add);
 #ifdef CONFIG_NATIVE_WINDOWS
 void wpa_unicode2ascii_inplace(TCHAR *str);
 TCHAR * wpa_strdup_tchar(const char *str);

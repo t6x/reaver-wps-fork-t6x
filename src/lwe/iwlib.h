@@ -496,8 +496,7 @@ extern "C" {
     /*
      * Wrapper to push some Wireless Parameter in the driver
      */
-    static int
-    iw_set_ext(int skfd, /* Socket to the kernel */
+    static inline int iw_set_ext(int skfd, /* Socket to the kernel */
             const char * ifname, /* Device name */
             int request, /* WE ID */
             struct iwreq * pwrq) /* Fixed part of the request */ {
@@ -512,8 +511,7 @@ extern "C" {
     /*
      * Wrapper to extract some Wireless Parameter out of the driver
      */
-    static int
-    iw_get_ext(int skfd, /* Socket to the kernel */
+    static inline int iw_get_ext(int skfd, /* Socket to the kernel */
             const char * ifname, /* Device name */
             int request, /* WE ID */
             struct iwreq * pwrq) /* Fixed part of the request */ {
