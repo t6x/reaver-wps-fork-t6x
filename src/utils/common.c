@@ -559,9 +559,11 @@ int pingen_zhaochunsheng(char *mac, int add) {
     temp[6] = '\0';
     sscanf(temp, "%x", &default_pin);
     default_pin = default_pin % 10000000;
-
-    snprintf(pin, pin_len, "%08d", (default_pin * 10) + wps_checksum(default_pin));
-
+    
+    char * p = NULL;
+    sprintf(p, "%d", pin); //int to *char
+    
+    snprintf(p, pin_len, "%08d", (default_pin * 10) + wps_checksum(default_pin));
     return pin;
 }
 
@@ -577,5 +579,5 @@ int pingen_zyxel(char *mac, int add) {
 
     pin = (hexToInt(mac_address) + add) % 10000000;
 
-    return (pin * 10) +wps_pin_checksum(pin);
+    return (pin * 10) + wps_pin_checksum(pin);
 }

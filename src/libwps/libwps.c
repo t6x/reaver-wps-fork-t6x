@@ -25,7 +25,7 @@
  */
 int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *wps) {
     const u_char *data = NULL;
-    size_t data_len = 0, offset = 0;
+    size_t offset = 0;
     struct radio_tap_header *rt_header = NULL;
     int ret_val = 0;
 
@@ -39,7 +39,6 @@ int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *w
 
             offset = rt_header->len + sizeof (struct dot11_frame_header) + sizeof (struct management_frame);
             data = (packet + offset);
-            data_len = (len - offset);
 
             ret_val = parse_wps_tag(data, len, wps);
         }

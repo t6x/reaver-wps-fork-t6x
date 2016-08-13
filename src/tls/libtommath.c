@@ -555,7 +555,7 @@ static int mp_mod(mp_int * a, mp_int * b, mp_int * c) {
  * for nothing (since 99% of the time the Montgomery code would be called)
  */
 static int mp_exptmod(mp_int * G, mp_int * X, mp_int * P, mp_int * Y) {
-    int dr;
+//    int dr;
 
     /* modulus P must be positive */
     if (P->sign == MP_NEG) {
@@ -614,7 +614,7 @@ static int mp_exptmod(mp_int * G, mp_int * X, mp_int * P, mp_int * Y) {
     dr = mp_dr_is_modulus(P);
 #else
     /* default to no */
-    dr = 0;
+//    dr = 0;
 #endif
 
 #ifdef BN_MP_REDUCE_IS_2K_C

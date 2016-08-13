@@ -465,7 +465,6 @@ static int tls_process_client_key_exchange_rsa(
         struct tlsv1_server *conn, const u8 *pos, const u8 *end) {
     u8 *out;
     size_t outlen, outbuflen;
-    u16 encr_len;
     int res;
     int use_random = 0;
 
@@ -475,7 +474,6 @@ static int tls_process_client_key_exchange_rsa(
         return -1;
     }
 
-    encr_len = WPA_GET_BE16(pos);
     pos += 2;
 
     outbuflen = outlen = end - pos;
