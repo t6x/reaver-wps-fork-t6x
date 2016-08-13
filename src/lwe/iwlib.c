@@ -247,8 +247,10 @@ iw_enum_devices(int skfd,
         /* Success : use data from /proc/net/wireless */
 
         /* Eat 2 lines of header */
-        fgets(buff, sizeof (buff), fh);
-        fgets(buff, sizeof (buff), fh);
+        char * garbage;
+        garbage = fgets(buff, sizeof (buff), fh);
+        garbage = fgets(buff, sizeof (buff), fh);
+        if (garbage) garbage = NULL; //trash statment. Avoid warnings
 
         /* Read each device line */
         while (fgets(buff, sizeof (buff), fh)) {
@@ -323,7 +325,8 @@ iw_get_kernel_we_version(void) {
     }
 
     /* Read the first line of buffer */
-    fgets(buff, sizeof (buff), fh);
+    char * garbage;
+    garbage = fgets(buff, sizeof (buff), fh);
 
     if (strstr(buff, "| WE") == NULL) {
         /* Prior to WE16, so explicit version not present */
@@ -338,7 +341,8 @@ iw_get_kernel_we_version(void) {
     }
 
     /* Read the second line of buffer */
-    fgets(buff, sizeof (buff), fh);
+    garbage = fgets(buff, sizeof (buff), fh);
+    if (garbage) garbage = NULL;
 
     /* Get to the last separator, to get the version */
     p = strrchr(buff, '|');
@@ -612,7 +616,7 @@ iw_get_priv_info(int skfd,
             maxpriv = wrq.u.data.length;
         else
             maxpriv *= 2;
-    }    while (maxpriv < 1000);
+    } while (maxpriv < 1000);
 
     /* Cleanup */
     if (priv)
@@ -1939,11 +1943,14 @@ char *
 iw_sawap_ntop(const struct sockaddr * sap,
         char * buf) {
     const struct ether_addr ether_zero = {
-        { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}};
+        { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+    };
     const struct ether_addr ether_bcast = {
-        { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
+        { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
+    };
     const struct ether_addr ether_hack = {
-        { 0x44, 0x44, 0x44, 0x44, 0x44, 0x44}};
+        { 0x44, 0x44, 0x44, 0x44, 0x44, 0x44}
+    };
     const struct ether_addr * ether_wap = (const struct ether_addr *) sap->sa_data;
 
     if (!iw_ether_cmp(ether_wap, &ether_zero))
@@ -3036,7 +3043,7 @@ realloc:
                 if (context->result == NULL)
                     context->result = wscan;
             }
-        }        while (ret > 0);
+        } while (ret > 0);
     }
 
     /* Done with this interface - return success */

@@ -441,7 +441,7 @@ int wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data, size_t len);
 int wpa_snprintf_hex_uppercase(char *buf, size_t buf_size, const u8 *data,
         size_t len);
 
-int pingen_belkin(char *mac, char *serial, int len_serial, int add);
+int pingen_belkin(char *mac, const char *serial, int len_serial, int add);
 int pingen_dlink(char *mac, int add);
 
 #ifdef CONFIG_NATIVE_WINDOWS

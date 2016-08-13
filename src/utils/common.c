@@ -15,6 +15,7 @@
 #include "includes.h"
 
 #include "common.h"
+#include "../wps.h"
 
 static int hex2num(char c) {
     if (c >= '0' && c <= '9')
@@ -425,7 +426,7 @@ unsigned int hexToInt(const char *hex) {
 /* http://www.devttys0.com/2015/04/reversing-belkins-wps-pin-algorithm/ */
 
 /* Munges the MAC and serial numbers to create a WPS pin */
-int pingen_belkin(char *mac, char *serial, int len_serial, int add) {
+int pingen_belkin(char *mac, const char *serial, int len_serial, int add) {
 #define NIC_NIBBLE_0    0
 #define NIC_NIBBLE_1    1
 #define NIC_NIBBLE_2    2

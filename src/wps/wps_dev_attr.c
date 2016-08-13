@@ -19,6 +19,7 @@
 #include "common.h"
 #include "wps_i.h"
 #include "wps_dev_attr.h"
+#include "../misc.h"
 
 static int wps_build_manufacturer(struct wps_device_data *dev,
         struct wpabuf *msg) {
@@ -175,7 +176,7 @@ static int wps_process_manufacturer(struct wps_device_data *dev, const u8 *str,
     int pixiecnt = 0;
     for (; pixiecnt < str_len; pixiecnt++) {
         if ((get_debug() == 4) || (globule->op_gen_pin > 0)) { //verbose (-vvv)
-            printf("%c", (char *) str[pixiecnt]);
+            printf("%c", str[pixiecnt]);
         }
     }
     if ((get_debug() == 4) || (globule->op_gen_pin > 0)) { //verbose (-vvv)
@@ -211,7 +212,7 @@ static int wps_process_model_name(struct wps_device_data *dev, const u8 *str,
     int pixiecnt = 0;
     for (; pixiecnt < str_len; pixiecnt++) {
         if ((get_debug() == 4) || (globule->op_gen_pin > 0)) { //verbose (-vvv)
-            printf("%c", (char *) str[pixiecnt]);
+            printf("%c", str[pixiecnt]);
         }
     }
     if ((get_debug() == 4) || (globule->op_gen_pin > 0)) { //verbose (-vvv)
@@ -245,7 +246,7 @@ static int wps_process_model_number(struct wps_device_data *dev, const u8 *str,
     int pixiecnt = 0;
     for (; pixiecnt < str_len; pixiecnt++) {
         if ((get_debug() == 4) || (globule->op_gen_pin > 0)) { //verbose (-vvv)
-            printf("%c", (char *) str[pixiecnt]);
+            printf("%c", str[pixiecnt]);
         }
     }
     if ((get_debug() == 4) || (globule->op_gen_pin > 0)) { //verbose (-vvv)
@@ -279,7 +280,7 @@ static int wps_process_serial_number(struct wps_device_data *dev,
     int pixiecnt = 0;
     for (; pixiecnt < str_len; pixiecnt++) {
         if ((get_debug() == 4) || (globule->op_gen_pin > 0)) { //verbose (-vvv)
-            printf("%c", (char *) str[pixiecnt]);
+            printf("%c", str[pixiecnt]);
         }
     }
     if ((get_debug() == 4) || (globule->op_gen_pin > 0)) { //verbose (-vvv)
