@@ -43,9 +43,9 @@
 #include "pins.h"
 #include "argsparser.h"
 
-#define DISPLAY_PIN_COUNT	5
-#define DATE_TIME_FORMAT	"%F %T"
-#define TIME_FORMAT			"%T"
+#define DISPLAY_PIN_COUNT 5
+#define DATE_TIME_FORMAT "%F %T"
+#define TIME_FORMAT   "%T"
 
 void crack();
 void advance_pin_count();

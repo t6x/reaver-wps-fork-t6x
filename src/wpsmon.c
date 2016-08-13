@@ -37,39 +37,38 @@ int o_file_p = 0;
 int get_chipset_output = 0;
 int c_fix = 0;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int c = 0;
     FILE *fp = NULL;
     int long_opt_index = 0, i = 0, channel = 0, passive = 0, mode = 0;
     int source = INTERFACE, ret_val = EXIT_FAILURE;
-    struct bpf_program bpf = { 0 };
+    struct bpf_program bpf = {0};
     char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
     char *short_options = "i:c:n:o:b:5sfuCDhPg";
     struct option long_options[] = {
-		{ "get-chipset", no_argument, NULL, 'g' },
-	{ "output-piped", no_argument, NULL, 'P' },
-        { "bssid", required_argument, NULL, 'b' },
-        { "interface", required_argument, NULL, 'i' },
-        { "channel", required_argument, NULL, 'c' },
-        { "out-file", required_argument, NULL, 'o' },
-        { "probes", required_argument, NULL, 'n' },
-        { "daemonize", no_argument, NULL, 'D' },
-        { "file", no_argument, NULL, 'f' },
-        { "announce-fcs", no_argument, NULL, 'C' }, //mod by flatr0ze
-        { "5ghz", no_argument, NULL, '5' },
-        { "scan", no_argument, NULL, 's' },
-        { "survey", no_argument, NULL, 'u' },
-        { "help", no_argument, NULL, 'h' },
-        { 0, 0, 0, 0 }
+        { "get-chipset", no_argument, NULL, 'g'},
+        { "output-piped", no_argument, NULL, 'P'},
+        { "bssid", required_argument, NULL, 'b'},
+        { "interface", required_argument, NULL, 'i'},
+        { "channel", required_argument, NULL, 'c'},
+        { "out-file", required_argument, NULL, 'o'},
+        { "probes", required_argument, NULL, 'n'},
+        { "daemonize", no_argument, NULL, 'D'},
+        { "file", no_argument, NULL, 'f'},
+        { "announce-fcs", no_argument, NULL, 'C'}, //mod by flatr0ze
+        { "5ghz", no_argument, NULL, '5'},
+        { "scan", no_argument, NULL, 's'},
+        { "survey", no_argument, NULL, 'u'},
+        { "help", no_argument, NULL, 'h'},
+        { 0, 0, 0, 0}
     };
 
 
     globule_init();
-//    sql_init();
+    //    sql_init();
     if (!sql_init()) {
-                fprintf(stderr, "[X] ERROR: sql_init failed\n");
-                goto end;
+        fprintf(stderr, "[X] ERROR: sql_init failed\n");
+        goto end;
     }
     create_ap_table();
     set_auto_channel_select(0);
@@ -79,15 +78,13 @@ int main(int argc, char *argv[])
     set_log_file(stdout);
     set_max_num_probes(DEFAULT_MAX_NUM_PROBES);
 
-    while((c = getopt_long(argc, argv, short_options, long_options, &long_opt_index)) != -1)
-    {
-        switch(c)
-        {
-			case 'g':
+    while ((c = getopt_long(argc, argv, short_options, long_options, &long_opt_index)) != -1) {
+        switch (c) {
+            case 'g':
                 get_chipset_output = 1;
-				o_file_p = 1;
+                o_file_p = 1;
                 break;
-			case 'P':
+            case 'P':
                 o_file_p = 1;
                 break;
             case 'f':
@@ -102,7 +99,7 @@ int main(int argc, char *argv[])
             case 'c':
                 channel = atoi(optarg);
                 set_fixed_channel(1);
-				c_fix = 1;
+                c_fix = 1;
                 break;
             case '5':
                 set_wifi_band(AN_BAND);
@@ -131,10 +128,8 @@ int main(int argc, char *argv[])
         }
 
         /* Track the last optarg. This is used later when looping back through any specified pcap files. */
-        if(optarg)
-        {
-            if(last_optarg)
-            {
+        if (optarg) {
+            if (last_optarg) {
                 free(last_optarg);
             }
 
@@ -142,48 +137,40 @@ int main(int argc, char *argv[])
         }
     }
 
-	if (o_file_p == 0)
-	{
-		printf("\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
-		printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
-		printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY\n\n");
-	}
+    if (o_file_p == 0) {
+        printf("\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
+        printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
+        printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY\n\n");
+    }
 
     /* The interface value won't be set if capture files were specified; else, there should have been an interface specified */
-    if(!get_iface() && source != PCAP_FILE)
-    {
+    if (!get_iface() && source != PCAP_FILE) {
         usage(argv[0]);
         goto end;
-    }
-    else if(get_iface())
-    {
+    } else if (get_iface()) {
         /* Get the MAC address of the specified interface */
         read_iface_mac();
     }
 
-    if(get_iface() && source == PCAP_FILE)
-    {
+    if (get_iface() && source == PCAP_FILE) {
         cprintf(CRITICAL, "[X] ERROR: -i and -f options cannot be used together.\n");
         usage(argv[0]);
         goto end;
     }
 
     /* If we're reading from a file, be sure we don't try to transmit probe requests */
-    if(source == PCAP_FILE)
-    {
+    if (source == PCAP_FILE) {
         passive = 1;
     }
 
     /* Open the output file, if any. If none, write to stdout. */
-    if(out_file)
-    {
+    if (out_file) {
 
-		fp = fopen(out_file, "wb");
-		if(!fp)
-		{
-			cprintf(CRITICAL, "[X] ERROR: Failed to open '%s' for writing\n", out_file);
-			goto end;
-		}
+        fp = fopen(out_file, "wb");
+        if (!fp) {
+            cprintf(CRITICAL, "[X] ERROR: Failed to open '%s' for writing\n", out_file);
+            goto end;
+        }
 
 
         set_log_file(fp);
@@ -194,44 +181,34 @@ int main(int argc, char *argv[])
      * call to monitor() will block indefinitely. If capture files were specified, this will loop through each file specified
      * on the command line and monitor() will return after each file has been processed.
      */
-    for(i=argc-1; i>0; i--)
-    {
+    for (i = argc - 1; i > 0; i--) {
         /* If the source is a pcap file, get the file name from the command line */
-        if(source == PCAP_FILE)
-        {
+        if (source == PCAP_FILE) {
             /* If we've gotten to the arguments, we're done */
-            if((argv[i][0] == '-') ||
+            if ((argv[i][0] == '-') ||
                     (last_optarg && (memcmp(argv[i], last_optarg, strlen(last_optarg)) == 0))
-              )
-            {
+                    ) {
                 break;
-            }
-            else
-            {
+            } else {
                 target = argv[i];
             }
-        }
-        /* Else, use the specified interface name */
-        else
-        {
+        }            /* Else, use the specified interface name */
+        else {
             target = get_iface();
         }
 
         set_handle(capture_init(target));
-        if(!get_handle())
-        {
+        if (!get_handle()) {
             cprintf(CRITICAL, "[X] ERROR: Failed to open '%s' for capturing\n", get_iface());
             goto end;
         }
 
-        if(pcap_compile(get_handle(), &bpf, PACKET_FILTER, 0, 0) != 0)
-        {
+        if (pcap_compile(get_handle(), &bpf, PACKET_FILTER, 0, 0) != 0) {
             cprintf(CRITICAL, "[X] ERROR: Failed to compile packet filter\n");
             goto end;
         }
 
-        if(pcap_setfilter(get_handle(), &bpf) != 0)
-        {
+        if (pcap_setfilter(get_handle(), &bpf) != 0) {
             cprintf(CRITICAL, "[X] ERROR: Failed to set packet filter\n");
             goto end;
         }
@@ -246,58 +223,50 @@ int main(int argc, char *argv[])
 end:
     globule_deinit();
     sql_cleanup();
-    if(bssid) free(bssid);
-    if(out_file) free(out_file);
-    if(wpsmon.fp) fclose(wpsmon.fp);
+    if (bssid) free(bssid);
+    if (out_file) free(out_file);
+    if (wpsmon.fp) fclose(wpsmon.fp);
     return ret_val;
 }
 
 /* Monitors an interface (or capture file) for WPS data in beacon packets or probe responses */
-void monitor(char *bssid, int passive, int source, int channel, int mode)
-{
+void monitor(char *bssid, int passive, int source, int channel, int mode) {
     struct sigaction act;
     struct itimerval timer;
     struct pcap_pkthdr header;
     static int header_printed;
     const u_char *packet = NULL;
 
-    memset(&act, 0, sizeof(struct sigaction));
-    memset(&timer, 0, sizeof(struct itimerval));
+    memset(&act, 0, sizeof (struct sigaction));
+    memset(&timer, 0, sizeof (struct itimerval));
 
     /* If we aren't reading from a pcap file, set the interface channel */
-    if(source == INTERFACE)
-    {
+    if (source == INTERFACE) {
         /*
          * If a channel has been specified, set the interface to that channel.
          * Else, set a recurring 1 second timer that will call sigalrm() and switch to
          * a new channel.
          */
-        if(channel > 0)
-        {
+        if (channel > 0) {
             change_channel(channel);
-        }
-        else
-        {
+        } else {
             act.sa_handler = sigalrm_handler;
-            sigaction (SIGALRM, &act, 0);
+            sigaction(SIGALRM, &act, 0);
             ualarm(CHANNEL_INTERVAL, CHANNEL_INTERVAL);
             change_channel(1);
         }
     }
 
-    if(!header_printed)
-    {
-		if (o_file_p == 0)
-		{
-			cprintf(INFO, "BSSID              Channel  RSSI  WPS Version  WPS Locked  ESSID\n");
-			cprintf(INFO, "--------------------------------------------------------------------------------------\n");
-			header_printed = 1;
-		}
+    if (!header_printed) {
+        if (o_file_p == 0) {
+            cprintf(INFO, "BSSID              Channel  RSSI  WPS Version  WPS Locked  ESSID\n");
+            cprintf(INFO, "--------------------------------------------------------------------------------------\n");
+            header_printed = 1;
+        }
 
     }
 
-    while((packet = next_packet(&header)))
-    {
+    while ((packet = next_packet(&header))) {
         parse_wps_settings(packet, &header, bssid, passive, mode, source);
 #ifndef __APPLE__
         memset((void *) packet, 0, header.len);
@@ -307,8 +276,7 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
     return;
 }
 
-void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *target, int passive, int mode, int source)
-{
+void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *target, int passive, int mode, int source) {
     struct radio_tap_header *rt_header = NULL;
     struct dot11_frame_header *frame_header = NULL;
     struct libwps_data *wps = NULL;
@@ -321,11 +289,10 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
     char info_modelnum[500];
     char info_modelserial[500];
 
-    wps = malloc(sizeof(struct libwps_data));
-    memset(wps, 0, sizeof(struct libwps_data));
+    wps = malloc(sizeof (struct libwps_data));
+    memset(wps, 0, sizeof (struct libwps_data));
 
-    if(packet == NULL || header == NULL || header->len < MIN_BEACON_SIZE)
-    {
+    if (packet == NULL || header == NULL || header->len < MIN_BEACON_SIZE) {
         goto end;
     }
 
@@ -334,8 +301,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
     frame_header = (struct dot11_frame_header *) (packet + rt_header->len);
 
     /* If a specific BSSID was specified, only parse packets from that BSSID */
-    if(!is_target(frame_header))
-    {
+    if (!is_target(frame_header)) {
         goto end;
     }
 
@@ -343,17 +309,14 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
     bssid = (char *) mac2str(frame_header->addr3, ':');
     set_bssid((unsigned char *) frame_header->addr3);
 
-    if(bssid)
-    {
-        if((target == NULL) ||
-                (target != NULL && strcmp(bssid, target) == 0))
-        {
+    if (bssid) {
+        if ((target == NULL) ||
+                (target != NULL && strcmp(bssid, target) == 0)) {
             channel = parse_beacon_tags(packet, header->len);
             rssi = signal_strength(packet, header->len);
             ssid = (char *) get_ssid();
 
-            if(target != NULL && channel_changed == 0)
-            {
+            if (target != NULL && channel_changed == 0) {
                 ualarm(0, 0);
                 change_channel(channel);
                 channel_changed = 1;
@@ -363,36 +326,29 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 
 
-            if(frame_header->fc.sub_type == PROBE_RESPONSE ||
-                    frame_header->fc.sub_type == SUBTYPE_BEACON)
-            {
+            if (frame_header->fc.sub_type == PROBE_RESPONSE ||
+                    frame_header->fc.sub_type == SUBTYPE_BEACON) {
                 wps_parsed = parse_wps_parameters(packet, header->len, wps);
             }
 
-            if(!is_done(bssid) && (get_channel() == channel || source == PCAP_FILE))
-            {
-                if(frame_header->fc.sub_type == SUBTYPE_BEACON &&
+            if (!is_done(bssid) && (get_channel() == channel || source == PCAP_FILE)) {
+                if (frame_header->fc.sub_type == SUBTYPE_BEACON &&
                         mode == SCAN &&
                         !passive &&
-//                        should_probe(bssid))
+                        //                        should_probe(bssid))
                         should_probe(bssid)
-                    #ifdef __APPLE__
-                                       && 0
-                    #endif
-                                       )
-                {
+#ifdef __APPLE__
+                        && 0
+#endif
+                        ) {
                     send_probe_request(get_bssid(), get_ssid());
                     probe_sent = 1;
                 }
 
-                if(!insert(bssid, ssid, wps, encryption, rssi))
-                {
+                if (!insert(bssid, ssid, wps, encryption, rssi)) {
                     update(bssid, ssid, wps, encryption);
-                }
-                else if(wps->version > 0)
-                {
-                    switch(wps->locked)
-                    {
+                } else if (wps->version > 0) {
+                    switch (wps->locked) {
                         case WPSLOCKED:
                             lock_display = YES;
                             break;
@@ -402,124 +358,113 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                             break;
                     }
 
-					//ideas made by kcdtv
+                    //ideas made by kcdtv
 
-					if(get_chipset_output == 1)
-					//if(1)
-					{
-						if (c_fix == 0)
-						{
-							//no use a fixed channel
-							cprintf(INFO,"Option (-g) REQUIRES a channel to be set with (-c)\n");
-							exit(0);
-						}
+                    if (get_chipset_output == 1)
+                        //if(1)
+                    {
+                        if (c_fix == 0) {
+                            //no use a fixed channel
+                            cprintf(INFO, "Option (-g) REQUIRES a channel to be set with (-c)\n");
+                            exit(0);
+                        }
 
-						FILE *fgchipset=NULL;
-						char cmd_chipset[4000];
-						char cmd_chipset_buf[4000];
-						char buffint[5];
+                        FILE *fgchipset = NULL;
+                        char cmd_chipset[4000];
+                        char cmd_chipset_buf[4000];
+                        char buffint[5];
 
-						char *aux_cmd_chipset=NULL;
-
-
-
-						memset(cmd_chipset, 0, sizeof(cmd_chipset));
-						memset(cmd_chipset_buf, 0, sizeof(cmd_chipset_buf));
-						memset(info_manufac, 0, sizeof(info_manufac));
-                        memset(info_modelnum, 0, sizeof(info_modelnum));
-                        memset(info_modelserial, 0, sizeof(info_modelserial));
+                        char *aux_cmd_chipset = NULL;
 
 
 
-						strcat(cmd_chipset,"reaver -0 -s y -vv -i "); //need option to stop reaver in m1 stage
-						strcat(cmd_chipset,get_iface());
-
-						strcat(cmd_chipset, " -b ");
-						strcat(cmd_chipset, mac2str(get_bssid(),':'));
-
-						strcat(cmd_chipset," -c ");
-						snprintf(buffint, sizeof(buffint), "%d",channel);
-						strcat(cmd_chipset, buffint);
-
-						//cprintf(INFO,"\n%s\n",cmd_chipset);
-
-						if ((fgchipset = popen(cmd_chipset, "r")) == NULL) {
-							printf("Error opening pipe!\n");
-							//return -1;
-						}
+                        memset(cmd_chipset, 0, sizeof (cmd_chipset));
+                        memset(cmd_chipset_buf, 0, sizeof (cmd_chipset_buf));
+                        memset(info_manufac, 0, sizeof (info_manufac));
+                        memset(info_modelnum, 0, sizeof (info_modelnum));
+                        memset(info_modelserial, 0, sizeof (info_modelserial));
 
 
 
-						while (fgets(cmd_chipset_buf, 4000, fgchipset) != NULL)
-						{
-							//[P] WPS Manufacturer: xxx
-							//[P] WPS Model Number: yyy
-							//[P] WPS Model Serial Number: zzz
-							//cprintf(INFO,"\n%s\n",cmd_chipset_buf);
+                        strcat(cmd_chipset, "reaver -0 -s y -vv -i "); //need option to stop reaver in m1 stage
+                        strcat(cmd_chipset, get_iface());
 
-							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Manufacturer:");
-							if(aux_cmd_chipset != NULL)
-							{
-								//bug fix by alxchk
-								strncpy(info_manufac, aux_cmd_chipset+21, sizeof(info_manufac));
-							}
+                        strcat(cmd_chipset, " -b ");
+                        strcat(cmd_chipset, mac2str(get_bssid(), ':'));
 
-							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Model Number:");
-							if(aux_cmd_chipset != NULL)
-							{
-                                //bug fix by alxchk
-								strncpy(info_modelnum, aux_cmd_chipset+21, sizeof(info_modelnum));
+                        strcat(cmd_chipset, " -c ");
+                        snprintf(buffint, sizeof (buffint), "%d", channel);
+                        strcat(cmd_chipset, buffint);
 
-							}
+                        //cprintf(INFO,"\n%s\n",cmd_chipset);
 
-							aux_cmd_chipset = strstr(cmd_chipset_buf,"[P] WPS Model Serial Number:");
-							if(aux_cmd_chipset != NULL)
-							{
-                                //bug fix by alxchk
-								strncpy(info_modelserial, aux_cmd_chipset+28, sizeof(info_modelserial));
-
-							}
-
-						}
-
-						//cprintf(INFO,"\n%s\n",info_manufac);
-						info_manufac[strcspn ( info_manufac, "\n" )] = '\0';
-						info_modelnum[strcspn ( info_modelnum, "\n" )] = '\0';
-						info_modelserial[strcspn ( info_modelserial, "\n" )] = '\0';
-
-
-
-                        if(pclose(fgchipset))  {
-                        //printf("Command not found or exited with error status\n");
-                        //return -1;
+                        if ((fgchipset = popen(cmd_chipset, "r")) == NULL) {
+                            printf("Error opening pipe!\n");
+                            //return -1;
                         }
 
 
 
-					}
+                        while (fgets(cmd_chipset_buf, 4000, fgchipset) != NULL) {
+                            //[P] WPS Manufacturer: xxx
+                            //[P] WPS Model Number: yyy
+                            //[P] WPS Model Serial Number: zzz
+                            //cprintf(INFO,"\n%s\n",cmd_chipset_buf);
+
+                            aux_cmd_chipset = strstr(cmd_chipset_buf, "[P] WPS Manufacturer:");
+                            if (aux_cmd_chipset != NULL) {
+                                //bug fix by alxchk
+                                strncpy(info_manufac, aux_cmd_chipset + 21, sizeof (info_manufac));
+                            }
+
+                            aux_cmd_chipset = strstr(cmd_chipset_buf, "[P] WPS Model Number:");
+                            if (aux_cmd_chipset != NULL) {
+                                //bug fix by alxchk
+                                strncpy(info_modelnum, aux_cmd_chipset + 21, sizeof (info_modelnum));
+
+                            }
+
+                            aux_cmd_chipset = strstr(cmd_chipset_buf, "[P] WPS Model Serial Number:");
+                            if (aux_cmd_chipset != NULL) {
+                                //bug fix by alxchk
+                                strncpy(info_modelserial, aux_cmd_chipset + 28, sizeof (info_modelserial));
+
+                            }
+
+                        }
+
+                        //cprintf(INFO,"\n%s\n",info_manufac);
+                        info_manufac[strcspn(info_manufac, "\n")] = '\0';
+                        info_modelnum[strcspn(info_modelnum, "\n")] = '\0';
+                        info_modelserial[strcspn(info_modelserial, "\n")] = '\0';
 
 
-					if (o_file_p == 0)
-					{
-						cprintf(INFO, "%17s    %2d       %.2d   %d.%d          %s         %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
-					}
-					else
-					{
-						if(get_chipset_output == 1)
-						{
-							cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s|%s|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid, info_manufac, info_modelnum, info_modelserial);
 
-						}else
-						{
-							cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+                        if (pclose(fgchipset)) {
+                            //printf("Command not found or exited with error status\n");
+                            //return -1;
+                        }
 
-						}
 
-					}
+
+                    }
+
+
+                    if (o_file_p == 0) {
+                        cprintf(INFO, "%17s    %2d       %.2d   %d.%d          %s         %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+                    } else {
+                        if (get_chipset_output == 1) {
+                            cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s|%s|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid, info_manufac, info_modelnum, info_modelserial);
+
+                        } else {
+                            cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+
+                        }
+
+                    }
                 }
 
-                if(probe_sent)
-                {
+                if (probe_sent) {
                     update_probe_count(bssid);
                 }
 
@@ -527,8 +472,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                  * If there was no WPS information, then the AP does not support WPS and we should ignore it from here on.
                  * If this was a probe response, then we've gotten all WPS info we can get from this AP and should ignore it from here on.
                  */
-                if(!wps_parsed || frame_header->fc.sub_type == PROBE_RESPONSE)
-                {
+                if (!wps_parsed || frame_header->fc.sub_type == PROBE_RESPONSE) {
                     mark_ap_complete(bssid);
                 }
 
@@ -536,8 +480,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
         }
 
         /* Only update received signal strength if we are on the same channel as the AP, otherwise power measurements are screwy */
-        if(channel == get_channel())
-        {
+        if (channel == get_channel()) {
             update_ap_power(bssid, rssi);
         }
 
@@ -546,21 +489,19 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
     }
 
 end:
-    if(wps) free(wps);
+    if (wps) free(wps);
     set_bssid((unsigned char *) NULL_MAC);
 
     return;
 }
 
 /* Does what it says */
-void send_probe_request(unsigned char *bssid, char *essid)
-{
+void send_probe_request(unsigned char *bssid, char *essid) {
     const void *probe = NULL;
     size_t probe_size = 0;
 
     probe = build_wps_probe_request(bssid, essid, &probe_size);
-    if(probe)
-    {
+    if (probe) {
         pcap_inject(get_handle(), probe, probe_size);
         free((void *) probe);
     }
@@ -569,13 +510,11 @@ void send_probe_request(unsigned char *bssid, char *essid)
 }
 
 /* Whenever a SIGALRM is thrown, go to the next 802.11 channel */
-void sigalrm_handler(int x)
-{
+void sigalrm_handler(int x) {
     next_channel();
 }
 
-void usage(char *prog)
-{
+void usage(char *prog) {
     fprintf(stderr, "Required Arguments:\n");
     fprintf(stderr, "\t-i, --interface=<iface>              Interface to capture packets on\n");
     fprintf(stderr, "\t-f, --file [FILE1 FILE2 FILE3 ...]   Read packets from capture files\n");

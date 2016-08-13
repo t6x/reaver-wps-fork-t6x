@@ -51,7 +51,7 @@
 #define ASSOCIATE_OK            2
 
 #define ASSOCIATE_WAIT_TIME     1               /* Seconds */
-#define BEACON_WAIT_TIME	2		/* Seconds */
+#define BEACON_WAIT_TIME 2  /* Seconds */
 #define ASSOCIATION_SUCCESS     0x0000
 #define AUTHENTICATION_SUCCESS  0x0000
 
@@ -74,8 +74,8 @@
 #define FC_WEP                  0x40
 #define FC_ORDER                0x80
 
-#define RADIO_TAP_VERSION	0x00
-#define FAKE_RADIO_TAP_HEADER	"\x00\x00\x00\x00\x00\x00\x00\x00"
+#define RADIO_TAP_VERSION 0x00
+#define FAKE_RADIO_TAP_HEADER "\x00\x00\x00\x00\x00\x00\x00\x00"
 
 #define MAX_AUTH_TRIES          5
 

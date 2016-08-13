@@ -33,14 +33,11 @@
 #define UFD_FILE UFD_DIR2 "/%s"
 #endif /* CONFIG_NATIVE_WINDOWS */
 
-
 struct wps_ufd_data {
     int ufd_fd;
 };
 
-
-static int dev_pwd_e_file_filter(const struct dirent *entry)
-{
+static int dev_pwd_e_file_filter(const struct dirent *entry) {
     unsigned int prefix;
     char ext[5];
 
@@ -54,9 +51,7 @@ static int dev_pwd_e_file_filter(const struct dirent *entry)
     return 1;
 }
 
-
-static int wps_get_dev_pwd_e_file_name(char *path, char *file_name)
-{
+static int wps_get_dev_pwd_e_file_name(char *path, char *file_name) {
     struct dirent **namelist;
     int i, file_num;
 
@@ -79,10 +74,8 @@ static int wps_get_dev_pwd_e_file_name(char *path, char *file_name)
     return 0;
 }
 
-
 static int get_file_name(struct wps_context *wps, int registrar,
-        const char *path, char *file_name)
-{
+        const char *path, char *file_name) {
     switch (wps->oob_conf.oob_method) {
         case OOB_METHOD_CRED:
             os_snprintf(file_name, 13, "00000000.WSC");
@@ -90,7 +83,7 @@ static int get_file_name(struct wps_context *wps, int registrar,
         case OOB_METHOD_DEV_PWD_E:
             if (registrar) {
                 char temp[128];
-                os_snprintf(temp, sizeof(temp), UFD_DIR2, path);
+                os_snprintf(temp, sizeof (temp), UFD_DIR2, path);
                 if (wps_get_dev_pwd_e_file_name(temp, file_name) < 0)
                     return -1;
             } else {
@@ -111,9 +104,7 @@ static int get_file_name(struct wps_context *wps, int registrar,
     return 0;
 }
 
-
-static int ufd_mkdir(const char *path)
-{
+static int ufd_mkdir(const char *path) {
     if (mkdir(path, S_IRWXU) < 0 && errno != EEXIST) {
         wpa_printf(MSG_ERROR, "WPS (UFD): Failed to create directory "
                 "'%s': %d (%s)", path, errno, strerror(errno));
@@ -122,10 +113,8 @@ static int ufd_mkdir(const char *path)
     return 0;
 }
 
-
 static void * init_ufd(struct wps_context *wps,
-        struct oob_device_data *oob_dev, int registrar)
-{
+        struct oob_device_data *oob_dev, int registrar) {
     int write_f;
     char temp[128];
     char *path = oob_dev->device_path;
@@ -137,7 +126,7 @@ static void * init_ufd(struct wps_context *wps,
         return NULL;
 
     write_f = wps->oob_conf.oob_method == OOB_METHOD_DEV_PWD_E ?
-        !registrar : registrar;
+            !registrar : registrar;
 
     if (get_file_name(wps, registrar, path, filename) < 0) {
         wpa_printf(MSG_ERROR, "WPS (UFD): Failed to get file name");
@@ -145,18 +134,18 @@ static void * init_ufd(struct wps_context *wps,
     }
 
     if (write_f) {
-        os_snprintf(temp, sizeof(temp), UFD_DIR1, path);
+        os_snprintf(temp, sizeof (temp), UFD_DIR1, path);
         if (ufd_mkdir(temp))
             return NULL;
-        os_snprintf(temp, sizeof(temp), UFD_DIR2, path);
+        os_snprintf(temp, sizeof (temp), UFD_DIR2, path);
         if (ufd_mkdir(temp))
             return NULL;
     }
 
-    os_snprintf(temp, sizeof(temp), UFD_FILE, path, filename);
+    os_snprintf(temp, sizeof (temp), UFD_FILE, path, filename);
     if (write_f)
         ufd_fd = open(temp, O_WRONLY | O_CREAT | O_TRUNC,
-                S_IRUSR | S_IWUSR);
+            S_IRUSR | S_IWUSR);
     else
         ufd_fd = open(temp, O_RDONLY);
     if (ufd_fd < 0) {
@@ -165,16 +154,14 @@ static void * init_ufd(struct wps_context *wps,
         return NULL;
     }
 
-    data = os_zalloc(sizeof(*data));
+    data = os_zalloc(sizeof (*data));
     if (data == NULL)
         return NULL;
     data->ufd_fd = ufd_fd;
     return data;
 }
 
-
-static struct wpabuf * read_ufd(void *priv)
-{
+static struct wpabuf * read_ufd(void *priv) {
     struct wps_ufd_data *data = priv;
     struct wpabuf *buf;
     struct stat s;
@@ -203,9 +190,7 @@ static struct wpabuf * read_ufd(void *priv)
     return buf;
 }
 
-
-static int write_ufd(void *priv, struct wpabuf *buf)
-{
+static int write_ufd(void *priv, struct wpabuf *buf) {
     struct wps_ufd_data *data = priv;
 
     if (write(data->ufd_fd, wpabuf_mhead(buf), wpabuf_len(buf)) !=
@@ -216,9 +201,7 @@ static int write_ufd(void *priv, struct wpabuf *buf)
     return 0;
 }
 
-
-static void deinit_ufd(void *priv)
-{
+static void deinit_ufd(void *priv) {
     struct wps_ufd_data *data = priv;
     close(data->ufd_fd);
     os_free(data);
@@ -226,10 +209,10 @@ static void deinit_ufd(void *priv)
 
 
 struct oob_device_data oob_ufd_device_data = {
-    .device_name	= NULL,
-    .device_path	= NULL,
-    .init_func	= init_ufd,
-    .read_func	= read_ufd,
-    .write_func	= write_ufd,
-    .deinit_func	= deinit_ufd,
+    .device_name = NULL,
+    .device_path = NULL,
+    .init_func = init_ufd,
+    .read_func = read_ufd,
+    .write_func = write_ufd,
+    .deinit_func = deinit_ufd,
 };

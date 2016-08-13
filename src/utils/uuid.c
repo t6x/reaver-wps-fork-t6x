@@ -17,8 +17,7 @@
 #include "common.h"
 #include "uuid.h"
 
-int uuid_str2bin(const char *str, u8 *bin)
-{
+int uuid_str2bin(const char *str, u8 *bin) {
     const char *pos;
     u8 *opos;
 
@@ -51,9 +50,7 @@ int uuid_str2bin(const char *str, u8 *bin)
     return 0;
 }
 
-
-int uuid_bin2str(const u8 *bin, char *str, size_t max_len)
-{
+int uuid_bin2str(const u8 *bin, char *str, size_t max_len) {
     int len;
     len = os_snprintf(str, max_len, "%02x%02x%02x%02x-%02x%02x-%02x%02x-"
             "%02x%02x-%02x%02x%02x%02x%02x%02x",
@@ -66,9 +63,7 @@ int uuid_bin2str(const u8 *bin, char *str, size_t max_len)
     return 0;
 }
 
-
-int is_nil_uuid(const u8 *uuid)
-{
+int is_nil_uuid(const u8 *uuid) {
     int i;
     for (i = 0; i < UUID_LEN; i++)
         if (uuid[i])

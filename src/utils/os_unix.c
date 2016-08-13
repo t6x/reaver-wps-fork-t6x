@@ -37,18 +37,14 @@ struct os_alloc_trace {
 
 #endif /* WPA_TRACE */
 
-
-void os_sleep(os_time_t sec, os_time_t usec)
-{
+void os_sleep(os_time_t sec, os_time_t usec) {
     if (sec)
         sleep(sec);
     if (usec)
         usleep(usec);
 }
 
-
-int os_get_time(struct os_time *t)
-{
+int os_get_time(struct os_time *t) {
     int res;
     struct timeval tv;
     res = gettimeofday(&tv, NULL);
@@ -57,10 +53,8 @@ int os_get_time(struct os_time *t)
     return res;
 }
 
-
 int os_mktime(int year, int month, int day, int hour, int min, int sec,
-        os_time_t *t)
-{
+        os_time_t *t) {
     struct tm tm, *tm1;
     time_t t_local, t1, t2;
     os_time_t tz_offset;
@@ -70,7 +64,7 @@ int os_mktime(int year, int month, int day, int hour, int min, int sec,
             sec > 60)
         return -1;
 
-    memset(&tm, 0, sizeof(tm));
+    memset(&tm, 0, sizeof (tm));
     tm.tm_year = year - 1900;
     tm.tm_mon = month - 1;
     tm.tm_mday = day;
@@ -100,8 +94,8 @@ int os_mktime(int year, int month, int day, int hour, int min, int sec,
 
 #ifdef __APPLE__
 #include <fcntl.h>
-static int os_daemon(int nochdir, int noclose)
-{
+
+static int os_daemon(int nochdir, int noclose) {
     int devnull;
 
     if (chdir("/") < 0)
@@ -132,9 +126,7 @@ static int os_daemon(int nochdir, int noclose)
 #define os_daemon daemon
 #endif /* __APPLE__ */
 
-
-int os_daemonize(const char *pid_file)
-{
+int os_daemonize(const char *pid_file) {
 #ifdef __uClinux__
     return -1;
 #else /* __uClinux__ */
@@ -155,16 +147,12 @@ int os_daemonize(const char *pid_file)
 #endif /* __uClinux__ */
 }
 
-
-void os_daemonize_terminate(const char *pid_file)
-{
+void os_daemonize_terminate(const char *pid_file) {
     if (pid_file)
         unlink(pid_file);
 }
 
-
-int os_get_random(unsigned char *buf, size_t len)
-{
+int os_get_random(unsigned char *buf, size_t len) {
     FILE *f;
     size_t rc;
 
@@ -180,15 +168,11 @@ int os_get_random(unsigned char *buf, size_t len)
     return rc != len ? -1 : 0;
 }
 
-
-unsigned long os_random(void)
-{
+unsigned long os_random(void) {
     return random();
 }
 
-
-char * os_rel2abs_path(const char *rel_path)
-{
+char * os_rel2abs_path(const char *rel_path) {
     char *buf = NULL, *cwd, *ret;
     size_t len = 128, cwd_len, rel_len, ret_len;
     int last_errno;
@@ -229,21 +213,18 @@ char * os_rel2abs_path(const char *rel_path)
     return ret;
 }
 
-
-int os_program_init(void)
-{
+int os_program_init(void) {
 #ifdef WPA_TRACE
     dl_list_init(&alloc_list);
 #endif /* WPA_TRACE */
     return 0;
 }
 
-
-void os_program_deinit(void)
-{
+void os_program_deinit(void) {
 #ifdef WPA_TRACE
     struct os_alloc_trace *a;
     unsigned long total = 0;
+
     dl_list_for_each(a, &alloc_list, struct os_alloc_trace, list) {
         total += a->len;
         if (a->magic != ALLOC_MAGIC) {
@@ -258,19 +239,15 @@ void os_program_deinit(void)
     }
     if (total)
         wpa_printf(MSG_INFO, "MEMLEAK: total %lu bytes",
-                (unsigned long) total);
+            (unsigned long) total);
 #endif /* WPA_TRACE */
 }
 
-
-int os_setenv(const char *name, const char *value, int overwrite)
-{
+int os_setenv(const char *name, const char *value, int overwrite) {
     return setenv(name, value, overwrite);
 }
 
-
-int os_unsetenv(const char *name)
-{
+int os_unsetenv(const char *name) {
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__) || \
     defined(__OpenBSD__)
     unsetenv(name);
@@ -280,9 +257,7 @@ int os_unsetenv(const char *name)
 #endif
 }
 
-
-char * os_readfile(const char *name, size_t *len)
-{
+char * os_readfile(const char *name, size_t *len) {
     FILE *f;
     char *buf;
 
@@ -313,15 +288,13 @@ char * os_readfile(const char *name, size_t *len)
 
 
 #ifndef WPA_TRACE
-void * os_zalloc(size_t size)
-{
+
+void * os_zalloc(size_t size) {
     return calloc(1, size);
 }
 #endif /* WPA_TRACE */
 
-
-size_t os_strlcpy(char *dest, const char *src, size_t siz)
-{
+size_t os_strlcpy(char *dest, const char *src, size_t siz) {
     const char *s = src;
     size_t left = siz;
 
@@ -347,10 +320,9 @@ size_t os_strlcpy(char *dest, const char *src, size_t siz)
 
 #ifdef WPA_TRACE
 
-void * os_malloc(size_t size)
-{
+void * os_malloc(size_t size) {
     struct os_alloc_trace *a;
-    a = malloc(sizeof(*a) + size);
+    a = malloc(sizeof (*a) + size);
     if (a == NULL)
         return NULL;
     a->magic = ALLOC_MAGIC;
@@ -360,9 +332,7 @@ void * os_malloc(size_t size)
     return a + 1;
 }
 
-
-void * os_realloc(void *ptr, size_t size)
-{
+void * os_realloc(void *ptr, size_t size) {
     struct os_alloc_trace *a;
     size_t copy_len;
     void *n;
@@ -389,9 +359,7 @@ void * os_realloc(void *ptr, size_t size)
     return n;
 }
 
-
-void os_free(void *ptr)
-{
+void os_free(void *ptr) {
     struct os_alloc_trace *a;
 
     if (ptr == NULL)
@@ -411,18 +379,14 @@ void os_free(void *ptr)
     free(a);
 }
 
-
-void * os_zalloc(size_t size)
-{
+void * os_zalloc(size_t size) {
     void *ptr = os_malloc(size);
     if (ptr)
         os_memset(ptr, 0, size);
     return ptr;
 }
 
-
-char * os_strdup(const char *s)
-{
+char * os_strdup(const char *s) {
     size_t len;
     char *d;
     len = os_strlen(s);

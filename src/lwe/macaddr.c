@@ -21,8 +21,7 @@
 
 #include "iwlib.h"
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 
     int devsock;
     struct ifreq ifbuffer;
@@ -37,11 +36,11 @@ int main(int argc, char** argv)
 
     if (devsock == -1) {
         perror("Failed opening socket");
-        exit (1);
+        exit(1);
     }
 
-    memset(&ifbuffer, 0, sizeof(ifbuffer));
-    strncpy(ifbuffer.ifr_name, argv[1], sizeof(ifbuffer.ifr_name));
+    memset(&ifbuffer, 0, sizeof (ifbuffer));
+    strncpy(ifbuffer.ifr_name, argv[1], sizeof (ifbuffer.ifr_name));
     if (ioctl(devsock, SIOCGIFHWADDR, &ifbuffer) == -1) {
         fprintf(stderr, "There is no MACADDR for %s\n", argv[1]);
         exit(1);

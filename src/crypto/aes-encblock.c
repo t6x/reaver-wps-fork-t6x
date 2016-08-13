@@ -26,8 +26,7 @@
  * @out: Output of the AES block operation (16 bytes)
  * Returns: 0 on success, -1 on failure
  */
-int aes_128_encrypt_block(const u8 *key, const u8 *in, u8 *out)
-{
+int aes_128_encrypt_block(const u8 *key, const u8 *in, u8 *out) {
     void *ctx;
     ctx = aes_encrypt_init(key, 16);
     if (ctx == NULL)

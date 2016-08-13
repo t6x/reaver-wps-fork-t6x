@@ -63,6 +63,7 @@ int gnutls_ia_verify_endphase(gnutls_session_t session, char *checksum);
 
 typedef u8 uint8;
 typedef unsigned char opaque;
+
 typedef struct {
     uint8 suite[2];
 } cipher_suite_st;
@@ -135,9 +136,7 @@ struct tls_connection {
 #endif /* GNUTLS_IA */
 };
 
-
-static void tls_log_func(int level, const char *msg)
-{
+static void tls_log_func(int level, const char *msg) {
     char *s, *pos;
     if (level == 6 || level == 7) {
         /* These levels seem to be mostly I/O debug and msg dumps */
@@ -164,8 +163,7 @@ static void tls_log_func(int level, const char *msg)
 
 extern int wpa_debug_show_keys;
 
-void * tls_init(const struct tls_config *conf)
-{
+void * tls_init(const struct tls_config *conf) {
     struct tls_global *global;
 
 #ifdef GNUTLS_INTERNAL_STRUCTURE_HACK
@@ -174,13 +172,13 @@ void * tls_init(const struct tls_config *conf)
      * that is expected to have same structure definition for the session
      * data.. */
     const char *ver;
-    const char *ok_ver[] = { "1.2.3", "1.2.4", "1.2.5", "1.2.6", "1.2.9",
+    const char *ok_ver[] = {"1.2.3", "1.2.4", "1.2.5", "1.2.6", "1.2.9",
         "1.3.2",
-        NULL };
+        NULL};
     int i;
 #endif /* GNUTLS_INTERNAL_STRUCTURE_HACK */
 
-    global = os_zalloc(sizeof(*global));
+    global = os_zalloc(sizeof (*global));
     if (global == NULL)
         return NULL;
 
@@ -215,9 +213,7 @@ void * tls_init(const struct tls_config *conf)
     return global;
 }
 
-
-void tls_deinit(void *ssl_ctx)
-{
+void tls_deinit(void *ssl_ctx) {
     struct tls_global *global = ssl_ctx;
     if (global) {
         if (global->params_set)
@@ -231,16 +227,12 @@ void tls_deinit(void *ssl_ctx)
         gnutls_global_deinit();
 }
 
-
-int tls_get_errors(void *ssl_ctx)
-{
+int tls_get_errors(void *ssl_ctx) {
     return 0;
 }
 
-
 static ssize_t tls_pull_func(gnutls_transport_ptr ptr, void *buf,
-        size_t len)
-{
+        size_t len) {
     struct tls_connection *conn = (struct tls_connection *) ptr;
     const u8 *end;
     if (conn->pull_buf == NULL) {
@@ -266,10 +258,8 @@ static ssize_t tls_pull_func(gnutls_transport_ptr ptr, void *buf,
     return len;
 }
 
-
 static ssize_t tls_push_func(gnutls_transport_ptr ptr, const void *buf,
-        size_t len)
-{
+        size_t len) {
     struct tls_connection *conn = (struct tls_connection *) ptr;
 
     if (wpabuf_resize(&conn->push_buf, len) < 0) {
@@ -281,12 +271,10 @@ static ssize_t tls_push_func(gnutls_transport_ptr ptr, const void *buf,
     return len;
 }
 
-
 static int tls_gnutls_init_session(struct tls_global *global,
-        struct tls_connection *conn)
-{
-    const int cert_types[2] = { GNUTLS_CRT_X509, 0 };
-    const int protos[2] = { GNUTLS_TLS1, 0 };
+        struct tls_connection *conn) {
+    const int cert_types[2] = {GNUTLS_CRT_X509, 0};
+    const int protos[2] = {GNUTLS_TLS1, 0};
     int ret;
 
     ret = gnutls_init(&conn->session,
@@ -322,14 +310,12 @@ fail:
     return -1;
 }
 
-
-struct tls_connection * tls_connection_init(void *ssl_ctx)
-{
+struct tls_connection * tls_connection_init(void *ssl_ctx) {
     struct tls_global *global = ssl_ctx;
     struct tls_connection *conn;
     int ret;
 
-    conn = os_zalloc(sizeof(*conn));
+    conn = os_zalloc(sizeof (*conn));
     if (conn == NULL)
         return NULL;
 
@@ -358,9 +344,7 @@ struct tls_connection * tls_connection_init(void *ssl_ctx)
     return conn;
 }
 
-
-void tls_connection_deinit(void *ssl_ctx, struct tls_connection *conn)
-{
+void tls_connection_deinit(void *ssl_ctx, struct tls_connection *conn) {
     if (conn == NULL)
         return;
 
@@ -385,15 +369,11 @@ void tls_connection_deinit(void *ssl_ctx, struct tls_connection *conn)
     os_free(conn);
 }
 
-
-int tls_connection_established(void *ssl_ctx, struct tls_connection *conn)
-{
+int tls_connection_established(void *ssl_ctx, struct tls_connection *conn) {
     return conn ? conn->established : 0;
 }
 
-
-int tls_connection_shutdown(void *ssl_ctx, struct tls_connection *conn)
-{
+int tls_connection_shutdown(void *ssl_ctx, struct tls_connection *conn) {
     struct tls_global *global = ssl_ctx;
     int ret;
 
@@ -448,8 +428,8 @@ int tls_connection_shutdown(void *ssl_ctx, struct tls_connection *conn)
 
 
 #if 0
-static int tls_match_altsubject(X509 *cert, const char *match)
-{
+
+static int tls_match_altsubject(X509 *cert, const char *match) {
     GENERAL_NAME *gen;
     char *field, *tmp;
     void *ext;
@@ -483,7 +463,7 @@ static int tls_match_altsubject(X509 *cert, const char *match)
         wpa_printf(MSG_DEBUG, "TLS: altSubjectName: %s:%s",
                 field, gen->d.ia5->data);
         len = os_strlen(field) + 1 +
-            strlen((char *) gen->d.ia5->data) + 1;
+                strlen((char *) gen->d.ia5->data) + 1;
         tmp = os_malloc(len);
         if (tmp == NULL)
             continue;
@@ -499,8 +479,8 @@ static int tls_match_altsubject(X509 *cert, const char *match)
 
 
 #if 0
-static int tls_verify_cb(int preverify_ok, X509_STORE_CTX *x509_ctx)
-{
+
+static int tls_verify_cb(int preverify_ok, X509_STORE_CTX *x509_ctx) {
     char buf[256];
     X509 *err_cert;
     int err, depth;
@@ -513,7 +493,7 @@ static int tls_verify_cb(int preverify_ok, X509_STORE_CTX *x509_ctx)
     depth = X509_STORE_CTX_get_error_depth(x509_ctx);
     ssl = X509_STORE_CTX_get_ex_data(x509_ctx,
             SSL_get_ex_data_X509_STORE_CTX_idx());
-    X509_NAME_oneline(X509_get_subject_name(err_cert), buf, sizeof(buf));
+    X509_NAME_oneline(X509_get_subject_name(err_cert), buf, sizeof (buf));
 
     conn = SSL_get_app_data(ssl);
     match = conn ? conn->subject_match : NULL;
@@ -544,10 +524,8 @@ static int tls_verify_cb(int preverify_ok, X509_STORE_CTX *x509_ctx)
 }
 #endif
 
-
 int tls_connection_set_params(void *tls_ctx, struct tls_connection *conn,
-        const struct tls_connection_params *params)
-{
+        const struct tls_connection_params *params) {
     int ret;
 
     if (conn == NULL || params == NULL)
@@ -681,10 +659,8 @@ int tls_connection_set_params(void *tls_ctx, struct tls_connection *conn,
     return ret;
 }
 
-
 int tls_global_set_params(void *tls_ctx,
-        const struct tls_connection_params *params)
-{
+        const struct tls_connection_params *params) {
     struct tls_global *global = tls_ctx;
     int ret;
 
@@ -787,17 +763,13 @@ fail:
     return -1;
 }
 
-
-int tls_global_set_verify(void *ssl_ctx, int check_crl)
-{
+int tls_global_set_verify(void *ssl_ctx, int check_crl) {
     /* TODO */
     return 0;
 }
 
-
 int tls_connection_set_verify(void *ssl_ctx, struct tls_connection *conn,
-        int verify_peer)
-{
+        int verify_peer) {
     if (conn == NULL || conn->session == NULL)
         return -1;
 
@@ -809,10 +781,8 @@ int tls_connection_set_verify(void *ssl_ctx, struct tls_connection *conn,
     return 0;
 }
 
-
 int tls_connection_get_keys(void *ssl_ctx, struct tls_connection *conn,
-        struct tls_keys *keys)
-{
+        struct tls_keys *keys) {
 #ifdef GNUTLS_INTERNAL_STRUCTURE_HACK
     security_parameters_st *sec;
 #endif /* GNUTLS_INTERNAL_STRUCTURE_HACK */
@@ -820,7 +790,7 @@ int tls_connection_get_keys(void *ssl_ctx, struct tls_connection *conn,
     if (conn == NULL || conn->session == NULL || keys == NULL)
         return -1;
 
-    os_memset(keys, 0, sizeof(*keys));
+    os_memset(keys, 0, sizeof (*keys));
 
 #ifdef GNUTLS_INTERNAL_STRUCTURE_HACK
     sec = &conn->session->security_parameters;
@@ -830,9 +800,9 @@ int tls_connection_get_keys(void *ssl_ctx, struct tls_connection *conn,
     keys->server_random = sec->server_random;
 #else /* GNUTLS_INTERNAL_STRUCTURE_HACK */
     keys->client_random =
-        (u8 *) gnutls_session_get_client_random(conn->session);
+            (u8 *) gnutls_session_get_client_random(conn->session);
     keys->server_random =
-        (u8 *) gnutls_session_get_server_random(conn->session);
+            (u8 *) gnutls_session_get_server_random(conn->session);
     /* No access to master_secret */
 #endif /* GNUTLS_INTERNAL_STRUCTURE_HACK */
 
@@ -849,11 +819,9 @@ int tls_connection_get_keys(void *ssl_ctx, struct tls_connection *conn,
     return 0;
 }
 
-
 int tls_connection_prf(void *tls_ctx, struct tls_connection *conn,
         const char *label, int server_random_first,
-        u8 *out, size_t out_len)
-{
+        u8 *out, size_t out_len) {
 #if LIBGNUTLS_VERSION_NUMBER >= 0x010302
     if (conn == NULL || conn->session == NULL)
         return -1;
@@ -865,10 +833,8 @@ int tls_connection_prf(void *tls_ctx, struct tls_connection *conn,
 #endif /* LIBGNUTLS_VERSION_NUMBER >= 0x010302 */
 }
 
-
 static int tls_connection_verify_peer(struct tls_connection *conn,
-        gnutls_alert_description_t *err)
-{
+        gnutls_alert_description_t *err) {
     unsigned int status, num_certs, i;
     struct os_time now;
     const gnutls_datum_t *certs;
@@ -934,7 +900,7 @@ static int tls_connection_verify_peer(struct tls_connection *conn,
         }
 
         if (gnutls_x509_crt_import(cert, &certs[i],
-                    GNUTLS_X509_FMT_DER) < 0) {
+                GNUTLS_X509_FMT_DER) < 0) {
             wpa_printf(MSG_INFO, "TLS: Could not parse peer "
                     "certificate %d/%d", i + 1, num_certs);
             gnutls_x509_crt_deinit(cert);
@@ -974,9 +940,7 @@ static int tls_connection_verify_peer(struct tls_connection *conn,
     return 0;
 }
 
-
-static struct wpabuf * gnutls_get_appl_data(struct tls_connection *conn)
-{
+static struct wpabuf * gnutls_get_appl_data(struct tls_connection *conn) {
     int res;
     struct wpabuf *ad;
     wpa_printf(MSG_DEBUG, "GnuTLS: Check for possible Application Data");
@@ -1001,12 +965,10 @@ static struct wpabuf * gnutls_get_appl_data(struct tls_connection *conn)
     return ad;
 }
 
-
 struct wpabuf * tls_connection_handshake(void *tls_ctx,
         struct tls_connection *conn,
         const struct wpabuf *in_data,
-        struct wpabuf **appl_data)
-{
+        struct wpabuf **appl_data) {
     struct tls_global *global = tls_ctx;
     struct wpabuf *out_data;
     int ret;
@@ -1041,7 +1003,7 @@ struct wpabuf * tls_connection_handshake(void *tls_ctx,
             case GNUTLS_E_FATAL_ALERT_RECEIVED:
                 wpa_printf(MSG_DEBUG, "%s - received fatal '%s' alert",
                         __func__, gnutls_alert_get_name(
-                            gnutls_alert_get(conn->session)));
+                        gnutls_alert_get(conn->session)));
                 conn->read_alerts++;
                 /* continue */
             default:
@@ -1105,31 +1067,27 @@ out:
     return out_data;
 }
 
-
 struct wpabuf * tls_connection_server_handshake(void *tls_ctx,
         struct tls_connection *conn,
         const struct wpabuf *in_data,
-        struct wpabuf **appl_data)
-{
+        struct wpabuf **appl_data) {
     return tls_connection_handshake(tls_ctx, conn, in_data, appl_data);
 }
 
-
 struct wpabuf * tls_connection_encrypt(void *tls_ctx,
         struct tls_connection *conn,
-        const struct wpabuf *in_data)
-{
+        const struct wpabuf *in_data) {
     ssize_t res;
     struct wpabuf *buf;
 
 #ifdef GNUTLS_IA
     if (conn->tls_ia)
         res = gnutls_ia_send(conn->session, wpabuf_head(in_data),
-                wpabuf_len(in_data));
+            wpabuf_len(in_data));
     else
 #endif /* GNUTLS_IA */
         res = gnutls_record_send(conn->session, wpabuf_head(in_data),
-                wpabuf_len(in_data));
+            wpabuf_len(in_data));
     if (res < 0) {
         wpa_printf(MSG_INFO, "%s: Encryption failed: %s",
                 __func__, gnutls_strerror(res));
@@ -1141,11 +1099,9 @@ struct wpabuf * tls_connection_encrypt(void *tls_ctx,
     return buf;
 }
 
-
 struct wpabuf * tls_connection_decrypt(void *tls_ctx,
         struct tls_connection *conn,
-        const struct wpabuf *in_data)
-{
+        const struct wpabuf *in_data) {
     ssize_t res;
     struct wpabuf *out;
 
@@ -1242,83 +1198,63 @@ struct wpabuf * tls_connection_decrypt(void *tls_ctx,
     return out;
 }
 
-
-int tls_connection_resumed(void *ssl_ctx, struct tls_connection *conn)
-{
+int tls_connection_resumed(void *ssl_ctx, struct tls_connection *conn) {
     if (conn == NULL)
         return 0;
     return gnutls_session_is_resumed(conn->session);
 }
 
-
 int tls_connection_set_cipher_list(void *tls_ctx, struct tls_connection *conn,
-        u8 *ciphers)
-{
+        u8 *ciphers) {
     /* TODO */
     return -1;
 }
 
-
 int tls_get_cipher(void *ssl_ctx, struct tls_connection *conn,
-        char *buf, size_t buflen)
-{
+        char *buf, size_t buflen) {
     /* TODO */
     buf[0] = '\0';
     return 0;
 }
 
-
 int tls_connection_enable_workaround(void *ssl_ctx,
-        struct tls_connection *conn)
-{
+        struct tls_connection *conn) {
     gnutls_record_disable_padding(conn->session);
     return 0;
 }
 
-
 int tls_connection_client_hello_ext(void *ssl_ctx, struct tls_connection *conn,
         int ext_type, const u8 *data,
-        size_t data_len)
-{
+        size_t data_len) {
     /* TODO */
     return -1;
 }
 
-
-int tls_connection_get_failed(void *ssl_ctx, struct tls_connection *conn)
-{
+int tls_connection_get_failed(void *ssl_ctx, struct tls_connection *conn) {
     if (conn == NULL)
         return -1;
     return conn->failed;
 }
 
-
-int tls_connection_get_read_alerts(void *ssl_ctx, struct tls_connection *conn)
-{
+int tls_connection_get_read_alerts(void *ssl_ctx, struct tls_connection *conn) {
     if (conn == NULL)
         return -1;
     return conn->read_alerts;
 }
 
-
-int tls_connection_get_write_alerts(void *ssl_ctx, struct tls_connection *conn)
-{
+int tls_connection_get_write_alerts(void *ssl_ctx, struct tls_connection *conn) {
     if (conn == NULL)
         return -1;
     return conn->write_alerts;
 }
 
-
 int tls_connection_get_keyblock_size(void *tls_ctx,
-        struct tls_connection *conn)
-{
+        struct tls_connection *conn) {
     /* TODO */
     return -1;
 }
 
-
-unsigned int tls_capabilities(void *tls_ctx)
-{
+unsigned int tls_capabilities(void *tls_ctx) {
     unsigned int capa = 0;
 
 #ifdef GNUTLS_IA
@@ -1328,10 +1264,8 @@ unsigned int tls_capabilities(void *tls_ctx)
     return capa;
 }
 
-
 int tls_connection_set_ia(void *tls_ctx, struct tls_connection *conn,
-        int tls_ia)
-{
+        int tls_ia) {
 #ifdef GNUTLS_IA
     int ret;
 
@@ -1365,10 +1299,8 @@ int tls_connection_set_ia(void *tls_ctx, struct tls_connection *conn,
 #endif /* GNUTLS_IA */
 }
 
-
 struct wpabuf * tls_connection_ia_send_phase_finished(
-        void *tls_ctx, struct tls_connection *conn, int final)
-{
+        void *tls_ctx, struct tls_connection *conn, int final) {
 #ifdef GNUTLS_IA
     int ret;
     struct wpabuf *buf;
@@ -1406,21 +1338,17 @@ struct wpabuf * tls_connection_ia_send_phase_finished(
 #endif /* GNUTLS_IA */
 }
 
-
 int tls_connection_ia_final_phase_finished(void *tls_ctx,
-        struct tls_connection *conn)
-{
+        struct tls_connection *conn) {
     if (conn == NULL)
         return -1;
 
     return conn->final_phase_finished;
 }
 
-
 int tls_connection_ia_permute_inner_secret(void *tls_ctx,
         struct tls_connection *conn,
-        const u8 *key, size_t key_len)
-{
+        const u8 *key, size_t key_len) {
 #ifdef GNUTLS_IA
     if (conn == NULL || !conn->tls_ia)
         return -1;
@@ -1448,10 +1376,8 @@ int tls_connection_ia_permute_inner_secret(void *tls_ctx,
 #endif /* GNUTLS_IA */
 }
 
-
 int tls_connection_set_session_ticket_cb(void *tls_ctx,
         struct tls_connection *conn,
-        tls_session_ticket_cb cb, void *ctx)
-{
+        tls_session_ticket_cb cb, void *ctx) {
     return -1;
 }

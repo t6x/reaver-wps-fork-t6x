@@ -27,7 +27,6 @@
 #include "crypto/aes_wrap.h"
 #include "milenage.h"
 
-
 /**
  * milenage_f1 - Milenage f1 and f1* algorithms
  * @opc: OPc = 128-bit value derived from OP and K
@@ -40,8 +39,7 @@
  * Returns: 0 on success, -1 on failure
  */
 int milenage_f1(const u8 *opc, const u8 *k, const u8 *_rand,
-        const u8 *sqn, const u8 *amf, u8 *mac_a, u8 *mac_s)
-{
+        const u8 *sqn, const u8 *amf, u8 *mac_a, u8 *mac_s) {
     u8 tmp1[16], tmp2[16], tmp3[16];
     int i;
 
@@ -78,7 +76,6 @@ int milenage_f1(const u8 *opc, const u8 *k, const u8 *_rand,
     return 0;
 }
 
-
 /**
  * milenage_f2345 - Milenage f2, f3, f4, f5, f5* algorithms
  * @opc: OPc = 128-bit value derived from OP and K
@@ -92,8 +89,7 @@ int milenage_f1(const u8 *opc, const u8 *k, const u8 *_rand,
  * Returns: 0 on success, -1 on failure
  */
 int milenage_f2345(const u8 *opc, const u8 *k, const u8 *_rand,
-        u8 *res, u8 *ck, u8 *ik, u8 *ak, u8 *akstar)
-{
+        u8 *res, u8 *ck, u8 *ik, u8 *ak, u8 *akstar) {
     u8 tmp1[16], tmp2[16], tmp3[16];
     int i;
 
@@ -162,7 +158,6 @@ int milenage_f2345(const u8 *opc, const u8 *k, const u8 *_rand,
     return 0;
 }
 
-
 /**
  * milenage_generate - Generate AKA AUTN,IK,CK,RES
  * @opc: OPc = 128-bit operator variant algorithm configuration field (encr.)
@@ -178,8 +173,7 @@ int milenage_f2345(const u8 *opc, const u8 *k, const u8 *_rand,
  */
 void milenage_generate(const u8 *opc, const u8 *amf, const u8 *k,
         const u8 *sqn, const u8 *_rand, u8 *autn, u8 *ik,
-        u8 *ck, u8 *res, size_t *res_len)
-{
+        u8 *ck, u8 *res, size_t *res_len) {
     int i;
     u8 mac_a[8], ak[6];
 
@@ -201,7 +195,6 @@ void milenage_generate(const u8 *opc, const u8 *amf, const u8 *k,
     os_memcpy(autn + 8, mac_a, 8);
 }
 
-
 /**
  * milenage_auts - Milenage AUTS validation
  * @opc: OPc = 128-bit operator variant algorithm configuration field (encr.)
@@ -212,9 +205,8 @@ void milenage_generate(const u8 *opc, const u8 *amf, const u8 *k,
  * Returns: 0 = success (sqn filled), -1 on failure
  */
 int milenage_auts(const u8 *opc, const u8 *k, const u8 *_rand, const u8 *auts,
-        u8 *sqn)
-{
-    u8 amf[2] = { 0x00, 0x00 }; /* TS 33.102 v7.0.0, 6.3.3 */
+        u8 *sqn) {
+    u8 amf[2] = {0x00, 0x00}; /* TS 33.102 v7.0.0, 6.3.3 */
     u8 ak[6], mac_s[8];
     int i;
 
@@ -228,7 +220,6 @@ int milenage_auts(const u8 *opc, const u8 *k, const u8 *_rand, const u8 *auts,
     return 0;
 }
 
-
 /**
  * gsm_milenage - Generate GSM-Milenage (3GPP TS 55.205) authentication triplet
  * @opc: OPc = 128-bit operator variant algorithm configuration field (encr.)
@@ -238,8 +229,7 @@ int milenage_auts(const u8 *opc, const u8 *k, const u8 *_rand, const u8 *auts,
  * @kc: Buffer for Kc = 64-bit Kc
  * Returns: 0 on success, -1 on failure
  */
-int gsm_milenage(const u8 *opc, const u8 *k, const u8 *_rand, u8 *sres, u8 *kc)
-{
+int gsm_milenage(const u8 *opc, const u8 *k, const u8 *_rand, u8 *sres, u8 *kc) {
     u8 res[8], ck[16], ik[16];
     int i;
 
@@ -258,7 +248,6 @@ int gsm_milenage(const u8 *opc, const u8 *k, const u8 *_rand, u8 *sres, u8 *kc)
     return 0;
 }
 
-
 /**
  * milenage_generate - Generate AKA AUTN,IK,CK,RES
  * @opc: OPc = 128-bit operator variant algorithm configuration field (encr.)
@@ -275,8 +264,7 @@ int gsm_milenage(const u8 *opc, const u8 *k, const u8 *_rand, u8 *sres, u8 *kc)
  */
 int milenage_check(const u8 *opc, const u8 *k, const u8 *sqn, const u8 *_rand,
         const u8 *autn, u8 *ik, u8 *ck, u8 *res, size_t *res_len,
-        u8 *auts)
-{
+        u8 *auts) {
     int i;
     u8 mac_a[8], ak[6], rx_sqn[6];
     const u8 *amf;
@@ -299,7 +287,7 @@ int milenage_check(const u8 *opc, const u8 *k, const u8 *sqn, const u8 *_rand,
     wpa_hexdump(MSG_DEBUG, "Milenage: SQN", rx_sqn, 6);
 
     if (os_memcmp(rx_sqn, sqn, 6) <= 0) {
-        u8 auts_amf[2] = { 0x00, 0x00 }; /* TS 33.102 v7.0.0, 6.3.3 */
+        u8 auts_amf[2] = {0x00, 0x00}; /* TS 33.102 v7.0.0, 6.3.3 */
         if (milenage_f2345(opc, k, _rand, NULL, NULL, NULL, NULL, ak))
             return -1;
         wpa_hexdump_key(MSG_DEBUG, "Milenage: AK*", ak, 6);

@@ -19,10 +19,8 @@
 
 #define WPS_WORKAROUNDS
 
-
 static int wps_set_attr(struct wps_parse_attr *attr, u16 type,
-        const u8 *pos, u16 len)
-{
+        const u8 *pos, u16 len) {
     switch (type) {
         case ATTR_VERSION:
             if (len != 1) {
@@ -408,13 +406,11 @@ static int wps_set_attr(struct wps_parse_attr *attr, u16 type,
     return 0;
 }
 
-
-int wps_parse_msg(const struct wpabuf *msg, struct wps_parse_attr *attr)
-{
+int wps_parse_msg(const struct wpabuf *msg, struct wps_parse_attr *attr) {
     const u8 *pos, *end;
     u16 type, len;
 
-    os_memset(attr, 0, sizeof(*attr));
+    os_memset(attr, 0, sizeof (*attr));
     pos = wpabuf_head(msg);
     end = pos + wpabuf_len(msg);
 

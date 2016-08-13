@@ -20,17 +20,13 @@
 #include "x509v3.h"
 #include "tlsv1_cred.h"
 
-
-struct tlsv1_credentials * tlsv1_cred_alloc(void)
-{
+struct tlsv1_credentials * tlsv1_cred_alloc(void) {
     struct tlsv1_credentials *cred;
-    cred = os_zalloc(sizeof(*cred));
+    cred = os_zalloc(sizeof (*cred));
     return cred;
 }
 
-
-void tlsv1_cred_free(struct tlsv1_credentials *cred)
-{
+void tlsv1_cred_free(struct tlsv1_credentials *cred) {
     if (cred == NULL)
         return;
 
@@ -42,10 +38,8 @@ void tlsv1_cred_free(struct tlsv1_credentials *cred)
     os_free(cred);
 }
 
-
 static int tlsv1_add_cert_der(struct x509_certificate **chain,
-        const u8 *buf, size_t len)
-{
+        const u8 *buf, size_t len) {
     struct x509_certificate *cert;
     char name[128];
 
@@ -59,7 +53,7 @@ static int tlsv1_add_cert_der(struct x509_certificate **chain,
     cert->next = *chain;
     *chain = cert;
 
-    x509_name_string(&cert->subject, name, sizeof(name));
+    x509_name_string(&cert->subject, name, sizeof (name));
     wpa_printf(MSG_DEBUG, "TLSv1: Added certificate: %s", name);
 
     return 0;
@@ -75,9 +69,7 @@ static const char *pem_key2_end = "-----END PRIVATE KEY-----";
 static const char *pem_key_enc_begin = "-----BEGIN ENCRYPTED PRIVATE KEY-----";
 static const char *pem_key_enc_end = "-----END ENCRYPTED PRIVATE KEY-----";
 
-
-static const u8 * search_tag(const char *tag, const u8 *buf, size_t len)
-{
+static const u8 * search_tag(const char *tag, const u8 *buf, size_t len) {
     size_t i, plen;
 
     plen = os_strlen(tag);
@@ -92,10 +84,8 @@ static const u8 * search_tag(const char *tag, const u8 *buf, size_t len)
     return NULL;
 }
 
-
 static int tlsv1_add_cert(struct x509_certificate **chain,
-        const u8 *buf, size_t len)
-{
+        const u8 *buf, size_t len) {
     const u8 *pos, *end;
     unsigned char *der;
     size_t der_len;
@@ -142,11 +132,9 @@ static int tlsv1_add_cert(struct x509_certificate **chain,
     return 0;
 }
 
-
 static int tlsv1_set_cert_chain(struct x509_certificate **chain,
         const char *cert, const u8 *cert_blob,
-        size_t cert_blob_len)
-{
+        size_t cert_blob_len) {
     if (cert_blob)
         return tlsv1_add_cert(chain, cert_blob, cert_blob_len);
 
@@ -170,7 +158,6 @@ static int tlsv1_set_cert_chain(struct x509_certificate **chain,
     return 0;
 }
 
-
 /**
  * tlsv1_set_ca_cert - Set trusted CA certificate(s)
  * @cred: TLSv1 credentials from tlsv1_cred_alloc()
@@ -182,10 +169,9 @@ static int tlsv1_set_cert_chain(struct x509_certificate **chain,
  */
 int tlsv1_set_ca_cert(struct tlsv1_credentials *cred, const char *cert,
         const u8 *cert_blob, size_t cert_blob_len,
-        const char *path)
-{
+        const char *path) {
     if (tlsv1_set_cert_chain(&cred->trusted_certs, cert,
-                cert_blob, cert_blob_len) < 0)
+            cert_blob, cert_blob_len) < 0)
         return -1;
 
     if (path) {
@@ -198,7 +184,6 @@ int tlsv1_set_ca_cert(struct tlsv1_credentials *cred, const char *cert,
     return 0;
 }
 
-
 /**
  * tlsv1_set_cert - Set certificate
  * @cred: TLSv1 credentials from tlsv1_cred_alloc()
@@ -208,15 +193,12 @@ int tlsv1_set_ca_cert(struct tlsv1_credentials *cred, const char *cert,
  * Returns: 0 on success, -1 on failure
  */
 int tlsv1_set_cert(struct tlsv1_credentials *cred, const char *cert,
-        const u8 *cert_blob, size_t cert_blob_len)
-{
+        const u8 *cert_blob, size_t cert_blob_len) {
     return tlsv1_set_cert_chain(&cred->cert, cert,
             cert_blob, cert_blob_len);
 }
 
-
-static struct crypto_private_key * tlsv1_set_key_pem(const u8 *key, size_t len)
-{
+static struct crypto_private_key * tlsv1_set_key_pem(const u8 *key, size_t len) {
     const u8 *pos, *end;
     unsigned char *der;
     size_t der_len;
@@ -246,11 +228,9 @@ static struct crypto_private_key * tlsv1_set_key_pem(const u8 *key, size_t len)
     return pkey;
 }
 
-
 static struct crypto_private_key * tlsv1_set_key_enc_pem(const u8 *key,
         size_t len,
-        const char *passwd)
-{
+        const char *passwd) {
     const u8 *pos, *end;
     unsigned char *der;
     size_t der_len;
@@ -274,10 +254,8 @@ static struct crypto_private_key * tlsv1_set_key_enc_pem(const u8 *key,
     return pkey;
 }
 
-
 static int tlsv1_set_key(struct tlsv1_credentials *cred,
-        const u8 *key, size_t len, const char *passwd)
-{
+        const u8 *key, size_t len, const char *passwd) {
     cred->key = crypto_private_key_import(key, len, passwd);
     if (cred->key == NULL)
         cred->key = tlsv1_set_key_pem(key, len);
@@ -289,7 +267,6 @@ static int tlsv1_set_key(struct tlsv1_credentials *cred,
     }
     return 0;
 }
-
 
 /**
  * tlsv1_set_private_key - Set private key
@@ -305,15 +282,14 @@ int tlsv1_set_private_key(struct tlsv1_credentials *cred,
         const char *private_key,
         const char *private_key_passwd,
         const u8 *private_key_blob,
-        size_t private_key_blob_len)
-{
+        size_t private_key_blob_len) {
     crypto_private_key_free(cred->key);
     cred->key = NULL;
 
     if (private_key_blob)
         return tlsv1_set_key(cred, private_key_blob,
-                private_key_blob_len,
-                private_key_passwd);
+            private_key_blob_len,
+            private_key_passwd);
 
     if (private_key) {
         u8 *buf;
@@ -335,10 +311,8 @@ int tlsv1_set_private_key(struct tlsv1_credentials *cred,
     return 0;
 }
 
-
 static int tlsv1_set_dhparams_der(struct tlsv1_credentials *cred,
-        const u8 *dh, size_t len)
-{
+        const u8 *dh, size_t len) {
     struct asn1_hdr hdr;
     const u8 *pos, *end;
 
@@ -413,10 +387,8 @@ static int tlsv1_set_dhparams_der(struct tlsv1_credentials *cred,
 static const char *pem_dhparams_begin = "-----BEGIN DH PARAMETERS-----";
 static const char *pem_dhparams_end = "-----END DH PARAMETERS-----";
 
-
 static int tlsv1_set_dhparams_blob(struct tlsv1_credentials *cred,
-        const u8 *buf, size_t len)
-{
+        const u8 *buf, size_t len) {
     const u8 *pos, *end;
     unsigned char *der;
     size_t der_len;
@@ -457,7 +429,6 @@ static int tlsv1_set_dhparams_blob(struct tlsv1_credentials *cred,
     return 0;
 }
 
-
 /**
  * tlsv1_set_dhparams - Set Diffie-Hellman parameters
  * @cred: TLSv1 credentials from tlsv1_cred_alloc()
@@ -467,8 +438,7 @@ static int tlsv1_set_dhparams_blob(struct tlsv1_credentials *cred,
  * Returns: 0 on success, -1 on failure
  */
 int tlsv1_set_dhparams(struct tlsv1_credentials *cred, const char *dh_file,
-        const u8 *dh_blob, size_t dh_blob_len)
-{
+        const u8 *dh_blob, size_t dh_blob_len) {
     if (dh_blob)
         return tlsv1_set_dhparams_blob(cred, dh_blob, dh_blob_len);
 

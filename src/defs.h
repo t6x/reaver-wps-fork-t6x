@@ -45,40 +45,40 @@
 
 #include "wps.h"
 
-#define NULL_MAC		"\x00\x00\x00\x00\x00\x00"
-#define DEFAULT_MAX_NUM_PROBES	15
-#define MAX_ASSOC_FAILURES	10
+#define NULL_MAC  "\x00\x00\x00\x00\x00\x00"
+#define DEFAULT_MAX_NUM_PROBES 15
+#define MAX_ASSOC_FAILURES 10
 
-#define TIMESTAMP_LEN		8
-#define MAC_ADDR_LEN    	6
-#define SSID_TAG_NUMBER		0
-#define RATES_TAG_NUMBER	1
-#define CHANNEL_TAG_NUMBER	3
-#define WPS_TAG_NUMBER		0xDD
-#define VENDOR_SPECIFIC_TAG	0xDD
-#define RSN_TAG_NUMBER		0x30
+#define TIMESTAMP_LEN  8
+#define MAC_ADDR_LEN     6
+#define SSID_TAG_NUMBER  0
+#define RATES_TAG_NUMBER 1
+#define CHANNEL_TAG_NUMBER 3
+#define WPS_TAG_NUMBER  0xDD
+#define VENDOR_SPECIFIC_TAG 0xDD
+#define RSN_TAG_NUMBER  0x30
 
-#define CAPABILITY_WEP		0x10
+#define CAPABILITY_WEP  0x10
 
 #define WPA_IE_ID               "\x00\x50\xF2\x01\x01\x00"
 #define WPA_IE_ID_LEN           6
 
-#define MANAGEMENT_FRAME	0x00
-#define SUBTYPE_BEACON		0x08
+#define MANAGEMENT_FRAME 0x00
+#define SUBTYPE_BEACON  0x08
 
-#define DOT1X_AUTHENTICATION	0x8E88
-#define DOT1X_EAP_PACKET	0x00
+#define DOT1X_AUTHENTICATION 0x8E88
+#define DOT1X_EAP_PACKET 0x00
 
-#define SIMPLE_CONFIG		0x01000000
+#define SIMPLE_CONFIG  0x01000000
 
-#define P1_SIZE			10000
-#define P2_SIZE			1000
+#define P1_SIZE   10000
+#define P2_SIZE   1000
 
-#define EAPOL_START_MAX_TRIES	25
-#define WARN_FAILURE_COUNT	10
+#define EAPOL_START_MAX_TRIES 25
+#define WARN_FAILURE_COUNT 10
 
-#define EAPOL_START		1
-#define EAP_IDENTITY 		0x01
+#define EAPOL_START  1
+#define EAP_IDENTITY   0x01
 #define EAP_EXPANDED            0xFE
 
 #define M57_DEFAULT_TIMEOUT     200000          /* uSeconds */
@@ -89,52 +89,47 @@
 #define DEFAULT_FK_NACK_DELAY   0               /* Seconds */
 #define SEC_TO_US               1000000         /* uSeconds in a Second */
 
-#define TSFT_SIZE 		8
-#define FLAGS_SIZE 		1
-#define RATE_SIZE 		1
-#define CHANNEL_SIZE 		4
-#define FHSS_SIZE 		2
+#define TSFT_SIZE   8
+#define FLAGS_SIZE   1
+#define RATE_SIZE   1
+#define CHANNEL_SIZE   4
+#define FHSS_SIZE   2
 
-#define WPS_DEVICE_NAME		"Glau"
-#define WPS_MANUFACTURER	"Microsoft"
-#define WPS_MODEL_NAME		"Windows"
-#define WPS_MODEL_NUMBER	"6.1.7601"
-#define WPS_DEVICE_TYPE		"\x00\x01\x00\x50\xF2\x04\x00\x01"
-#define WPS_OS_VERSION		"\x01\x00\x06\x00"
-#define WPS_RF_BANDS		0x01
+#define WPS_DEVICE_NAME  "Glau"
+#define WPS_MANUFACTURER "Microsoft"
+#define WPS_MODEL_NAME  "Windows"
+#define WPS_MODEL_NUMBER "6.1.7601"
+#define WPS_DEVICE_TYPE  "\x00\x01\x00\x50\xF2\x04\x00\x01"
+#define WPS_OS_VERSION  "\x01\x00\x06\x00"
+#define WPS_RF_BANDS  0x01
 
-enum encryption_type
-{
+enum encryption_type {
     NONE,
     WEP,
     WPA
 };
 
-enum key_state
-{
+enum key_state {
     KEY1_WIP = 0,
     KEY2_WIP = 1,
     KEY_DONE = 2
 };
 
-enum debug_level
-{
+enum debug_level {
     CRITICAL = 0,
     INFO = 1,
     WARNING = 2,
     VERBOSE = 3
 };
 
-enum eap_codes
-{
+enum eap_codes {
     EAP_REQUEST = 1,
     EAP_RESPONSE = 2,
     EAP_SUCCESS = 3,
     EAP_FAILURE = 4
 };
 
-enum wps_result
-{
+enum wps_result {
     KEY_ACCEPTED = 0,
     KEY_REJECTED = 1,
     RX_TIMEOUT = 2,
@@ -143,8 +138,7 @@ enum wps_result
     FAKE_NACK = 5
 };
 
-enum nack_code
-{
+enum nack_code {
     NO_NACK = -1,
     NO_ERROR = 0,
     OOB_RRAD_ERROR = 1,
@@ -167,8 +161,7 @@ enum nack_code
     AUTH_FAILURE = 18
 };
 
-enum wps_type
-{
+enum wps_type {
     TERMINATE = -1,
     UNKNOWN = 0,
     IDENTITY_REQUEST = 1,
@@ -185,8 +178,7 @@ enum wps_type
     NACK = 0x0E
 };
 
-enum rt_header_flags
-{
+enum rt_header_flags {
     TSFT_FLAG = 0x01,
     FLAGS_FLAG = 0x02,
     RATE_FLAG = 0x04,
@@ -195,8 +187,7 @@ enum rt_header_flags
     SSI_FLAG = 0x20,
 };
 
-enum wfa_elements
-{
+enum wfa_elements {
     AP_CHANNEL = 0x1001,
     ASSOCIATION_STATE = 0x1002,
     AUTHENTICATION_TYPE = 0x1003,
@@ -286,16 +277,15 @@ enum wfa_elements
 };
 
 #pragma pack(1)
-struct radio_tap_header
-{
-    uint8_t revision;	
+
+struct radio_tap_header {
+    uint8_t revision;
     uint8_t pad;
     uint16_t len;
     uint32_t flags;
 };
 
-struct frame_control
-{
+struct frame_control {
     unsigned version : 2;
     unsigned type : 2;
     unsigned sub_type : 4;
@@ -310,45 +300,39 @@ struct frame_control
     unsigned order : 1;
 };
 
-struct dot11_frame_header
-{
+struct dot11_frame_header {
     struct frame_control fc;
     uint16_t duration;
-    unsigned char addr1[MAC_ADDR_LEN];	//Destnation address
-    unsigned char addr2[MAC_ADDR_LEN];	//Transmiter address
-    unsigned char addr3[MAC_ADDR_LEN];	//Source address
-    uint16_t frag_seq;			// Fragment : 4; Sequence : 12
+    unsigned char addr1[MAC_ADDR_LEN]; //Destnation address
+    unsigned char addr2[MAC_ADDR_LEN]; //Transmiter address
+    unsigned char addr3[MAC_ADDR_LEN]; //Source address
+    uint16_t frag_seq; // Fragment : 4; Sequence : 12
 };
 
-struct authentication_management_frame
-{
+struct authentication_management_frame {
     uint16_t algorithm;
     uint16_t sequence;
     uint16_t status;
 };
 
-struct association_request_management_frame
-{
+struct association_request_management_frame {
     uint16_t capability;
     uint16_t listen_interval;
 };
 
-struct association_response_management_frame
-{
+struct association_response_management_frame {
     uint16_t capability;
     uint16_t status;
     uint16_t id;
 };
 
-struct beacon_management_frame
-{
+struct beacon_management_frame {
     unsigned char timestamp[TIMESTAMP_LEN];
     uint16_t beacon_interval;
     uint16_t capability;
 };
 
-struct llc_header
-{
+struct llc_header {
     uint8_t dsap;
     uint8_t ssap;
     uint8_t control_field;
@@ -356,42 +340,37 @@ struct llc_header
     uint16_t type;
 };
 
-struct dot1X_header
-{
+struct dot1X_header {
     uint8_t version;
     uint8_t type;
     uint16_t len;
 };
 
-struct eap_header
-{
+struct eap_header {
     uint8_t code;
     uint8_t id;
     uint16_t len;
     uint8_t type;
 };
 
-struct wfa_expanded_header
-{
+struct wfa_expanded_header {
     unsigned char id[3];
     uint32_t type;
     uint8_t opcode;
     uint8_t flags;
 };
 
-struct wfa_element_header
-{
+struct wfa_element_header {
     uint16_t type;
     uint16_t length;
 };
 
-struct tagged_parameter
-{
+struct tagged_parameter {
     uint8_t number;
     uint8_t len;
 };
 #pragma pack()
 
-#define MIN_BEACON_SIZE		(sizeof(struct radio_tap_header) + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame))
+#define MIN_BEACON_SIZE  (sizeof(struct radio_tap_header) + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame))
 
 #endif

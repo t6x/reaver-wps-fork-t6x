@@ -17,7 +17,7 @@
 
 /***************************** INCLUDES *****************************/
 
-#include "iwlib.h"		/* Header */
+#include "iwlib.h"  /* Header */
 
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
@@ -28,7 +28,7 @@
 
 /* Ugly backward compatibility :-( */
 #ifndef IFLA_WIRELESS
-#define IFLA_WIRELESS	(IFLA_MASTER + 1)
+#define IFLA_WIRELESS (IFLA_MASTER + 1)
 #endif /* IFLA_WIRELESS */
 
 /****************************** TYPES ******************************/
@@ -37,26 +37,26 @@
  * Static information about wireless interface.
  * We cache this info for performance reason.
  */
-typedef struct wireless_iface
-{
+typedef struct wireless_iface {
     /* Linked list */
-    struct wireless_iface *	next;
+    struct wireless_iface * next;
 
     /* Interface identification */
-    int		ifindex;		/* Interface index == black magic */
+    int ifindex; /* Interface index == black magic */
 
     /* Interface data */
-    char			ifname[IFNAMSIZ + 1];	/* Interface name */
-    struct iw_range	range;			/* Wireless static data */
-    int			has_range;
+    char ifname[IFNAMSIZ + 1]; /* Interface name */
+    struct iw_range range; /* Wireless static data */
+    int has_range;
 } wireless_iface;
 
 /**************************** VARIABLES ****************************/
 
 /* Cache of wireless interfaces */
-struct wireless_iface *	interface_cache = NULL;
+struct wireless_iface * interface_cache = NULL;
 
 /************************ RTNETLINK HELPERS ************************/
+
 /*
  * The following code is extracted from :
  * ----------------------------------------------
@@ -71,25 +71,22 @@ struct wireless_iface *	interface_cache = NULL;
  * -----------------------------------------------
  */
 
-struct rtnl_handle
-{
-    int			fd;
-    struct sockaddr_nl	local;
-    struct sockaddr_nl	peer;
-    __u32			seq;
-    __u32			dump;
+struct rtnl_handle {
+    int fd;
+    struct sockaddr_nl local;
+    struct sockaddr_nl peer;
+    __u32 seq;
+    __u32 dump;
 };
 
-static inline void rtnl_close(struct rtnl_handle *rth)
-{
+static inline void rtnl_close(struct rtnl_handle *rth) {
     close(rth->fd);
 }
 
-static inline int rtnl_open(struct rtnl_handle *rth, unsigned subscriptions)
-{
+static inline int rtnl_open(struct rtnl_handle *rth, unsigned subscriptions) {
     int addr_len;
 
-    memset(rth, 0, sizeof(rth));
+    memset(rth, 0, sizeof (rth));
 
     rth->fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
     if (rth->fd < 0) {
@@ -97,21 +94,21 @@ static inline int rtnl_open(struct rtnl_handle *rth, unsigned subscriptions)
         return -1;
     }
 
-    memset(&rth->local, 0, sizeof(rth->local));
+    memset(&rth->local, 0, sizeof (rth->local));
     rth->local.nl_family = AF_NETLINK;
     rth->local.nl_groups = subscriptions;
 
-    if (bind(rth->fd, (struct sockaddr*)&rth->local, sizeof(rth->local)) < 0) {
+    if (bind(rth->fd, (struct sockaddr*) &rth->local, sizeof (rth->local)) < 0) {
         perror("Cannot bind netlink socket");
         return -1;
     }
-    addr_len = sizeof(rth->local);
-    if (getsockname(rth->fd, (struct sockaddr*)&rth->local,
-                (socklen_t *) &addr_len) < 0) {
+    addr_len = sizeof (rth->local);
+    if (getsockname(rth->fd, (struct sockaddr*) &rth->local,
+            (socklen_t *) & addr_len) < 0) {
         perror("Cannot getsockname");
         return -1;
     }
-    if (addr_len != sizeof(rth->local)) {
+    if (addr_len != sizeof (rth->local)) {
         fprintf(stderr, "Wrong address length %d\n", addr_len);
         return -1;
     }
@@ -138,50 +135,48 @@ static inline int rtnl_open(struct rtnl_handle *rth, unsigned subscriptions)
  */
 
 /*------------------------------------------------------------------*/
+
 /*
  * Get name of interface based on interface index...
  */
-    static inline int
-index2name(int		skfd,
-        int		ifindex,
-        char *	name)
-{
-    struct ifreq	irq;
-    int		ret = 0;
+static inline int
+index2name(int skfd,
+        int ifindex,
+        char * name) {
+    struct ifreq irq;
+    int ret = 0;
 
     memset(name, 0, IFNAMSIZ + 1);
 
     /* Get interface name */
     irq.ifr_ifindex = ifindex;
-    if(ioctl(skfd, SIOCGIFNAME, &irq) < 0)
+    if (ioctl(skfd, SIOCGIFNAME, &irq) < 0)
         ret = -1;
     else
         strncpy(name, irq.ifr_name, IFNAMSIZ);
 
-    return(ret);
+    return (ret);
 }
 
 /*------------------------------------------------------------------*/
+
 /*
  * Get interface data from cache or live interface
  */
-    static struct wireless_iface *
-iw_get_interface_data(int	ifindex)
-{
-    struct wireless_iface *	curr;
-    int				skfd = -1;	/* ioctl socket */
+static struct wireless_iface *
+iw_get_interface_data(int ifindex) {
+    struct wireless_iface * curr;
+    int skfd = -1; /* ioctl socket */
 
     /* Search for it in the database */
     curr = interface_cache;
-    while(curr != NULL)
-    {
+    while (curr != NULL) {
         /* Match ? */
-        if(curr->ifindex == ifindex)
-        {
+        if (curr->ifindex == ifindex) {
             //printf("Cache : found %d-%s\n", curr->ifindex, curr->ifname);
 
             /* Return */
-            return(curr);
+            return (curr);
         }
         /* Next entry */
         curr = curr->next;
@@ -189,27 +184,24 @@ iw_get_interface_data(int	ifindex)
 
     /* Create a channel to the NET kernel. Doesn't happen too often, so
      * socket creation overhead is minimal... */
-    if((skfd = iw_sockets_open()) < 0)
-    {
+    if ((skfd = iw_sockets_open()) < 0) {
         perror("iw_sockets_open");
-        return(NULL);
+        return (NULL);
     }
 
     /* Create new entry, zero, init */
-    curr = calloc(1, sizeof(struct wireless_iface));
-    if(!curr)
-    {
+    curr = calloc(1, sizeof (struct wireless_iface));
+    if (!curr) {
         fprintf(stderr, "Malloc failed\n");
-        return(NULL);
+        return (NULL);
     }
     curr->ifindex = ifindex;
 
     /* Extract static data */
-    if(index2name(skfd, ifindex, curr->ifname) < 0)
-    {
+    if (index2name(skfd, ifindex, curr->ifname) < 0) {
         perror("index2name");
         free(curr);
-        return(NULL);
+        return (NULL);
     }
     curr->has_range = (iw_get_range_info(skfd, curr->ifname, &curr->range) >= 0);
     //printf("Cache : create %d-%s\n", curr->ifindex, curr->ifname);
@@ -221,31 +213,29 @@ iw_get_interface_data(int	ifindex)
     curr->next = interface_cache;
     interface_cache = curr;
 
-    return(curr);
+    return (curr);
 }
 
 /*------------------------------------------------------------------*/
+
 /*
  * Remove interface data from cache (if it exist)
  */
-    static void
-iw_del_interface_data(int	ifindex)
-{
-    struct wireless_iface *	curr;
-    struct wireless_iface *	prev = NULL;
-    struct wireless_iface *	next;
+static void
+iw_del_interface_data(int ifindex) {
+    struct wireless_iface * curr;
+    struct wireless_iface * prev = NULL;
+    struct wireless_iface * next;
 
     /* Go through the list, find the interface, kills it */
     curr = interface_cache;
-    while(curr)
-    {
+    while (curr) {
         next = curr->next;
 
         /* Got a match ? */
-        if(curr->ifindex == ifindex)
-        {
+        if (curr->ifindex == ifindex) {
             /* Unlink. Root ? */
-            if(!prev)
+            if (!prev)
                 interface_cache = next;
             else
                 prev->next = next;
@@ -253,9 +243,7 @@ iw_del_interface_data(int	ifindex)
 
             /* Destroy */
             free(curr);
-        }
-        else
-        {
+        } else {
             /* Keep as previous */
             prev = curr;
         }
@@ -271,68 +259,66 @@ iw_del_interface_data(int	ifindex)
  */
 
 /*------------------------------------------------------------------*/
+
 /*
  * Dump a buffer as a serie of hex
  * Maybe should go in iwlib...
  * Maybe we should have better formatting like iw_print_key...
  */
-    static char *
-iw_hexdump(char *		buf,
-        size_t		buflen,
+static char *
+iw_hexdump(char * buf,
+        size_t buflen,
         const unsigned char *data,
-        size_t		datalen)
-{
-    size_t	i;
-    char *	pos = buf;
+        size_t datalen) {
+    size_t i;
+    char * pos = buf;
 
-    for(i = 0; i < datalen; i++)
+    for (i = 0; i < datalen; i++)
         pos += snprintf(pos, buf + buflen - pos, "%02X", data[i]);
     return buf;
 }
 
 /*------------------------------------------------------------------*/
+
 /*
  * Print one element from the scanning results
  */
-    static inline int
-print_event_token(struct iw_event *	event,		/* Extracted token */
-        struct iw_range *	iw_range,	/* Range info */
-        int			has_range)
-{
-    char		buffer[128];	/* Temporary buffer */
-    char		buffer2[30];	/* Temporary buffer */
-    char *	prefix = (IW_IS_GET(event->cmd) ? "New" : "Set");
+static inline int
+print_event_token(struct iw_event * event, /* Extracted token */
+        struct iw_range * iw_range, /* Range info */
+        int has_range) {
+    char buffer[128]; /* Temporary buffer */
+    char buffer2[30]; /* Temporary buffer */
+    char * prefix = (IW_IS_GET(event->cmd) ? "New" : "Set");
 
     /* Now, let's decode the event */
-    switch(event->cmd)
-    {
-        /* ----- set events ----- */
-        /* Events that result from a "SET XXX" operation by the user */
+    switch (event->cmd) {
+            /* ----- set events ----- */
+            /* Events that result from a "SET XXX" operation by the user */
         case SIOCSIWNWID:
-            if(event->u.nwid.disabled)
+            if (event->u.nwid.disabled)
                 printf("Set NWID:off/any\n");
             else
                 printf("Set NWID:%X\n", event->u.nwid.value);
             break;
         case SIOCSIWFREQ:
         case SIOCGIWFREQ:
-            {
-                double		freq;			/* Frequency/channel */
-                int		channel = -1;		/* Converted to channel */
-                freq = iw_freq2float(&(event->u.freq));
-                if(has_range)
-                {
-                    if(freq < KILO)
-                        /* Convert channel to frequency if possible */
-                        channel = iw_channel_to_freq((int) freq, &freq, iw_range);
-                    else
-                        /* Convert frequency to channel if possible */
-                        channel = iw_freq_to_channel(freq, iw_range);
-                }
-                iw_print_freq(buffer, sizeof(buffer),
-                        freq, channel, event->u.freq.flags);
-                printf("%s %s\n", prefix, buffer);
+        {
+            double freq; /* Frequency/channel */
+            int channel = -1; /* Converted to channel */
+            freq = iw_freq2float(&(event->u.freq));
+            if (has_range) {
+                if (freq < KILO)
+                    /* Convert channel to frequency if possible */
+                    channel = iw_channel_to_freq((int) freq, &freq, iw_range);
+                else
+                    /* Convert frequency to channel if possible */
+                    channel = iw_freq_to_channel(freq, iw_range);
             }
+            iw_print_freq(buffer, sizeof (buffer),
+                    freq, channel, event->u.freq.flags);
+            printf("%s %s\n", prefix, buffer);
+        }
             break;
         case SIOCSIWMODE:
             printf("Set Mode:%s\n",
@@ -340,51 +326,48 @@ print_event_token(struct iw_event *	event,		/* Extracted token */
             break;
         case SIOCSIWESSID:
         case SIOCGIWESSID:
-            {
-                char essid[IW_ESSID_MAX_SIZE+1];
-                memset(essid, '\0', sizeof(essid));
-                if((event->u.essid.pointer) && (event->u.essid.length))
-                    memcpy(essid, event->u.essid.pointer, event->u.essid.length);
-                if(event->u.essid.flags)
-                {
-                    /* Does it have an ESSID index ? */
-                    if((event->u.essid.flags & IW_ENCODE_INDEX) > 1)
-                        printf("%s ESSID:\"%s\" [%d]\n", prefix, essid,
-                                (event->u.essid.flags & IW_ENCODE_INDEX));
-                    else
-                        printf("%s ESSID:\"%s\"\n", prefix, essid);
-                }
+        {
+            char essid[IW_ESSID_MAX_SIZE + 1];
+            memset(essid, '\0', sizeof (essid));
+            if ((event->u.essid.pointer) && (event->u.essid.length))
+                memcpy(essid, event->u.essid.pointer, event->u.essid.length);
+            if (event->u.essid.flags) {
+                /* Does it have an ESSID index ? */
+                if ((event->u.essid.flags & IW_ENCODE_INDEX) > 1)
+                    printf("%s ESSID:\"%s\" [%d]\n", prefix, essid,
+                        (event->u.essid.flags & IW_ENCODE_INDEX));
                 else
-                    printf("%s ESSID:off/any\n", prefix);
-            }
+                    printf("%s ESSID:\"%s\"\n", prefix, essid);
+            } else
+                printf("%s ESSID:off/any\n", prefix);
+        }
             break;
         case SIOCSIWENCODE:
-            {
-                unsigned char	key[IW_ENCODING_TOKEN_MAX];
-                if(event->u.data.pointer)
-                    memcpy(key, event->u.data.pointer, event->u.data.length);
-                else
-                    event->u.data.flags |= IW_ENCODE_NOKEY;
-                printf("Set Encryption key:");
-                if(event->u.data.flags & IW_ENCODE_DISABLED)
-                    printf("off\n");
-                else
-                {
-                    /* Display the key */
-                    iw_print_key(buffer, sizeof(buffer), key, event->u.data.length,
-                            event->u.data.flags);
-                    printf("%s", buffer);
+        {
+            unsigned char key[IW_ENCODING_TOKEN_MAX];
+            if (event->u.data.pointer)
+                memcpy(key, event->u.data.pointer, event->u.data.length);
+            else
+                event->u.data.flags |= IW_ENCODE_NOKEY;
+            printf("Set Encryption key:");
+            if (event->u.data.flags & IW_ENCODE_DISABLED)
+                printf("off\n");
+            else {
+                /* Display the key */
+                iw_print_key(buffer, sizeof (buffer), key, event->u.data.length,
+                        event->u.data.flags);
+                printf("%s", buffer);
 
-                    /* Other info... */
-                    if((event->u.data.flags & IW_ENCODE_INDEX) > 1)
-                        printf(" [%d]", event->u.data.flags & IW_ENCODE_INDEX);
-                    if(event->u.data.flags & IW_ENCODE_RESTRICTED)
-                        printf("   Security mode:restricted");
-                    if(event->u.data.flags & IW_ENCODE_OPEN)
-                        printf("   Security mode:open");
-                    printf("\n");
-                }
+                /* Other info... */
+                if ((event->u.data.flags & IW_ENCODE_INDEX) > 1)
+                    printf(" [%d]", event->u.data.flags & IW_ENCODE_INDEX);
+                if (event->u.data.flags & IW_ENCODE_RESTRICTED)
+                    printf("   Security mode:restricted");
+                if (event->u.data.flags & IW_ENCODE_OPEN)
+                    printf("   Security mode:open");
+                printf("\n");
             }
+        }
             break;
             /* ----- driver events ----- */
             /* Events generated by the driver when something important happens */
@@ -400,13 +383,13 @@ print_event_token(struct iw_event *	event,		/* Extracted token */
                     iw_saether_ntop(&event->u.addr, buffer));
             break;
         case IWEVCUSTOM:
-            {
-                char custom[IW_CUSTOM_MAX+1];
-                memset(custom, '\0', sizeof(custom));
-                if((event->u.data.pointer) && (event->u.data.length))
-                    memcpy(custom, event->u.data.pointer, event->u.data.length);
-                printf("Custom driver event:%s\n", custom);
-            }
+        {
+            char custom[IW_CUSTOM_MAX + 1];
+            memset(custom, '\0', sizeof (custom));
+            if ((event->u.data.pointer) && (event->u.data.length))
+                memcpy(custom, event->u.data.pointer, event->u.data.length);
+            printf("Custom driver event:%s\n", custom);
+        }
             break;
         case IWEVREGISTERED:
             printf("Registered node:%s\n",
@@ -417,51 +400,47 @@ print_event_token(struct iw_event *	event,		/* Extracted token */
                     iw_saether_ntop(&event->u.addr, buffer));
             break;
         case SIOCGIWTHRSPY:
-            {
-                struct iw_thrspy	threshold;
-                if((event->u.data.pointer) && (event->u.data.length))
-                {
-                    memcpy(&threshold, event->u.data.pointer,
-                            sizeof(struct iw_thrspy));
-                    printf("Spy threshold crossed on address:%s\n",
-                            iw_saether_ntop(&threshold.addr, buffer));
-                    iw_print_stats(buffer, sizeof(buffer),
-                            &threshold.qual, iw_range, has_range);
-                    printf("                            Link %s\n", buffer);
-                }
-                else
-                    printf("Invalid Spy Threshold event\n");
-            }
+        {
+            struct iw_thrspy threshold;
+            if ((event->u.data.pointer) && (event->u.data.length)) {
+                memcpy(&threshold, event->u.data.pointer,
+                        sizeof (struct iw_thrspy));
+                printf("Spy threshold crossed on address:%s\n",
+                        iw_saether_ntop(&threshold.addr, buffer));
+                iw_print_stats(buffer, sizeof (buffer),
+                        &threshold.qual, iw_range, has_range);
+                printf("                            Link %s\n", buffer);
+            } else
+                printf("Invalid Spy Threshold event\n");
+        }
             break;
             /* ----- driver WPA events ----- */
             /* Events generated by the driver, used for WPA operation */
         case IWEVMICHAELMICFAILURE:
-            if(event->u.data.length >= sizeof(struct iw_michaelmicfailure))
-            {
+            if (event->u.data.length >= sizeof (struct iw_michaelmicfailure)) {
                 struct iw_michaelmicfailure mf;
-                memcpy(&mf, event->u.data.pointer, sizeof(mf));
+                memcpy(&mf, event->u.data.pointer, sizeof (mf));
                 printf("Michael MIC failure flags:0x%X src_addr:%s tsc:%s\n",
                         mf.flags,
                         iw_saether_ntop(&mf.src_addr, buffer2),
-                        iw_hexdump(buffer, sizeof(buffer),
-                            mf.tsc, IW_ENCODE_SEQ_MAX_SIZE));
+                        iw_hexdump(buffer, sizeof (buffer),
+                        mf.tsc, IW_ENCODE_SEQ_MAX_SIZE));
             }
             break;
         case IWEVASSOCREQIE:
             printf("Association Request IEs:%s\n",
-                    iw_hexdump(buffer, sizeof(buffer),
-                        event->u.data.pointer, event->u.data.length));
+                    iw_hexdump(buffer, sizeof (buffer),
+                    event->u.data.pointer, event->u.data.length));
             break;
         case IWEVASSOCRESPIE:
             printf("Association Response IEs:%s\n",
-                    iw_hexdump(buffer, sizeof(buffer),
-                        event->u.data.pointer, event->u.data.length));
+                    iw_hexdump(buffer, sizeof (buffer),
+                    event->u.data.pointer, event->u.data.length));
             break;
         case IWEVPMKIDCAND:
-            if(event->u.data.length >= sizeof(struct iw_pmkid_cand))
-            {
+            if (event->u.data.length >= sizeof (struct iw_pmkid_cand)) {
                 struct iw_pmkid_cand cand;
-                memcpy(&cand, event->u.data.pointer, sizeof(cand));
+                memcpy(&cand, event->u.data.pointer, sizeof (cand));
                 printf("PMKID candidate flags:0x%X index:%d bssid:%s\n",
                         cand.flags, cand.index,
                         iw_saether_ntop(&cand.bssid, buffer));
@@ -470,80 +449,77 @@ print_event_token(struct iw_event *	event,		/* Extracted token */
             /* ----- junk ----- */
             /* other junk not currently in use */
         case SIOCGIWRATE:
-            iw_print_bitrate(buffer, sizeof(buffer), event->u.bitrate.value);
+            iw_print_bitrate(buffer, sizeof (buffer), event->u.bitrate.value);
             printf("New Bit Rate:%s\n", buffer);
             break;
         case SIOCGIWNAME:
             printf("Protocol:%-1.16s\n", event->u.name);
             break;
         case IWEVQUAL:
-            {
-                event->u.qual.updated = 0x0;	/* Not that reliable, disable */
-                iw_print_stats(buffer, sizeof(buffer),
-                        &event->u.qual, iw_range, has_range);
-                printf("Link %s\n", buffer);
-                break;
-            }
+        {
+            event->u.qual.updated = 0x0; /* Not that reliable, disable */
+            iw_print_stats(buffer, sizeof (buffer),
+                    &event->u.qual, iw_range, has_range);
+            printf("Link %s\n", buffer);
+            break;
+        }
         default:
             printf("(Unknown Wireless event 0x%04X)\n", event->cmd);
-    }	/* switch(event->cmd) */
+    } /* switch(event->cmd) */
 
-    return(0);
+    return (0);
 }
 
 /*------------------------------------------------------------------*/
+
 /*
  * Print out all Wireless Events part of the RTNetlink message
  * Most often, there will be only one event per message, but
  * just make sure we read everything...
  */
-    static inline int
-print_event_stream(int		ifindex,
-        char *	data,
-        int		len)
-{
-    struct iw_event	iwe;
-    struct stream_descr	stream;
-    int			i = 0;
-    int			ret;
-    char			buffer[64];
-    struct timeval	recv_time;
-    struct timezone	tz;
-    struct wireless_iface *	wireless_data;
+static inline int
+print_event_stream(int ifindex,
+        char * data,
+        int len) {
+    struct iw_event iwe;
+    struct stream_descr stream;
+    int i = 0;
+    int ret;
+    char buffer[64];
+    struct timeval recv_time;
+    struct timezone tz;
+    struct wireless_iface * wireless_data;
 
     /* Get data from cache */
     wireless_data = iw_get_interface_data(ifindex);
-    if(wireless_data == NULL)
-        return(-1);
+    if (wireless_data == NULL)
+        return (-1);
 
     /* Print received time in readable form */
     gettimeofday(&recv_time, &tz);
-    iw_print_timeval(buffer, sizeof(buffer), &recv_time, &tz);
+    iw_print_timeval(buffer, sizeof (buffer), &recv_time, &tz);
 
     iw_init_event_stream(&stream, data, len);
-    do
-    {
+    do {
         /* Extract an event and print it */
         ret = iw_extract_event_stream(&stream, &iwe,
                 wireless_data->range.we_version_compiled);
-        if(ret != 0)
-        {
-            if(i++ == 0)
+        if (ret != 0) {
+            if (i++ == 0)
                 printf("%s   %-8.16s ", buffer, wireless_data->ifname);
             else
                 printf("                           ");
-            if(ret > 0)
+            if (ret > 0)
                 print_event_token(&iwe,
-                        &wireless_data->range, wireless_data->has_range);
+                    &wireless_data->range, wireless_data->has_range);
             else
                 printf("(Invalid event)\n");
             /* Push data out *now*, in case we are redirected to a pipe */
             fflush(stdout);
         }
-    }
-    while(ret > 0);
+    }    while (ret > 0);
 
-    return(0);
+    return (0);
 }
 
 /*********************** RTNETLINK EVENT DUMP***********************/
@@ -553,12 +529,12 @@ print_event_stream(int		ifindex,
  */
 
 /*------------------------------------------------------------------*/
+
 /*
  * Respond to a single RTM_NEWLINK event from the rtnetlink socket.
  */
-    static int
-LinkCatcher(struct nlmsghdr *nlh)
-{
+static int
+LinkCatcher(struct nlmsghdr *nlh) {
     struct ifinfomsg* ifi;
 
 #if 0
@@ -570,33 +546,29 @@ LinkCatcher(struct nlmsghdr *nlh)
     /* Code is ugly, but sort of works - Jean II */
 
     /* If interface is getting destoyed */
-    if(nlh->nlmsg_type == RTM_DELLINK)
-    {
+    if (nlh->nlmsg_type == RTM_DELLINK) {
         /* Remove from cache (if in cache) */
         iw_del_interface_data(ifi->ifi_index);
         return 0;
     }
 
     /* Only keep add/change events */
-    if(nlh->nlmsg_type != RTM_NEWLINK)
+    if (nlh->nlmsg_type != RTM_NEWLINK)
         return 0;
 
     /* Check for attributes */
-    if (nlh->nlmsg_len > NLMSG_ALIGN(sizeof(struct ifinfomsg)))
-    {
-        int attrlen = nlh->nlmsg_len - NLMSG_ALIGN(sizeof(struct ifinfomsg));
+    if (nlh->nlmsg_len > NLMSG_ALIGN(sizeof (struct ifinfomsg))) {
+        int attrlen = nlh->nlmsg_len - NLMSG_ALIGN(sizeof (struct ifinfomsg));
         struct rtattr *attr = (void *) ((char *) ifi +
-                NLMSG_ALIGN(sizeof(struct ifinfomsg)));
+                NLMSG_ALIGN(sizeof (struct ifinfomsg)));
 
-        while (RTA_OK(attr, attrlen))
-        {
+        while (RTA_OK(attr, attrlen)) {
             /* Check if the Wireless kind */
-            if(attr->rta_type == IFLA_WIRELESS)
-            {
+            if (attr->rta_type == IFLA_WIRELESS) {
                 /* Go to display it */
                 print_event_stream(ifi->ifi_index,
-                        (char *) attr + RTA_ALIGN(sizeof(struct rtattr)),
-                        attr->rta_len - RTA_ALIGN(sizeof(struct rtattr)));
+                        (char *) attr + RTA_ALIGN(sizeof (struct rtattr)),
+                        attr->rta_len - RTA_ALIGN(sizeof (struct rtattr)));
             }
             attr = RTA_NEXT(attr, attrlen);
         }
@@ -606,54 +578,47 @@ LinkCatcher(struct nlmsghdr *nlh)
 }
 
 /* ---------------------------------------------------------------- */
+
 /*
  * We must watch the rtnelink socket for events.
  * This routine handles those events (i.e., call this when rth.fd
  * is ready to read).
  */
-    static inline void
-handle_netlink_events(struct rtnl_handle *	rth)
-{
-    while(1)
-    {
+static inline void
+handle_netlink_events(struct rtnl_handle * rth) {
+    while (1) {
         struct sockaddr_nl sanl;
-        socklen_t sanllen = sizeof(struct sockaddr_nl);
+        socklen_t sanllen = sizeof (struct sockaddr_nl);
 
         struct nlmsghdr *h;
         int amt;
         char buf[8192];
 
-        amt = recvfrom(rth->fd, buf, sizeof(buf), MSG_DONTWAIT, (struct sockaddr*)&sanl, &sanllen);
-        if(amt < 0)
-        {
-            if(errno != EINTR && errno != EAGAIN)
-            {
+        amt = recvfrom(rth->fd, buf, sizeof (buf), MSG_DONTWAIT, (struct sockaddr*) &sanl, &sanllen);
+        if (amt < 0) {
+            if (errno != EINTR && errno != EAGAIN) {
                 fprintf(stderr, "%s: error reading netlink: %s.\n",
                         __PRETTY_FUNCTION__, strerror(errno));
             }
             return;
         }
 
-        if(amt == 0)
-        {
+        if (amt == 0) {
             fprintf(stderr, "%s: EOF on netlink??\n", __PRETTY_FUNCTION__);
             return;
         }
 
-        h = (struct nlmsghdr*)buf;
-        while(amt >= (int)sizeof(*h))
-        {
+        h = (struct nlmsghdr*) buf;
+        while (amt >= (int) sizeof (*h)) {
             int len = h->nlmsg_len;
-            int l = len - sizeof(*h);
+            int l = len - sizeof (*h);
 
-            if(l < 0 || len > amt)
-            {
+            if (l < 0 || len > amt) {
                 fprintf(stderr, "%s: malformed netlink message: len=%d\n", __PRETTY_FUNCTION__, len);
                 break;
             }
 
-            switch(h->nlmsg_type)
-            {
+            switch (h->nlmsg_type) {
                 case RTM_NEWLINK:
                 case RTM_DELLINK:
                     LinkCatcher(h);
@@ -667,10 +632,10 @@ handle_netlink_events(struct rtnl_handle *	rth)
 
             len = NLMSG_ALIGN(len);
             amt -= len;
-            h = (struct nlmsghdr*)((char*)h + len);
+            h = (struct nlmsghdr*) ((char*) h + len);
         }
 
-        if(amt > 0)
+        if (amt > 0)
             fprintf(stderr, "%s: remnant of size %d on netlink\n", __PRETTY_FUNCTION__, amt);
     }
 }
@@ -678,22 +643,21 @@ handle_netlink_events(struct rtnl_handle *	rth)
 /**************************** MAIN LOOP ****************************/
 
 /* ---------------------------------------------------------------- */
+
 /*
  * Wait until we get an event
  */
-    static inline int
-wait_for_event(struct rtnl_handle *	rth)
-{
+static inline int
+wait_for_event(struct rtnl_handle * rth) {
 #if 0
-    struct timeval	tv;	/* Select timeout */
+    struct timeval tv; /* Select timeout */
 #endif
 
     /* Forever */
-    while(1)
-    {
-        fd_set		rfds;		/* File descriptors for select */
-        int		last_fd;	/* Last fd */
-        int		ret;
+    while (1) {
+        fd_set rfds; /* File descriptors for select */
+        int last_fd; /* Last fd */
+        int ret;
 
         /* Guess what ? We must re-generate rfds each time */
         FD_ZERO(&rfds);
@@ -704,37 +668,35 @@ wait_for_event(struct rtnl_handle *	rth)
         ret = select(last_fd + 1, &rfds, NULL, NULL, NULL);
 
         /* Check if there was an error */
-        if(ret < 0)
-        {
-            if(errno == EAGAIN || errno == EINTR)
+        if (ret < 0) {
+            if (errno == EAGAIN || errno == EINTR)
                 continue;
             fprintf(stderr, "Unhandled signal - exiting...\n");
             break;
         }
 
         /* Check if there was a timeout */
-        if(ret == 0)
-        {
+        if (ret == 0) {
             continue;
         }
 
         /* Check for interface discovery events. */
-        if(FD_ISSET(rth->fd, &rfds))
+        if (FD_ISSET(rth->fd, &rfds))
             handle_netlink_events(rth);
     }
 
-    return(0);
+    return (0);
 }
 
 /******************************* MAIN *******************************/
 
 /* ---------------------------------------------------------------- */
+
 /*
  * helper ;-)
  */
-    static void
-iw_usage(int status)
-{
+static void
+iw_usage(int status) {
     fputs("Usage: iwevent [OPTIONS]\n"
             "   Monitors and displays Wireless Events.\n"
             "   Options are:\n"
@@ -745,33 +707,31 @@ iw_usage(int status)
 }
 /* Command line options */
 static const struct option long_opts[] = {
-    { "help", no_argument, NULL, 'h' },
-    { "version", no_argument, NULL, 'v' },
-    { NULL, 0, NULL, 0 }
+    { "help", no_argument, NULL, 'h'},
+    { "version", no_argument, NULL, 'v'},
+    { NULL, 0, NULL, 0}
 };
 
 /* ---------------------------------------------------------------- */
+
 /*
  * main body of the program
  */
-    int
-main(int	argc,
-        char *	argv[])
-{
-    struct rtnl_handle	rth;
+int
+main(int argc,
+        char * argv[]) {
+    struct rtnl_handle rth;
     int opt;
 
     /* Check command line options */
-    while((opt = getopt_long(argc, argv, "hv", long_opts, NULL)) > 0)
-    {
-        switch(opt)
-        {
+    while ((opt = getopt_long(argc, argv, "hv", long_opts, NULL)) > 0) {
+        switch (opt) {
             case 'h':
                 iw_usage(0);
                 break;
 
             case 'v':
-                return(iw_print_version_info("iwevent"));
+                return (iw_print_version_info("iwevent"));
                 break;
 
             default:
@@ -779,17 +739,15 @@ main(int	argc,
                 break;
         }
     }
-    if(optind < argc)
-    {
+    if (optind < argc) {
         fputs("Too many arguments.\n", stderr);
         iw_usage(1);
     }
 
     /* Open netlink channel */
-    if(rtnl_open(&rth, RTMGRP_LINK) < 0)
-    {
+    if (rtnl_open(&rth, RTMGRP_LINK) < 0) {
         perror("Can't initialize rtnetlink socket");
-        return(1);
+        return (1);
     }
 
     fprintf(stderr, "Waiting for Wireless Events from interfaces...\n");
@@ -800,5 +758,5 @@ main(int	argc,
     /* Cleanup - only if you are pedantic */
     rtnl_close(&rth);
 
-    return(0);
+    return (0);
 }

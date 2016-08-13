@@ -16,9 +16,7 @@
 
 #include "common.h"
 
-
-static int hex2num(char c)
-{
+static int hex2num(char c) {
     if (c >= '0' && c <= '9')
         return c - '0';
     if (c >= 'a' && c <= 'f')
@@ -28,9 +26,7 @@ static int hex2num(char c)
     return -1;
 }
 
-
-static int hex2byte(const char *hex)
-{
+static int hex2byte(const char *hex) {
     int a, b;
     a = hex2num(*hex++);
     if (a < 0)
@@ -41,15 +37,13 @@ static int hex2byte(const char *hex)
     return (a << 4) | b;
 }
 
-
 /**
  * hwaddr_aton - Convert ASCII string to MAC address (colon-delimited format)
  * @txt: MAC address as a string (e.g., "00:11:22:33:44:55")
  * @addr: Buffer for the MAC address (ETH_ALEN = 6 bytes)
  * Returns: 0 on success, -1 on failure (e.g., string not a MAC address)
  */
-int hwaddr_aton(const char *txt, u8 *addr)
-{
+int hwaddr_aton(const char *txt, u8 *addr) {
     int i;
 
     for (i = 0; i < 6; i++) {
@@ -69,15 +63,13 @@ int hwaddr_aton(const char *txt, u8 *addr)
     return 0;
 }
 
-
 /**
  * hwaddr_aton2 - Convert ASCII string to MAC address (in any known format)
  * @txt: MAC address as a string (e.g., 00:11:22:33:44:55 or 0011.2233.4455)
  * @addr: Buffer for the MAC address (ETH_ALEN = 6 bytes)
  * Returns: Characters used (> 0) on success, -1 on failure
  */
-int hwaddr_aton2(const char *txt, u8 *addr)
-{
+int hwaddr_aton2(const char *txt, u8 *addr) {
     int i;
     const char *pos = txt;
 
@@ -99,7 +91,6 @@ int hwaddr_aton2(const char *txt, u8 *addr)
     return pos - txt;
 }
 
-
 /**
  * hexstr2bin - Convert ASCII hex string into binary data
  * @hex: ASCII hex string (e.g., "01ab")
@@ -108,8 +99,7 @@ int hwaddr_aton2(const char *txt, u8 *addr)
  * this size
  * Returns: 0 on success, -1 on failure (invalid hex string)
  */
-int hexstr2bin(const char *hex, u8 *buf, size_t len)
-{
+int hexstr2bin(const char *hex, u8 *buf, size_t len) {
     size_t i;
     int a;
     const char *ipos = hex;
@@ -125,7 +115,6 @@ int hexstr2bin(const char *hex, u8 *buf, size_t len)
     return 0;
 }
 
-
 /**
  * inc_byte_array - Increment arbitrary length byte array by one
  * @counter: Pointer to byte array
@@ -135,8 +124,7 @@ int hexstr2bin(const char *hex, u8 *buf, size_t len)
  * rolling over to more significant bytes if the byte was incremented from
  * 0xff to 0x00.
  */
-void inc_byte_array(u8 *counter, size_t len)
-{
+void inc_byte_array(u8 *counter, size_t len) {
     int pos = len - 1;
     while (pos >= 0) {
         counter[pos]++;
@@ -146,9 +134,7 @@ void inc_byte_array(u8 *counter, size_t len)
     }
 }
 
-
-void wpa_get_ntp_timestamp(u8 *buf)
-{
+void wpa_get_ntp_timestamp(u8 *buf) {
     struct os_time now;
     u32 sec, usec;
     be32 tmp;
@@ -160,15 +146,13 @@ void wpa_get_ntp_timestamp(u8 *buf)
     usec = now.usec;
     usec = 4295 * usec - (usec >> 5) - (usec >> 9);
     tmp = host_to_be32(sec);
-    os_memcpy(buf, (u8 *) &tmp, 4);
+    os_memcpy(buf, (u8 *) & tmp, 4);
     tmp = host_to_be32(usec);
-    os_memcpy(buf + 4, (u8 *) &tmp, 4);
+    os_memcpy(buf + 4, (u8 *) & tmp, 4);
 }
 
-
 static inline int _wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data,
-        size_t len, int uppercase)
-{
+        size_t len, int uppercase) {
     size_t i;
     char *pos = buf, *end = buf + buf_size;
     int ret;
@@ -195,11 +179,9 @@ static inline int _wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data,
  * @len: Length of data in bytes
  * Returns: Number of bytes written
  */
-int wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data, size_t len)
-{
+int wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data, size_t len) {
     return _wpa_snprintf_hex(buf, buf_size, data, len, 0);
 }
-
 
 /**
  * wpa_snprintf_hex_uppercase - Print data as a upper case hex string into buf
@@ -210,8 +192,7 @@ int wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data, size_t len)
  * Returns: Number of bytes written
  */
 int wpa_snprintf_hex_uppercase(char *buf, size_t buf_size, const u8 *data,
-        size_t len)
-{
+        size_t len) {
     return _wpa_snprintf_hex(buf, buf_size, data, len, 1);
 }
 
@@ -219,8 +200,8 @@ int wpa_snprintf_hex_uppercase(char *buf, size_t buf_size, const u8 *data,
 #ifdef CONFIG_ANSI_C_EXTRA
 
 #ifdef _WIN32_WCE
-void perror(const char *s)
-{
+
+void perror(const char *s) {
     wpa_printf(MSG_ERROR, "%s: GetLastError: %d",
             s, (int) GetLastError());
 }
@@ -231,8 +212,7 @@ int optind = 1;
 int optopt;
 char *optarg;
 
-int getopt(int argc, char *const argv[], const char *optstring)
-{
+int getopt(int argc, char *const argv[], const char *optstring) {
     static int optchr = 1;
     char *cp;
 
@@ -291,6 +271,7 @@ int getopt(int argc, char *const argv[], const char *optstring)
 
 
 #ifdef CONFIG_NATIVE_WINDOWS
+
 /**
  * wpa_unicode2ascii_inplace - Convert unicode string into ASCII
  * @str: Pointer to string to convert
@@ -299,8 +280,7 @@ int getopt(int argc, char *const argv[], const char *optstring)
  * buffer for output. If UNICODE is not set, the buffer is not
  * modified.
  */
-void wpa_unicode2ascii_inplace(TCHAR *str)
-{
+void wpa_unicode2ascii_inplace(TCHAR *str) {
 #ifdef UNICODE
     char *dst = (char *) str;
     while (*str)
@@ -309,12 +289,10 @@ void wpa_unicode2ascii_inplace(TCHAR *str)
 #endif /* UNICODE */
 }
 
-
-TCHAR * wpa_strdup_tchar(const char *str)
-{
+TCHAR * wpa_strdup_tchar(const char *str) {
 #ifdef UNICODE
     TCHAR *buf;
-    buf = os_malloc((strlen(str) + 1) * sizeof(TCHAR));
+    buf = os_malloc((strlen(str) + 1) * sizeof (TCHAR));
     if (buf == NULL)
         return NULL;
     wsprintf(buf, L"%S", str);
@@ -324,7 +302,6 @@ TCHAR * wpa_strdup_tchar(const char *str)
 #endif /* UNICODE */
 }
 #endif /* CONFIG_NATIVE_WINDOWS */
-
 
 /**
  * wpa_ssid_txt - Convert SSID to a printable string
@@ -340,8 +317,7 @@ TCHAR * wpa_strdup_tchar(const char *str)
  * time, i.e., this is not re-entrant and the returned buffer must be used
  * before calling this again.
  */
-const char * wpa_ssid_txt(const u8 *ssid, size_t ssid_len)
-{
+const char * wpa_ssid_txt(const u8 *ssid, size_t ssid_len) {
     static char ssid_txt[33];
     char *pos;
 
@@ -350,15 +326,13 @@ const char * wpa_ssid_txt(const u8 *ssid, size_t ssid_len)
     os_memcpy(ssid_txt, ssid, ssid_len);
     ssid_txt[ssid_len] = '\0';
     for (pos = ssid_txt; *pos != '\0'; pos++) {
-        if ((u8) *pos < 32 || (u8) *pos >= 127)
+        if ((u8) * pos < 32 || (u8) * pos >= 127)
             *pos = '_';
     }
     return ssid_txt;
 }
 
-
-void * __hide_aliasing_typecast(void *foo)
-{
+void * __hide_aliasing_typecast(void *foo) {
     return foo;
 }
 
@@ -400,26 +374,25 @@ void * __hide_aliasing_typecast(void *foo)
  *  o F5D8233-4v4       [Ralink, SerComm, Unknown RTOS]
  *
  */
+
 /* http://www.devttys0.com/2015/04/reversing-belkins-wps-pin-algorithm/ */
 
 
-int char2int(char c)
-{
-    char buf[2] = { 0 };
+int char2int(char c) {
+    char buf[2] = {0};
 
     buf[0] = c;
     return strtol(buf, NULL, 16);
 }
- 
+
 
 /* http://www.devttys0.com/2015/04/reversing-belkins-wps-pin-algorithm/ */
+
 /* Generates a standard WPS checksum from a 7 digit pin */
-int wps_checksum(int pin)
-{
+int wps_checksum(int pin) {
     int div = 0;
 
-    while(pin)
-    {
+    while (pin) {
         div += 3 * (pin % 10);
         pin /= 10;
         div += pin % 10;
@@ -429,41 +402,39 @@ int wps_checksum(int pin)
     return ((10 - div % 10) % 10);
 }
 
-unsigned int hexToInt(const char *hex)
-{
-	unsigned int result = 0;
+unsigned int hexToInt(const char *hex) {
+    unsigned int result = 0;
 
-	while (*hex)
-	{
-	if (*hex > 47 && *hex < 58)
-	  result += (*hex - 48);
-	else if (*hex > 64 && *hex < 71)
-	  result += (*hex - 55);
-	else if (*hex > 96 && *hex < 103)
-	  result += (*hex - 87);
+    while (*hex) {
+        if (*hex > 47 && *hex < 58)
+            result += (*hex - 48);
+        else if (*hex > 64 && *hex < 71)
+            result += (*hex - 55);
+        else if (*hex > 96 && *hex < 103)
+            result += (*hex - 87);
 
-	if (*++hex)
-	  result <<= 4;
-	}
+        if (*++hex)
+            result <<= 4;
+    }
 
-return result;
+    return result;
 }
 
 
 /* Belkin Default Pin generator created by devttys0 team */
-/* http://www.devttys0.com/2015/04/reversing-belkins-wps-pin-algorithm/ */ 
-/* Munges the MAC and serial numbers to create a WPS pin */
-int pingen_belkin(char *mac, char *serial, int len_serial, int add)
-{
-    #define NIC_NIBBLE_0    0
-    #define NIC_NIBBLE_1    1
-    #define NIC_NIBBLE_2    2
-    #define NIC_NIBBLE_3    3
+/* http://www.devttys0.com/2015/04/reversing-belkins-wps-pin-algorithm/ */
 
-    #define SN_DIGIT_0      0
-    #define SN_DIGIT_1      1
-    #define SN_DIGIT_2      2
-    #define SN_DIGIT_3      3
+/* Munges the MAC and serial numbers to create a WPS pin */
+int pingen_belkin(char *mac, char *serial, int len_serial, int add) {
+#define NIC_NIBBLE_0    0
+#define NIC_NIBBLE_1    1
+#define NIC_NIBBLE_2    2
+#define NIC_NIBBLE_3    3
+
+#define SN_DIGIT_0      0
+#define SN_DIGIT_1      1
+#define SN_DIGIT_2      2
+#define SN_DIGIT_3      3
 
     int sn[4], nic[4];
     int mac_len, serial_len;
@@ -475,47 +446,47 @@ int pingen_belkin(char *mac, char *serial, int len_serial, int add)
 
     mac_len = strlen(mac);
     serial_len = len_serial;
-	
-	//serial[len_serial] = '\0';
+
+    //serial[len_serial] = '\0';
 
     buff_mac_i = hexToInt(mac);
     buff_mac_i = buff_mac_i + add;
-    sprintf(buff_mac,"%X",buff_mac_i);
+    sprintf(buff_mac, "%X", buff_mac_i);
 
-	mac_len = strlen(buff_mac);
+    mac_len = strlen(buff_mac);
 
 
     /* Get the four least significant digits of the serial number */
-    sn[SN_DIGIT_0] = char2int(serial[serial_len-1]);
-    sn[SN_DIGIT_1] = char2int(serial[serial_len-2]);
-    sn[SN_DIGIT_2] = char2int(serial[serial_len-3]);
-    sn[SN_DIGIT_3] = char2int(serial[serial_len-4]);
+    sn[SN_DIGIT_0] = char2int(serial[serial_len - 1]);
+    sn[SN_DIGIT_1] = char2int(serial[serial_len - 2]);
+    sn[SN_DIGIT_2] = char2int(serial[serial_len - 3]);
+    sn[SN_DIGIT_3] = char2int(serial[serial_len - 4]);
 
     /* Get the four least significant nibbles of the MAC address */
-    nic[NIC_NIBBLE_0] = char2int(buff_mac[mac_len-1]);
-    nic[NIC_NIBBLE_1] = char2int(buff_mac[mac_len-2]);
-    nic[NIC_NIBBLE_2] = char2int(buff_mac[mac_len-3]);
-    nic[NIC_NIBBLE_3] = char2int(buff_mac[mac_len-4]);
+    nic[NIC_NIBBLE_0] = char2int(buff_mac[mac_len - 1]);
+    nic[NIC_NIBBLE_1] = char2int(buff_mac[mac_len - 2]);
+    nic[NIC_NIBBLE_2] = char2int(buff_mac[mac_len - 3]);
+    nic[NIC_NIBBLE_3] = char2int(buff_mac[mac_len - 4]);
 
-    k1 = (sn[SN_DIGIT_2] + 
-          sn[SN_DIGIT_3] +
-          nic[NIC_NIBBLE_0] + 
-          nic[NIC_NIBBLE_1]) % 16;
+    k1 = (sn[SN_DIGIT_2] +
+            sn[SN_DIGIT_3] +
+            nic[NIC_NIBBLE_0] +
+            nic[NIC_NIBBLE_1]) % 16;
 
     k2 = (sn[SN_DIGIT_0] +
-          sn[SN_DIGIT_1] +
-          nic[NIC_NIBBLE_3] +
-          nic[NIC_NIBBLE_2]) % 16;
+            sn[SN_DIGIT_1] +
+            nic[NIC_NIBBLE_3] +
+            nic[NIC_NIBBLE_2]) % 16;
 
     pin = k1 ^ sn[SN_DIGIT_1];
-    
+
     t1 = k1 ^ sn[SN_DIGIT_0];
     t2 = k2 ^ nic[NIC_NIBBLE_1];
-    
+
     p1 = nic[NIC_NIBBLE_0] ^ sn[SN_DIGIT_1] ^ t1;
     p2 = k2 ^ nic[NIC_NIBBLE_0] ^ t2;
     p3 = k1 ^ sn[SN_DIGIT_2] ^ k2 ^ nic[NIC_NIBBLE_2];
-    
+
     k1 = k1 ^ k2;
 
     pin = (pin ^ k1) * 16;
@@ -526,13 +497,12 @@ int pingen_belkin(char *mac, char *serial, int len_serial, int add)
     pin = (pin + k1) * 16;
     pin += p3;
     pin = (pin % 10000000) - (((pin % 10000000) / 10000000) * k1);
-	
-	//pingen mac init c83a35
-	//printf("WPS PIN is: %07d%d\n",4402328%10000000,wps_checksum(4402328%10000000));
-    
-    return (pin * 10) + wps_checksum(pin);
-}
 
+    //pingen mac init c83a35
+    //printf("WPS PIN is: %07d%d\n",4402328%10000000,wps_checksum(4402328%10000000));
+
+    return (pin * 10) +wps_checksum(pin);
+}
 
 /* 
 Calculates the default WPS pin from the BSSID/MAC of many D-Link routers/APs.
@@ -541,48 +511,44 @@ Tactical Network Solutions
 
 
 http://www.devttys0.com/2014/10/reversing-d-links-wps-pin-algorithm/
-*/
+ */
 
-int pingen_dlink(char *mac, int add)
-{
-    int nic=0, pin=0;
+int pingen_dlink(char *mac, int add) {
+    int nic = 0, pin = 0;
     char buff[10];
 
-    nic = hexToInt(strncpy(buff, mac+6, sizeof(buff)));
+    nic = hexToInt(strncpy(buff, mac + 6, sizeof (buff)));
     nic = nic + add;
 
     pin = nic ^ 0x55AA55;
     pin = pin ^ (((pin & 0x0F) << 4) +
-		 ((pin & 0x0F) << 8) +
-		 ((pin & 0x0F) << 12) +
-		 ((pin & 0x0F) << 16) +
-				 ((pin & 0x0F) << 20));
+            ((pin & 0x0F) << 8) +
+            ((pin & 0x0F) << 12) +
+            ((pin & 0x0F) << 16) +
+            ((pin & 0x0F) << 20));
     pin = pin % (int) 10e6;
-	
-    if (pin < (int) 10e5)
-    {
-    	pin += ((pin % 9) * (int)10e5) + (int)10e5;
-		
+
+    if (pin < (int) 10e5) {
+        pin += ((pin % 9) * (int) 10e5) + (int) 10e5;
+
     }
 
-    return (pin * 10) + wps_checksum(pin);
+    return (pin * 10) +wps_checksum(pin);
 }
 
 //Zhaochunsheng algorithm/
-int pingen_zhaochunsheng(char *mac, int add)
-{
-    int default_pin=0, pin=0, i=0, pin_len = 9;
+
+int pingen_zhaochunsheng(char *mac, int add) {
+    int default_pin = 0, pin = 0, i = 0, pin_len = 9;
     //char *bssid = mac2str(get_bssid(), ':');
-    char *bssid_copy = (char *)malloc(strlen(mac) + 1);
-    char *bssid_parts, temp[7] = { 0 };
+    char *bssid_copy = (char *) malloc(strlen(mac) + 1);
+    char *bssid_parts, temp[7] = {0};
 
     strcpy(bssid_copy, mac);
     bssid_parts = strtok(bssid_copy, ":");
 
-    while(bssid_parts)
-    {
-        if(i > 2)
-        {
+    while (bssid_parts) {
+        if (i > 2) {
             strcat(temp, bssid_parts);
         }
 
@@ -600,16 +566,16 @@ int pingen_zhaochunsheng(char *mac, int add)
 }
 
 //mac to decimal by kib0rg
-int pingen_zyxel(char *mac, int add)
-{
+
+int pingen_zyxel(char *mac, int add) {
     //pingen make by kib0rg, a little change by t6x
     int pin;
 
     char mac_address[7] = {0};
- 
+
     sprintf(mac_address, "%c%c%c%c%c%c", mac[6], mac[7], mac[8], mac[9], mac[10], mac[11]);
 
     pin = (hexToInt(mac_address) + add) % 10000000;
 
-    return (pin * 10) + wps_pin_checksum(pin);
+    return (pin * 10) +wps_pin_checksum(pin);
 }

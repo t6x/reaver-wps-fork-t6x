@@ -21,9 +21,7 @@
 #include "pkcs5.h"
 #include "pkcs8.h"
 
-
-struct crypto_private_key * pkcs8_key_import(const u8 *buf, size_t len)
-{
+struct crypto_private_key * pkcs8_key_import(const u8 *buf, size_t len) {
     struct asn1_hdr hdr;
     const u8 *pos, *end;
     struct bignum *zero;
@@ -90,7 +88,7 @@ struct crypto_private_key * pkcs8_key_import(const u8 *buf, size_t len)
         return NULL;
     }
 
-    asn1_oid_to_str(&oid, obuf, sizeof(obuf));
+    asn1_oid_to_str(&oid, obuf, sizeof (obuf));
     wpa_printf(MSG_DEBUG, "PKCS #8: algorithm=%s", obuf);
 
     if (oid.len != 7 ||
@@ -120,13 +118,11 @@ struct crypto_private_key * pkcs8_key_import(const u8 *buf, size_t len)
     wpa_printf(MSG_DEBUG, "PKCS #8: Try to parse RSAPrivateKey");
 
     return (struct crypto_private_key *)
-        crypto_rsa_import_private_key(hdr.payload, hdr.length);
+            crypto_rsa_import_private_key(hdr.payload, hdr.length);
 }
 
-
-    struct crypto_private_key *
-pkcs8_enc_key_import(const u8 *buf, size_t len, const char *passwd)
-{
+struct crypto_private_key *
+pkcs8_enc_key_import(const u8 *buf, size_t len, const char *passwd) {
     struct asn1_hdr hdr;
     const u8 *pos, *end, *enc_alg;
     size_t enc_alg_len;

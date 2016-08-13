@@ -68,7 +68,7 @@ int os_get_time(struct os_time *t);
  * which is used by POSIX mktime().
  */
 int os_mktime(int year, int month, int day, int hour, int min, int sec,
-              os_time_t *t);
+        os_time_t *t);
 
 
 /**

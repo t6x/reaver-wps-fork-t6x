@@ -18,11 +18,9 @@
 #include "rsa.h"
 #include "pkcs1.h"
 
-
 static int pkcs1_generate_encryption_block(u8 block_type, size_t modlen,
         const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     size_t ps_len;
     u8 *pos;
 
@@ -81,27 +79,23 @@ static int pkcs1_generate_encryption_block(u8 block_type, size_t modlen,
     return 0;
 }
 
-
 int pkcs1_encrypt(int block_type, struct crypto_rsa_key *key,
         int use_private, const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     size_t modlen;
 
     modlen = crypto_rsa_get_modulus_len(key);
 
     if (pkcs1_generate_encryption_block(block_type, modlen, in, inlen,
-                out, outlen) < 0)
+            out, outlen) < 0)
         return -1;
 
     return crypto_rsa_exptmod(out, modlen, out, outlen, key, use_private);
 }
 
-
 int pkcs1_v15_private_key_decrypt(struct crypto_rsa_key *key,
         const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     int res;
     u8 *pos, *end;
 
@@ -129,11 +123,9 @@ int pkcs1_v15_private_key_decrypt(struct crypto_rsa_key *key,
     return 0;
 }
 
-
 int pkcs1_decrypt_public_key(struct crypto_rsa_key *key,
         const u8 *crypt, size_t crypt_len,
-        u8 *plain, size_t *plain_len)
-{
+        u8 *plain, size_t *plain_len) {
     size_t len;
     u8 *pos;
 

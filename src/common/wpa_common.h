@@ -144,7 +144,6 @@
 #define WPA_KEY_INFO_ENCR_KEY_DATA BIT(12) /* IEEE 802.11i/RSN only */
 #define WPA_KEY_INFO_SMK_MESSAGE BIT(13)
 
-
 struct wpa_eapol_key {
     u8 type;
     /* Note: key_info, key_length, and key_data_length are unaligned */
@@ -168,15 +167,16 @@ struct wpa_ptk {
     u8 kck[16]; /* EAPOL-Key Key Confirmation Key (KCK) */
     u8 kek[16]; /* EAPOL-Key Key Encryption Key (KEK) */
     u8 tk1[16]; /* Temporal Key 1 (TK1) */
+
     union {
         u8 tk2[16]; /* Temporal Key 2 (TK2) */
+
         struct {
             u8 tx_mic_key[8];
             u8 rx_mic_key[8];
         } auth;
     } u;
 } STRUCT_PACKED;
-
 
 /* WPA IE version 1
  * 00-50-f2:1 (OUI:OUI type)
@@ -232,6 +232,7 @@ struct rsn_ie_hdr {
 
 
 #ifdef CONFIG_PEERKEY
+
 enum {
     STK_MUI_4WAY_STA_AP = 1,
     STK_MUI_4WAY_STAT_STA = 2,
@@ -253,6 +254,7 @@ struct rsn_error_kde {
 } STRUCT_PACKED;
 
 #ifdef CONFIG_IEEE80211W
+
 struct wpa_igtk_kde {
     u8 keyid[2];
     u8 pn[6];
@@ -261,6 +263,7 @@ struct wpa_igtk_kde {
 #endif /* CONFIG_IEEE80211W */
 
 #ifdef CONFIG_IEEE80211R
+
 struct rsn_mdie {
     u8 mobility_domain[MOBILITY_DOMAIN_ID_LEN];
     u8 ft_capab;
@@ -296,31 +299,31 @@ struct rsn_rdie {
 
 
 int wpa_eapol_key_mic(const u8 *key, int ver, const u8 *buf, size_t len,
-                      u8 *mic);
+        u8 *mic);
 void wpa_pmk_to_ptk(const u8 *pmk, size_t pmk_len, const char *label,
-                    const u8 *addr1, const u8 *addr2,
-                    const u8 *nonce1, const u8 *nonce2,
-                    u8 *ptk, size_t ptk_len, int use_sha256);
+        const u8 *addr1, const u8 *addr2,
+        const u8 *nonce1, const u8 *nonce2,
+        u8 *ptk, size_t ptk_len, int use_sha256);
 
 #ifdef CONFIG_IEEE80211R
 int wpa_ft_mic(const u8 *kck, const u8 *sta_addr, const u8 *ap_addr,
-               u8 transaction_seqnum, const u8 *mdie, size_t mdie_len,
-               const u8 *ftie, size_t ftie_len,
-               const u8 *rsnie, size_t rsnie_len,
-               const u8 *ric, size_t ric_len, u8 *mic);
+        u8 transaction_seqnum, const u8 *mdie, size_t mdie_len,
+        const u8 *ftie, size_t ftie_len,
+        const u8 *rsnie, size_t rsnie_len,
+        const u8 *ric, size_t ric_len, u8 *mic);
 void wpa_derive_pmk_r0(const u8 *xxkey, size_t xxkey_len,
-                       const u8 *ssid, size_t ssid_len,
-                       const u8 *mdid, const u8 *r0kh_id, size_t r0kh_id_len,
-                       const u8 *s0kh_id, u8 *pmk_r0, u8 *pmk_r0_name);
+        const u8 *ssid, size_t ssid_len,
+        const u8 *mdid, const u8 *r0kh_id, size_t r0kh_id_len,
+        const u8 *s0kh_id, u8 *pmk_r0, u8 *pmk_r0_name);
 void wpa_derive_pmk_r1_name(const u8 *pmk_r0_name, const u8 *r1kh_id,
-                            const u8 *s1kh_id, u8 *pmk_r1_name);
+        const u8 *s1kh_id, u8 *pmk_r1_name);
 void wpa_derive_pmk_r1(const u8 *pmk_r0, const u8 *pmk_r0_name,
-                       const u8 *r1kh_id, const u8 *s1kh_id,
-                       u8 *pmk_r1, u8 *pmk_r1_name);
+        const u8 *r1kh_id, const u8 *s1kh_id,
+        u8 *pmk_r1, u8 *pmk_r1_name);
 void wpa_pmk_r1_to_ptk(const u8 *pmk_r1, const u8 *snonce, const u8 *anonce,
-                       const u8 *sta_addr, const u8 *bssid,
-                       const u8 *pmk_r1_name,
-                       u8 *ptk, size_t ptk_len, u8 *ptk_name);
+        const u8 *sta_addr, const u8 *bssid,
+        const u8 *pmk_r1_name,
+        u8 *ptk, size_t ptk_len, u8 *ptk_name);
 #endif /* CONFIG_IEEE80211R */
 
 struct wpa_ie_data {
@@ -336,16 +339,16 @@ struct wpa_ie_data {
 
 
 int wpa_parse_wpa_ie_rsn(const u8 *rsn_ie, size_t rsn_ie_len,
-                         struct wpa_ie_data *data);
+        struct wpa_ie_data *data);
 
 void rsn_pmkid(const u8 *pmk, size_t pmk_len, const u8 *aa, const u8 *spa,
-               u8 *pmkid, int use_sha256);
+        u8 *pmkid, int use_sha256);
 
 const char * wpa_cipher_txt(int cipher);
 const char * wpa_key_mgmt_txt(int key_mgmt, int proto);
 int wpa_compare_rsn_ie(int ft_initial_assoc,
-                       const u8 *ie1, size_t ie1len,
-                       const u8 *ie2, size_t ie2len);
+        const u8 *ie1, size_t ie1len,
+        const u8 *ie2, size_t ie2len);
 int wpa_insert_pmkid(u8 *ies, size_t ies_len, const u8 *pmkid);
 
 #endif /* WPA_COMMON_H */

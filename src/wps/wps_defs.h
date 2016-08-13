@@ -270,7 +270,6 @@ enum wps_dev_subcateg {
     WPS_DEV_PHONE_WINDOWS_MOBILE = 1
 };
 
-
 /* Request Type */
 enum wps_request_type {
     WPS_REQ_ENROLLEE_INFO = 0,

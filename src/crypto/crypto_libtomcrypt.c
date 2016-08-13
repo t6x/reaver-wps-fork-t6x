@@ -27,9 +27,7 @@
 #define mp_exptmod(a,b,c,d)          ltc_mp.exptmod(a,b,c,d)
 #endif
 
-
-int md4_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
-{
+int md4_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac) {
     hash_state md;
     size_t i;
 
@@ -40,9 +38,7 @@ int md4_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
     return 0;
 }
 
-
-void des_encrypt(const u8 *clear, const u8 *key, u8 *cypher)
-{
+void des_encrypt(const u8 *clear, const u8 *key, u8 *cypher) {
     u8 pkey[8], next, tmp;
     int i;
     symmetric_key skey;
@@ -61,9 +57,7 @@ void des_encrypt(const u8 *clear, const u8 *key, u8 *cypher)
     des_done(&skey);
 }
 
-
-int md5_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
-{
+int md5_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac) {
     hash_state md;
     size_t i;
 
@@ -74,9 +68,7 @@ int md5_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
     return 0;
 }
 
-
-int sha1_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
-{
+int sha1_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac) {
     hash_state md;
     size_t i;
 
@@ -87,11 +79,9 @@ int sha1_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
     return 0;
 }
 
-
-void * aes_encrypt_init(const u8 *key, size_t len)
-{
+void * aes_encrypt_init(const u8 *key, size_t len) {
     symmetric_key *skey;
-    skey = os_malloc(sizeof(*skey));
+    skey = os_malloc(sizeof (*skey));
     if (skey == NULL)
         return NULL;
     if (aes_setup(key, len, 0, skey) != CRYPT_OK) {
@@ -101,26 +91,20 @@ void * aes_encrypt_init(const u8 *key, size_t len)
     return skey;
 }
 
-
-void aes_encrypt(void *ctx, const u8 *plain, u8 *crypt)
-{
+void aes_encrypt(void *ctx, const u8 *plain, u8 *crypt) {
     symmetric_key *skey = ctx;
     aes_ecb_encrypt(plain, crypt, skey);
 }
 
-
-void aes_encrypt_deinit(void *ctx)
-{
+void aes_encrypt_deinit(void *ctx) {
     symmetric_key *skey = ctx;
     aes_done(skey);
     os_free(skey);
 }
 
-
-void * aes_decrypt_init(const u8 *key, size_t len)
-{
+void * aes_decrypt_init(const u8 *key, size_t len) {
     symmetric_key *skey;
-    skey = os_malloc(sizeof(*skey));
+    skey = os_malloc(sizeof (*skey));
     if (skey == NULL)
         return NULL;
     if (aes_setup(key, len, 0, skey) != CRYPT_OK) {
@@ -130,38 +114,32 @@ void * aes_decrypt_init(const u8 *key, size_t len)
     return skey;
 }
 
-
-void aes_decrypt(void *ctx, const u8 *crypt, u8 *plain)
-{
+void aes_decrypt(void *ctx, const u8 *crypt, u8 *plain) {
     symmetric_key *skey = ctx;
     aes_ecb_encrypt(plain, (u8 *) crypt, skey);
 }
 
-
-void aes_decrypt_deinit(void *ctx)
-{
+void aes_decrypt_deinit(void *ctx) {
     symmetric_key *skey = ctx;
     aes_done(skey);
     os_free(skey);
 }
 
-
 struct crypto_hash {
     enum crypto_hash_alg alg;
     int error;
+
     union {
         hash_state md;
         hmac_state hmac;
     } u;
 };
 
-
 struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
-        size_t key_len)
-{
+        size_t key_len) {
     struct crypto_hash *ctx;
 
-    ctx = os_zalloc(sizeof(*ctx));
+    ctx = os_zalloc(sizeof (*ctx));
     if (ctx == NULL)
         return NULL;
 
@@ -197,8 +175,7 @@ fail:
     return NULL;
 }
 
-void crypto_hash_update(struct crypto_hash *ctx, const u8 *data, size_t len)
-{
+void crypto_hash_update(struct crypto_hash *ctx, const u8 *data, size_t len) {
     if (ctx == NULL || ctx->error)
         return;
 
@@ -216,9 +193,7 @@ void crypto_hash_update(struct crypto_hash *ctx, const u8 *data, size_t len)
     }
 }
 
-
-int crypto_hash_finish(struct crypto_hash *ctx, u8 *mac, size_t *len)
-{
+int crypto_hash_finish(struct crypto_hash *ctx, u8 *mac, size_t *len) {
     int ret = 0;
     unsigned long clen;
 
@@ -286,11 +261,12 @@ int crypto_hash_finish(struct crypto_hash *ctx, u8 *mac, size_t *len)
     return ret;
 }
 
-
 struct crypto_cipher {
     int rc4;
+
     union {
         symmetric_CBC cbc;
+
         struct {
             size_t used_bytes;
             u8 key[16];
@@ -299,11 +275,9 @@ struct crypto_cipher {
     } u;
 };
 
-
 struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
         const u8 *iv, const u8 *key,
-        size_t key_len)
-{	
+        size_t key_len) {
     struct crypto_cipher *ctx;
     int idx, res, rc4 = 0;
 
@@ -328,13 +302,13 @@ struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
             return NULL;
     }
 
-    ctx = os_zalloc(sizeof(*ctx));
+    ctx = os_zalloc(sizeof (*ctx));
     if (ctx == NULL)
         return NULL;
 
     if (rc4) {
         ctx->rc4 = 1;
-        if (key_len > sizeof(ctx->u.rc4.key)) {
+        if (key_len > sizeof (ctx->u.rc4.key)) {
             os_free(ctx);
             return NULL;
         }
@@ -354,8 +328,7 @@ struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
 }
 
 int crypto_cipher_encrypt(struct crypto_cipher *ctx, const u8 *plain,
-        u8 *crypt, size_t len)
-{
+        u8 *crypt, size_t len) {
     int res;
 
     if (ctx->rc4) {
@@ -376,10 +349,8 @@ int crypto_cipher_encrypt(struct crypto_cipher *ctx, const u8 *plain,
     return 0;
 }
 
-
 int crypto_cipher_decrypt(struct crypto_cipher *ctx, const u8 *crypt,
-        u8 *plain, size_t len)
-{
+        u8 *plain, size_t len) {
     int res;
 
     if (ctx->rc4) {
@@ -401,14 +372,11 @@ int crypto_cipher_decrypt(struct crypto_cipher *ctx, const u8 *crypt,
     return 0;
 }
 
-
-void crypto_cipher_deinit(struct crypto_cipher *ctx)
-{
+void crypto_cipher_deinit(struct crypto_cipher *ctx) {
     if (!ctx->rc4)
         cbc_done(&ctx->u.cbc);
     os_free(ctx);
 }
-
 
 struct crypto_public_key {
     rsa_key rsa;
@@ -418,13 +386,11 @@ struct crypto_private_key {
     rsa_key rsa;
 };
 
-
-struct crypto_public_key * crypto_public_key_import(const u8 *key, size_t len)
-{
+struct crypto_public_key * crypto_public_key_import(const u8 *key, size_t len) {
     int res;
     struct crypto_public_key *pk;
 
-    pk = os_zalloc(sizeof(*pk));
+    pk = os_zalloc(sizeof (*pk));
     if (pk == NULL)
         return NULL;
 
@@ -448,15 +414,13 @@ struct crypto_public_key * crypto_public_key_import(const u8 *key, size_t len)
     return pk;
 }
 
-
 struct crypto_private_key * crypto_private_key_import(const u8 *key,
         size_t len,
-        const char *passwd)
-{
+        const char *passwd) {
     int res;
     struct crypto_private_key *pk;
 
-    pk = os_zalloc(sizeof(*pk));
+    pk = os_zalloc(sizeof (*pk));
     if (pk == NULL)
         return NULL;
 
@@ -480,19 +444,15 @@ struct crypto_private_key * crypto_private_key_import(const u8 *key,
     return pk;
 }
 
-
 struct crypto_public_key * crypto_public_key_from_cert(const u8 *buf,
-        size_t len)
-{
+        size_t len) {
     /* No X.509 support in LibTomCrypt */
     return NULL;
 }
 
-
 static int pkcs1_generate_encryption_block(u8 block_type, size_t modlen,
         const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     size_t ps_len;
     u8 *pos;
 
@@ -551,18 +511,16 @@ static int pkcs1_generate_encryption_block(u8 block_type, size_t modlen,
     return 0;
 }
 
-
 static int crypto_rsa_encrypt_pkcs1(int block_type, rsa_key *key, int key_type,
         const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     unsigned long len, modlen;
     int res;
 
     modlen = mp_unsigned_bin_size(key->N);
 
     if (pkcs1_generate_encryption_block(block_type, modlen, in, inlen,
-                out, outlen) < 0)
+            out, outlen) < 0)
         return -1;
 
     len = *outlen;
@@ -577,47 +535,37 @@ static int crypto_rsa_encrypt_pkcs1(int block_type, rsa_key *key, int key_type,
     return 0;
 }
 
-
 int crypto_public_key_encrypt_pkcs1_v15(struct crypto_public_key *key,
         const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     return crypto_rsa_encrypt_pkcs1(2, &key->rsa, PK_PUBLIC, in, inlen,
             out, outlen);
 }
 
-
 int crypto_private_key_sign_pkcs1(struct crypto_private_key *key,
         const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     return crypto_rsa_encrypt_pkcs1(1, &key->rsa, PK_PRIVATE, in, inlen,
             out, outlen);
 }
 
-
-void crypto_public_key_free(struct crypto_public_key *key)
-{
+void crypto_public_key_free(struct crypto_public_key *key) {
     if (key) {
         rsa_free(&key->rsa);
         os_free(key);
     }
 }
 
-
-void crypto_private_key_free(struct crypto_private_key *key)
-{
+void crypto_private_key_free(struct crypto_private_key *key) {
     if (key) {
         rsa_free(&key->rsa);
         os_free(key);
     }
 }
-
 
 int crypto_public_key_decrypt_pkcs1(struct crypto_public_key *key,
         const u8 *crypt, size_t crypt_len,
-        u8 *plain, size_t *plain_len)
-{
+        u8 *plain, size_t *plain_len) {
     int res;
     unsigned long len;
     u8 *pos;
@@ -672,9 +620,7 @@ int crypto_public_key_decrypt_pkcs1(struct crypto_public_key *key,
     return 0;
 }
 
-
-int crypto_global_init(void)
-{
+int crypto_global_init(void) {
     ltc_mp = tfm_desc;
     /* TODO: only register algorithms that are really needed */
     if (register_hash(&md4_desc) < 0 ||
@@ -691,9 +637,7 @@ int crypto_global_init(void)
     return 0;
 }
 
-
-void crypto_global_deinit(void)
-{
+void crypto_global_deinit(void) {
 }
 
 
@@ -702,8 +646,7 @@ void crypto_global_deinit(void)
 int crypto_mod_exp(const u8 *base, size_t base_len,
         const u8 *power, size_t power_len,
         const u8 *modulus, size_t modulus_len,
-        u8 *result, size_t *result_len)
-{
+        u8 *result, size_t *result_len) {
     void *b, *p, *m, *r;
 
     if (mp_init_multi(&b, &p, &m, &r, NULL) != CRYPT_OK)

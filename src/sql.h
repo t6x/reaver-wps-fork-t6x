@@ -42,15 +42,15 @@
 #include "globule.h"
 
 #ifndef REAVER_DATABASE
-#define REAVER_DATABASE		"/etc/reaver/reaver.db"
+#define REAVER_DATABASE  "/etc/reaver/reaver.db"
 #endif
 
-#define BUSY_WAIT_PERIOD	100
-#define SETTINGS_TABLE		"auto"
-#define HISTORY_TABLE		"history"
-#define AP_TABLE		"survey"
-#define DROP_TABLE		"DROP TABLE %s"
-#define CREATE_TABLE		"CREATE TABLE %s (bssid TEXT PRIMARY KEY NOT NULL, essid TEXT, manufacturer TEXT, model_name TEXT, model_number TEXT, device_name TEXT, version INTEGER DEFAULT 0, state INTEGER DEFAULT 0, locked INTEGER DEFAULT 0, encryption INTEGER DEFAULT 0, probes INTEGER DEFAULT 0, rssi TEXT, complete INTEGER DEFAULT 0, rowid INTEGER NOT NULL)"
+#define BUSY_WAIT_PERIOD 100
+#define SETTINGS_TABLE  "auto"
+#define HISTORY_TABLE  "history"
+#define AP_TABLE  "survey"
+#define DROP_TABLE  "DROP TABLE %s"
+#define CREATE_TABLE  "CREATE TABLE %s (bssid TEXT PRIMARY KEY NOT NULL, essid TEXT, manufacturer TEXT, model_name TEXT, model_number TEXT, device_name TEXT, version INTEGER DEFAULT 0, state INTEGER DEFAULT 0, locked INTEGER DEFAULT 0, encryption INTEGER DEFAULT 0, probes INTEGER DEFAULT 0, rssi TEXT, complete INTEGER DEFAULT 0, rowid INTEGER NOT NULL)"
 
 int sql_init(void);
 int create_ap_table(void);

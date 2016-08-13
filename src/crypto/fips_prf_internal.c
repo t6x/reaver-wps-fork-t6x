@@ -19,17 +19,15 @@
 #include "sha1_i.h"
 #include "crypto.h"
 
-
-int fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x, size_t xlen)
-{
+int fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x, size_t xlen) {
     u8 xkey[64];
     u32 t[5], _t[5];
     int i, j, m, k;
     u8 *xpos = x;
     u32 carry;
 
-    if (seed_len > sizeof(xkey))
-        seed_len = sizeof(xkey);
+    if (seed_len > sizeof (xkey))
+        seed_len = sizeof (xkey);
 
     /* FIPS 186-2 + change notice 1 */
 

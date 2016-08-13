@@ -20,7 +20,9 @@
 /* Debugging function - conditional printf and hex dump. Driver wrappers can
  * use these for debugging purposes. */
 
-enum { MSG_MSGDUMP, MSG_DEBUG, MSG_INFO, MSG_WARNING, MSG_ERROR };
+enum {
+    MSG_MSGDUMP, MSG_DEBUG, MSG_INFO, MSG_WARNING, MSG_ERROR
+};
 
 #ifdef CONFIG_NO_STDOUT_DEBUG
 
@@ -61,24 +63,23 @@ void wpa_debug_print_timestamp(void);
  * Note: New line '\n' is added to the end of the text when printing to stdout.
  */
 void wpa_printf(int level, const char *fmt, ...)
-    PRINTF_FORMAT(2, 3);
+PRINTF_FORMAT(2, 3);
 
-    /**
-     * wpa_hexdump - conditional hex dump
-     * @level: priority level (MSG_*) of the message
-     * @title: title of for the message
-     * @buf: data buffer to be dumped
-     * @len: length of the buf
-     *
-     * This function is used to print conditional debugging and error messages. The
-     * output may be directed to stdout, stderr, and/or syslog based on
-     * configuration. The contents of buf is printed out has hex dump.
-     */
-    void wpa_hexdump(int level, const char *title, const u8 *buf, size_t len);
+/**
+ * wpa_hexdump - conditional hex dump
+ * @level: priority level (MSG_*) of the message
+ * @title: title of for the message
+ * @buf: data buffer to be dumped
+ * @len: length of the buf
+ *
+ * This function is used to print conditional debugging and error messages. The
+ * output may be directed to stdout, stderr, and/or syslog based on
+ * configuration. The contents of buf is printed out has hex dump.
+ */
+void wpa_hexdump(int level, const char *title, const u8 *buf, size_t len);
 
 static inline void wpa_hexdump_buf(int level, const char *title,
-                                   const struct wpabuf *buf)
-{
+        const struct wpabuf *buf) {
     wpa_hexdump(level, title, wpabuf_head(buf), wpabuf_len(buf));
 }
 
@@ -98,8 +99,7 @@ static inline void wpa_hexdump_buf(int level, const char *title,
 void wpa_hexdump_key(int level, const char *title, const u8 *buf, size_t len);
 
 static inline void wpa_hexdump_buf_key(int level, const char *title,
-                                       const struct wpabuf *buf)
-{
+        const struct wpabuf *buf) {
     wpa_hexdump_key(level, title, wpabuf_head(buf), wpabuf_len(buf));
 }
 
@@ -117,7 +117,7 @@ static inline void wpa_hexdump_buf_key(int level, const char *title,
  * bytes per line will be shown.
  */
 void wpa_hexdump_ascii(int level, const char *title, const u8 *buf,
-                       size_t len);
+        size_t len);
 
 /**
  * wpa_hexdump_ascii_key - conditional hex dump, hide keys
@@ -134,7 +134,7 @@ void wpa_hexdump_ascii(int level, const char *title, const u8 *buf,
  * default, does not include secret keys (passwords, etc.) in debug output.
  */
 void wpa_hexdump_ascii_key(int level, const char *title, const u8 *buf,
-                           size_t len);
+        size_t len);
 
 #endif /* CONFIG_NO_STDOUT_DEBUG */
 
@@ -173,10 +173,10 @@ void wpa_msg(void *ctx, int level, const char *fmt, ...) PRINTF_FORMAT(3, 4);
  * events that do not need to be sent to syslog.
  */
 void wpa_msg_ctrl(void *ctx, int level, const char *fmt, ...)
-    PRINTF_FORMAT(3, 4);
+PRINTF_FORMAT(3, 4);
 
-    typedef void (*wpa_msg_cb_func)(void *ctx, int level, const char *txt,
-                                    size_t len);
+typedef void (*wpa_msg_cb_func)(void *ctx, int level, const char *txt,
+        size_t len);
 
 /**
  * wpa_msg_register_cb - Register callback function for wpa_msg() messages
@@ -191,11 +191,11 @@ void wpa_msg_register_cb(wpa_msg_cb_func func);
 #define hostapd_logger_register_cb(f) do { } while (0)
 #else /* CONFIG_NO_HOSTAPD_LOGGER */
 void hostapd_logger(void *ctx, const u8 *addr, unsigned int module, int level,
-                    const char *fmt, ...) PRINTF_FORMAT(5, 6);
+        const char *fmt, ...) PRINTF_FORMAT(5, 6);
 
 typedef void (*hostapd_logger_cb_func)(void *ctx, const u8 *addr,
-                                       unsigned int module, int level,
-                                       const char *txt, size_t len);
+        unsigned int module, int level,
+        const char *txt, size_t len);
 
 /**
  * hostapd_logger_register_cb - Register callback function for hostapd_logger()
@@ -204,13 +204,13 @@ typedef void (*hostapd_logger_cb_func)(void *ctx, const u8 *addr,
 void hostapd_logger_register_cb(hostapd_logger_cb_func func);
 #endif /* CONFIG_NO_HOSTAPD_LOGGER */
 
-#define HOSTAPD_MODULE_IEEE80211	0x00000001
-#define HOSTAPD_MODULE_IEEE8021X	0x00000002
-#define HOSTAPD_MODULE_RADIUS		0x00000004
-#define HOSTAPD_MODULE_WPA		0x00000008
-#define HOSTAPD_MODULE_DRIVER		0x00000010
-#define HOSTAPD_MODULE_IAPP		0x00000020
-#define HOSTAPD_MODULE_MLME		0x00000040
+#define HOSTAPD_MODULE_IEEE80211 0x00000001
+#define HOSTAPD_MODULE_IEEE8021X 0x00000002
+#define HOSTAPD_MODULE_RADIUS  0x00000004
+#define HOSTAPD_MODULE_WPA  0x00000008
+#define HOSTAPD_MODULE_DRIVER  0x00000010
+#define HOSTAPD_MODULE_IAPP  0x00000020
+#define HOSTAPD_MODULE_MLME  0x00000040
 
 enum hostapd_logger_level {
     HOSTAPD_LEVEL_DEBUG_VERBOSE = 0,
@@ -228,26 +228,24 @@ void wpa_debug_close_syslog(void);
 
 #else /* CONFIG_DEBUG_SYSLOG */
 
-static inline void wpa_debug_open_syslog(void)
-{
+static inline void wpa_debug_open_syslog(void) {
 }
 
-static inline void wpa_debug_close_syslog(void)
-{
+static inline void wpa_debug_close_syslog(void) {
 }
 
 #endif /* CONFIG_DEBUG_SYSLOG */
 
 
 #ifdef EAPOL_TEST
-#define WPA_ASSERT(a)						       \
-    do {							       \
-        if (!(a)) {					       \
-            printf("WPA_ASSERT FAILED '" #a "' "	       \
-                   "%s %s:%d\n",			       \
+#define WPA_ASSERT(a)             \
+    do {              \
+        if (!(a)) {            \
+            printf("WPA_ASSERT FAILED '" #a "' "        \
+                   "%s %s:%d\n",          \
                    __FUNCTION__, __FILE__, __LINE__);      \
-            exit(1);				       \
-        }						       \
+            exit(1);           \
+        }             \
     } while (0)
 #else
 #define WPA_ASSERT(a) do { } while (0)

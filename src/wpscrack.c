@@ -36,8 +36,7 @@
 //#include "wps/t6.h";
 #include "wpscrack.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int ret_val = EXIT_FAILURE;
     time_t start_time = 0, end_time = 0;
     struct wps_data *wps = NULL;
@@ -48,10 +47,9 @@ int main(int argc, char **argv)
     init_default_settings();
 
     int cont_arg_rev;
-    for(cont_arg_rev=0; cont_arg_rev < argc; cont_arg_rev++)
-    {
-        strcat(globule->cmd_reaver_test,argv[cont_arg_rev]);
-        strcat(globule->cmd_reaver_test," ");
+    for (cont_arg_rev = 0; cont_arg_rev < argc; cont_arg_rev++) {
+        strcat(globule->cmd_reaver_test, argv[cont_arg_rev]);
+        strcat(globule->cmd_reaver_test, " ");
     }
     //set_cmd_reaver_test(rv_t);
 
@@ -59,49 +57,40 @@ int main(int argc, char **argv)
     printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
     printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY & KokoSoft\n\n");
 
-    if(argc < 2)
-    {
+    if (argc < 2) {
         ret_val = usage(argv[0]);
         goto end;
     }
 
     /* Process the command line arguments */
-    if(process_arguments(argc, argv) == EXIT_FAILURE)
-    {
+    if (process_arguments(argc, argv) == EXIT_FAILURE) {
         ret_val = usage(argv[0]);
         goto end;
     }
 
     /* Double check usage */
-    if(!get_iface() || (memcmp(get_bssid(), NULL_MAC, MAC_ADDR_LEN) == 0))
-    {
+    if (!get_iface() || (memcmp(get_bssid(), NULL_MAC, MAC_ADDR_LEN) == 0)) {
         usage(argv[0]);
         goto end;
     }
 
     /* If no MAC address was provided, get it ourselves */
-    if(memcmp(get_mac(), NULL_MAC, MAC_ADDR_LEN) == 0)
-    {
-        if(!read_iface_mac())
-        {
+    if (memcmp(get_mac(), NULL_MAC, MAC_ADDR_LEN) == 0) {
+        if (!read_iface_mac()) {
             fprintf(stderr, "[-] Failed to retrieve a MAC address for interface '%s'!\n", get_iface());
             goto end;
         }
     }
 
     /* Sanity checking on the message timeout value */
-    if(get_m57_timeout() > M57_MAX_TIMEOUT)
-    {
+    if (get_m57_timeout() > M57_MAX_TIMEOUT) {
         set_m57_timeout(M57_MAX_TIMEOUT);
-    }
-    else if(get_m57_timeout() <= 0)
-    {
+    } else if (get_m57_timeout() <= 0) {
         set_m57_timeout(M57_DEFAULT_TIMEOUT);
     }
 
     /* Sanity checking on the receive timeout value */
-    if(get_rx_timeout() <= 0)
-    {
+    if (get_rx_timeout() <= 0) {
         set_rx_timeout(DEFAULT_TIMEOUT);
     }
 
@@ -119,25 +108,21 @@ int main(int argc, char **argv)
     end_time = time(NULL);
 
     /* Check our key status */
-    if(get_key_status() == KEY_DONE)
-    {
+    if (get_key_status() == KEY_DONE) {
         wps = get_wps();
 
-        cprintf(VERBOSE,  		    "[+] Pin cracked in %d seconds\n", (int) (end_time - start_time));
-        cprintf(CRITICAL, 		    "[+] WPS PIN: '%s'\n", get_pin());
-        if(wps->key)      cprintf(CRITICAL, "[+] WPA PSK: '%s'\n", wps->key);
-        if(wps->essid)    cprintf(CRITICAL, "[+] AP SSID: '%s'\n", wps->essid);
+        cprintf(VERBOSE, "[+] Pin cracked in %d seconds\n", (int) (end_time - start_time));
+        cprintf(CRITICAL, "[+] WPS PIN: '%s'\n", get_pin());
+        if (wps->key) cprintf(CRITICAL, "[+] WPA PSK: '%s'\n", wps->key);
+        if (wps->essid) cprintf(CRITICAL, "[+] AP SSID: '%s'\n", wps->essid);
 
         /* Run user-supplied command */
-        if(get_exec_string())
-        {
+        if (get_exec_string()) {
             system(get_exec_string());
         }
 
         ret_val = EXIT_SUCCESS;
-    }
-    else
-    {
+    } else {
         cprintf(CRITICAL, "[-] Failed to recover WPA key\n");
     }
 
@@ -148,8 +133,7 @@ end:
     return ret_val;
 }
 
-int usage(char *prog_name)
-{
+int usage(char *prog_name) {
     float fail_timeout = 0;
 
     fail_timeout = ((float) M57_DEFAULT_TIMEOUT / (float) SEC_TO_US);
@@ -180,7 +164,7 @@ int usage(char *prog_name)
     fprintf(stderr, "\t-p, --pin=<wps pin>             Use the specified 4 or 8 digit WPS pin\n");
     fprintf(stderr, "\t-d, --delay=<seconds>           Set the delay between pin attempts [%d]\n", DEFAULT_DELAY);
     fprintf(stderr, "\t-l, --lock-delay=<seconds>      Set the time to wait if the AP locks WPS pin attempts [%d]\n", DEFAULT_LOCK_DELAY);
-    fprintf(stderr, "\t-F, --fake-delay=<seconds>      Set the time to sleep after received fake NACK [%d]\n",DEFAULT_FK_NACK_DELAY);
+    fprintf(stderr, "\t-F, --fake-delay=<seconds>      Set the time to sleep after received fake NACK [%d]\n", DEFAULT_FK_NACK_DELAY);
     fprintf(stderr, "\t-R, --fake-reason=<nack reason> Specifies the reason code for NACK used in the FAKE NACK\n");
     fprintf(stderr, "\t-I, --ignore-reason             Ignore change of reason code for NACK\n");
     fprintf(stderr, "\t-g, --max-attempts=<num>        Quit after num pin attempts\n");

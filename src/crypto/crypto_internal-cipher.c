@@ -19,25 +19,29 @@
 #include "aes.h"
 #include "des_i.h"
 
-
 struct crypto_cipher {
     enum crypto_cipher_alg alg;
+
     union {
+
         struct {
             size_t used_bytes;
             u8 key[16];
             size_t keylen;
         } rc4;
+
         struct {
             u8 cbc[32];
             size_t block_size;
             void *ctx_enc;
             void *ctx_dec;
         } aes;
+
         struct {
             struct des3_key_s key;
             u8 cbc[8];
         } des3;
+
         struct {
             u32 ek[32];
             u32 dk[32];
@@ -46,14 +50,12 @@ struct crypto_cipher {
     } u;
 };
 
-
 struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
         const u8 *iv, const u8 *key,
-        size_t key_len)
-{
+        size_t key_len) {
     struct crypto_cipher *ctx;
 
-    ctx = os_zalloc(sizeof(*ctx));
+    ctx = os_zalloc(sizeof (*ctx));
     if (ctx == NULL)
         return NULL;
 
@@ -61,7 +63,7 @@ struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
 
     switch (alg) {
         case CRYPTO_CIPHER_ALG_RC4:
-            if (key_len > sizeof(ctx->u.rc4.key)) {
+            if (key_len > sizeof (ctx->u.rc4.key)) {
                 os_free(ctx);
                 return NULL;
             }
@@ -69,7 +71,7 @@ struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
             os_memcpy(ctx->u.rc4.key, key, key_len);
             break;
         case CRYPTO_CIPHER_ALG_AES:
-            if (key_len > sizeof(ctx->u.aes.cbc)) {
+            if (key_len > sizeof (ctx->u.aes.cbc)) {
                 os_free(ctx);
                 return NULL;
             }
@@ -111,10 +113,8 @@ struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
     return ctx;
 }
 
-
 int crypto_cipher_encrypt(struct crypto_cipher *ctx, const u8 *plain,
-        u8 *crypt, size_t len)
-{
+        u8 *crypt, size_t len) {
     size_t i, j, blocks;
 
     switch (ctx->alg) {
@@ -175,10 +175,8 @@ int crypto_cipher_encrypt(struct crypto_cipher *ctx, const u8 *plain,
     return 0;
 }
 
-
 int crypto_cipher_decrypt(struct crypto_cipher *ctx, const u8 *crypt,
-        u8 *plain, size_t len)
-{
+        u8 *plain, size_t len) {
     size_t i, j, blocks;
     u8 tmp[32];
 
@@ -239,9 +237,7 @@ int crypto_cipher_decrypt(struct crypto_cipher *ctx, const u8 *crypt,
     return 0;
 }
 
-
-void crypto_cipher_deinit(struct crypto_cipher *ctx)
-{
+void crypto_cipher_deinit(struct crypto_cipher *ctx) {
     switch (ctx->alg) {
         case CRYPTO_CIPHER_ALG_AES:
             aes_encrypt_deinit(ctx->u.aes.ctx_enc);

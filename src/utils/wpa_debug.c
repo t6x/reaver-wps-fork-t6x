@@ -33,8 +33,7 @@ int wpa_debug_timestamp = 0;
 
 #ifndef CONFIG_NO_STDOUT_DEBUG
 
-void wpa_debug_print_timestamp(void)
-{
+void wpa_debug_print_timestamp(void) {
     struct os_time tv;
 
     if (!wpa_debug_timestamp)
@@ -52,22 +51,18 @@ void wpa_debug_print_timestamp(void)
 
 
 #ifdef CONFIG_DEBUG_SYSLOG
-void wpa_debug_open_syslog(void)
-{
+
+void wpa_debug_open_syslog(void) {
     openlog("wpa_supplicant", LOG_PID | LOG_NDELAY, LOG_DAEMON);
     wpa_debug_syslog++;
 }
 
-
-void wpa_debug_close_syslog(void)
-{
+void wpa_debug_close_syslog(void) {
     if (wpa_debug_syslog)
         closelog();
 }
 
-
-static int syslog_priority(int level)
-{
+static int syslog_priority(int level) {
     switch (level) {
         case MSG_MSGDUMP:
         case MSG_DEBUG:
@@ -83,7 +78,6 @@ static int syslog_priority(int level)
 }
 #endif /* CONFIG_DEBUG_SYSLOG */
 
-
 /**
  * wpa_printf - conditional printf
  * @level: priority level (MSG_*) of the message
@@ -95,8 +89,7 @@ static int syslog_priority(int level)
  *
  * Note: New line '\n' is added to the end of the text when printing to stdout.
  */
-void wpa_printf(int level, const char *fmt, ...)
-{
+void wpa_printf(int level, const char *fmt, ...) {
     va_list ap;
     /* @@@ debug for now @@@ */
     //wpa_debug_level = MSG_MSGDUMP;
@@ -127,10 +120,8 @@ void wpa_printf(int level, const char *fmt, ...)
     va_end(ap);
 }
 
-
 static void _wpa_hexdump(int level, const char *title, const u8 *buf,
-        size_t len, int show)
-{
+        size_t len, int show) {
     show = 1;
     size_t i;
     if (level < wpa_debug_level)
@@ -166,21 +157,16 @@ static void _wpa_hexdump(int level, const char *title, const u8 *buf,
 #endif /* CONFIG_DEBUG_FILE */
 }
 
-void wpa_hexdump(int level, const char *title, const u8 *buf, size_t len)
-{
+void wpa_hexdump(int level, const char *title, const u8 *buf, size_t len) {
     _wpa_hexdump(level, title, buf, len, 1);
 }
 
-
-void wpa_hexdump_key(int level, const char *title, const u8 *buf, size_t len)
-{
+void wpa_hexdump_key(int level, const char *title, const u8 *buf, size_t len) {
     _wpa_hexdump(level, title, buf, len, wpa_debug_show_keys);
 }
 
-
 static void _wpa_hexdump_ascii(int level, const char *title, const u8 *buf,
-        size_t len, int show)
-{
+        size_t len, int show) {
     size_t i, llen;
     const u8 *pos = buf;
     const size_t line_len = 16;
@@ -265,22 +251,16 @@ static void _wpa_hexdump_ascii(int level, const char *title, const u8 *buf,
 #endif /* CONFIG_DEBUG_FILE */
 }
 
-
-void wpa_hexdump_ascii(int level, const char *title, const u8 *buf, size_t len)
-{
+void wpa_hexdump_ascii(int level, const char *title, const u8 *buf, size_t len) {
     _wpa_hexdump_ascii(level, title, buf, len, 1);
 }
 
-
 void wpa_hexdump_ascii_key(int level, const char *title, const u8 *buf,
-        size_t len)
-{
+        size_t len) {
     _wpa_hexdump_ascii(level, title, buf, len, wpa_debug_show_keys);
 }
 
-
-int wpa_debug_open_file(const char *path)
-{
+int wpa_debug_open_file(const char *path) {
 #ifdef CONFIG_DEBUG_FILE
     if (!path)
         return 0;
@@ -297,9 +277,7 @@ int wpa_debug_open_file(const char *path)
     return 0;
 }
 
-
-void wpa_debug_close_file(void)
-{
+void wpa_debug_close_file(void) {
 #ifdef CONFIG_DEBUG_FILE
     if (!out_file)
         return;
@@ -314,14 +292,11 @@ void wpa_debug_close_file(void)
 #ifndef CONFIG_NO_WPA_MSG
 static wpa_msg_cb_func wpa_msg_cb = NULL;
 
-void wpa_msg_register_cb(wpa_msg_cb_func func)
-{
+void wpa_msg_register_cb(wpa_msg_cb_func func) {
     wpa_msg_cb = func;
 }
 
-
-void wpa_msg(void *ctx, int level, const char *fmt, ...)
-{
+void wpa_msg(void *ctx, int level, const char *fmt, ...) {
     va_list ap;
     char *buf;
     const int buflen = 2048;
@@ -342,9 +317,7 @@ void wpa_msg(void *ctx, int level, const char *fmt, ...)
     os_free(buf);
 }
 
-
-void wpa_msg_ctrl(void *ctx, int level, const char *fmt, ...)
-{
+void wpa_msg_ctrl(void *ctx, int level, const char *fmt, ...) {
     va_list ap;
     char *buf;
     const int buflen = 2048;
@@ -371,15 +344,12 @@ void wpa_msg_ctrl(void *ctx, int level, const char *fmt, ...)
 #ifndef CONFIG_NO_HOSTAPD_LOGGER
 static hostapd_logger_cb_func hostapd_logger_cb = NULL;
 
-void hostapd_logger_register_cb(hostapd_logger_cb_func func)
-{
+void hostapd_logger_register_cb(hostapd_logger_cb_func func) {
     hostapd_logger_cb = func;
 }
 
-
 void hostapd_logger(void *ctx, const u8 *addr, unsigned int module, int level,
-        const char *fmt, ...)
-{
+        const char *fmt, ...) {
     va_list ap;
     char *buf;
     const int buflen = 2048;
@@ -398,7 +368,7 @@ void hostapd_logger(void *ctx, const u8 *addr, unsigned int module, int level,
         hostapd_logger_cb(ctx, addr, module, level, buf, len);
     else if (addr)
         wpa_printf(MSG_DEBUG, "hostapd_logger: STA " MACSTR " - %s",
-                MAC2STR(addr), buf);
+            MAC2STR(addr), buf);
     else
         wpa_printf(MSG_DEBUG, "hostapd_logger: %s", buf);
     os_free(buf);

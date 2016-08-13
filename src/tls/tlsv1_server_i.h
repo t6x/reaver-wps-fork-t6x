@@ -16,6 +16,7 @@
 #define TLSV1_SERVER_I_H
 
 struct tlsv1_server {
+
     enum {
         CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE,
         SERVER_KEY_EXCHANGE, SERVER_CERTIFICATE_REQUEST,
@@ -66,12 +67,12 @@ struct tlsv1_server {
 
 void tlsv1_server_alert(struct tlsv1_server *conn, u8 level, u8 description);
 int tlsv1_server_derive_keys(struct tlsv1_server *conn,
-                             const u8 *pre_master_secret,
-                             size_t pre_master_secret_len);
+        const u8 *pre_master_secret,
+        size_t pre_master_secret_len);
 u8 * tlsv1_server_handshake_write(struct tlsv1_server *conn, size_t *out_len);
 u8 * tlsv1_server_send_alert(struct tlsv1_server *conn, u8 level,
-                             u8 description, size_t *out_len);
+        u8 description, size_t *out_len);
 int tlsv1_server_process_handshake(struct tlsv1_server *conn, u8 ct,
-                                   const u8 *buf, size_t *len);
+        const u8 *buf, size_t *len);
 
 #endif /* TLSV1_SERVER_I_H */

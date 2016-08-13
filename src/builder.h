@@ -54,7 +54,7 @@
 #define DOT1X_START             0x01
 
 #define FC_PROBE_REQUEST        0x0040
-#define FC_STANDARD		0x0108
+#define FC_STANDARD  0x0108
 
 #define LLC_SNAP                0xAA
 #define SEQ_MASK                0x10

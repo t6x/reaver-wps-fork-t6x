@@ -31,10 +31,8 @@ static int tls_process_change_cipher_spec(struct tlsv1_server *conn,
         u8 ct, const u8 *in_data,
         size_t *in_len);
 
-
 static int tls_process_client_hello(struct tlsv1_server *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end, *c;
     size_t left, len, i, j;
     u16 cipher_suite;
@@ -263,10 +261,8 @@ decode_error:
     return -1;
 }
 
-
 static int tls_process_certificate(struct tlsv1_server *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len, list_len, cert_len, idx;
     u8 type;
@@ -393,7 +389,7 @@ static int tls_process_certificate(struct tlsv1_server *conn, u8 ct,
         if (idx == 0) {
             crypto_public_key_free(conn->client_rsa_key);
             if (tls_parse_cert(pos, cert_len,
-                        &conn->client_rsa_key)) {
+                    &conn->client_rsa_key)) {
                 wpa_printf(MSG_DEBUG, "TLSv1: Failed to parse "
                         "the certificate");
                 tlsv1_server_alert(conn, TLS_ALERT_LEVEL_FATAL,
@@ -424,7 +420,7 @@ static int tls_process_certificate(struct tlsv1_server *conn, u8 ct,
     }
 
     if (x509_certificate_chain_validate(conn->cred->trusted_certs, chain,
-                &reason) < 0) {
+            &reason) < 0) {
         int tls_reason;
         wpa_printf(MSG_DEBUG, "TLSv1: Server certificate chain "
                 "validation failed (reason=%d)", reason);
@@ -465,10 +461,8 @@ static int tls_process_certificate(struct tlsv1_server *conn, u8 ct,
     return 0;
 }
 
-
 static int tls_process_client_key_exchange_rsa(
-        struct tlsv1_server *conn, const u8 *pos, const u8 *end)
-{
+        struct tlsv1_server *conn, const u8 *pos, const u8 *end) {
     u8 *out;
     size_t outlen, outbuflen;
     u16 encr_len;
@@ -512,8 +506,8 @@ static int tls_process_client_key_exchange_rsa(
      */
 
     if (crypto_private_key_decrypt_pkcs1_v15(conn->cred->key,
-                pos, end - pos,
-                out, &outlen) < 0) {
+            pos, end - pos,
+            out, &outlen) < 0) {
         wpa_printf(MSG_DEBUG, "TLSv1: Failed to decrypt "
                 "PreMasterSecret (encr_len=%d outlen=%lu)",
                 (int) (end - pos), (unsigned long) outlen);
@@ -563,10 +557,8 @@ static int tls_process_client_key_exchange_rsa(
     return 0;
 }
 
-
 static int tls_process_client_key_exchange_dh_anon(
-        struct tlsv1_server *conn, const u8 *pos, const u8 *end)
-{
+        struct tlsv1_server *conn, const u8 *pos, const u8 *end) {
     const u8 *dh_yc;
     u16 dh_yc_len;
     u8 *shared;
@@ -635,9 +627,9 @@ static int tls_process_client_key_exchange_dh_anon(
 
     /* shared = Yc^secret mod p */
     if (crypto_mod_exp(dh_yc, dh_yc_len, conn->dh_secret,
-                conn->dh_secret_len,
-                conn->cred->dh_p, conn->cred->dh_p_len,
-                shared, &shared_len)) {
+            conn->dh_secret_len,
+            conn->cred->dh_p, conn->cred->dh_p_len,
+            shared, &shared_len)) {
         os_free(shared);
         tlsv1_server_alert(conn, TLS_ALERT_LEVEL_FATAL,
                 TLS_ALERT_INTERNAL_ERROR);
@@ -666,10 +658,8 @@ static int tls_process_client_key_exchange_dh_anon(
     return 0;
 }
 
-
 static int tls_process_client_key_exchange(struct tlsv1_server *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len;
     u8 type;
@@ -744,16 +734,17 @@ static int tls_process_client_key_exchange(struct tlsv1_server *conn, u8 ct,
     return 0;
 }
 
-
 static int tls_process_certificate_verify(struct tlsv1_server *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len;
     u8 type;
     size_t hlen, buflen;
     u8 hash[MD5_MAC_LEN + SHA1_MAC_LEN], *hpos, *buf;
-    enum { SIGN_ALG_RSA, SIGN_ALG_DSA } alg = SIGN_ALG_RSA;
+
+    enum {
+        SIGN_ALG_RSA, SIGN_ALG_DSA
+    } alg = SIGN_ALG_RSA;
     u16 slen;
 
     if (ct == TLS_CONTENT_TYPE_CHANGE_CIPHER_SPEC) {
@@ -825,8 +816,7 @@ static int tls_process_certificate_verify(struct tlsv1_server *conn, u8 ct,
     if (alg == SIGN_ALG_RSA) {
         hlen = MD5_MAC_LEN;
         if (conn->verify.md5_cert == NULL ||
-                crypto_hash_finish(conn->verify.md5_cert, hpos, &hlen) < 0)
-        {
+                crypto_hash_finish(conn->verify.md5_cert, hpos, &hlen) < 0) {
             tlsv1_server_alert(conn, TLS_ALERT_LEVEL_FATAL,
                     TLS_ALERT_INTERNAL_ERROR);
             conn->verify.md5_cert = NULL;
@@ -879,8 +869,7 @@ static int tls_process_certificate_verify(struct tlsv1_server *conn, u8 ct,
     buflen = end - pos;
     buf = os_malloc(end - pos);
     if (crypto_public_key_decrypt_pkcs1(conn->client_rsa_key,
-                pos, end - pos, buf, &buflen) < 0)
-    {
+            pos, end - pos, buf, &buflen) < 0) {
         wpa_printf(MSG_DEBUG, "TLSv1: Failed to decrypt signature");
         os_free(buf);
         tlsv1_server_alert(conn, TLS_ALERT_LEVEL_FATAL,
@@ -910,11 +899,9 @@ static int tls_process_certificate_verify(struct tlsv1_server *conn, u8 ct,
     return 0;
 }
 
-
 static int tls_process_change_cipher_spec(struct tlsv1_server *conn,
         u8 ct, const u8 *in_data,
-        size_t *in_len)
-{
+        size_t *in_len) {
     const u8 *pos;
     size_t left;
 
@@ -960,10 +947,8 @@ static int tls_process_change_cipher_spec(struct tlsv1_server *conn,
     return 0;
 }
 
-
 static int tls_process_client_finished(struct tlsv1_server *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len, hlen;
     u8 verify_data[TLS_VERIFY_DATA_LEN];
@@ -1036,7 +1021,7 @@ static int tls_process_client_finished(struct tlsv1_server *conn, u8 ct,
     hlen = SHA1_MAC_LEN;
     if (conn->verify.sha1_client == NULL ||
             crypto_hash_finish(conn->verify.sha1_client, hash + MD5_MAC_LEN,
-                &hlen) < 0) {
+            &hlen) < 0) {
         conn->verify.sha1_client = NULL;
         tlsv1_server_alert(conn, TLS_ALERT_LEVEL_FATAL,
                 TLS_ALERT_INTERNAL_ERROR);
@@ -1045,8 +1030,8 @@ static int tls_process_client_finished(struct tlsv1_server *conn, u8 ct,
     conn->verify.sha1_client = NULL;
 
     if (tls_prf(conn->master_secret, TLS_MASTER_SECRET_LEN,
-                "client finished", hash, MD5_MAC_LEN + SHA1_MAC_LEN,
-                verify_data, TLS_VERIFY_DATA_LEN)) {
+            "client finished", hash, MD5_MAC_LEN + SHA1_MAC_LEN,
+            verify_data, TLS_VERIFY_DATA_LEN)) {
         wpa_printf(MSG_DEBUG, "TLSv1: Failed to derive verify_data");
         tlsv1_server_alert(conn, TLS_ALERT_LEVEL_FATAL,
                 TLS_ALERT_DECRYPT_ERROR);
@@ -1077,10 +1062,8 @@ static int tls_process_client_finished(struct tlsv1_server *conn, u8 ct,
     return 0;
 }
 
-
 int tlsv1_server_process_handshake(struct tlsv1_server *conn, u8 ct,
-        const u8 *buf, size_t *len)
-{
+        const u8 *buf, size_t *len) {
     if (ct == TLS_CONTENT_TYPE_ALERT) {
         if (*len < 2) {
             wpa_printf(MSG_DEBUG, "TLSv1: Alert underflow");

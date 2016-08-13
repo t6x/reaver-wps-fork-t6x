@@ -64,7 +64,7 @@ extern "C" {
     /** Available WPS AP with active PBC found in scan results */
 #define WPS_EVENT_AP_AVAILABLE_PBC "WPS-AP-AVAILABLE-PBC "
     /** Available WPS AP with recently selected PIN registrar found in scan results
-    */
+     */
 #define WPS_EVENT_AP_AVAILABLE_PIN "WPS-AP-AVAILABLE-PIN "
     /** Available WPS AP found in scan results */
 #define WPS_EVENT_AP_AVAILABLE "WPS-AP-AVAILABLE "
@@ -150,8 +150,8 @@ extern "C" {
      * the control interface connection that will be used for event messages.
      */
     int wpa_ctrl_request(struct wpa_ctrl *ctrl, const char *cmd, size_t cmd_len,
-                         char *reply, size_t *reply_len,
-                         void (*msg_cb)(char *msg, size_t len));
+            char *reply, size_t *reply_len,
+            void (*msg_cb)(char *msg, size_t len));
 
 
     /**

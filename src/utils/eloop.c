@@ -19,7 +19,6 @@
 #include "list.h"
 #include "eloop.h"
 
-
 struct eloop_sock {
     int sock;
     void *eloop_data;
@@ -77,14 +76,12 @@ static struct eloop_data eloop;
 
 #ifdef WPA_TRACE
 
-static void eloop_sigsegv_handler(int sig)
-{
+static void eloop_sigsegv_handler(int sig) {
     wpa_trace_show("eloop SIGSEGV");
     abort();
 }
 
-static void eloop_trace_sock_add_ref(struct eloop_sock_table *table)
-{
+static void eloop_trace_sock_add_ref(struct eloop_sock_table *table) {
     int i;
     if (table == NULL || table->table == NULL)
         return;
@@ -96,9 +93,7 @@ static void eloop_trace_sock_add_ref(struct eloop_sock_table *table)
     }
 }
 
-
-static void eloop_trace_sock_remove_ref(struct eloop_sock_table *table)
-{
+static void eloop_trace_sock_remove_ref(struct eloop_sock_table *table) {
     int i;
     if (table == NULL || table->table == NULL)
         return;
@@ -117,10 +112,8 @@ static void eloop_trace_sock_remove_ref(struct eloop_sock_table *table)
 
 #endif /* WPA_TRACE */
 
-
-int eloop_init(void)
-{
-    os_memset(&eloop, 0, sizeof(eloop));
+int eloop_init(void) {
+    os_memset(&eloop, 0, sizeof (eloop));
     dl_list_init(&eloop.timeout);
 #ifdef WPA_TRACE
     signal(SIGSEGV, eloop_sigsegv_handler);
@@ -128,11 +121,9 @@ int eloop_init(void)
     return 0;
 }
 
-
 static int eloop_sock_table_add_sock(struct eloop_sock_table *table,
         int sock, eloop_sock_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_sock *tmp;
 
     if (table == NULL)
@@ -140,8 +131,8 @@ static int eloop_sock_table_add_sock(struct eloop_sock_table *table,
 
     eloop_trace_sock_remove_ref(table);
     tmp = (struct eloop_sock *)
-        os_realloc(table->table,
-                (table->count + 1) * sizeof(struct eloop_sock));
+            os_realloc(table->table,
+            (table->count + 1) * sizeof (struct eloop_sock));
     if (tmp == NULL)
         return -1;
 
@@ -160,10 +151,8 @@ static int eloop_sock_table_add_sock(struct eloop_sock_table *table,
     return 0;
 }
 
-
 static void eloop_sock_table_remove_sock(struct eloop_sock_table *table,
-        int sock)
-{
+        int sock) {
     int i;
 
     if (table == NULL || table->table == NULL || table->count == 0)
@@ -179,17 +168,15 @@ static void eloop_sock_table_remove_sock(struct eloop_sock_table *table,
     if (i != table->count - 1) {
         os_memmove(&table->table[i], &table->table[i + 1],
                 (table->count - i - 1) *
-                sizeof(struct eloop_sock));
+                sizeof (struct eloop_sock));
     }
     table->count--;
     table->changed = 1;
     eloop_trace_sock_add_ref(table);
 }
 
-
 static void eloop_sock_table_set_fds(struct eloop_sock_table *table,
-        fd_set *fds)
-{
+        fd_set *fds) {
     int i;
 
     FD_ZERO(fds);
@@ -201,10 +188,8 @@ static void eloop_sock_table_set_fds(struct eloop_sock_table *table,
         FD_SET(table->table[i].sock, fds);
 }
 
-
 static void eloop_sock_table_dispatch(struct eloop_sock_table *table,
-        fd_set *fds)
-{
+        fd_set *fds) {
     int i;
 
     if (table == NULL || table->table == NULL)
@@ -222,9 +207,7 @@ static void eloop_sock_table_dispatch(struct eloop_sock_table *table,
     }
 }
 
-
-static void eloop_sock_table_destroy(struct eloop_sock_table *table)
-{
+static void eloop_sock_table_destroy(struct eloop_sock_table *table) {
     if (table) {
         int i;
         for (i = 0; i < table->count && table->table; i++) {
@@ -244,23 +227,17 @@ static void eloop_sock_table_destroy(struct eloop_sock_table *table)
     }
 }
 
-
 int eloop_register_read_sock(int sock, eloop_sock_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     return eloop_register_sock(sock, EVENT_TYPE_READ, handler,
             eloop_data, user_data);
 }
 
-
-void eloop_unregister_read_sock(int sock)
-{
+void eloop_unregister_read_sock(int sock) {
     eloop_unregister_sock(sock, EVENT_TYPE_READ);
 }
 
-
-static struct eloop_sock_table *eloop_get_sock_table(eloop_event_type type)
-{
+static struct eloop_sock_table *eloop_get_sock_table(eloop_event_type type) {
     switch (type) {
         case EVENT_TYPE_READ:
             return &eloop.readers;
@@ -273,11 +250,9 @@ static struct eloop_sock_table *eloop_get_sock_table(eloop_event_type type)
     return NULL;
 }
 
-
 int eloop_register_sock(int sock, eloop_event_type type,
         eloop_sock_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_sock_table *table;
 
     table = eloop_get_sock_table(type);
@@ -285,23 +260,19 @@ int eloop_register_sock(int sock, eloop_event_type type,
             eloop_data, user_data);
 }
 
-
-void eloop_unregister_sock(int sock, eloop_event_type type)
-{
+void eloop_unregister_sock(int sock, eloop_event_type type) {
     struct eloop_sock_table *table;
 
     table = eloop_get_sock_table(type);
     eloop_sock_table_remove_sock(table, sock);
 }
 
-
 int eloop_register_timeout(unsigned int secs, unsigned int usecs,
         eloop_timeout_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *timeout, *tmp;
 
-    timeout = os_zalloc(sizeof(*timeout));
+    timeout = os_zalloc(sizeof (*timeout));
     if (timeout == NULL)
         return -1;
     if (os_get_time(&timeout->time) < 0) {
@@ -333,19 +304,15 @@ int eloop_register_timeout(unsigned int secs, unsigned int usecs,
     return 0;
 }
 
-
-static void eloop_remove_timeout(struct eloop_timeout *timeout)
-{
+static void eloop_remove_timeout(struct eloop_timeout *timeout) {
     dl_list_del(&timeout->list);
     wpa_trace_remove_ref(timeout, eloop, timeout->eloop_data);
     wpa_trace_remove_ref(timeout, user, timeout->user_data);
     os_free(timeout);
 }
 
-
 int eloop_cancel_timeout(eloop_timeout_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *timeout, *prev;
     int removed = 0;
 
@@ -353,9 +320,9 @@ int eloop_cancel_timeout(eloop_timeout_handler handler,
             struct eloop_timeout, list) {
         if (timeout->handler == handler &&
                 (timeout->eloop_data == eloop_data ||
-                 eloop_data == ELOOP_ALL_CTX) &&
+                eloop_data == ELOOP_ALL_CTX) &&
                 (timeout->user_data == user_data ||
-                 user_data == ELOOP_ALL_CTX)) {
+                user_data == ELOOP_ALL_CTX)) {
             eloop_remove_timeout(timeout);
             removed++;
         }
@@ -364,10 +331,8 @@ int eloop_cancel_timeout(eloop_timeout_handler handler,
     return removed;
 }
 
-
 int eloop_is_timeout_registered(eloop_timeout_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *tmp;
 
     dl_list_for_each(tmp, &eloop.timeout, struct eloop_timeout, list) {
@@ -382,8 +347,8 @@ int eloop_is_timeout_registered(eloop_timeout_handler handler,
 
 
 #ifndef CONFIG_NATIVE_WINDOWS
-static void eloop_handle_alarm(int sig)
-{
+
+static void eloop_handle_alarm(int sig) {
     wpa_printf(MSG_ERROR, "eloop: could not process SIGINT or SIGTERM in "
             "two seconds. Looks like there\n"
             "is a bug that ends up in a busy loop that "
@@ -393,9 +358,7 @@ static void eloop_handle_alarm(int sig)
 }
 #endif /* CONFIG_NATIVE_WINDOWS */
 
-
-static void eloop_handle_signal(int sig)
-{
+static void eloop_handle_signal(int sig) {
     int i;
 
 #ifndef CONFIG_NATIVE_WINDOWS
@@ -417,9 +380,7 @@ static void eloop_handle_signal(int sig)
     }
 }
 
-
-static void eloop_process_pending_signals(void)
-{
+static void eloop_process_pending_signals(void) {
     int i;
 
     if (eloop.signaled == 0)
@@ -442,16 +403,14 @@ static void eloop_process_pending_signals(void)
     }
 }
 
-
 int eloop_register_signal(int sig, eloop_signal_handler handler,
-        void *user_data)
-{
+        void *user_data) {
     struct eloop_signal *tmp;
 
     tmp = (struct eloop_signal *)
-        os_realloc(eloop.signals,
-                (eloop.signal_count + 1) *
-                sizeof(struct eloop_signal));
+            os_realloc(eloop.signals,
+            (eloop.signal_count + 1) *
+            sizeof (struct eloop_signal));
     if (tmp == NULL)
         return -1;
 
@@ -466,20 +425,16 @@ int eloop_register_signal(int sig, eloop_signal_handler handler,
     return 0;
 }
 
-
 int eloop_register_signal_terminate(eloop_signal_handler handler,
-        void *user_data)
-{
+        void *user_data) {
     int ret = eloop_register_signal(SIGINT, handler, user_data);
     if (ret == 0)
         ret = eloop_register_signal(SIGTERM, handler, user_data);
     return ret;
 }
 
-
 int eloop_register_signal_reconfig(eloop_signal_handler handler,
-        void *user_data)
-{
+        void *user_data) {
 #ifdef CONFIG_NATIVE_WINDOWS
     return 0;
 #else /* CONFIG_NATIVE_WINDOWS */
@@ -487,23 +442,21 @@ int eloop_register_signal_reconfig(eloop_signal_handler handler,
 #endif /* CONFIG_NATIVE_WINDOWS */
 }
 
-
-void eloop_run(void)
-{
+void eloop_run(void) {
     fd_set *rfds, *wfds, *efds;
     int res;
     struct timeval _tv;
     struct os_time tv, now;
 
-    rfds = os_malloc(sizeof(*rfds));
-    wfds = os_malloc(sizeof(*wfds));
-    efds = os_malloc(sizeof(*efds));
+    rfds = os_malloc(sizeof (*rfds));
+    wfds = os_malloc(sizeof (*wfds));
+    efds = os_malloc(sizeof (*efds));
     if (rfds == NULL || wfds == NULL || efds == NULL)
         goto out;
 
     while (!eloop.terminate &&
             (!dl_list_empty(&eloop.timeout) || eloop.readers.count > 0 ||
-             eloop.writers.count > 0 || eloop.exceptions.count > 0)) {
+            eloop.writers.count > 0 || eloop.exceptions.count > 0)) {
         struct eloop_timeout *timeout;
         timeout = dl_list_first(&eloop.timeout, struct eloop_timeout,
                 list);
@@ -537,7 +490,7 @@ void eloop_run(void)
                 void *eloop_data = timeout->eloop_data;
                 void *user_data = timeout->user_data;
                 eloop_timeout_handler handler =
-                    timeout->handler;
+                        timeout->handler;
                 eloop_remove_timeout(timeout);
                 handler(eloop_data, user_data);
             }
@@ -558,19 +511,16 @@ out:
     os_free(efds);
 }
 
-
-void eloop_terminate(void)
-{
+void eloop_terminate(void) {
     eloop.terminate = 1;
 }
 
-
-void eloop_destroy(void)
-{
+void eloop_destroy(void) {
     struct eloop_timeout *timeout, *prev;
     struct os_time now;
 
     os_get_time(&now);
+
     dl_list_for_each_safe(timeout, prev, &eloop.timeout,
             struct eloop_timeout, list) {
         int sec, usec;
@@ -595,15 +545,11 @@ void eloop_destroy(void)
     os_free(eloop.signals);
 }
 
-
-int eloop_terminated(void)
-{
+int eloop_terminated(void) {
     return eloop.terminate;
 }
 
-
-void eloop_wait_for_read_sock(int sock)
-{
+void eloop_wait_for_read_sock(int sock) {
     fd_set rfds;
 
     if (sock < 0)

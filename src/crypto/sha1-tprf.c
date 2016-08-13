@@ -33,8 +33,7 @@
  * given key for EAP-FAST. T-PRF is defined in RFC 4851, Section 5.5.
  */
 int sha1_t_prf(const u8 *key, size_t key_len, const char *label,
-        const u8 *seed, size_t seed_len, u8 *buf, size_t buf_len)
-{
+        const u8 *seed, size_t seed_len, u8 *buf, size_t buf_len) {
     unsigned char counter = 0;
     size_t pos, plen;
     u8 hash[SHA1_MAC_LEN];

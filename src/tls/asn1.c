@@ -17,12 +17,11 @@
 #include "common.h"
 #include "asn1.h"
 
-int asn1_get_next(const u8 *buf, size_t len, struct asn1_hdr *hdr)
-{
+int asn1_get_next(const u8 *buf, size_t len, struct asn1_hdr *hdr) {
     const u8 *pos, *end;
     u8 tmp;
 
-    os_memset(hdr, 0, sizeof(*hdr));
+    os_memset(hdr, 0, sizeof (*hdr));
     pos = buf;
     end = buf + len;
 
@@ -81,14 +80,12 @@ int asn1_get_next(const u8 *buf, size_t len, struct asn1_hdr *hdr)
     return 0;
 }
 
-
-int asn1_parse_oid(const u8 *buf, size_t len, struct asn1_oid *oid)
-{
+int asn1_parse_oid(const u8 *buf, size_t len, struct asn1_oid *oid) {
     const u8 *pos, *end;
     unsigned long val;
     u8 tmp;
 
-    os_memset(oid, 0, sizeof(*oid));
+    os_memset(oid, 0, sizeof (*oid));
 
     pos = buf;
     end = buf + len;
@@ -125,10 +122,8 @@ int asn1_parse_oid(const u8 *buf, size_t len, struct asn1_oid *oid)
     return 0;
 }
 
-
 int asn1_get_oid(const u8 *buf, size_t len, struct asn1_oid *oid,
-        const u8 **next)
-{
+        const u8 **next) {
     struct asn1_hdr hdr;
 
     if (asn1_get_next(buf, len, &hdr) < 0 || hdr.length == 0)
@@ -145,9 +140,7 @@ int asn1_get_oid(const u8 *buf, size_t len, struct asn1_oid *oid,
     return asn1_parse_oid(hdr.payload, hdr.length, oid);
 }
 
-
-void asn1_oid_to_str(struct asn1_oid *oid, char *buf, size_t len)
-{
+void asn1_oid_to_str(struct asn1_oid *oid, char *buf, size_t len) {
     char *pos = buf;
     size_t i;
     int ret;
@@ -168,9 +161,7 @@ void asn1_oid_to_str(struct asn1_oid *oid, char *buf, size_t len)
     buf[len - 1] = '\0';
 }
 
-
-static u8 rotate_bits(u8 octet)
-{
+static u8 rotate_bits(u8 octet) {
     int i;
     u8 res;
 
@@ -185,9 +176,7 @@ static u8 rotate_bits(u8 octet)
     return res;
 }
 
-
-unsigned long asn1_bit_string_to_long(const u8 *buf, size_t len)
-{
+unsigned long asn1_bit_string_to_long(const u8 *buf, size_t len) {
     unsigned long val = 0;
     const u8 *pos = buf;
 
@@ -205,8 +194,8 @@ unsigned long asn1_bit_string_to_long(const u8 *buf, size_t len)
         val |= ((unsigned long) rotate_bits(*pos++)) << 24;
     if (len >= 6)
         wpa_printf(MSG_DEBUG, "X509: %s - some bits ignored "
-                "(BIT STRING length %lu)",
-                __func__, (unsigned long) len);
+            "(BIT STRING length %lu)",
+            __func__, (unsigned long) len);
 
     return val;
 }

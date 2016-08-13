@@ -18,11 +18,9 @@
 #include "ieee802_11_defs.h"
 #include "ieee802_11_common.h"
 
-
 static int ieee802_11_parse_vendor_specific(const u8 *pos, size_t elen,
         struct ieee802_11_elems *elems,
-        int show_errors)
-{
+        int show_errors) {
     unsigned int oui;
 
     /* first 3 bytes in vendor specific information element are the IEEE
@@ -122,7 +120,6 @@ static int ieee802_11_parse_vendor_specific(const u8 *pos, size_t elen,
     return 0;
 }
 
-
 /**
  * ieee802_11_parse_elems - Parse information elements in management frames
  * @start: Pointer to the start of IEs
@@ -133,13 +130,12 @@ static int ieee802_11_parse_vendor_specific(const u8 *pos, size_t elen,
  */
 ParseRes ieee802_11_parse_elems(const u8 *start, size_t len,
         struct ieee802_11_elems *elems,
-        int show_errors)
-{
+        int show_errors) {
     size_t left = len;
     const u8 *pos = start;
     int unknown = 0;
 
-    os_memset(elems, 0, sizeof(*elems));
+    os_memset(elems, 0, sizeof (*elems));
 
     while (left >= 2) {
         u8 id, elen;
@@ -202,8 +198,8 @@ ParseRes ieee802_11_parse_elems(const u8 *start, size_t len,
                 break;
             case WLAN_EID_VENDOR_SPECIFIC:
                 if (ieee802_11_parse_vendor_specific(pos, elen,
-                            elems,
-                            show_errors))
+                        elems,
+                        show_errors))
                     unknown++;
                 break;
             case WLAN_EID_RSN:
@@ -258,9 +254,7 @@ ParseRes ieee802_11_parse_elems(const u8 *start, size_t len,
     return unknown ? ParseUnknown : ParseOK;
 }
 
-
-int ieee802_11_ie_count(const u8 *ies, size_t ies_len)
-{
+int ieee802_11_ie_count(const u8 *ies, size_t ies_len) {
     int count = 0;
     const u8 *pos, *end;
 
@@ -280,10 +274,8 @@ int ieee802_11_ie_count(const u8 *ies, size_t ies_len)
     return count;
 }
 
-
 struct wpabuf * ieee802_11_vendor_ie_concat(const u8 *ies, size_t ies_len,
-        u32 oui_type)
-{
+        u32 oui_type) {
     struct wpabuf *buf;
     const u8 *end, *pos, *ie;
 

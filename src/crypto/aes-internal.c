@@ -66,7 +66,7 @@
    Td2[x] = Si[x].[0d, 0b, 0e, 09];
    Td3[x] = Si[x].[09, 0d, 0b, 0e];
    Td4[x] = Si[x].[01, 01, 01, 01];
-   */
+ */
 
 const u32 Te0[256] = {
     0xc66363a5U, 0xf87c7c84U, 0xee777799U, 0xf67b7b8dU,
@@ -775,28 +775,28 @@ const u8 Td4s[256] = {
 };
 const u8 rcons[] = {
     0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36
-        /* for 128-bit blocks, Rijndael never uses more than 10 rcon values */
+    /* for 128-bit blocks, Rijndael never uses more than 10 rcon values */
 };
 #endif /* AES_SMALL_TABLES */
+
 /**
  * Expand the cipher key into the encryption key schedule.
  *
  * @return	the number of rounds for the given cipher key size.
  */
-void rijndaelKeySetupEnc(u32 rk[/*44*/], const u8 cipherKey[])
-{
+void rijndaelKeySetupEnc(u32 rk[/*44*/], const u8 cipherKey[]) {
     int i;
     u32 temp;
 
-    rk[0] = GETU32(cipherKey     );
-    rk[1] = GETU32(cipherKey +  4);
-    rk[2] = GETU32(cipherKey +  8);
+    rk[0] = GETU32(cipherKey);
+    rk[1] = GETU32(cipherKey + 4);
+    rk[2] = GETU32(cipherKey + 8);
     rk[3] = GETU32(cipherKey + 12);
     for (i = 0; i < 10; i++) {
-        temp  = rk[3];
+        temp = rk[3];
         rk[4] = rk[0] ^
-            TE421(temp) ^ TE432(temp) ^ TE443(temp) ^ TE414(temp) ^
-            RCON(i);
+                TE421(temp) ^ TE432(temp) ^ TE443(temp) ^ TE414(temp) ^
+                RCON(i);
         rk[5] = rk[1] ^ rk[4];
         rk[6] = rk[2] ^ rk[5];
         rk[7] = rk[3] ^ rk[6];

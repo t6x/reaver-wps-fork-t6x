@@ -34,16 +34,14 @@
 #include "send.h"
 
 /* Initiate the WPS session with an EAPOL START packet */
-int send_eapol_start()
-{
+int send_eapol_start() {
     const void *packet = NULL;
     size_t packet_len = 0;
     int ret_val = 0;
 
     packet = build_eapol_start_packet(&packet_len);
 
-    if(packet)
-    {
+    if (packet) {
         cprintf(VERBOSE, "[+] Sending EAPOL START request\n");
         ret_val = send_packet(packet, packet_len);
         free((void *) packet);
@@ -65,8 +63,7 @@ int send_eapol_start()
 }
 
 /* Send an identity response packet */
-int send_identity_response()
-{
+int send_identity_response() {
     const void *packet = NULL, *identity = NULL;
     size_t packet_len = 0;
     int ret_val = 0;
@@ -75,8 +72,7 @@ int send_identity_response()
 
     packet = build_eap_packet(identity, strlen(identity), &packet_len);
 
-    if(packet)
-    {
+    if (packet) {
         cprintf(VERBOSE, "[+] Sending identity response\n");
         ret_val = send_packet(packet, packet_len);
         free((void *) packet);
@@ -86,8 +82,7 @@ int send_identity_response()
 }
 
 /* Send the appropriate WPS message based on the current WPS state (globule->wps->state) */
-int send_msg(int type)
-{
+int send_msg(int type) {
     int ret_val = 0;
     const struct wpabuf *msg = NULL;
     unsigned char *payload = NULL;
@@ -103,18 +98,15 @@ int send_msg(int type)
      */
     msg = wps_registrar_get_msg(wps, &opcode, type);
     set_opcode(opcode);
-    if(msg)
-    {
+    if (msg) {
         /* Get a pointer to the actual data inside of the wpabuf */
         payload = (unsigned char *) wpabuf_head(msg);
         payload_len = (uint16_t) msg->used;
 
         /* Build and send an EAP packet with the message payload */
         packet = build_eap_packet(payload, payload_len, &packet_len);
-        if(packet)
-        {
-            if(send_packet(packet, packet_len))
-            {
+        if (packet) {
+            if (send_packet(packet, packet_len)) {
                 ret_val = 1;
             } else {
                 free((void *) packet);
@@ -131,22 +123,19 @@ int send_msg(int type)
  * Send a WSC_NACK message followed by an EAP failure packet.
  * This is only called when completely terminating a cracking session.
  */
-void send_termination()
-{
+void send_termination() {
     const void *data = NULL;
     size_t data_size = 0;
 
     data = build_eap_failure_packet(&data_size);
-    if(data)
-    {
+    if (data) {
         send_packet(data, data_size);
         free((void*) data);
     }
 }
 
 /* Send a WSC_NACK message */
-void send_wsc_nack()
-{
+void send_wsc_nack() {
     struct wps_data *wps = get_wps();
 
     wps->state = SEND_WSC_NACK;
@@ -157,12 +146,10 @@ void send_wsc_nack()
  * All transmissions are handled here to ensure that the receive timer 
  * is always started immediately after a packet is transmitted.
  */
-int send_packet(const void *packet, size_t len)
-{
+int send_packet(const void *packet, size_t len) {
     int ret_val = 0;
 
-    if(pcap_inject(get_handle(), packet, len) == len)
-    {
+    if (pcap_inject(get_handle(), packet, len) == len) {
         ret_val = 1;
     }
 

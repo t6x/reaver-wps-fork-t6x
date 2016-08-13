@@ -39,14 +39,12 @@
  * define here whatever extra is needed.
  */
 
-    static BOOL WINAPI
+static BOOL WINAPI
 (*CryptImportPublicKeyInfo)(HCRYPTPROV hCryptProv, DWORD dwCertEncodingType,
         PCERT_PUBLIC_KEY_INFO pInfo, HCRYPTKEY *phKey)
-    = NULL; /* to be loaded from crypt32.dll */
+= NULL; /* to be loaded from crypt32.dll */
 
-
-static int mingw_load_crypto_func(void)
-{
+static int mingw_load_crypto_func(void) {
     HINSTANCE dll;
 
     /* MinGW does not yet have full CryptoAPI support, so load the needed
@@ -76,22 +74,19 @@ static int mingw_load_crypto_func(void)
 
 #else /* __MINGW32_VERSION */
 
-static int mingw_load_crypto_func(void)
-{
+static int mingw_load_crypto_func(void) {
     return 0;
 }
 
 #endif /* __MINGW32_VERSION */
 
-
-static void cryptoapi_report_error(const char *msg)
-{
+static void cryptoapi_report_error(const char *msg) {
     char *s, *pos;
     DWORD err = GetLastError();
 
     if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                FORMAT_MESSAGE_FROM_SYSTEM,
-                NULL, err, 0, (LPTSTR) &s, 0, NULL) == 0) {
+            FORMAT_MESSAGE_FROM_SYSTEM,
+            NULL, err, 0, (LPTSTR) & s, 0, NULL) == 0) {
         wpa_printf(MSG_DEBUG, "CryptoAPI: %s: %d", msg, (int) err);
     }
 
@@ -108,10 +103,8 @@ static void cryptoapi_report_error(const char *msg)
     LocalFree(s);
 }
 
-
 int cryptoapi_hash_vector(ALG_ID alg, size_t hash_len, size_t num_elem,
-        const u8 *addr[], const size_t *len, u8 *mac)
-{
+        const u8 *addr[], const size_t *len, u8 *mac) {
     HCRYPTPROV prov;
     HCRYPTHASH hash;
     size_t i;
@@ -149,20 +142,17 @@ int cryptoapi_hash_vector(ALG_ID alg, size_t hash_len, size_t num_elem,
     return ret;
 }
 
-
-int md4_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
-{
+int md4_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac) {
     return cryptoapi_hash_vector(CALG_MD4, 16, num_elem, addr, len, mac);
 }
 
-
-void des_encrypt(const u8 *clear, const u8 *key, u8 *cypher)
-{
+void des_encrypt(const u8 *clear, const u8 *key, u8 *cypher) {
     u8 next, tmp;
     int i;
     HCRYPTPROV prov;
     HCRYPTKEY ckey;
     DWORD dlen;
+
     struct {
         BLOBHEADER hdr;
         DWORD len;
@@ -186,21 +176,21 @@ void des_encrypt(const u8 *clear, const u8 *key, u8 *cypher)
     key_blob.key[i] = next | 1;
 
     if (!CryptAcquireContext(&prov, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL,
-                CRYPT_VERIFYCONTEXT)) {
+            CRYPT_VERIFYCONTEXT)) {
         wpa_printf(MSG_DEBUG, "CryptoAPI: CryptAcquireContext failed: "
                 "%d", (int) GetLastError());
         return;
     }
 
-    if (!CryptImportKey(prov, (BYTE *) &key_blob, sizeof(key_blob), 0, 0,
-                &ckey)) {
+    if (!CryptImportKey(prov, (BYTE *) & key_blob, sizeof (key_blob), 0, 0,
+            &ckey)) {
         wpa_printf(MSG_DEBUG, "CryptoAPI: CryptImportKey failed: %d",
                 (int) GetLastError());
         CryptReleaseContext(prov, 0);
         return;
     }
 
-    if (!CryptSetKeyParam(ckey, KP_MODE, (BYTE *) &mode, 0)) {
+    if (!CryptSetKeyParam(ckey, KP_MODE, (BYTE *) & mode, 0)) {
         wpa_printf(MSG_DEBUG, "CryptoAPI: CryptSetKeyParam(KP_MODE) "
                 "failed: %d", (int) GetLastError());
         CryptDestroyKey(ckey);
@@ -220,28 +210,22 @@ void des_encrypt(const u8 *clear, const u8 *key, u8 *cypher)
     CryptReleaseContext(prov, 0);
 }
 
-
-int md5_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
-{
+int md5_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac) {
     return cryptoapi_hash_vector(CALG_MD5, 16, num_elem, addr, len, mac);
 }
 
-
-int sha1_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
-{
+int sha1_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac) {
     return cryptoapi_hash_vector(CALG_SHA, 20, num_elem, addr, len, mac);
 }
-
 
 struct aes_context {
     HCRYPTPROV prov;
     HCRYPTKEY ckey;
 };
 
-
-void * aes_encrypt_init(const u8 *key, size_t len)
-{
+void * aes_encrypt_init(const u8 *key, size_t len) {
     struct aes_context *akey;
+
     struct {
         BLOBHEADER hdr;
         DWORD len;
@@ -259,21 +243,21 @@ void * aes_encrypt_init(const u8 *key, size_t len)
     key_blob.len = len;
     os_memcpy(key_blob.key, key, len);
 
-    akey = os_zalloc(sizeof(*akey));
+    akey = os_zalloc(sizeof (*akey));
     if (akey == NULL)
         return NULL;
 
     if (!CryptAcquireContext(&akey->prov, NULL,
-                MS_ENH_RSA_AES_PROV, PROV_RSA_AES,
-                CRYPT_VERIFYCONTEXT)) {
+            MS_ENH_RSA_AES_PROV, PROV_RSA_AES,
+            CRYPT_VERIFYCONTEXT)) {
         wpa_printf(MSG_DEBUG, "CryptoAPI: CryptAcquireContext failed: "
                 "%d", (int) GetLastError());
         os_free(akey);
         return NULL;
     }
 
-    if (!CryptImportKey(akey->prov, (BYTE *) &key_blob, sizeof(key_blob),
-                0, 0, &akey->ckey)) {
+    if (!CryptImportKey(akey->prov, (BYTE *) & key_blob, sizeof (key_blob),
+            0, 0, &akey->ckey)) {
         wpa_printf(MSG_DEBUG, "CryptoAPI: CryptImportKey failed: %d",
                 (int) GetLastError());
         CryptReleaseContext(akey->prov, 0);
@@ -281,7 +265,7 @@ void * aes_encrypt_init(const u8 *key, size_t len)
         return NULL;
     }
 
-    if (!CryptSetKeyParam(akey->ckey, KP_MODE, (BYTE *) &mode, 0)) {
+    if (!CryptSetKeyParam(akey->ckey, KP_MODE, (BYTE *) & mode, 0)) {
         wpa_printf(MSG_DEBUG, "CryptoAPI: CryptSetKeyParam(KP_MODE) "
                 "failed: %d", (int) GetLastError());
         CryptDestroyKey(akey->ckey);
@@ -293,9 +277,7 @@ void * aes_encrypt_init(const u8 *key, size_t len)
     return akey;
 }
 
-
-void aes_encrypt(void *ctx, const u8 *plain, u8 *crypt)
-{
+void aes_encrypt(void *ctx, const u8 *plain, u8 *crypt) {
     struct aes_context *akey = ctx;
     DWORD dlen;
 
@@ -308,9 +290,7 @@ void aes_encrypt(void *ctx, const u8 *plain, u8 *crypt)
     }
 }
 
-
-void aes_encrypt_deinit(void *ctx)
-{
+void aes_encrypt_deinit(void *ctx) {
     struct aes_context *akey = ctx;
     if (akey) {
         CryptDestroyKey(akey->ckey);
@@ -319,15 +299,11 @@ void aes_encrypt_deinit(void *ctx)
     }
 }
 
-
-void * aes_decrypt_init(const u8 *key, size_t len)
-{
+void * aes_decrypt_init(const u8 *key, size_t len) {
     return aes_encrypt_init(key, len);
 }
 
-
-void aes_decrypt(void *ctx, const u8 *crypt, u8 *plain)
-{
+void aes_decrypt(void *ctx, const u8 *crypt, u8 *plain) {
     struct aes_context *akey = ctx;
     DWORD dlen;
 
@@ -340,12 +316,9 @@ void aes_decrypt(void *ctx, const u8 *crypt, u8 *plain)
     }
 }
 
-
-void aes_decrypt_deinit(void *ctx)
-{
+void aes_decrypt_deinit(void *ctx) {
     aes_encrypt_deinit(ctx);
 }
-
 
 struct crypto_hash {
     enum crypto_hash_alg alg;
@@ -356,17 +329,17 @@ struct crypto_hash {
 };
 
 struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
-        size_t key_len)
-{
+        size_t key_len) {
     struct crypto_hash *ctx;
     ALG_ID calg;
+
     struct {
         BLOBHEADER hdr;
         DWORD len;
         BYTE key[32];
     } key_blob;
 
-    os_memset(&key_blob, 0, sizeof(key_blob));
+    os_memset(&key_blob, 0, sizeof (key_blob));
     switch (alg) {
         case CRYPTO_HASH_ALG_MD5:
             calg = CALG_MD5;
@@ -388,7 +361,7 @@ struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
              */
             key_blob.hdr.aiKeyAlg = CALG_RC2;
             key_blob.len = key_len;
-            if (key_len > sizeof(key_blob.key))
+            if (key_len > sizeof (key_blob.key))
                 return NULL;
             os_memcpy(key_blob.key, key, key_len);
             break;
@@ -396,7 +369,7 @@ struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
             return NULL;
     }
 
-    ctx = os_zalloc(sizeof(*ctx));
+    ctx = os_zalloc(sizeof (*ctx));
     if (ctx == NULL)
         return NULL;
 
@@ -412,9 +385,9 @@ struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
 #ifndef CRYPT_IPSEC_HMAC_KEY
 #define CRYPT_IPSEC_HMAC_KEY 0x00000100
 #endif
-        if (!CryptImportKey(ctx->prov, (BYTE *) &key_blob,
-                    sizeof(key_blob), 0, CRYPT_IPSEC_HMAC_KEY,
-                    &ctx->key)) {
+        if (!CryptImportKey(ctx->prov, (BYTE *) & key_blob,
+                sizeof (key_blob), 0, CRYPT_IPSEC_HMAC_KEY,
+                &ctx->key)) {
             cryptoapi_report_error("CryptImportKey");
             CryptReleaseContext(ctx->prov, 0);
             os_free(ctx);
@@ -431,7 +404,7 @@ struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
 
     if (calg == CALG_HMAC) {
         HMAC_INFO info;
-        os_memset(&info, 0, sizeof(info));
+        os_memset(&info, 0, sizeof (info));
         switch (alg) {
             case CRYPTO_HASH_ALG_HMAC_MD5:
                 info.HashAlgid = CALG_MD5;
@@ -444,8 +417,8 @@ struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
                 break;
         }
 
-        if (!CryptSetHashParam(ctx->hash, HP_HMAC_INFO, (BYTE *) &info,
-                    0)) {
+        if (!CryptSetHashParam(ctx->hash, HP_HMAC_INFO, (BYTE *) & info,
+                0)) {
             cryptoapi_report_error("CryptSetHashParam");
             CryptDestroyHash(ctx->hash);
             CryptReleaseContext(ctx->prov, 0);
@@ -457,9 +430,7 @@ struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
     return ctx;
 }
 
-
-void crypto_hash_update(struct crypto_hash *ctx, const u8 *data, size_t len)
-{
+void crypto_hash_update(struct crypto_hash *ctx, const u8 *data, size_t len) {
     if (ctx == NULL || ctx->error)
         return;
 
@@ -469,9 +440,7 @@ void crypto_hash_update(struct crypto_hash *ctx, const u8 *data, size_t len)
     }
 }
 
-
-int crypto_hash_finish(struct crypto_hash *ctx, u8 *mac, size_t *len)
-{
+int crypto_hash_finish(struct crypto_hash *ctx, u8 *mac, size_t *len) {
     int ret = 0;
     DWORD hlen;
 
@@ -503,18 +472,16 @@ done:
     return ret;
 }
 
-
 struct crypto_cipher {
     HCRYPTPROV prov;
     HCRYPTKEY key;
 };
 
-
 struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
         const u8 *iv, const u8 *key,
-        size_t key_len)
-{	
+        size_t key_len) {
     struct crypto_cipher *ctx;
+
     struct {
         BLOBHEADER hdr;
         DWORD len;
@@ -526,7 +493,7 @@ struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
     key_blob.hdr.bVersion = CUR_BLOB_VERSION;
     key_blob.hdr.reserved = 0;
     key_blob.len = key_len;
-    if (key_len > sizeof(key_blob.key))
+    if (key_len > sizeof (key_blob.key))
         return NULL;
     os_memcpy(key_blob.key, key, key_len);
 
@@ -555,23 +522,23 @@ struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
             return NULL;
     }
 
-    ctx = os_zalloc(sizeof(*ctx));
+    ctx = os_zalloc(sizeof (*ctx));
     if (ctx == NULL)
         return NULL;
 
     if (!CryptAcquireContext(&ctx->prov, NULL, MS_ENH_RSA_AES_PROV,
-                PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
+            PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
         cryptoapi_report_error("CryptAcquireContext");
         goto fail1;
     }
 
-    if (!CryptImportKey(ctx->prov, (BYTE *) &key_blob,
-                sizeof(key_blob), 0, 0, &ctx->key)) {
+    if (!CryptImportKey(ctx->prov, (BYTE *) & key_blob,
+            sizeof (key_blob), 0, 0, &ctx->key)) {
         cryptoapi_report_error("CryptImportKey");
         goto fail2;
     }
 
-    if (!CryptSetKeyParam(ctx->key, KP_MODE, (BYTE *) &mode, 0)) {
+    if (!CryptSetKeyParam(ctx->key, KP_MODE, (BYTE *) & mode, 0)) {
         cryptoapi_report_error("CryptSetKeyParam(KP_MODE)");
         goto fail3;
     }
@@ -592,10 +559,8 @@ fail1:
     return NULL;
 }
 
-
 int crypto_cipher_encrypt(struct crypto_cipher *ctx, const u8 *plain,
-        u8 *crypt, size_t len)
-{
+        u8 *crypt, size_t len) {
     DWORD dlen;
 
     os_memcpy(crypt, plain, len);
@@ -609,10 +574,8 @@ int crypto_cipher_encrypt(struct crypto_cipher *ctx, const u8 *plain,
     return 0;
 }
 
-
 int crypto_cipher_decrypt(struct crypto_cipher *ctx, const u8 *crypt,
-        u8 *plain, size_t len)
-{
+        u8 *plain, size_t len) {
     DWORD dlen;
 
     os_memcpy(plain, crypt, len);
@@ -625,14 +588,11 @@ int crypto_cipher_decrypt(struct crypto_cipher *ctx, const u8 *crypt,
     return 0;
 }
 
-
-void crypto_cipher_deinit(struct crypto_cipher *ctx)
-{
+void crypto_cipher_deinit(struct crypto_cipher *ctx) {
     CryptDestroyKey(ctx->key);
     CryptReleaseContext(ctx->prov, 0);
     os_free(ctx);
 }
-
 
 struct crypto_public_key {
     HCRYPTPROV prov;
@@ -644,30 +604,24 @@ struct crypto_private_key {
     HCRYPTKEY rsa;
 };
 
-
-struct crypto_public_key * crypto_public_key_import(const u8 *key, size_t len)
-{
+struct crypto_public_key * crypto_public_key_import(const u8 *key, size_t len) {
     /* Use crypto_public_key_from_cert() instead. */
     return NULL;
 }
 
-
 struct crypto_private_key * crypto_private_key_import(const u8 *key,
         size_t len,
-        const char *passwd)
-{
+        const char *passwd) {
     /* TODO */
     return NULL;
 }
 
-
 struct crypto_public_key * crypto_public_key_from_cert(const u8 *buf,
-        size_t len)
-{
+        size_t len) {
     struct crypto_public_key *pk;
     PCCERT_CONTEXT cc;
 
-    pk = os_zalloc(sizeof(*pk));
+    pk = os_zalloc(sizeof (*pk));
     if (pk == NULL)
         return NULL;
 
@@ -680,7 +634,7 @@ struct crypto_public_key * crypto_public_key_from_cert(const u8 *buf,
     }
 
     if (!CryptAcquireContext(&pk->prov, NULL, MS_DEF_PROV, PROV_RSA_FULL,
-                0)) {
+            0)) {
         cryptoapi_report_error("CryptAcquireContext");
         os_free(pk);
         CertFreeCertificateContext(cc);
@@ -688,9 +642,9 @@ struct crypto_public_key * crypto_public_key_from_cert(const u8 *buf,
     }
 
     if (!CryptImportPublicKeyInfo(pk->prov, X509_ASN_ENCODING |
-                PKCS_7_ASN_ENCODING,
-                &cc->pCertInfo->SubjectPublicKeyInfo,
-                &pk->rsa)) {
+            PKCS_7_ASN_ENCODING,
+            &cc->pCertInfo->SubjectPublicKeyInfo,
+            &pk->rsa)) {
         cryptoapi_report_error("CryptImportPublicKeyInfo");
         CryptReleaseContext(pk->prov, 0);
         os_free(pk);
@@ -703,11 +657,9 @@ struct crypto_public_key * crypto_public_key_from_cert(const u8 *buf,
     return pk;
 }
 
-
 int crypto_public_key_encrypt_pkcs1_v15(struct crypto_public_key *key,
         const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     DWORD clen;
     u8 *tmp;
     size_t i;
@@ -738,18 +690,14 @@ int crypto_public_key_encrypt_pkcs1_v15(struct crypto_public_key *key,
     return 0;
 }
 
-
 int crypto_private_key_sign_pkcs1(struct crypto_private_key *key,
         const u8 *in, size_t inlen,
-        u8 *out, size_t *outlen)
-{
+        u8 *out, size_t *outlen) {
     /* TODO */
     return -1;
 }
 
-
-void crypto_public_key_free(struct crypto_public_key *key)
-{
+void crypto_public_key_free(struct crypto_public_key *key) {
     if (key) {
         CryptDestroyKey(key->rsa);
         CryptReleaseContext(key->prov, 0);
@@ -757,9 +705,7 @@ void crypto_public_key_free(struct crypto_public_key *key)
     }
 }
 
-
-void crypto_private_key_free(struct crypto_private_key *key)
-{
+void crypto_private_key_free(struct crypto_private_key *key) {
     if (key) {
         CryptDestroyKey(key->rsa);
         CryptReleaseContext(key->prov, 0);
@@ -767,23 +713,17 @@ void crypto_private_key_free(struct crypto_private_key *key)
     }
 }
 
-
-int crypto_global_init(void)
-{
+int crypto_global_init(void) {
     return mingw_load_crypto_func();
 }
 
-
-void crypto_global_deinit(void)
-{
+void crypto_global_deinit(void) {
 }
-
 
 int crypto_mod_exp(const u8 *base, size_t base_len,
         const u8 *power, size_t power_len,
         const u8 *modulus, size_t modulus_len,
-        u8 *result, size_t *result_len)
-{
+        u8 *result, size_t *result_len) {
     /* TODO */
     return -1;
 }

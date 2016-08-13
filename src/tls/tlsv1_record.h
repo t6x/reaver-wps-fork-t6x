@@ -62,13 +62,13 @@ struct tlsv1_record_layer {
 
 
 int tlsv1_record_set_cipher_suite(struct tlsv1_record_layer *rl,
-                                  u16 cipher_suite);
+        u16 cipher_suite);
 int tlsv1_record_change_write_cipher(struct tlsv1_record_layer *rl);
 int tlsv1_record_change_read_cipher(struct tlsv1_record_layer *rl);
 int tlsv1_record_send(struct tlsv1_record_layer *rl, u8 content_type, u8 *buf,
-                      size_t buf_size, size_t payload_len, size_t *out_len);
+        size_t buf_size, size_t payload_len, size_t *out_len);
 int tlsv1_record_receive(struct tlsv1_record_layer *rl,
-                         const u8 *in_data, size_t in_len,
-                         u8 *out_data, size_t *out_len, u8 *alert);
+        const u8 *in_data, size_t in_len,
+        u8 *out_data, size_t *out_len, u8 *alert);
 
 #endif /* TLSV1_RECORD_H */

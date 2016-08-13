@@ -66,13 +66,15 @@ struct ieee802_11_elems {
     u8 vendor_ht_cap_len;
 };
 
-typedef enum { ParseOK = 0, ParseUnknown = 1, ParseFailed = -1 } ParseRes;
+typedef enum {
+    ParseOK = 0, ParseUnknown = 1, ParseFailed = -1
+} ParseRes;
 
 ParseRes ieee802_11_parse_elems(const u8 *start, size_t len,
-                                struct ieee802_11_elems *elems,
-                                int show_errors);
+        struct ieee802_11_elems *elems,
+        int show_errors);
 int ieee802_11_ie_count(const u8 *ies, size_t ies_len);
 struct wpabuf * ieee802_11_vendor_ie_concat(const u8 *ies, size_t ies_len,
-                                            u32 oui_type);
+        u32 oui_type);
 
 #endif /* IEEE802_11_COMMON_H */
