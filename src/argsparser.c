@@ -36,68 +36,65 @@
 #include "globule.h"
 
 /* Processes Reaver command line options */
-int process_arguments(int argc, char **argv)
-{
+int process_arguments(int argc, char **argv) {
     int ret_val = EXIT_SUCCESS;
     int c = 0, channel = 0;
     int long_opt_index = 0;
-    char bssid[MAC_ADDR_LEN] = { 0 };
-    char mac[MAC_ADDR_LEN] = { 0 };
+    char bssid[MAC_ADDR_LEN] = {0};
+    char mac[MAC_ADDR_LEN] = {0};
     char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:F:R:ZaA5ELfnqvDShwXNPH0I";
     struct option long_options[] = {
-		{ "generate-pin", required_argument, NULL, 'W' },
-		{ "stop-in-m1", no_argument, NULL, '0' },
-        { "pixie-dust", required_argument, NULL, 'K' },
-        { "no-auto-pass", no_argument, NULL, 'Z' },
-        { "interface", required_argument, NULL, 'i' },
-        { "bssid", required_argument, NULL, 'b' },
-        { "essid", required_argument, NULL, 'e' },
-        { "mac", required_argument, NULL, 'm' },
-        { "timeout", required_argument, NULL, 't' },
-        { "m57-timeout", required_argument, NULL, 'T' },
-        { "delay", required_argument, NULL, 'd' },
-        { "lock-delay", required_argument, NULL, 'l' },
-        { "fake-delay", required_argument, NULL, 'F' },
-        { "fake-reason", required_argument, NULL, 'R' },
-        { "ignore-reason", no_argument, NULL, 'I' },
-        { "fail-wait", required_argument, NULL, 'x' },
-        { "channel", required_argument, NULL, 'c' },
-        { "session", required_argument, NULL, 's' },
-        { "recurring-delay", required_argument, NULL, 'r' },
-        { "max-attempts", required_argument, NULL, 'g' },
-        { "out-file", required_argument, NULL, 'o' },
-        { "pin", required_argument, NULL, 'p' },
-        { "exec", required_argument, NULL, 'C' },
-        { "p1-index", required_argument, NULL, '1' },
-        { "p2-index", required_argument, NULL, '2' },
-        { "no-associate", no_argument, NULL, 'A' },
-        { "ignore-locks", no_argument, NULL, 'L' },
-        { "no-nacks", no_argument, NULL, 'N' },
-        { "eap-terminate", no_argument, NULL, 'E' },
-        { "dh-small", no_argument, NULL, 'S' },
-        { "auto", no_argument, NULL, 'a' },
-        { "fixed", no_argument, NULL, 'f' },
-        { "daemonize", no_argument, NULL, 'D' },
-        { "5ghz", no_argument, NULL, '5' },
-        { "nack", no_argument, NULL, 'n' },
-        { "quiet", no_argument, NULL, 'q' },
-        { "verbose", no_argument, NULL, 'v' },
-        { "win7", no_argument, NULL, 'w' },
-        { "exhaustive", no_argument, NULL, 'X' },
-        { "help", no_argument, NULL, 'h' },
-	{ "pixiedust-loop", no_argument, NULL, 'P' },
-	{ "pixiedust-log", no_argument, NULL, 'H' },
-        { 0, 0, 0, 0 }
+        { "generate-pin", required_argument, NULL, 'W'},
+        { "stop-in-m1", no_argument, NULL, '0'},
+        { "pixie-dust", required_argument, NULL, 'K'},
+        { "no-auto-pass", no_argument, NULL, 'Z'},
+        { "interface", required_argument, NULL, 'i'},
+        { "bssid", required_argument, NULL, 'b'},
+        { "essid", required_argument, NULL, 'e'},
+        { "mac", required_argument, NULL, 'm'},
+        { "timeout", required_argument, NULL, 't'},
+        { "m57-timeout", required_argument, NULL, 'T'},
+        { "delay", required_argument, NULL, 'd'},
+        { "lock-delay", required_argument, NULL, 'l'},
+        { "fake-delay", required_argument, NULL, 'F'},
+        { "fake-reason", required_argument, NULL, 'R'},
+        { "ignore-reason", no_argument, NULL, 'I'},
+        { "fail-wait", required_argument, NULL, 'x'},
+        { "channel", required_argument, NULL, 'c'},
+        { "session", required_argument, NULL, 's'},
+        { "recurring-delay", required_argument, NULL, 'r'},
+        { "max-attempts", required_argument, NULL, 'g'},
+        { "out-file", required_argument, NULL, 'o'},
+        { "pin", required_argument, NULL, 'p'},
+        { "exec", required_argument, NULL, 'C'},
+        { "p1-index", required_argument, NULL, '1'},
+        { "p2-index", required_argument, NULL, '2'},
+        { "no-associate", no_argument, NULL, 'A'},
+        { "ignore-locks", no_argument, NULL, 'L'},
+        { "no-nacks", no_argument, NULL, 'N'},
+        { "eap-terminate", no_argument, NULL, 'E'},
+        { "dh-small", no_argument, NULL, 'S'},
+        { "auto", no_argument, NULL, 'a'},
+        { "fixed", no_argument, NULL, 'f'},
+        { "daemonize", no_argument, NULL, 'D'},
+        { "5ghz", no_argument, NULL, '5'},
+        { "nack", no_argument, NULL, 'n'},
+        { "quiet", no_argument, NULL, 'q'},
+        { "verbose", no_argument, NULL, 'v'},
+        { "win7", no_argument, NULL, 'w'},
+        { "exhaustive", no_argument, NULL, 'X'},
+        { "help", no_argument, NULL, 'h'},
+        { "pixiedust-loop", no_argument, NULL, 'P'},
+        { "pixiedust-log", no_argument, NULL, 'H'},
+        { 0, 0, 0, 0}
     };
 
     /* Since this function may be called multiple times, be sure to set opt index to 0 each time */
     optind = 0;
     opterr = 0;
 
-    while((c = getopt_long(argc, argv, short_options, long_options, &long_opt_index)) != -1)
-    {
-        switch(c)
-        {
+    while ((c = getopt_long(argc, argv, short_options, long_options, &long_opt_index)) != -1) {
+        switch (c) {
             case 'W':
                 //set default pin generator
                 set_op_gen_pin(atoi(optarg));
@@ -120,8 +117,8 @@ int process_arguments(int argc, char **argv)
                     set_dh_small(1);
                     printf("Option (-K 1) or (-K 2) must use the -S option. -S Option enabled now, continuing.\n");
                 }
-                */
-            break;
+                 */
+                break;
             case 'i':
                 set_iface(optarg);
                 break;
@@ -158,8 +155,8 @@ int process_arguments(int argc, char **argv)
             case 'p':
                 parse_static_pin(optarg);
                 break;
-            case 's':       
-                set_session(optarg);   
+            case 's':
+                set_session(optarg);
                 break;
             case 'C':
                 set_exec_string(optarg);
@@ -176,8 +173,8 @@ int process_arguments(int argc, char **argv)
             case 'L':
                 set_ignore_locks(1);
                 break;
-            case 'a':       
-                set_auto_detect_options(1); 
+            case 'a':
+                set_auto_detect_options(1);
                 break;
             case 'o':
                 set_log_file(fopen(optarg, "w"));
@@ -221,20 +218,20 @@ int process_arguments(int argc, char **argv)
             case 'N':
                 set_oo_send_nack(0);
                 break;
-	    case 'P':
+            case 'P':
                 set_pixie_loop(1);
                 break;
-	    case 'H':
+            case 'H':
                 set_pixie_log(1);
                 break;
             case 'F':
-                set_fake_nack_delay( atoi(optarg) );
+                set_fake_nack_delay(atoi(optarg));
                 break;
             case 'I':
                 set_ignore_nack_reason(1);
                 break;
             case 'R':
-                set_fake_nack_reason( strtol(optarg, NULL, 0) );
+                set_fake_nack_reason(strtol(optarg, NULL, 0));
                 set_ignore_nack_reason(1);
                 break;
             default:
@@ -242,8 +239,7 @@ int process_arguments(int argc, char **argv)
         }
     }
 
-    if(channel)
-    {
+    if (channel) {
         change_channel(channel);
     }
 
@@ -251,8 +247,7 @@ int process_arguments(int argc, char **argv)
 }
 
 /* Initialize some basic config settings */
-void init_default_settings(void)
-{
+void init_default_settings(void) {
     set_log_file(stdout);
     set_max_pin_attempts(P1_SIZE + P2_SIZE);
     set_delay(DEFAULT_DELAY);
@@ -280,15 +275,13 @@ void init_default_settings(void)
 }
 
 /* Parses the recurring delay optarg */
-void parse_recurring_delay(char *arg)
-{
+void parse_recurring_delay(char *arg) {
     char *x = NULL, *y = NULL;
 
     x = strdup(arg);
     y = strchr(x, ':');
 
-    if(y)
-    {
+    if (y) {
         memset(y, 0, 1);
         y++;
 
@@ -300,70 +293,57 @@ void parse_recurring_delay(char *arg)
 }
 
 /* Parse the WPS pin to use into p1 and p2 */
-void parse_static_pin(char *pin)
-{
+void parse_static_pin(char *pin) {
     int len = 0;
-    char p1[5] = { 0 };
-    char p2[4] = { 0 };
+    char p1[5] = {0};
+    char p2[4] = {0};
 
-    if(pin)
-    {
+    if (pin) {
         len = strlen(pin);
         //set_max_pin_attempts(1);
 
-        if(len == 4 || len == 7 || len == 8)
-        {
-            memcpy((void *) &p1, pin, sizeof(p1)-1);
+        if (len == 4 || len == 7 || len == 8) {
+            memcpy((void *) &p1, pin, sizeof (p1) - 1);
             set_static_p1((char *) &p1);
             set_key_status(KEY2_WIP);
 
-            if(len > 4)
-            {
-                memcpy((void *) &p2, pin+sizeof(p1)-1, sizeof(p2)-1);
+            if (len > 4) {
+                memcpy((void *) &p2, pin + sizeof (p1) - 1, sizeof (p2) - 1);
                 set_static_p2((char *) &p2);
             }
-        }
-        else
-        {
+        } else {
             cprintf(CRITICAL, "[X] ERROR: Invalid pin specified! Ignoring '%s'.\n", pin);
         }
     }
 }
 
 /* Process auto-applied options from the database. read_ap_beacon should be called before this. */
-void process_auto_options(void)
-{
+void process_auto_options(void) {
     char **argv = NULL;
     int argc = 0, i = 0;
     char *bssid = NULL, *ssid = NULL;
 
-    if(get_auto_detect_options())
-    {
+    if (get_auto_detect_options()) {
         bssid = (char *) mac2str(get_bssid(), ':');
 
 
-        if(bssid)
-        {
+        if (bssid) {
             /* If we didn't get the SSID from the beacon packet, check the database */
-            if(get_ssid() == NULL)
-            {
+            if (get_ssid() == NULL) {
                 ssid = get_db_ssid(bssid);
-                if(ssid)
-                {
+                if (ssid) {
                     set_ssid(ssid);
                     free(ssid);
                 }
             }
 
             argv = auto_detect_settings(bssid, &argc);
-            if(argc > 1 && argv != NULL)
-            {
+            if (argc > 1 && argv != NULL) {
                 /* Process the command line arguments */
                 process_arguments(argc, argv);
 
                 /* Clean up argument memory allocation */
-                for(i=0; i<argc; i++)
-                {
+                for (i = 0; i < argc; i++) {
                     free(argv[i]);
                 }
                 free(argv);

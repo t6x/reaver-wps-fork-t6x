@@ -34,52 +34,38 @@
 #include "pins.h"
 
 /* Builds a WPS PIN from the key tables */
-char *build_wps_pin()
-{
+char *build_wps_pin() {
     char *key = NULL, *pin = NULL, *p1_value = NULL, *p2_value = NULL;
     int pin_len = PIN_SIZE + 1;
 
     pin = malloc(pin_len);
     key = malloc(pin_len);
-    if(pin && key)
-    {
+    if (pin && key) {
         memset(key, 0, pin_len);
         memset(pin, 0, pin_len);
 
-        if(get_static_p1())
-        {
+        if (get_static_p1()) {
             p1_value = get_static_p1();
-        }
-        else
-        {
+        } else {
             p1_value = get_p1(get_p1_index());
         }
 
-        if(get_static_p2())
-        {
+        if (get_static_p2()) {
             p2_value = get_static_p2();
-        }
-        else
-        {
-            if(get_exhaustive())
-            {
+        } else {
+            if (get_exhaustive()) {
                 p2_value = get_p1(get_p2_index());
-            }
-            else
-            {
+            } else {
                 p2_value = get_p2(get_p2_index());
             }
         }
 
-        if(get_exhaustive())
-        {
+        if (get_exhaustive()) {
             /* Generate an 8-digit pin from the given key index values */
             snprintf(pin, pin_len, "%s%s", p1_value, p2_value);
-        }
-        else
-        {
+        } else {
             /* Generate a 7-digit pin from the given key index values */
-            snprintf(key, pin_len-1, "%s%s", p1_value, p2_value);
+            snprintf(key, pin_len - 1, "%s%s", p1_value, p2_value);
 
             /* Generate and append the pin checksum digit */
             snprintf(pin, pin_len, "%s%d", key, wps_pin_checksum(atoi(key)));
@@ -95,8 +81,7 @@ char *build_wps_pin()
  * Remove the last WPS pin (if any), build the next WPS pin in the p1 and p2 arrays, 
  * and populate the wps structure with the new pin.
  */
-char *build_next_pin()
-{
+char *build_next_pin() {
     char *pin = NULL;
     struct wps_data *wps = get_wps();
 
@@ -105,11 +90,9 @@ char *build_next_pin()
 
     /* Build a new pin */
     pin = build_wps_pin();
-    if(pin)
-    {
+    if (pin) {
         /* Add the new pin */
-        if(wps_registrar_add_pin(wps->wps->registrar, NULL, (const u8 *) pin, PIN_SIZE, 0) != 0)
-        {
+        if (wps_registrar_add_pin(wps->wps->registrar, NULL, (const u8 *) pin, PIN_SIZE, 0) != 0) {
             free(pin);
             pin = NULL;
         }
@@ -119,8 +102,7 @@ char *build_next_pin()
 }
 
 /* Generate the p1 and p2 pin arrays */
-void generate_pins()
-{
+void generate_pins() {
     int i = 0, index = 0;
 
     /* If the first half of the pin was not specified, generate a list of possible pins */
@@ -130,20 +112,16 @@ void generate_pins()
      * Look for P1 keys marked as priority. These are pins that have been 
      * reported to be commonly used on some APs and should be tried first. 
      */
-    for(index=0, i=0; i<P1_SIZE; i++)
-    {
-        if(k1[i].priority == 1)
-        {
+    for (index = 0, i = 0; i < P1_SIZE; i++) {
+        if (k1[i].priority == 1) {
             set_p1(index, k1[i].key);
             index++;
         }
     }
 
     /* Randomize the rest of the P1 keys */
-    for(i=0; index < P1_SIZE; i++)
-    {
-        if(!k1[i].priority)
-        {
+    for (i = 0; index < P1_SIZE; i++) {
+        if (!k1[i].priority) {
             set_p1(index, k1[i].key);
             index++;
         }
@@ -165,20 +143,16 @@ void generate_pins()
      * Look for P2 keys statically marked as priority. These are pins that have been 
      * reported to be commonly used on some APs and should be tried first. 
      */
-    for(index=0, i=0; i<P2_SIZE; i++)
-    {
-        if(k2[i].priority == 1)
-        {
+    for (index = 0, i = 0; i < P2_SIZE; i++) {
+        if (k2[i].priority == 1) {
             set_p2(index, k2[i].key);
             index++;
         }
     }
 
     /* Randomize the rest of the P2 keys */
-    for(i=0; index < P2_SIZE; i++)
-    {
-        if(!k2[i].priority)
-        {
+    for (i = 0; index < P2_SIZE; i++) {
+        if (!k2[i].priority) {
             set_p2(index, k2[i].key);
             index++;
         }

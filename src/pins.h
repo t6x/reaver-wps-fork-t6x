@@ -38,7 +38,7 @@
 #include "globule.h"
 #include "keys.h"
 
-#define PIN_SIZE	8
+#define PIN_SIZE 8
 
 /* Defined in keys.c */
 extern struct key k1[P1_SIZE];

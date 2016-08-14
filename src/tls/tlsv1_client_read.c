@@ -31,10 +31,8 @@ static int tls_process_certificate_request(struct tlsv1_client *conn, u8 ct,
 static int tls_process_server_hello_done(struct tlsv1_client *conn, u8 ct,
         const u8 *in_data, size_t *in_len);
 
-
 static int tls_process_server_hello(struct tlsv1_client *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len, i;
     u16 cipher_suite;
@@ -199,7 +197,7 @@ static int tls_process_server_hello(struct tlsv1_client *conn, u8 ct,
     *in_len = end - in_data;
 
     conn->state = (conn->session_resumed || conn->use_session_ticket) ?
-        SERVER_CHANGE_CIPHER_SPEC : SERVER_CERTIFICATE;
+            SERVER_CHANGE_CIPHER_SPEC : SERVER_CERTIFICATE;
 
     return 0;
 
@@ -209,10 +207,8 @@ decode_error:
     return -1;
 }
 
-
 static int tls_process_certificate(struct tlsv1_client *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len, list_len, cert_len, idx;
     u8 type;
@@ -252,13 +248,13 @@ static int tls_process_certificate(struct tlsv1_client *conn, u8 ct,
 
     if (type == TLS_HANDSHAKE_TYPE_SERVER_KEY_EXCHANGE)
         return tls_process_server_key_exchange(conn, ct, in_data,
-                in_len);
+            in_len);
     if (type == TLS_HANDSHAKE_TYPE_CERTIFICATE_REQUEST)
         return tls_process_certificate_request(conn, ct, in_data,
-                in_len);
+            in_len);
     if (type == TLS_HANDSHAKE_TYPE_SERVER_HELLO_DONE)
         return tls_process_server_hello_done(conn, ct, in_data,
-                in_len);
+            in_len);
     if (type != TLS_HANDSHAKE_TYPE_CERTIFICATE) {
         wpa_printf(MSG_DEBUG, "TLSv1: Received unexpected handshake "
                 "message %d (expected Certificate/"
@@ -333,7 +329,7 @@ static int tls_process_certificate(struct tlsv1_client *conn, u8 ct,
         if (idx == 0) {
             crypto_public_key_free(conn->server_rsa_key);
             if (tls_parse_cert(pos, cert_len,
-                        &conn->server_rsa_key)) {
+                    &conn->server_rsa_key)) {
                 wpa_printf(MSG_DEBUG, "TLSv1: Failed to parse "
                         "the certificate");
                 tls_alert(conn, TLS_ALERT_LEVEL_FATAL,
@@ -365,7 +361,7 @@ static int tls_process_certificate(struct tlsv1_client *conn, u8 ct,
 
     if (conn->cred &&
             x509_certificate_chain_validate(conn->cred->trusted_certs, chain,
-                &reason) < 0) {
+            &reason) < 0) {
         int tls_reason;
         wpa_printf(MSG_DEBUG, "TLSv1: Server certificate chain "
                 "validation failed (reason=%d)", reason);
@@ -406,10 +402,8 @@ static int tls_process_certificate(struct tlsv1_client *conn, u8 ct,
     return 0;
 }
 
-
 static int tlsv1_process_diffie_hellman(struct tlsv1_client *conn,
-        const u8 *buf, size_t len)
-{
+        const u8 *buf, size_t len) {
     const u8 *pos, *end;
 
     tlsv1_client_free_dh(conn);
@@ -472,10 +466,8 @@ fail:
     return -1;
 }
 
-
 static int tls_process_server_key_exchange(struct tlsv1_client *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len;
     u8 type;
@@ -516,10 +508,10 @@ static int tls_process_server_key_exchange(struct tlsv1_client *conn, u8 ct,
 
     if (type == TLS_HANDSHAKE_TYPE_CERTIFICATE_REQUEST)
         return tls_process_certificate_request(conn, ct, in_data,
-                in_len);
+            in_len);
     if (type == TLS_HANDSHAKE_TYPE_SERVER_HELLO_DONE)
         return tls_process_server_hello_done(conn, ct, in_data,
-                in_len);
+            in_len);
     if (type != TLS_HANDSHAKE_TYPE_SERVER_KEY_EXCHANGE) {
         wpa_printf(MSG_DEBUG, "TLSv1: Received unexpected handshake "
                 "message %d (expected ServerKeyExchange/"
@@ -561,10 +553,8 @@ static int tls_process_server_key_exchange(struct tlsv1_client *conn, u8 ct,
     return 0;
 }
 
-
 static int tls_process_certificate_request(struct tlsv1_client *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len;
     u8 type;
@@ -604,7 +594,7 @@ static int tls_process_certificate_request(struct tlsv1_client *conn, u8 ct,
 
     if (type == TLS_HANDSHAKE_TYPE_SERVER_HELLO_DONE)
         return tls_process_server_hello_done(conn, ct, in_data,
-                in_len);
+            in_len);
     if (type != TLS_HANDSHAKE_TYPE_CERTIFICATE_REQUEST) {
         wpa_printf(MSG_DEBUG, "TLSv1: Received unexpected handshake "
                 "message %d (expected CertificateRequest/"
@@ -625,10 +615,8 @@ static int tls_process_certificate_request(struct tlsv1_client *conn, u8 ct,
     return 0;
 }
 
-
 static int tls_process_server_hello_done(struct tlsv1_client *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len;
     u8 type;
@@ -682,11 +670,9 @@ static int tls_process_server_hello_done(struct tlsv1_client *conn, u8 ct,
     return 0;
 }
 
-
 static int tls_process_server_change_cipher_spec(struct tlsv1_client *conn,
         u8 ct, const u8 *in_data,
-        size_t *in_len)
-{
+        size_t *in_len) {
     const u8 *pos;
     size_t left;
 
@@ -753,10 +739,8 @@ static int tls_process_server_change_cipher_spec(struct tlsv1_client *conn,
     return 0;
 }
 
-
 static int tls_process_server_finished(struct tlsv1_client *conn, u8 ct,
-        const u8 *in_data, size_t *in_len)
-{
+        const u8 *in_data, size_t *in_len) {
     const u8 *pos, *end;
     size_t left, len, hlen;
     u8 verify_data[TLS_VERIFY_DATA_LEN];
@@ -829,7 +813,7 @@ static int tls_process_server_finished(struct tlsv1_client *conn, u8 ct,
     hlen = SHA1_MAC_LEN;
     if (conn->verify.sha1_server == NULL ||
             crypto_hash_finish(conn->verify.sha1_server, hash + MD5_MAC_LEN,
-                &hlen) < 0) {
+            &hlen) < 0) {
         conn->verify.sha1_server = NULL;
         tls_alert(conn, TLS_ALERT_LEVEL_FATAL,
                 TLS_ALERT_INTERNAL_ERROR);
@@ -838,8 +822,8 @@ static int tls_process_server_finished(struct tlsv1_client *conn, u8 ct,
     conn->verify.sha1_server = NULL;
 
     if (tls_prf(conn->master_secret, TLS_MASTER_SECRET_LEN,
-                "server finished", hash, MD5_MAC_LEN + SHA1_MAC_LEN,
-                verify_data, TLS_VERIFY_DATA_LEN)) {
+            "server finished", hash, MD5_MAC_LEN + SHA1_MAC_LEN,
+            verify_data, TLS_VERIFY_DATA_LEN)) {
         wpa_printf(MSG_DEBUG, "TLSv1: Failed to derive verify_data");
         tls_alert(conn, TLS_ALERT_LEVEL_FATAL,
                 TLS_ALERT_DECRYPT_ERROR);
@@ -858,16 +842,14 @@ static int tls_process_server_finished(struct tlsv1_client *conn, u8 ct,
     *in_len = end - in_data;
 
     conn->state = (conn->session_resumed || conn->use_session_ticket) ?
-        CHANGE_CIPHER_SPEC : ACK_FINISHED;
+            CHANGE_CIPHER_SPEC : ACK_FINISHED;
 
     return 0;
 }
 
-
 static int tls_process_application_data(struct tlsv1_client *conn, u8 ct,
         const u8 *in_data, size_t *in_len,
-        u8 **out_data, size_t *out_len)
-{
+        u8 **out_data, size_t *out_len) {
     const u8 *pos;
     size_t left;
 
@@ -894,11 +876,9 @@ static int tls_process_application_data(struct tlsv1_client *conn, u8 ct,
     return 0;
 }
 
-
 int tlsv1_client_process_handshake(struct tlsv1_client *conn, u8 ct,
         const u8 *buf, size_t *len,
-        u8 **out_data, size_t *out_len)
-{
+        u8 **out_data, size_t *out_len) {
     if (ct == TLS_CONTENT_TYPE_ALERT) {
         if (*len < 2) {
             wpa_printf(MSG_DEBUG, "TLSv1: Alert underflow");
@@ -959,7 +939,7 @@ int tlsv1_client_process_handshake(struct tlsv1_client *conn, u8 ct,
         case ACK_FINISHED:
             if (out_data &&
                     tls_process_application_data(conn, ct, buf, len, out_data,
-                        out_len))
+                    out_len))
                 return -1;
             break;
         default:

@@ -27,17 +27,14 @@
 #undef OS_REJECT_C_LIB_FUNCTIONS
 #include "os.h"
 
-void os_sleep(os_time_t sec, os_time_t usec)
-{
+void os_sleep(os_time_t sec, os_time_t usec) {
     if (sec)
         sleep(sec);
     if (usec)
         usleep(usec);
 }
 
-
-int os_get_time(struct os_time *t)
-{
+int os_get_time(struct os_time *t) {
     int res;
     struct timeval tv;
     res = gettimeofday(&tv, NULL);
@@ -46,10 +43,8 @@ int os_get_time(struct os_time *t)
     return res;
 }
 
-
 int os_mktime(int year, int month, int day, int hour, int min, int sec,
-        os_time_t *t)
-{
+        os_time_t *t) {
     struct tm tm;
 
     if (year < 1970 || month < 1 || month > 12 || day < 1 || day > 31 ||
@@ -57,7 +52,7 @@ int os_mktime(int year, int month, int day, int hour, int min, int sec,
             sec > 60)
         return -1;
 
-    os_memset(&tm, 0, sizeof(tm));
+    os_memset(&tm, 0, sizeof (tm));
     tm.tm_year = year - 1900;
     tm.tm_mon = month - 1;
     tm.tm_mday = day;
@@ -69,9 +64,7 @@ int os_mktime(int year, int month, int day, int hour, int min, int sec,
     return 0;
 }
 
-
-int os_daemonize(const char *pid_file)
-{
+int os_daemonize(const char *pid_file) {
     if (daemon(0, 0)) {
         perror("daemon");
         return -1;
@@ -88,16 +81,12 @@ int os_daemonize(const char *pid_file)
     return -0;
 }
 
-
-void os_daemonize_terminate(const char *pid_file)
-{
+void os_daemonize_terminate(const char *pid_file) {
     if (pid_file)
         unlink(pid_file);
 }
 
-
-int os_get_random(unsigned char *buf, size_t len)
-{
+int os_get_random(unsigned char *buf, size_t len) {
     FILE *f;
     size_t rc;
 
@@ -113,15 +102,11 @@ int os_get_random(unsigned char *buf, size_t len)
     return rc != len ? -1 : 0;
 }
 
-
-unsigned long os_random(void)
-{
+unsigned long os_random(void) {
     return random();
 }
 
-
-char * os_rel2abs_path(const char *rel_path)
-{
+char * os_rel2abs_path(const char *rel_path) {
     char *buf = NULL, *cwd, *ret;
     size_t len = 128, cwd_len, rel_len, ret_len;
 
@@ -158,26 +143,18 @@ char * os_rel2abs_path(const char *rel_path)
     return ret;
 }
 
-
-int os_program_init(void)
-{
+int os_program_init(void) {
     return 0;
 }
 
-
-void os_program_deinit(void)
-{
+void os_program_deinit(void) {
 }
 
-
-int os_setenv(const char *name, const char *value, int overwrite)
-{
+int os_setenv(const char *name, const char *value, int overwrite) {
     return setenv(name, value, overwrite);
 }
 
-
-int os_unsetenv(const char *name)
-{
+int os_unsetenv(const char *name) {
 #if defined(__FreeBSD__) || defined(__NetBSD__)
     unsetenv(name);
     return 0;
@@ -186,9 +163,7 @@ int os_unsetenv(const char *name)
 #endif
 }
 
-
-char * os_readfile(const char *name, size_t *len)
-{
+char * os_readfile(const char *name, size_t *len) {
     FILE *f;
     char *buf;
 
@@ -217,36 +192,26 @@ char * os_readfile(const char *name, size_t *len)
     return buf;
 }
 
-
-void * os_zalloc(size_t size)
-{
+void * os_zalloc(size_t size) {
     void *n = os_malloc(size);
     if (n)
         os_memset(n, 0, size);
     return n;
 }
 
-
-void * os_malloc(size_t size)
-{
+void * os_malloc(size_t size) {
     return malloc(size);
 }
 
-
-void * os_realloc(void *ptr, size_t size)
-{
+void * os_realloc(void *ptr, size_t size) {
     return realloc(ptr, size);
 }
 
-
-void os_free(void *ptr)
-{
+void os_free(void *ptr) {
     free(ptr);
 }
 
-
-void * os_memcpy(void *dest, const void *src, size_t n)
-{
+void * os_memcpy(void *dest, const void *src, size_t n) {
     char *d = dest;
     const char *s = src;
     while (n--)
@@ -254,9 +219,7 @@ void * os_memcpy(void *dest, const void *src, size_t n)
     return dest;
 }
 
-
-void * os_memmove(void *dest, const void *src, size_t n)
-{
+void * os_memmove(void *dest, const void *src, size_t n) {
     if (dest < src)
         os_memcpy(dest, src, n);
     else {
@@ -269,18 +232,14 @@ void * os_memmove(void *dest, const void *src, size_t n)
     return dest;
 }
 
-
-void * os_memset(void *s, int c, size_t n)
-{
+void * os_memset(void *s, int c, size_t n) {
     char *p = s;
     while (n--)
         *p++ = c;
     return s;
 }
 
-
-int os_memcmp(const void *s1, const void *s2, size_t n)
-{
+int os_memcmp(const void *s1, const void *s2, size_t n) {
     const unsigned char *p1 = s1, *p2 = s2;
 
     if (n == 0)
@@ -297,9 +256,7 @@ int os_memcmp(const void *s1, const void *s2, size_t n)
     return *p1 - *p2;
 }
 
-
-char * os_strdup(const char *s)
-{
+char * os_strdup(const char *s) {
     char *res;
     size_t len;
     if (s == NULL)
@@ -311,18 +268,14 @@ char * os_strdup(const char *s)
     return res;
 }
 
-
-size_t os_strlen(const char *s)
-{
+size_t os_strlen(const char *s) {
     const char *p = s;
     while (*p)
         p++;
     return p - s;
 }
 
-
-int os_strcasecmp(const char *s1, const char *s2)
-{
+int os_strcasecmp(const char *s1, const char *s2) {
     /*
      * Ignoring case is not required for main functionality, so just use
      * the case sensitive version of the function.
@@ -330,9 +283,7 @@ int os_strcasecmp(const char *s1, const char *s2)
     return os_strcmp(s1, s2);
 }
 
-
-int os_strncasecmp(const char *s1, const char *s2, size_t n)
-{
+int os_strncasecmp(const char *s1, const char *s2, size_t n) {
     /*
      * Ignoring case is not required for main functionality, so just use
      * the case sensitive version of the function.
@@ -340,9 +291,7 @@ int os_strncasecmp(const char *s1, const char *s2, size_t n)
     return os_strncmp(s1, s2, n);
 }
 
-
-char * os_strchr(const char *s, int c)
-{
+char * os_strchr(const char *s, int c) {
     while (*s) {
         if (*s == c)
             return (char *) s;
@@ -351,9 +300,7 @@ char * os_strchr(const char *s, int c)
     return NULL;
 }
 
-
-char * os_strrchr(const char *s, int c)
-{
+char * os_strrchr(const char *s, int c) {
     const char *p = s;
     while (*p)
         p++;
@@ -366,9 +313,7 @@ char * os_strrchr(const char *s, int c)
     return NULL;
 }
 
-
-int os_strcmp(const char *s1, const char *s2)
-{
+int os_strcmp(const char *s1, const char *s2) {
     while (*s1 == *s2) {
         if (*s1 == '\0')
             break;
@@ -379,9 +324,7 @@ int os_strcmp(const char *s1, const char *s2)
     return *s1 - *s2;
 }
 
-
-int os_strncmp(const char *s1, const char *s2, size_t n)
-{
+int os_strncmp(const char *s1, const char *s2, size_t n) {
     if (n == 0)
         return 0;
 
@@ -398,9 +341,7 @@ int os_strncmp(const char *s1, const char *s2, size_t n)
     return *s1 - *s2;
 }
 
-
-char * os_strncpy(char *dest, const char *src, size_t n)
-{
+char * os_strncpy(char *dest, const char *src, size_t n) {
     char *d = dest;
 
     while (n--) {
@@ -414,9 +355,7 @@ char * os_strncpy(char *dest, const char *src, size_t n)
     return dest;
 }
 
-
-size_t os_strlcpy(char *dest, const char *src, size_t siz)
-{
+size_t os_strlcpy(char *dest, const char *src, size_t siz) {
     const char *s = src;
     size_t left = siz;
 
@@ -439,9 +378,7 @@ size_t os_strlcpy(char *dest, const char *src, size_t siz)
     return s - src - 1;
 }
 
-
-char * os_strstr(const char *haystack, const char *needle)
-{
+char * os_strstr(const char *haystack, const char *needle) {
     size_t len = os_strlen(needle);
     while (*haystack) {
         if (os_strncmp(haystack, needle, len) == 0)
@@ -452,9 +389,7 @@ char * os_strstr(const char *haystack, const char *needle)
     return NULL;
 }
 
-
-int os_snprintf(char *str, size_t size, const char *format, ...)
-{
+int os_snprintf(char *str, size_t size, const char *format, ...) {
     va_list ap;
     int ret;
 

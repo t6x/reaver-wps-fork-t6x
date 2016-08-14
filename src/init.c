@@ -37,27 +37,24 @@
  * Generates a wps_config structure which is passed to wps_init() to create
  * an initial wps_data structure.
  */
-struct wps_data *initialize_wps_data()
-{
+struct wps_data *initialize_wps_data() {
     struct wps_config *wpsconf = NULL;
     struct wps_data *wps = NULL;
     struct wps_registrar_config *reg_conf = NULL;
 
-    wpsconf = malloc(sizeof(struct wps_config));
-    if(!wpsconf)
-    {
+    wpsconf = malloc(sizeof (struct wps_config));
+    if (!wpsconf) {
         perror("malloc");
         goto end;
     }
-    memset(wpsconf, 0, sizeof(struct wps_config));
+    memset(wpsconf, 0, sizeof (struct wps_config));
 
-    reg_conf = malloc(sizeof(struct wps_registrar_config));
-    if(!reg_conf)
-    {
+    reg_conf = malloc(sizeof (struct wps_registrar_config));
+    if (!reg_conf) {
         perror("malloc");
         goto end;
     }
-    memset(reg_conf, 0, sizeof(struct wps_registrar_config));
+    memset(reg_conf, 0, sizeof (struct wps_registrar_config));
 
     /* Configure ourselves as a registrar */
     wpsconf->registrar = 1;
@@ -66,21 +63,19 @@ struct wps_data *initialize_wps_data()
     reg_conf->disable_auto_conf = 1;
 
     /* Allocate space for the wps_context structure member */
-    wpsconf->wps = malloc(sizeof(struct wps_context));
-    if(!wpsconf->wps)
-    {
+    wpsconf->wps = malloc(sizeof (struct wps_context));
+    if (!wpsconf->wps) {
         perror("malloc");
         goto end;
     }
-    memset(wpsconf->wps, 0, sizeof(struct wps_context));
+    memset(wpsconf->wps, 0, sizeof (struct wps_context));
 
     /* 
      * Initialize the registrar sub-structure. This is necessary when calling
      * wpa_supplicant functions to build registrar response payloads.
      */
     wpsconf->wps->registrar = wps_registrar_init(wpsconf->wps, (const struct wps_registrar_config *) reg_conf);
-    if(wpsconf->wps->registrar == NULL)
-    {
+    if (wpsconf->wps->registrar == NULL) {
         cprintf(CRITICAL, "[X] ERROR: Failed to initialize registrar structure!\n");
     }
 
@@ -89,17 +84,14 @@ struct wps_data *initialize_wps_data()
      * populated in order to call wps_init(). If acting as an enrollee,
      * the wps_device_data sub-structure must also be populated.
      */
-    if(os_get_random(wpsconf->wps->uuid, UUID_LEN) == -1)
-    {
+    if (os_get_random(wpsconf->wps->uuid, UUID_LEN) == -1) {
         memcpy(wpsconf->wps->uuid, DEFAULT_UUID, UUID_LEN);
     }
 
     wps = wps_init(wpsconf);
-    if(wps)
-    {
+    if (wps) {
         /* Report that we are a Windows 7 registrar, if --win7 was specified on the command line */
-        if(wps->wps && get_win7_compat())
-        {
+        if (wps->wps && get_win7_compat()) {
             wps->wps->dev.device_name = WPS_DEVICE_NAME;
             wps->wps->dev.manufacturer = WPS_MANUFACTURER;
             wps->wps->dev.model_name = WPS_MODEL_NAME;
@@ -110,43 +102,41 @@ struct wps_data *initialize_wps_data()
         }
     }
 end:
-    if(wpsconf) free(wpsconf);
-    if(reg_conf) free(reg_conf);
+    if (wpsconf) free(wpsconf);
+    if (reg_conf) free(reg_conf);
     return wps;
 }
 
 /* Initializes pcap capture settings and returns a pcap handle on success, NULL on error */
-pcap_t *capture_init(char *capture_source)
-{
+pcap_t *capture_init(char *capture_source) {
     pcap_t *handle = NULL;
-    char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
+    char errbuf[PCAP_ERRBUF_SIZE] = {0};
 
-    #ifdef __APPLE__
-        // must disassociate from any current AP.  This is the only way.
-        pid_t pid = fork();
-    	if (!pid) {
-        		char* argv[] = {"/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", "-z", NULL};
-        		execve("/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", argv, NULL);
-        	}
-    	int status;
-    	waitpid(pid,&status,0);
-    
-    
-        handle = pcap_create(capture_source,errbuf);
-        if (handle) {
-                pcap_set_snaplen(handle, BUFSIZ);
-                pcap_set_timeout(handle, 50);
-                pcap_set_rfmon(handle, 1);
-                pcap_set_promisc(handle, 1);
-                int status = pcap_activate(handle);
-                if (status)
-                        cprintf(CRITICAL, "pcap_activate status %d\n", status);
-            }
-    #else
-            handle = pcap_open_live(capture_source, BUFSIZ, 1, 0, errbuf);
-    #endif
-    if(!handle)
-    {
+#ifdef __APPLE__
+    // must disassociate from any current AP.  This is the only way.
+    pid_t pid = fork();
+    if (!pid) {
+        char* argv[] = {"/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", "-z", NULL};
+        execve("/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", argv, NULL);
+    }
+    int status;
+    waitpid(pid, &status, 0);
+
+
+    handle = pcap_create(capture_source, errbuf);
+    if (handle) {
+        pcap_set_snaplen(handle, BUFSIZ);
+        pcap_set_timeout(handle, 50);
+        pcap_set_rfmon(handle, 1);
+        pcap_set_promisc(handle, 1);
+        int status = pcap_activate(handle);
+        if (status)
+            cprintf(CRITICAL, "pcap_activate status %d\n", status);
+    }
+#else
+    handle = pcap_open_live(capture_source, BUFSIZ, 1, 0, errbuf);
+#endif
+    if (!handle) {
         handle = pcap_open_offline(capture_source, errbuf);
     }
 

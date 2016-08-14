@@ -19,7 +19,6 @@
 #include "md5.h"
 #include "crypto.h"
 
-
 /**
  * tls_prf - Pseudo-Random Function for TLS (TLS-PRF, RFC 2246)
  * @secret: Key for PRF
@@ -35,14 +34,13 @@
  * given key in TLS. This PRF is defined in RFC 2246, Chapter 5.
  */
 int tls_prf(const u8 *secret, size_t secret_len, const char *label,
-        const u8 *seed, size_t seed_len, u8 *out, size_t outlen)
-{
+        const u8 *seed, size_t seed_len, u8 *out, size_t outlen) {
     size_t L_S1, L_S2, i;
     const u8 *S1, *S2;
     u8 A_MD5[MD5_MAC_LEN], A_SHA1[SHA1_MAC_LEN];
     u8 P_MD5[MD5_MAC_LEN], P_SHA1[SHA1_MAC_LEN];
     int MD5_pos, SHA1_pos;
-    const u8 *MD5_addr[3];
+    const u8 * MD5_addr[3];
     size_t MD5_len[3];
     const unsigned char *SHA1_addr[3];
     size_t SHA1_len[3];

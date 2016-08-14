@@ -33,12 +33,11 @@
  */
 int aes_128_eax_encrypt(const u8 *key, const u8 *nonce, size_t nonce_len,
         const u8 *hdr, size_t hdr_len,
-        u8 *data, size_t data_len, u8 *tag)
-{
+        u8 *data, size_t data_len, u8 *tag) {
     u8 *buf;
     size_t buf_len;
     u8 nonce_mac[AES_BLOCK_SIZE], hdr_mac[AES_BLOCK_SIZE],
-       data_mac[AES_BLOCK_SIZE];
+            data_mac[AES_BLOCK_SIZE];
     int i, ret = -1;
 
     if (nonce_len > data_len)
@@ -82,7 +81,6 @@ fail:
     return ret;
 }
 
-
 /**
  * aes_128_eax_decrypt - AES-128 EAX mode decryption
  * @key: Key for decryption (16 bytes)
@@ -97,12 +95,11 @@ fail:
  */
 int aes_128_eax_decrypt(const u8 *key, const u8 *nonce, size_t nonce_len,
         const u8 *hdr, size_t hdr_len,
-        u8 *data, size_t data_len, const u8 *tag)
-{
+        u8 *data, size_t data_len, const u8 *tag) {
     u8 *buf;
     size_t buf_len;
     u8 nonce_mac[AES_BLOCK_SIZE], hdr_mac[AES_BLOCK_SIZE],
-       data_mac[AES_BLOCK_SIZE];
+            data_mac[AES_BLOCK_SIZE];
     int i;
 
     if (nonce_len > data_len)

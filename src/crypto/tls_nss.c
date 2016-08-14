@@ -35,7 +35,6 @@ static int tls_nss_ref_count = 0;
 
 static PRDescIdentity nss_layer_id;
 
-
 struct tls_connection {
     PRFileDesc *fd;
 
@@ -45,39 +44,29 @@ struct tls_connection {
     size_t push_buf_len, pull_buf_len;
 };
 
-
-static PRStatus nss_io_close(PRFileDesc *fd)
-{
+static PRStatus nss_io_close(PRFileDesc *fd) {
     wpa_printf(MSG_DEBUG, "NSS: I/O close");
     return PR_SUCCESS;
 }
 
-
-static PRInt32 nss_io_read(PRFileDesc *fd, void *buf, PRInt32 amount)
-{
+static PRInt32 nss_io_read(PRFileDesc *fd, void *buf, PRInt32 amount) {
     wpa_printf(MSG_DEBUG, "NSS: I/O read(%d)", amount);
     return PR_FAILURE;
 }
 
-
-static PRInt32 nss_io_write(PRFileDesc *fd, const void *buf, PRInt32 amount)
-{
+static PRInt32 nss_io_write(PRFileDesc *fd, const void *buf, PRInt32 amount) {
     wpa_printf(MSG_DEBUG, "NSS: I/O write(%d)", amount);
     return PR_FAILURE;
 }
 
-
 static PRInt32 nss_io_writev(PRFileDesc *fd, const PRIOVec *iov,
-        PRInt32 iov_size, PRIntervalTime timeout)
-{
+        PRInt32 iov_size, PRIntervalTime timeout) {
     wpa_printf(MSG_DEBUG, "NSS: I/O writev(%d)", iov_size);
     return PR_FAILURE;
 }
 
-
 static PRInt32 nss_io_recv(PRFileDesc *fd, void *buf, PRInt32 amount,
-        PRIntn flags, PRIntervalTime timeout)
-{
+        PRIntn flags, PRIntervalTime timeout) {
     struct tls_connection *conn = (struct tls_connection *) fd->secret;
     u8 *end;
 
@@ -106,10 +95,8 @@ static PRInt32 nss_io_recv(PRFileDesc *fd, void *buf, PRInt32 amount,
     return amount;
 }
 
-
 static PRInt32 nss_io_send(PRFileDesc *fd, const void *buf, PRInt32 amount,
-        PRIntn flags, PRIntervalTime timeout)
-{
+        PRIntn flags, PRIntervalTime timeout) {
     struct tls_connection *conn = (struct tls_connection *) fd->secret;
     u8 *nbuf;
 
@@ -129,27 +116,21 @@ static PRInt32 nss_io_send(PRFileDesc *fd, const void *buf, PRInt32 amount,
     return amount;
 }
 
-
 static PRInt32 nss_io_recvfrom(PRFileDesc *fd, void *buf, PRInt32 amount,
         PRIntn flags, PRNetAddr *addr,
-        PRIntervalTime timeout)
-{
+        PRIntervalTime timeout) {
     wpa_printf(MSG_DEBUG, "NSS: I/O %s", __func__);
     return PR_FAILURE;
 }
-
 
 static PRInt32 nss_io_sendto(PRFileDesc *fd, const void *buf, PRInt32 amount,
         PRIntn flags, const PRNetAddr *addr,
-        PRIntervalTime timeout)
-{
+        PRIntervalTime timeout) {
     wpa_printf(MSG_DEBUG, "NSS: I/O %s", __func__);
     return PR_FAILURE;
 }
 
-
-static PRStatus nss_io_getpeername(PRFileDesc *fd, PRNetAddr *addr)
-{
+static PRStatus nss_io_getpeername(PRFileDesc *fd, PRNetAddr *addr) {
     wpa_printf(MSG_DEBUG, "NSS: I/O getpeername");
 
     /*
@@ -157,16 +138,14 @@ static PRStatus nss_io_getpeername(PRFileDesc *fd, PRNetAddr *addr)
      * fake IPv4 address to work around this even though we are not really
      * using TCP.
      */
-    os_memset(addr, 0, sizeof(*addr));
+    os_memset(addr, 0, sizeof (*addr));
     addr->inet.family = PR_AF_INET;
 
     return PR_SUCCESS;
 }
 
-
 static PRStatus nss_io_getsocketoption(PRFileDesc *fd,
-        PRSocketOptionData *data)
-{
+        PRSocketOptionData *data) {
     switch (data->option) {
         case PR_SockOpt_Nonblocking:
             wpa_printf(MSG_DEBUG, "NSS: I/O getsocketoption(Nonblocking)");
@@ -219,16 +198,12 @@ static const PRIOMethods nss_io = {
     NULL /* reserved_fn_0 */
 };
 
-
-static char * nss_password_cb(PK11SlotInfo *slot, PRBool retry, void *arg)
-{
+static char * nss_password_cb(PK11SlotInfo *slot, PRBool retry, void *arg) {
     wpa_printf(MSG_ERROR, "NSS: TODO - %s", __func__);
     return NULL;
 }
 
-
-void * tls_init(const struct tls_config *conf)
-{
+void * tls_init(const struct tls_config *conf) {
     char *dir;
 
     tls_nss_ref_count++;
@@ -273,8 +248,7 @@ void * tls_init(const struct tls_config *conf)
     return (void *) 1;
 }
 
-void tls_deinit(void *ssl_ctx)
-{
+void tls_deinit(void *ssl_ctx) {
     tls_nss_ref_count--;
     if (tls_nss_ref_count == 0) {
         if (NSS_Shutdown() != SECSuccess)
@@ -282,15 +256,11 @@ void tls_deinit(void *ssl_ctx)
     }
 }
 
-
-int tls_get_errors(void *tls_ctx)
-{
+int tls_get_errors(void *tls_ctx) {
     return 0;
 }
 
-
-static SECStatus nss_bad_cert_cb(void *arg, PRFileDesc *fd)
-{
+static SECStatus nss_bad_cert_cb(void *arg, PRFileDesc *fd) {
     struct tls_connection *conn = arg;
     SECStatus res = SECSuccess;
     PRErrorCode err;
@@ -300,10 +270,10 @@ static SECStatus nss_bad_cert_cb(void *arg, PRFileDesc *fd)
     err = PR_GetError();
     if (IS_SEC_ERROR(err))
         wpa_printf(MSG_DEBUG, "NSS: Bad Server Certificate (sec err "
-                "%d)", err - SEC_ERROR_BASE);
+            "%d)", err - SEC_ERROR_BASE);
     else
         wpa_printf(MSG_DEBUG, "NSS: Bad Server Certificate (err %d)",
-                err);
+            err);
     cert = SSL_PeerCertificate(fd);
     subject = CERT_NameToAscii(&cert->subject);
     issuer = CERT_NameToAscii(&cert->issuer);
@@ -318,20 +288,16 @@ static SECStatus nss_bad_cert_cb(void *arg, PRFileDesc *fd)
     return res;
 }
 
-
-static void nss_handshake_cb(PRFileDesc *fd, void *client_data)
-{
+static void nss_handshake_cb(PRFileDesc *fd, void *client_data) {
     struct tls_connection *conn = client_data;
     wpa_printf(MSG_DEBUG, "NSS: Handshake completed");
     conn->established = 1;
 }
 
-
-struct tls_connection * tls_connection_init(void *tls_ctx)
-{
+struct tls_connection * tls_connection_init(void *tls_ctx) {
     struct tls_connection *conn;
 
-    conn = os_zalloc(sizeof(*conn));
+    conn = os_zalloc(sizeof (*conn));
     if (conn == NULL)
         return NULL;
 
@@ -368,76 +334,56 @@ struct tls_connection * tls_connection_init(void *tls_ctx)
     return conn;
 }
 
-
-void tls_connection_deinit(void *tls_ctx, struct tls_connection *conn)
-{
+void tls_connection_deinit(void *tls_ctx, struct tls_connection *conn) {
     PR_Close(conn->fd);
     os_free(conn->push_buf);
     os_free(conn->pull_buf);
     os_free(conn);
 }
 
-
-int tls_connection_established(void *tls_ctx, struct tls_connection *conn)
-{
+int tls_connection_established(void *tls_ctx, struct tls_connection *conn) {
     return conn->established;
 }
 
-
-int tls_connection_shutdown(void *tls_ctx, struct tls_connection *conn)
-{
+int tls_connection_shutdown(void *tls_ctx, struct tls_connection *conn) {
     return -1;
 }
 
-
 int tls_connection_set_params(void *tls_ctx, struct tls_connection *conn,
-        const struct tls_connection_params *params)
-{
+        const struct tls_connection_params *params) {
     wpa_printf(MSG_ERROR, "NSS: TODO - %s", __func__);
     return 0;
 }
 
-
 int tls_global_set_params(void *tls_ctx,
-        const struct tls_connection_params *params)
-{
+        const struct tls_connection_params *params) {
     return -1;
 }
 
-
-int tls_global_set_verify(void *tls_ctx, int check_crl)
-{
+int tls_global_set_verify(void *tls_ctx, int check_crl) {
     return -1;
 }
-
 
 int tls_connection_set_verify(void *tls_ctx, struct tls_connection *conn,
-        int verify_peer)
-{
+        int verify_peer) {
     conn->verify_peer = verify_peer;
     return 0;
 }
 
-
 int tls_connection_set_ia(void *tls_ctx, struct tls_connection *conn,
-        int tls_ia)
-{
+        int tls_ia) {
     return -1;
 }
 
-
 int tls_connection_get_keys(void *tls_ctx, struct tls_connection *conn,
-        struct tls_keys *keys)
-{
+        struct tls_keys *keys) {
     /* NSS does not export master secret or client/server random. */
     return -1;
 }
 
-
 int tls_connection_prf(void *tls_ctx, struct tls_connection *conn,
         const char *label, int server_random_first,
-        u8 *out, size_t out_len)
-{
+        u8 *out, size_t out_len) {
     if (conn == NULL || server_random_first) {
         wpa_printf(MSG_INFO, "NSS: Unsupported PRF request "
                 "(server_random_first=%d)",
@@ -455,12 +401,10 @@ int tls_connection_prf(void *tls_ctx, struct tls_connection *conn,
     return 0;
 }
 
-
 struct wpabuf * tls_connection_handshake(void *tls_ctx,
         struct tls_connection *conn,
         const struct wpabuf *in_data,
-        struct wpabuf **appl_data)
-{
+        struct wpabuf **appl_data) {
     struct wpabuf *out_data;
 
     wpa_printf(MSG_DEBUG, "NSS: handshake: in_len=%u",
@@ -502,20 +446,16 @@ struct wpabuf * tls_connection_handshake(void *tls_ctx,
     return out_data;
 }
 
-
 struct wpabuf * tls_connection_server_handshake(void *tls_ctx,
         struct tls_connection *conn,
         const struct wpabuf *in_data,
-        struct wpabuf **appl_data)
-{
+        struct wpabuf **appl_data) {
     return NULL;
 }
 
-
 struct wpabuf * tls_connection_encrypt(void *tls_ctx,
         struct tls_connection *conn,
-        const struct wpabuf *in_data)
-{
+        const struct wpabuf *in_data) {
     PRInt32 res;
     struct wpabuf *buf;
 
@@ -537,11 +477,9 @@ struct wpabuf * tls_connection_encrypt(void *tls_ctx,
     return buf;
 }
 
-
 struct wpabuf * tls_connection_decrypt(void *tls_ctx,
         struct tls_connection *conn,
-        const struct wpabuf *in_data)
-{
+        const struct wpabuf *in_data) {
     PRInt32 res;
     struct wpabuf *out;
 
@@ -581,100 +519,72 @@ struct wpabuf * tls_connection_decrypt(void *tls_ctx,
     return out;
 }
 
-
-int tls_connection_resumed(void *tls_ctx, struct tls_connection *conn)
-{
+int tls_connection_resumed(void *tls_ctx, struct tls_connection *conn) {
     return 0;
 }
 
-
 int tls_connection_set_cipher_list(void *tls_ctx, struct tls_connection *conn,
-        u8 *ciphers)
-{
+        u8 *ciphers) {
     return -1;
 }
-
 
 int tls_get_cipher(void *tls_ctx, struct tls_connection *conn,
-        char *buf, size_t buflen)
-{
+        char *buf, size_t buflen) {
     return -1;
 }
-
 
 int tls_connection_enable_workaround(void *tls_ctx,
-        struct tls_connection *conn)
-{
+        struct tls_connection *conn) {
     return -1;
 }
-
 
 int tls_connection_client_hello_ext(void *tls_ctx, struct tls_connection *conn,
         int ext_type, const u8 *data,
-        size_t data_len)
-{
+        size_t data_len) {
     return -1;
 }
 
-
-int tls_connection_get_failed(void *tls_ctx, struct tls_connection *conn)
-{
+int tls_connection_get_failed(void *tls_ctx, struct tls_connection *conn) {
     return 0;
 }
 
-
-int tls_connection_get_read_alerts(void *tls_ctx, struct tls_connection *conn)
-{
+int tls_connection_get_read_alerts(void *tls_ctx, struct tls_connection *conn) {
     return 0;
 }
-
 
 int tls_connection_get_write_alerts(void *tls_ctx,
-        struct tls_connection *conn)
-{
+        struct tls_connection *conn) {
     return 0;
 }
 
-
 int tls_connection_get_keyblock_size(void *tls_ctx,
-        struct tls_connection *conn)
-{
+        struct tls_connection *conn) {
     return -1;
 }
 
-
-unsigned int tls_capabilities(void *tls_ctx)
-{
+unsigned int tls_capabilities(void *tls_ctx) {
     return 0;
 }
 
-
 struct wpabuf * tls_connection_ia_send_phase_finished(
-        void *tls_ctx, struct tls_connection *conn, int final)
-{
+        void *tls_ctx, struct tls_connection *conn, int final) {
     return NULL;
 }
 
-
 int tls_connection_ia_final_phase_finished(void *tls_ctx,
-        struct tls_connection *conn)
-{
+        struct tls_connection *conn) {
     return -1;
 }
-
 
 int tls_connection_ia_permute_inner_secret(void *tls_ctx,
         struct tls_connection *conn,
-        const u8 *key, size_t key_len)
-{
+        const u8 *key, size_t key_len) {
     return -1;
 }
-
 
 int tls_connection_set_session_ticket_cb(void *tls_ctx,
         struct tls_connection *conn,
         tls_session_ticket_cb cb,
-        void *ctx)
-{
+        void *ctx) {
     return -1;
 }

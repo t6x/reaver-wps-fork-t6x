@@ -22,17 +22,17 @@
  * 2F = Elementary File under the Master File
  * 6F = Elementary File under a Dedicated File
  */
-#define SCARD_FILE_MF		0x3F00
-#define SCARD_FILE_GSM_DF	0x7F20
-#define SCARD_FILE_UMTS_DF	0x7F50
-#define SCARD_FILE_GSM_EF_IMSI	0x6F07
-#define SCARD_FILE_EF_DIR	0x2F00
-#define SCARD_FILE_EF_ICCID	0x2FE2
-#define SCARD_FILE_EF_CK	0x6FE1
-#define SCARD_FILE_EF_IK	0x6FE2
+#define SCARD_FILE_MF  0x3F00
+#define SCARD_FILE_GSM_DF 0x7F20
+#define SCARD_FILE_UMTS_DF 0x7F50
+#define SCARD_FILE_GSM_EF_IMSI 0x6F07
+#define SCARD_FILE_EF_DIR 0x2F00
+#define SCARD_FILE_EF_ICCID 0x2FE2
+#define SCARD_FILE_EF_CK 0x6FE1
+#define SCARD_FILE_EF_IK 0x6FE2
 
-#define SCARD_CHV1_OFFSET	13
-#define SCARD_CHV1_FLAG		0x80
+#define SCARD_CHV1_OFFSET 13
+#define SCARD_CHV1_FLAG  0x80
 
 typedef enum {
     SCARD_GSM_SIM_ONLY,
@@ -48,11 +48,11 @@ void scard_deinit(struct scard_data *scard);
 int scard_set_pin(struct scard_data *scard, const char *pin);
 int scard_get_imsi(struct scard_data *scard, char *imsi, size_t *len);
 int scard_gsm_auth(struct scard_data *scard, const unsigned char *_rand,
-                   unsigned char *sres, unsigned char *kc);
+        unsigned char *sres, unsigned char *kc);
 int scard_umts_auth(struct scard_data *scard, const unsigned char *_rand,
-                    const unsigned char *autn,
-                    unsigned char *res, size_t *res_len,
-                    unsigned char *ik, unsigned char *ck, unsigned char *auts);
+        const unsigned char *autn,
+        unsigned char *res, size_t *res_len,
+        unsigned char *ik, unsigned char *ck, unsigned char *auts);
 
 #else /* PCSC_FUNCS */
 

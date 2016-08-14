@@ -24,33 +24,33 @@
  * RFC 2246 Section 9: Mandatory to implement TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA
  * Add support for commonly used cipher suites; don't bother with exportable
  * suites.
- */ 
+ */
 
 static const struct tls_cipher_suite tls_cipher_suites[] = {
     { TLS_NULL_WITH_NULL_NULL, TLS_KEY_X_NULL, TLS_CIPHER_NULL,
-        TLS_HASH_NULL },
+        TLS_HASH_NULL},
     { TLS_RSA_WITH_RC4_128_MD5, TLS_KEY_X_RSA, TLS_CIPHER_RC4_128,
-        TLS_HASH_MD5 },
+        TLS_HASH_MD5},
     { TLS_RSA_WITH_RC4_128_SHA, TLS_KEY_X_RSA, TLS_CIPHER_RC4_128,
-        TLS_HASH_SHA },
+        TLS_HASH_SHA},
     { TLS_RSA_WITH_DES_CBC_SHA, TLS_KEY_X_RSA, TLS_CIPHER_DES_CBC,
-        TLS_HASH_SHA },
+        TLS_HASH_SHA},
     { TLS_RSA_WITH_3DES_EDE_CBC_SHA, TLS_KEY_X_RSA,
-        TLS_CIPHER_3DES_EDE_CBC, TLS_HASH_SHA },
+        TLS_CIPHER_3DES_EDE_CBC, TLS_HASH_SHA},
     { TLS_DH_anon_WITH_RC4_128_MD5, TLS_KEY_X_DH_anon,
-        TLS_CIPHER_RC4_128, TLS_HASH_MD5 },
+        TLS_CIPHER_RC4_128, TLS_HASH_MD5},
     { TLS_DH_anon_WITH_DES_CBC_SHA, TLS_KEY_X_DH_anon,
-        TLS_CIPHER_DES_CBC, TLS_HASH_SHA },
+        TLS_CIPHER_DES_CBC, TLS_HASH_SHA},
     { TLS_DH_anon_WITH_3DES_EDE_CBC_SHA, TLS_KEY_X_DH_anon,
-        TLS_CIPHER_3DES_EDE_CBC, TLS_HASH_SHA },
+        TLS_CIPHER_3DES_EDE_CBC, TLS_HASH_SHA},
     { TLS_RSA_WITH_AES_128_CBC_SHA, TLS_KEY_X_RSA, TLS_CIPHER_AES_128_CBC,
-        TLS_HASH_SHA },
+        TLS_HASH_SHA},
     { TLS_DH_anon_WITH_AES_128_CBC_SHA, TLS_KEY_X_DH_anon,
-        TLS_CIPHER_AES_128_CBC, TLS_HASH_SHA },
+        TLS_CIPHER_AES_128_CBC, TLS_HASH_SHA},
     { TLS_RSA_WITH_AES_256_CBC_SHA, TLS_KEY_X_RSA, TLS_CIPHER_AES_256_CBC,
-        TLS_HASH_SHA },
+        TLS_HASH_SHA},
     { TLS_DH_anon_WITH_AES_256_CBC_SHA, TLS_KEY_X_DH_anon,
-        TLS_CIPHER_AES_256_CBC, TLS_HASH_SHA }
+        TLS_CIPHER_AES_256_CBC, TLS_HASH_SHA}
 };
 
 #define NUM_ELEMS(a) (sizeof(a) / sizeof((a)[0]))
@@ -58,38 +58,36 @@ static const struct tls_cipher_suite tls_cipher_suites[] = {
 
 
 static const struct tls_cipher_data tls_ciphers[] = {
-    { TLS_CIPHER_NULL,         TLS_CIPHER_STREAM,  0,  0,  0,
-        CRYPTO_CIPHER_NULL },
-    { TLS_CIPHER_IDEA_CBC,     TLS_CIPHER_BLOCK,  16, 16,  8,
-        CRYPTO_CIPHER_NULL },
-    { TLS_CIPHER_RC2_CBC_40,   TLS_CIPHER_BLOCK,   5, 16,  0,
-        CRYPTO_CIPHER_ALG_RC2 },
-    { TLS_CIPHER_RC4_40,       TLS_CIPHER_STREAM,  5, 16,  0,
-        CRYPTO_CIPHER_ALG_RC4 },
-    { TLS_CIPHER_RC4_128,      TLS_CIPHER_STREAM, 16, 16,  0,
-        CRYPTO_CIPHER_ALG_RC4 },
-    { TLS_CIPHER_DES40_CBC,    TLS_CIPHER_BLOCK,   5,  8,  8,
-        CRYPTO_CIPHER_ALG_DES },
-    { TLS_CIPHER_DES_CBC,      TLS_CIPHER_BLOCK,   8,  8,  8,
-        CRYPTO_CIPHER_ALG_DES },
-    { TLS_CIPHER_3DES_EDE_CBC, TLS_CIPHER_BLOCK,  24, 24,  8,
-        CRYPTO_CIPHER_ALG_3DES },
-    { TLS_CIPHER_AES_128_CBC,  TLS_CIPHER_BLOCK,  16, 16, 16,
-        CRYPTO_CIPHER_ALG_AES },
-    { TLS_CIPHER_AES_256_CBC,  TLS_CIPHER_BLOCK,  32, 32, 16,
-        CRYPTO_CIPHER_ALG_AES }
+    { TLS_CIPHER_NULL, TLS_CIPHER_STREAM, 0, 0, 0,
+        CRYPTO_CIPHER_NULL},
+    { TLS_CIPHER_IDEA_CBC, TLS_CIPHER_BLOCK, 16, 16, 8,
+        CRYPTO_CIPHER_NULL},
+    { TLS_CIPHER_RC2_CBC_40, TLS_CIPHER_BLOCK, 5, 16, 0,
+        CRYPTO_CIPHER_ALG_RC2},
+    { TLS_CIPHER_RC4_40, TLS_CIPHER_STREAM, 5, 16, 0,
+        CRYPTO_CIPHER_ALG_RC4},
+    { TLS_CIPHER_RC4_128, TLS_CIPHER_STREAM, 16, 16, 0,
+        CRYPTO_CIPHER_ALG_RC4},
+    { TLS_CIPHER_DES40_CBC, TLS_CIPHER_BLOCK, 5, 8, 8,
+        CRYPTO_CIPHER_ALG_DES},
+    { TLS_CIPHER_DES_CBC, TLS_CIPHER_BLOCK, 8, 8, 8,
+        CRYPTO_CIPHER_ALG_DES},
+    { TLS_CIPHER_3DES_EDE_CBC, TLS_CIPHER_BLOCK, 24, 24, 8,
+        CRYPTO_CIPHER_ALG_3DES},
+    { TLS_CIPHER_AES_128_CBC, TLS_CIPHER_BLOCK, 16, 16, 16,
+        CRYPTO_CIPHER_ALG_AES},
+    { TLS_CIPHER_AES_256_CBC, TLS_CIPHER_BLOCK, 32, 32, 16,
+        CRYPTO_CIPHER_ALG_AES}
 };
 
 #define NUM_TLS_CIPHER_DATA NUM_ELEMS(tls_ciphers)
-
 
 /**
  * tls_get_cipher_suite - Get TLS cipher suite
  * @suite: Cipher suite identifier
  * Returns: Pointer to the cipher data or %NULL if not found
  */
-const struct tls_cipher_suite * tls_get_cipher_suite(u16 suite)
-{
+const struct tls_cipher_suite * tls_get_cipher_suite(u16 suite) {
     size_t i;
     for (i = 0; i < NUM_TLS_CIPHER_SUITES; i++)
         if (tls_cipher_suites[i].suite == suite)
@@ -97,9 +95,7 @@ const struct tls_cipher_suite * tls_get_cipher_suite(u16 suite)
     return NULL;
 }
 
-
-const struct tls_cipher_data * tls_get_cipher_data(tls_cipher cipher)
-{
+const struct tls_cipher_data * tls_get_cipher_data(tls_cipher cipher) {
     size_t i;
     for (i = 0; i < NUM_TLS_CIPHER_DATA; i++)
         if (tls_ciphers[i].cipher == cipher)
@@ -107,9 +103,7 @@ const struct tls_cipher_data * tls_get_cipher_data(tls_cipher cipher)
     return NULL;
 }
 
-
-int tls_server_key_exchange_allowed(tls_cipher cipher)
-{
+int tls_server_key_exchange_allowed(tls_cipher cipher) {
     const struct tls_cipher_suite *suite;
 
     /* RFC 2246, Section 7.4.3 */
@@ -132,7 +126,6 @@ int tls_server_key_exchange_allowed(tls_cipher cipher)
     }
 }
 
-
 /**
  * tls_parse_cert - Parse DER encoded X.509 certificate and get public key
  * @buf: ASN.1 DER encoded certificate
@@ -144,8 +137,7 @@ int tls_server_key_exchange_allowed(tls_cipher cipher)
  * the public key from it. The caller is responsible for freeing the public key
  * by calling crypto_public_key_free().
  */
-int tls_parse_cert(const u8 *buf, size_t len, struct crypto_public_key **pk)
-{
+int tls_parse_cert(const u8 *buf, size_t len, struct crypto_public_key **pk) {
     struct x509_certificate *cert;
 
     wpa_hexdump(MSG_MSGDUMP, "TLSv1: Parse ASN.1 DER certificate",
@@ -186,9 +178,7 @@ int tls_parse_cert(const u8 *buf, size_t len, struct crypto_public_key **pk)
     return 0;
 }
 
-
-int tls_verify_hash_init(struct tls_verify_hash *verify)
-{
+int tls_verify_hash_init(struct tls_verify_hash *verify) {
     tls_verify_hash_free(verify);
     verify->md5_client = crypto_hash_init(CRYPTO_HASH_ALG_MD5, NULL, 0);
     verify->md5_server = crypto_hash_init(CRYPTO_HASH_ALG_MD5, NULL, 0);
@@ -205,10 +195,8 @@ int tls_verify_hash_init(struct tls_verify_hash *verify)
     return 0;
 }
 
-
 void tls_verify_hash_add(struct tls_verify_hash *verify, const u8 *buf,
-        size_t len)
-{
+        size_t len) {
     if (verify->md5_client && verify->sha1_client) {
         crypto_hash_update(verify->md5_client, buf, len);
         crypto_hash_update(verify->sha1_client, buf, len);
@@ -223,9 +211,7 @@ void tls_verify_hash_add(struct tls_verify_hash *verify, const u8 *buf,
     }
 }
 
-
-void tls_verify_hash_free(struct tls_verify_hash *verify)
-{
+void tls_verify_hash_free(struct tls_verify_hash *verify) {
     crypto_hash_finish(verify->md5_client, NULL, NULL);
     crypto_hash_finish(verify->md5_server, NULL, NULL);
     crypto_hash_finish(verify->md5_cert, NULL, NULL);

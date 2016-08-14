@@ -20,7 +20,6 @@
 #include "tlsv1_common.h"
 #include "tlsv1_record.h"
 
-
 /**
  * tlsv1_record_set_cipher_suite - TLS record layer: Set cipher suite
  * @rl: Pointer to TLS record layer data
@@ -33,8 +32,7 @@
  * currently used ciphers.
  */
 int tlsv1_record_set_cipher_suite(struct tlsv1_record_layer *rl,
-        u16 cipher_suite)
-{
+        u16 cipher_suite) {
     const struct tls_cipher_suite *suite;
     const struct tls_cipher_data *data;
 
@@ -65,7 +63,6 @@ int tlsv1_record_set_cipher_suite(struct tlsv1_record_layer *rl,
     return 0;
 }
 
-
 /**
  * tlsv1_record_change_write_cipher - TLS record layer: Change write cipher
  * @rl: Pointer to TLS record layer data
@@ -74,8 +71,7 @@ int tlsv1_record_set_cipher_suite(struct tlsv1_record_layer *rl,
  * This function changes TLS record layer to use the new cipher suite
  * configured with tlsv1_record_set_cipher_suite() for writing.
  */
-int tlsv1_record_change_write_cipher(struct tlsv1_record_layer *rl)
-{
+int tlsv1_record_change_write_cipher(struct tlsv1_record_layer *rl) {
     wpa_printf(MSG_DEBUG, "TLSv1: Record Layer - New write cipher suite "
             "0x%04x", rl->cipher_suite);
     rl->write_cipher_suite = rl->cipher_suite;
@@ -99,7 +95,6 @@ int tlsv1_record_change_write_cipher(struct tlsv1_record_layer *rl)
     return 0;
 }
 
-
 /**
  * tlsv1_record_change_read_cipher - TLS record layer: Change read cipher
  * @rl: Pointer to TLS record layer data
@@ -108,8 +103,7 @@ int tlsv1_record_change_write_cipher(struct tlsv1_record_layer *rl)
  * This function changes TLS record layer to use the new cipher suite
  * configured with tlsv1_record_set_cipher_suite() for reading.
  */
-int tlsv1_record_change_read_cipher(struct tlsv1_record_layer *rl)
-{
+int tlsv1_record_change_read_cipher(struct tlsv1_record_layer *rl) {
     wpa_printf(MSG_DEBUG, "TLSv1: Record Layer - New read cipher suite "
             "0x%04x", rl->cipher_suite);
     rl->read_cipher_suite = rl->cipher_suite;
@@ -133,7 +127,6 @@ int tlsv1_record_change_read_cipher(struct tlsv1_record_layer *rl)
     return 0;
 }
 
-
 /**
  * tlsv1_record_send - TLS record layer: Send a message
  * @rl: Pointer to TLS record layer data
@@ -150,8 +143,7 @@ int tlsv1_record_change_read_cipher(struct tlsv1_record_layer *rl)
  * the data using the current write cipher.
  */
 int tlsv1_record_send(struct tlsv1_record_layer *rl, u8 content_type, u8 *buf,
-        size_t buf_size, size_t payload_len, size_t *out_len)
-{
+        size_t buf_size, size_t payload_len, size_t *out_len) {
     u8 *pos, *ct_start, *length, *payload;
     struct crypto_hash *hmac;
     size_t clen;
@@ -215,7 +207,7 @@ int tlsv1_record_send(struct tlsv1_record_layer *rl, u8 content_type, u8 *buf,
         }
 
         if (crypto_cipher_encrypt(rl->write_cbc, payload,
-                    payload, pos - payload) < 0)
+                payload, pos - payload) < 0)
             return -1;
     }
 
@@ -226,7 +218,6 @@ int tlsv1_record_send(struct tlsv1_record_layer *rl, u8 content_type, u8 *buf,
 
     return 0;
 }
-
 
 /**
  * tlsv1_record_receive - TLS record layer: Process a received message
@@ -244,8 +235,7 @@ int tlsv1_record_send(struct tlsv1_record_layer *rl, u8 content_type, u8 *buf,
  */
 int tlsv1_record_receive(struct tlsv1_record_layer *rl,
         const u8 *in_data, size_t in_len,
-        u8 *out_data, size_t *out_len, u8 *alert)
-{
+        u8 *out_data, size_t *out_len, u8 *alert) {
     size_t i, rlen, hlen;
     u8 padlen;
     struct crypto_hash *hmac;
@@ -317,7 +307,7 @@ int tlsv1_record_receive(struct tlsv1_record_layer *rl,
 
     if (rl->read_cipher_suite != TLS_NULL_WITH_NULL_NULL) {
         if (crypto_cipher_decrypt(rl->read_cbc, out_data,
-                    out_data, in_len) < 0) {
+                out_data, in_len) < 0) {
             *alert = TLS_ALERT_DECRYPTION_FAILED;
             return -1;
         }
@@ -380,7 +370,7 @@ int tlsv1_record_receive(struct tlsv1_record_layer *rl,
         WPA_PUT_BE16(len, *out_len);
         crypto_hash_update(hmac, len, 2);
         crypto_hash_update(hmac, out_data, *out_len);
-        hlen = sizeof(hash);
+        hlen = sizeof (hash);
         if (crypto_hash_finish(hmac, hash, &hlen) < 0) {
             wpa_printf(MSG_DEBUG, "TLSv1: Record Layer - Failed "
                     "to calculate HMAC");

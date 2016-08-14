@@ -35,49 +35,47 @@
 
 /* Populates globule->mac with the MAC address of the interface globule->iface */
 #ifdef __APPLE__
+
 int read_iface_mac() {
-        struct ifaddrs* iflist;
-        int found = 0;
-        if (getifaddrs(&iflist) == 0) {
-                struct ifaddrs* cur;
-                for (cur = iflist; cur; cur = cur->ifa_next) {
-                        if ((cur->ifa_addr->sa_family == AF_LINK) &&
-                                             (strcmp(cur->ifa_name, get_iface()) == 0) &&
-                                             cur->ifa_addr) {
-                                struct sockaddr_dl* sdl = (struct sockaddr_dl*)cur->ifa_addr;
-                                set_mac(LLADDR(sdl));
-                                found = 1;
-                                break;
-                            }
-                    }
-                
-                freeifaddrs(iflist);
+    struct ifaddrs* iflist;
+    int found = 0;
+    if (getifaddrs(&iflist) == 0) {
+        struct ifaddrs* cur;
+        for (cur = iflist; cur; cur = cur->ifa_next) {
+            if ((cur->ifa_addr->sa_family == AF_LINK) &&
+                    (strcmp(cur->ifa_name, get_iface()) == 0) &&
+                    cur->ifa_addr) {
+                struct sockaddr_dl* sdl = (struct sockaddr_dl*) cur->ifa_addr;
+                set_mac(LLADDR(sdl));
+                found = 1;
+                break;
             }
-        return found;
+        }
+
+        freeifaddrs(iflist);
     }
+    return found;
+}
 #else
-int read_iface_mac()
-{
+
+int read_iface_mac() {
     struct ifreq ifr;
     struct ether_addr *eth = NULL;
     int sock = 0, ret_val = 0;
 
     /* Need a socket for the ioctl call */
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    if(sock != -1)
-    {
-        eth = malloc(sizeof(struct ether_addr));
-        if(eth)
-        {
-            memset(eth, 0, sizeof(struct ether_addr));
+    if (sock != -1) {
+        eth = malloc(sizeof (struct ether_addr));
+        if (eth) {
+            memset(eth, 0, sizeof (struct ether_addr));
 
             /* Prepare request */
-            memset(&ifr, 0, sizeof(struct ifreq));
+            memset(&ifr, 0, sizeof (struct ifreq));
             strncpy(ifr.ifr_name, get_iface(), IFNAMSIZ);
 
             /* Do it */
-            if(ioctl(sock, SIOCGIFHWADDR, &ifr) == 0)
-            {
+            if (ioctl(sock, SIOCGIFHWADDR, &ifr) == 0) {
                 set_mac((unsigned char *) &ifr.ifr_hwaddr.sa_data);
                 ret_val = 1;
             }
@@ -91,14 +89,14 @@ int read_iface_mac()
     return ret_val;
 }
 #endif
+
 /* 
  * Goes to the next 802.11 channel.
  * This is mostly required for APs that hop channels, which usually hop between channels 1, 6, and 11.
  * We just hop channels until we successfully associate with the AP.
  * The AP's actual channel number is parsed and set by parse_beacon_tags() in 80211.c.
  */
-int next_channel()
-{
+int next_channel() {
     static int i;
     int n = 0;
     int bg_channels[] = BG_CHANNELS;
@@ -106,27 +104,22 @@ int next_channel()
     int *channels = NULL;
 
     /* Only switch channels if fixed channel operation is disabled */
-    if(get_fixed_channel())
-    {
+    if (get_fixed_channel()) {
         return 0;
     }
 
     /* Select the appropriate channels for the target 802.11 band */
-    if(get_wifi_band() == AN_BAND)
-    {
+    if (get_wifi_band() == AN_BAND) {
         channels = (int *) &an_channels;
-        n = sizeof(an_channels) / sizeof(int);
-    }
-    else
-    {
+        n = sizeof (an_channels) / sizeof (int);
+    } else {
         channels = (int *) &bg_channels;
-        n = sizeof(bg_channels) / sizeof(int);
+        n = sizeof (bg_channels) / sizeof (int);
     }
 
     i++;
 
-    if((i >= n) || i < 0)
-    {
+    if ((i >= n) || i < 0) {
         i = 0;
     }
 
@@ -135,37 +128,34 @@ int next_channel()
 
 /* Sets the 802.11 channel for the selected interface */
 #ifdef __APPLE__
-int change_channel(int channel)
-{
-        cprintf(VERBOSE, "[+] Switching %s to channel %d\n", get_iface(), channel);
-        // Unfortunately, there is no API to change the channel
-        pid_t pid = fork();
-    	if (!pid) {
-        		char chan_arg[32];
-        		sprintf(chan_arg, "-c%d", channel);
-        		char* argv[] = {"/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", chan_arg, NULL};
-        		execve("/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", argv, NULL);
-        	}
-    	int status;
-    	waitpid(pid,&status,0);
-        set_channel(channel);
-    	return 0;
+
+int change_channel(int channel) {
+    cprintf(VERBOSE, "[+] Switching %s to channel %d\n", get_iface(), channel);
+    // Unfortunately, there is no API to change the channel
+    pid_t pid = fork();
+    if (!pid) {
+        char chan_arg[32];
+        sprintf(chan_arg, "-c%d", channel);
+        char* argv[] = {"/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", chan_arg, NULL};
+        execve("/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", argv, NULL);
     }
+    int status;
+    waitpid(pid, &status, 0);
+    set_channel(channel);
+    return 0;
+}
 #else
-int change_channel(int channel)
-{
+
+int change_channel(int channel) {
     int skfd = 0, ret_val = 0;
     struct iwreq wrq;
 
-    memset((void *) &wrq, 0, sizeof(struct iwreq));
+    memset((void *) &wrq, 0, sizeof (struct iwreq));
 
     /* Open NET socket */
-    if((skfd = iw_sockets_open()) < 0)
-    {
+    if ((skfd = iw_sockets_open()) < 0) {
         perror("iw_sockets_open");
-    }
-    else if(get_iface())
-    {
+    } else if (get_iface()) {
         /* Convert channel to a frequency */
         iw_float2freq((double) channel, &(wrq.u.freq));
 
@@ -175,8 +165,7 @@ int change_channel(int channel)
         cprintf(VERBOSE, "[+] Switching %s to channel %d\n", get_iface(), channel);
 
         /* Set frequency */
-        if(iw_set_ext(skfd, get_iface(), SIOCSIWFREQ, &wrq) >= 0)
-        {
+        if (iw_set_ext(skfd, get_iface(), SIOCSIWFREQ, &wrq) >= 0) {
             set_channel(channel);
             ret_val = 1;
         }

@@ -17,7 +17,6 @@
 #include "common.h"
 #include "eloop.h"
 
-
 struct eloop_sock {
     int sock;
     void *eloop_data;
@@ -57,24 +56,20 @@ struct eloop_data {
 
 static struct eloop_data eloop;
 
-
-int eloop_init(void)
-{
-    memset(&eloop, 0, sizeof(eloop));
+int eloop_init(void) {
+    memset(&eloop, 0, sizeof (eloop));
     return 0;
 }
 
-
 int eloop_register_read_sock(int sock,
         void (*handler)(int sock, void *eloop_ctx,
-            void *sock_ctx),
-        void *eloop_data, void *user_data)
-{
+        void *sock_ctx),
+        void *eloop_data, void *user_data) {
     struct eloop_sock *tmp;
 
     tmp = (struct eloop_sock *)
-        realloc(eloop.readers,
-                (eloop.reader_count + 1) * sizeof(struct eloop_sock));
+            realloc(eloop.readers,
+            (eloop.reader_count + 1) * sizeof (struct eloop_sock));
     if (tmp == NULL)
         return -1;
 
@@ -91,9 +86,7 @@ int eloop_register_read_sock(int sock,
     return 0;
 }
 
-
-void eloop_unregister_read_sock(int sock)
-{
+void eloop_unregister_read_sock(int sock) {
     int i;
 
     if (eloop.readers == NULL || eloop.reader_count == 0)
@@ -108,20 +101,18 @@ void eloop_unregister_read_sock(int sock)
     if (i != eloop.reader_count - 1) {
         memmove(&eloop.readers[i], &eloop.readers[i + 1],
                 (eloop.reader_count - i - 1) *
-                sizeof(struct eloop_sock));
+                sizeof (struct eloop_sock));
     }
     eloop.reader_count--;
     eloop.reader_table_changed = 1;
 }
 
-
 int eloop_register_timeout(unsigned int secs, unsigned int usecs,
         void (*handler)(void *eloop_ctx, void *timeout_ctx),
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *timeout, *tmp, *prev;
 
-    timeout = (struct eloop_timeout *) malloc(sizeof(*timeout));
+    timeout = (struct eloop_timeout *) malloc(sizeof (*timeout));
     if (timeout == NULL)
         return -1;
     os_get_time(&timeout->time);
@@ -161,10 +152,8 @@ int eloop_register_timeout(unsigned int secs, unsigned int usecs,
     return 0;
 }
 
-
 int eloop_cancel_timeout(void (*handler)(void *eloop_ctx, void *sock_ctx),
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *timeout, *prev, *next;
     int removed = 0;
 
@@ -175,9 +164,9 @@ int eloop_cancel_timeout(void (*handler)(void *eloop_ctx, void *sock_ctx),
 
         if (timeout->handler == handler &&
                 (timeout->eloop_data == eloop_data ||
-                 eloop_data == ELOOP_ALL_CTX) &&
+                eloop_data == ELOOP_ALL_CTX) &&
                 (timeout->user_data == user_data ||
-                 user_data == ELOOP_ALL_CTX)) {
+                user_data == ELOOP_ALL_CTX)) {
             if (prev == NULL)
                 eloop.timeout = next;
             else
@@ -193,11 +182,9 @@ int eloop_cancel_timeout(void (*handler)(void *eloop_ctx, void *sock_ctx),
     return removed;
 }
 
-
 int eloop_is_timeout_registered(void (*handler)(void *eloop_ctx,
-            void *timeout_ctx),
-        void *eloop_data, void *user_data)
-{
+        void *timeout_ctx),
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *tmp;
 
     tmp = eloop.timeout;
@@ -216,8 +203,8 @@ int eloop_is_timeout_registered(void (*handler)(void *eloop_ctx,
 
 /* TODO: replace with suitable signal handler */
 #if 0
-static void eloop_handle_signal(int sig)
-{
+
+static void eloop_handle_signal(int sig) {
     int i;
 
     eloop.signaled++;
@@ -230,9 +217,7 @@ static void eloop_handle_signal(int sig)
 }
 #endif
 
-
-static void eloop_process_pending_signals(void)
-{
+static void eloop_process_pending_signals(void) {
     int i;
 
     if (eloop.signaled == 0)
@@ -253,18 +238,16 @@ static void eloop_process_pending_signals(void)
     }
 }
 
-
 int eloop_register_signal(int sig,
         void (*handler)(int sig, void *eloop_ctx,
-            void *signal_ctx),
-        void *user_data)
-{
+        void *signal_ctx),
+        void *user_data) {
     struct eloop_signal *tmp;
 
     tmp = (struct eloop_signal *)
-        realloc(eloop.signals,
-                (eloop.signal_count + 1) *
-                sizeof(struct eloop_signal));
+            realloc(eloop.signals,
+            (eloop.signal_count + 1) *
+            sizeof (struct eloop_signal));
     if (tmp == NULL)
         return -1;
 
@@ -280,11 +263,9 @@ int eloop_register_signal(int sig,
     return 0;
 }
 
-
 int eloop_register_signal_terminate(void (*handler)(int sig, void *eloop_ctx,
-            void *signal_ctx),
-        void *user_data)
-{
+        void *signal_ctx),
+        void *user_data) {
 #if 0
     /* TODO: for example */
     int ret = eloop_register_signal(SIGINT, handler, user_data);
@@ -295,11 +276,9 @@ int eloop_register_signal_terminate(void (*handler)(int sig, void *eloop_ctx,
     return 0;
 }
 
-
 int eloop_register_signal_reconfig(void (*handler)(int sig, void *eloop_ctx,
-            void *signal_ctx),
-        void *user_data)
-{
+        void *signal_ctx),
+        void *user_data) {
 #if 0
     /* TODO: for example */
     return eloop_register_signal(SIGHUP, handler, user_data);
@@ -307,9 +286,7 @@ int eloop_register_signal_reconfig(void (*handler)(int sig, void *eloop_ctx,
     return 0;
 }
 
-
-void eloop_run(void)
-{
+void eloop_run(void) {
     int i;
     struct os_time tv, now;
 
@@ -364,15 +341,11 @@ void eloop_run(void)
     }
 }
 
-
-void eloop_terminate(void)
-{
+void eloop_terminate(void) {
     eloop.terminate = 1;
 }
 
-
-void eloop_destroy(void)
-{
+void eloop_destroy(void) {
     struct eloop_timeout *timeout, *prev;
 
     timeout = eloop.timeout;
@@ -385,15 +358,11 @@ void eloop_destroy(void)
     free(eloop.signals);
 }
 
-
-int eloop_terminated(void)
-{
+int eloop_terminated(void) {
     return eloop.terminate;
 }
 
-
-void eloop_wait_for_read_sock(int sock)
-{
+void eloop_wait_for_read_sock(int sock) {
     /*
      * TODO: wait for the file descriptor to have something available for
      * reading

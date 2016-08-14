@@ -19,8 +19,7 @@
 
 #ifdef WPA_TRACE
 
-static struct dl_list active_references =
-{ &active_references, &active_references };
+static struct dl_list active_references ={&active_references, &active_references};
 
 #ifdef WPA_TRACE_BFD
 #include <bfd.h>
@@ -34,13 +33,12 @@ static char *prg_fname = NULL;
 static bfd *cached_abfd = NULL;
 static asymbol **syms = NULL;
 
-static void get_prg_fname(void)
-{
+static void get_prg_fname(void) {
     char exe[50], fname[512];
     int len;
-    os_snprintf(exe, sizeof(exe) - 1, "/proc/%u/exe", getpid());
-    len = readlink(exe, fname, sizeof(fname) - 1);
-    if (len < 0 || len >= (int) sizeof(fname)) {
+    os_snprintf(exe, sizeof (exe) - 1, "/proc/%u/exe", getpid());
+    len = readlink(exe, fname, sizeof (fname) - 1);
+    if (len < 0 || len >= (int) sizeof (fname)) {
         perror("readlink");
         return;
     }
@@ -48,9 +46,7 @@ static void get_prg_fname(void)
     prg_fname = strdup(fname);
 }
 
-
-static bfd * open_bfd(const char *fname)
-{
+static bfd * open_bfd(const char *fname) {
     bfd *abfd;
     char **matching;
 
@@ -76,9 +72,7 @@ static bfd * open_bfd(const char *fname)
     return abfd;
 }
 
-
-static void read_syms(bfd *abfd)
-{
+static void read_syms(bfd *abfd) {
     long storage, symcount;
     bfd_boolean dynamic = FALSE;
 
@@ -119,7 +113,6 @@ static void read_syms(bfd *abfd)
     }
 }
 
-
 struct bfd_data {
     bfd_vma pc;
     bfd_boolean found;
@@ -128,9 +121,7 @@ struct bfd_data {
     unsigned int line;
 };
 
-
-static void find_addr_sect(bfd *abfd, asection *section, void *obj)
-{
+static void find_addr_sect(bfd *abfd, asection *section, void *obj) {
     struct bfd_data *data = obj;
     bfd_vma vma;
     bfd_size_type size;
@@ -156,9 +147,7 @@ static void find_addr_sect(bfd *abfd, asection *section, void *obj)
             &data->line);
 }
 
-
-static void wpa_trace_bfd_addr(void *pc)
-{
+static void wpa_trace_bfd_addr(void *pc) {
     bfd *abfd = cached_abfd;
     struct bfd_data data;
     const char *name;
@@ -178,7 +167,7 @@ static void wpa_trace_bfd_addr(void *pc)
     do {
         if (data.function)
             aname = bfd_demangle(abfd, data.function,
-                    DMGL_ANSI | DMGL_PARAMS);
+                DMGL_ANSI | DMGL_PARAMS);
         name = aname ? aname : data.function;
         filename = data.filename;
         if (filename) {
@@ -199,9 +188,7 @@ static void wpa_trace_bfd_addr(void *pc)
     } while (data.found);
 }
 
-
-static const char * wpa_trace_bfd_addr2func(void *pc)
-{
+static const char * wpa_trace_bfd_addr2func(void *pc) {
     bfd *abfd = cached_abfd;
     struct bfd_data data;
 
@@ -218,9 +205,7 @@ static const char * wpa_trace_bfd_addr2func(void *pc)
     return data.function;
 }
 
-
-static void wpa_trace_bfd_init(void)
-{
+static void wpa_trace_bfd_init(void) {
     if (!prg_fname) {
         get_prg_fname();
         if (!prg_fname)
@@ -242,9 +227,7 @@ static void wpa_trace_bfd_init(void)
     }
 }
 
-
-void wpa_trace_dump_funcname(const char *title, void *pc)
-{
+void wpa_trace_dump_funcname(const char *title, void *pc) {
     wpa_printf(MSG_INFO, "WPA_TRACE: %s: %p", title, pc);
     wpa_trace_bfd_init();
     wpa_trace_bfd_addr(pc);
@@ -258,11 +241,13 @@ void wpa_trace_dump_funcname(const char *title, void *pc)
 
 #endif /* WPA_TRACE_BFD */
 
-void wpa_trace_dump_func(const char *title, void **btrace, int btrace_num)
-{
+void wpa_trace_dump_func(const char *title, void **btrace, int btrace_num) {
     char **sym;
     int i;
-    enum { TRACE_HEAD, TRACE_RELEVANT, TRACE_TAIL } state;
+
+    enum {
+        TRACE_HEAD, TRACE_RELEVANT, TRACE_TAIL
+    } state;
 
     wpa_trace_bfd_init();
     wpa_printf(MSG_INFO, "WPA_TRACE: %s - START", title);
@@ -272,8 +257,8 @@ void wpa_trace_dump_func(const char *title, void **btrace, int btrace_num)
         const char *func = wpa_trace_bfd_addr2func(btrace[i]);
         if (state == TRACE_HEAD && func &&
                 (os_strcmp(func, "wpa_trace_add_ref_func") == 0 ||
-                 os_strcmp(func, "wpa_trace_check_ref") == 0 ||
-                 os_strcmp(func, "wpa_trace_show") == 0))
+                os_strcmp(func, "wpa_trace_check_ref") == 0 ||
+                os_strcmp(func, "wpa_trace_show") == 0))
             continue;
         if (state == TRACE_TAIL && sym && sym[i] &&
                 os_strstr(sym[i], "__libc_start_main"))
@@ -293,9 +278,8 @@ void wpa_trace_dump_func(const char *title, void **btrace, int btrace_num)
     wpa_printf(MSG_INFO, "WPA_TRACE: %s - END", title);
 }
 
+void wpa_trace_show(const char *title) {
 
-void wpa_trace_show(const char *title)
-{
     struct info {
         WPA_TRACE_INFO
     } info;
@@ -303,9 +287,7 @@ void wpa_trace_show(const char *title)
     wpa_trace_dump(title, &info);
 }
 
-
-void wpa_trace_add_ref_func(struct wpa_trace_ref *ref, const void *addr)
-{
+void wpa_trace_add_ref_func(struct wpa_trace_ref *ref, const void *addr) {
     if (addr == NULL)
         return;
     ref->addr = addr;
@@ -313,10 +295,9 @@ void wpa_trace_add_ref_func(struct wpa_trace_ref *ref, const void *addr)
     dl_list_add(&active_references, &ref->list);
 }
 
-
-void wpa_trace_check_ref(const void *addr)
-{
+void wpa_trace_check_ref(const void *addr) {
     struct wpa_trace_ref *ref;
+
     dl_list_for_each(ref, &active_references, struct wpa_trace_ref, list) {
         if (addr != ref->addr)
             continue;

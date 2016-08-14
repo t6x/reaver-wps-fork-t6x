@@ -16,6 +16,7 @@
 #define TLSV1_CLIENT_I_H
 
 struct tlsv1_client {
+
     enum {
         CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE,
         SERVER_KEY_EXCHANGE, SERVER_CERTIFICATE_REQUEST,
@@ -35,10 +36,10 @@ struct tlsv1_client {
     u8 alert_level;
     u8 alert_description;
 
-    unsigned int certificate_requested:1;
-    unsigned int session_resumed:1;
-    unsigned int session_ticket_included:1;
-    unsigned int use_session_ticket:1;
+    unsigned int certificate_requested : 1;
+    unsigned int session_resumed : 1;
+    unsigned int session_ticket_included : 1;
+    unsigned int use_session_ticket : 1;
 
     struct crypto_public_key *server_rsa_key;
 
@@ -74,14 +75,14 @@ void tls_alert(struct tlsv1_client *conn, u8 level, u8 description);
 void tlsv1_client_free_dh(struct tlsv1_client *conn);
 int tls_derive_pre_master_secret(u8 *pre_master_secret);
 int tls_derive_keys(struct tlsv1_client *conn,
-                    const u8 *pre_master_secret, size_t pre_master_secret_len);
+        const u8 *pre_master_secret, size_t pre_master_secret_len);
 u8 * tls_send_client_hello(struct tlsv1_client *conn, size_t *out_len);
 u8 * tlsv1_client_send_alert(struct tlsv1_client *conn, u8 level,
-                             u8 description, size_t *out_len);
+        u8 description, size_t *out_len);
 u8 * tlsv1_client_handshake_write(struct tlsv1_client *conn, size_t *out_len,
-                                  int no_appl_data);
+        int no_appl_data);
 int tlsv1_client_process_handshake(struct tlsv1_client *conn, u8 ct,
-                                   const u8 *buf, size_t *len,
-                                   u8 **out_data, size_t *out_len);
+        const u8 *buf, size_t *len,
+        u8 **out_data, size_t *out_len);
 
 #endif /* TLSV1_CLIENT_I_H */

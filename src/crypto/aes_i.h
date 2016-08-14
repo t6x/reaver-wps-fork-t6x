@@ -69,8 +69,7 @@ extern const u8 rcons[10];
 
 #define RCON(i) (rcons[(i)] << 24)
 
-static inline u32 rotr(u32 val, int bits)
-{
+static inline u32 rotr(u32 val, int bits) {
     return (val >> bits) | (val << (32 - bits));
 }
 

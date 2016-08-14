@@ -18,17 +18,14 @@
 
 #include "os.h"
 
-void os_sleep(os_time_t sec, os_time_t usec)
-{
+void os_sleep(os_time_t sec, os_time_t usec) {
     if (sec)
         Sleep(sec * 1000);
     if (usec)
         Sleep(usec / 1000);
 }
 
-
-int os_get_time(struct os_time *t)
-{
+int os_get_time(struct os_time *t) {
 #define EPOCHFILETIME (116444736000000000ULL)
     FILETIME ft;
     LARGE_INTEGER li;
@@ -51,10 +48,8 @@ int os_get_time(struct os_time *t)
     return 0;
 }
 
-
 int os_mktime(int year, int month, int day, int hour, int min, int sec,
-        os_time_t *t)
-{
+        os_time_t *t) {
     struct tm tm, *tm1;
     time_t t_local, t1, t2;
     os_time_t tz_offset;
@@ -64,7 +59,7 @@ int os_mktime(int year, int month, int day, int hour, int min, int sec,
             sec > 60)
         return -1;
 
-    memset(&tm, 0, sizeof(tm));
+    memset(&tm, 0, sizeof (tm));
     tm.tm_year = year - 1900;
     tm.tm_mon = month - 1;
     tm.tm_mday = day;
@@ -91,26 +86,20 @@ int os_mktime(int year, int month, int day, int hour, int min, int sec,
     return 0;
 }
 
-
-int os_daemonize(const char *pid_file)
-{
+int os_daemonize(const char *pid_file) {
     /* TODO */
     return -1;
 }
 
-
-void os_daemonize_terminate(const char *pid_file)
-{
+void os_daemonize_terminate(const char *pid_file) {
 }
 
-
-int os_get_random(unsigned char *buf, size_t len)
-{
+int os_get_random(unsigned char *buf, size_t len) {
     HCRYPTPROV prov;
     BOOL ret;
 
     if (!CryptAcquireContext(&prov, NULL, NULL, PROV_RSA_FULL,
-                CRYPT_VERIFYCONTEXT))
+            CRYPT_VERIFYCONTEXT))
         return -1;
 
     ret = CryptGenRandom(prov, len, buf);
@@ -119,21 +108,15 @@ int os_get_random(unsigned char *buf, size_t len)
     return ret ? 0 : -1;
 }
 
-
-unsigned long os_random(void)
-{
+unsigned long os_random(void) {
     return rand();
 }
 
-
-char * os_rel2abs_path(const char *rel_path)
-{
+char * os_rel2abs_path(const char *rel_path) {
     return _strdup(rel_path);
 }
 
-
-int os_program_init(void)
-{
+int os_program_init(void) {
 #ifdef CONFIG_NATIVE_WINDOWS
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 0), &wsaData)) {
@@ -144,29 +127,21 @@ int os_program_init(void)
     return 0;
 }
 
-
-void os_program_deinit(void)
-{
+void os_program_deinit(void) {
 #ifdef CONFIG_NATIVE_WINDOWS
     WSACleanup();
 #endif /* CONFIG_NATIVE_WINDOWS */
 }
 
-
-int os_setenv(const char *name, const char *value, int overwrite)
-{
+int os_setenv(const char *name, const char *value, int overwrite) {
     return -1;
 }
 
-
-int os_unsetenv(const char *name)
-{
+int os_unsetenv(const char *name) {
     return -1;
 }
 
-
-char * os_readfile(const char *name, size_t *len)
-{
+char * os_readfile(const char *name, size_t *len) {
     FILE *f;
     char *buf;
 
@@ -190,15 +165,11 @@ char * os_readfile(const char *name, size_t *len)
     return buf;
 }
 
-
-void * os_zalloc(size_t size)
-{
+void * os_zalloc(size_t size) {
     return calloc(1, size);
 }
 
-
-size_t os_strlcpy(char *dest, const char *src, size_t siz)
-{
+size_t os_strlcpy(char *dest, const char *src, size_t siz) {
     const char *s = src;
     size_t left = siz;
 

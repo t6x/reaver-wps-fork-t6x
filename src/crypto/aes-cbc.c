@@ -27,8 +27,7 @@
  * @data_len: Length of data in bytes (must be divisible by 16)
  * Returns: 0 on success, -1 on failure
  */
-int aes_128_cbc_encrypt(const u8 *key, const u8 *iv, u8 *data, size_t data_len)
-{
+int aes_128_cbc_encrypt(const u8 *key, const u8 *iv, u8 *data, size_t data_len) {
     void *ctx;
     u8 cbc[AES_BLOCK_SIZE];
     u8 *pos = data;
@@ -51,7 +50,6 @@ int aes_128_cbc_encrypt(const u8 *key, const u8 *iv, u8 *data, size_t data_len)
     return 0;
 }
 
-
 /**
  * aes_128_cbc_decrypt - AES-128 CBC decryption
  * @key: Decryption key
@@ -60,8 +58,7 @@ int aes_128_cbc_encrypt(const u8 *key, const u8 *iv, u8 *data, size_t data_len)
  * @data_len: Length of data in bytes (must be divisible by 16)
  * Returns: 0 on success, -1 on failure
  */
-int aes_128_cbc_decrypt(const u8 *key, const u8 *iv, u8 *data, size_t data_len)
-{
+int aes_128_cbc_decrypt(const u8 *key, const u8 *iv, u8 *data, size_t data_len) {
     void *ctx;
     u8 cbc[AES_BLOCK_SIZE], tmp[AES_BLOCK_SIZE];
     u8 *pos = data;

@@ -21,7 +21,10 @@
 #ifdef TRUE
 #undef TRUE
 #endif
-typedef enum { FALSE = 0, TRUE = 1 } Boolean;
+
+typedef enum {
+    FALSE = 0, TRUE = 1
+} Boolean;
 
 
 #define WPA_CIPHER_NONE BIT(0)
@@ -44,30 +47,26 @@ typedef enum { FALSE = 0, TRUE = 1 } Boolean;
 #define WPA_KEY_MGMT_PSK_SHA256 BIT(8)
 #define WPA_KEY_MGMT_WPS BIT(9)
 
-static inline int wpa_key_mgmt_wpa_ieee8021x(int akm)
-{
+static inline int wpa_key_mgmt_wpa_ieee8021x(int akm) {
     return akm == WPA_KEY_MGMT_IEEE8021X ||
-        akm == WPA_KEY_MGMT_FT_IEEE8021X ||
-        akm == WPA_KEY_MGMT_IEEE8021X_SHA256;
+            akm == WPA_KEY_MGMT_FT_IEEE8021X ||
+            akm == WPA_KEY_MGMT_IEEE8021X_SHA256;
 }
 
-static inline int wpa_key_mgmt_wpa_psk(int akm)
-{
+static inline int wpa_key_mgmt_wpa_psk(int akm) {
     return akm == WPA_KEY_MGMT_PSK ||
-        akm == WPA_KEY_MGMT_FT_PSK ||
-        akm == WPA_KEY_MGMT_PSK_SHA256;
+            akm == WPA_KEY_MGMT_FT_PSK ||
+            akm == WPA_KEY_MGMT_PSK_SHA256;
 }
 
-static inline int wpa_key_mgmt_ft(int akm)
-{
+static inline int wpa_key_mgmt_ft(int akm) {
     return akm == WPA_KEY_MGMT_FT_PSK ||
-        akm == WPA_KEY_MGMT_FT_IEEE8021X;
+            akm == WPA_KEY_MGMT_FT_IEEE8021X;
 }
 
-static inline int wpa_key_mgmt_sha256(int akm)
-{
+static inline int wpa_key_mgmt_sha256(int akm) {
     return akm == WPA_KEY_MGMT_PSK_SHA256 ||
-        akm == WPA_KEY_MGMT_IEEE8021X_SHA256;
+            akm == WPA_KEY_MGMT_IEEE8021X_SHA256;
 }
 
 
@@ -78,7 +77,6 @@ static inline int wpa_key_mgmt_sha256(int akm)
 #define WPA_AUTH_ALG_SHARED BIT(1)
 #define WPA_AUTH_ALG_LEAP BIT(2)
 #define WPA_AUTH_ALG_FT BIT(3)
-
 
 enum wpa_alg {
     WPA_ALG_NONE,
@@ -231,7 +229,6 @@ enum wpa_states {
 
 #define MLME_SETPROTECTION_KEY_TYPE_GROUP 0
 #define MLME_SETPROTECTION_KEY_TYPE_PAIRWISE 1
-
 
 /**
  * enum mfp_options - Management frame protection (IEEE 802.11w) options

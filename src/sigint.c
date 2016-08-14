@@ -34,24 +34,21 @@
 #include "sigint.h"
 
 /* Initializes SIGINT handler */
-void sigint_init()
-{
+void sigint_init() {
     struct sigaction act;
 
-    memset(&act, 0, sizeof(struct sigaction));
+    memset(&act, 0, sizeof (struct sigaction));
     act.sa_handler = sigint_handler;
 
-    sigaction (SIGINT, &act, 0);
+    sigaction(SIGINT, &act, 0);
 
     return;
 }
 
 /* Handles Ctrl+C */
-void sigint_handler(int x)
-{
+void sigint_handler(int x) {
     /* If we have initiated a WPS exchange, try to end it before quitting */
-    if(get_wps() != NULL)
-    {
+    if (get_wps() != NULL) {
         send_termination();
     }
 
@@ -63,8 +60,7 @@ void sigint_handler(int x)
     fflush(stdout);
 
     /* Save our session */
-    if(save_session())
-    {
+    if (save_session()) {
         cprintf(INFO, "[+] Session saved.\n");
     }
 

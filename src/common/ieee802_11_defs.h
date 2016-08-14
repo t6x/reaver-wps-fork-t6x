@@ -18,65 +18,65 @@
 
 /* IEEE 802.11 defines */
 
-#define WLAN_FC_PVER		0x0003
-#define WLAN_FC_TODS		0x0100
-#define WLAN_FC_FROMDS		0x0200
-#define WLAN_FC_MOREFRAG	0x0400
-#define WLAN_FC_RETRY		0x0800
-#define WLAN_FC_PWRMGT		0x1000
-#define WLAN_FC_MOREDATA	0x2000
-#define WLAN_FC_ISWEP		0x4000
-#define WLAN_FC_ORDER		0x8000
+#define WLAN_FC_PVER  0x0003
+#define WLAN_FC_TODS  0x0100
+#define WLAN_FC_FROMDS  0x0200
+#define WLAN_FC_MOREFRAG 0x0400
+#define WLAN_FC_RETRY  0x0800
+#define WLAN_FC_PWRMGT  0x1000
+#define WLAN_FC_MOREDATA 0x2000
+#define WLAN_FC_ISWEP  0x4000
+#define WLAN_FC_ORDER  0x8000
 
-#define WLAN_FC_GET_TYPE(fc)	(((fc) & 0x000c) >> 2)
-#define WLAN_FC_GET_STYPE(fc)	(((fc) & 0x00f0) >> 4)
+#define WLAN_FC_GET_TYPE(fc) (((fc) & 0x000c) >> 2)
+#define WLAN_FC_GET_STYPE(fc) (((fc) & 0x00f0) >> 4)
 
 #define WLAN_GET_SEQ_FRAG(seq) ((seq) & (BIT(3) | BIT(2) | BIT(1) | BIT(0)))
 #define WLAN_GET_SEQ_SEQ(seq) \
     (((seq) & (~(BIT(3) | BIT(2) | BIT(1) | BIT(0)))) >> 4)
 
-#define WLAN_FC_TYPE_MGMT		0
-#define WLAN_FC_TYPE_CTRL		1
-#define WLAN_FC_TYPE_DATA		2
+#define WLAN_FC_TYPE_MGMT  0
+#define WLAN_FC_TYPE_CTRL  1
+#define WLAN_FC_TYPE_DATA  2
 
 /* management */
-#define WLAN_FC_STYPE_ASSOC_REQ		0
-#define WLAN_FC_STYPE_ASSOC_RESP	1
-#define WLAN_FC_STYPE_REASSOC_REQ	2
-#define WLAN_FC_STYPE_REASSOC_RESP	3
-#define WLAN_FC_STYPE_PROBE_REQ		4
-#define WLAN_FC_STYPE_PROBE_RESP	5
-#define WLAN_FC_STYPE_BEACON		8
-#define WLAN_FC_STYPE_ATIM		9
-#define WLAN_FC_STYPE_DISASSOC		10
-#define WLAN_FC_STYPE_AUTH		11
-#define WLAN_FC_STYPE_DEAUTH		12
-#define WLAN_FC_STYPE_ACTION		13
+#define WLAN_FC_STYPE_ASSOC_REQ  0
+#define WLAN_FC_STYPE_ASSOC_RESP 1
+#define WLAN_FC_STYPE_REASSOC_REQ 2
+#define WLAN_FC_STYPE_REASSOC_RESP 3
+#define WLAN_FC_STYPE_PROBE_REQ  4
+#define WLAN_FC_STYPE_PROBE_RESP 5
+#define WLAN_FC_STYPE_BEACON  8
+#define WLAN_FC_STYPE_ATIM  9
+#define WLAN_FC_STYPE_DISASSOC  10
+#define WLAN_FC_STYPE_AUTH  11
+#define WLAN_FC_STYPE_DEAUTH  12
+#define WLAN_FC_STYPE_ACTION  13
 
 /* control */
-#define WLAN_FC_STYPE_PSPOLL		10
-#define WLAN_FC_STYPE_RTS		11
-#define WLAN_FC_STYPE_CTS		12
-#define WLAN_FC_STYPE_ACK		13
-#define WLAN_FC_STYPE_CFEND		14
-#define WLAN_FC_STYPE_CFENDACK		15
+#define WLAN_FC_STYPE_PSPOLL  10
+#define WLAN_FC_STYPE_RTS  11
+#define WLAN_FC_STYPE_CTS  12
+#define WLAN_FC_STYPE_ACK  13
+#define WLAN_FC_STYPE_CFEND  14
+#define WLAN_FC_STYPE_CFENDACK  15
 
 /* data */
-#define WLAN_FC_STYPE_DATA		0
-#define WLAN_FC_STYPE_DATA_CFACK	1
-#define WLAN_FC_STYPE_DATA_CFPOLL	2
-#define WLAN_FC_STYPE_DATA_CFACKPOLL	3
-#define WLAN_FC_STYPE_NULLFUNC		4
-#define WLAN_FC_STYPE_CFACK		5
-#define WLAN_FC_STYPE_CFPOLL		6
-#define WLAN_FC_STYPE_CFACKPOLL		7
-#define WLAN_FC_STYPE_QOS_DATA		8
+#define WLAN_FC_STYPE_DATA  0
+#define WLAN_FC_STYPE_DATA_CFACK 1
+#define WLAN_FC_STYPE_DATA_CFPOLL 2
+#define WLAN_FC_STYPE_DATA_CFACKPOLL 3
+#define WLAN_FC_STYPE_NULLFUNC  4
+#define WLAN_FC_STYPE_CFACK  5
+#define WLAN_FC_STYPE_CFPOLL  6
+#define WLAN_FC_STYPE_CFACKPOLL  7
+#define WLAN_FC_STYPE_QOS_DATA  8
 
 /* Authentication algorithms */
-#define WLAN_AUTH_OPEN			0
-#define WLAN_AUTH_SHARED_KEY		1
-#define WLAN_AUTH_FT			2
-#define WLAN_AUTH_LEAP			128
+#define WLAN_AUTH_OPEN   0
+#define WLAN_AUTH_SHARED_KEY  1
+#define WLAN_AUTH_FT   2
+#define WLAN_AUTH_LEAP   128
 
 #define WLAN_AUTH_CHALLENGE_LEN 128
 
@@ -245,7 +245,7 @@ struct ieee80211_hdr {
     u8 addr3[6];
     le16 seq_ctrl;
     /* followed by 'u8 addr4[6];' if ToDS and FromDS is set in data frame
-    */
+     */
 } STRUCT_PACKED;
 
 #define IEEE80211_DA_FROMDS addr1
@@ -263,7 +263,9 @@ struct ieee80211_mgmt {
     u8 sa[6];
     u8 bssid[6];
     le16 seq_ctrl;
+
     union {
+
         struct {
             le16 auth_alg;
             le16 auth_transaction;
@@ -271,15 +273,18 @@ struct ieee80211_mgmt {
             /* possibly followed by Challenge text */
             u8 variable[0];
         } STRUCT_PACKED auth;
+
         struct {
             le16 reason_code;
         } STRUCT_PACKED deauth;
+
         struct {
             le16 capab_info;
             le16 listen_interval;
             /* followed by SSID and Supported rates */
             u8 variable[0];
         } STRUCT_PACKED assoc_req;
+
         struct {
             le16 capab_info;
             le16 status_code;
@@ -287,6 +292,7 @@ struct ieee80211_mgmt {
             /* followed by Supported rates */
             u8 variable[0];
         } STRUCT_PACKED assoc_resp, reassoc_resp;
+
         struct {
             le16 capab_info;
             le16 listen_interval;
@@ -294,9 +300,11 @@ struct ieee80211_mgmt {
             /* followed by SSID and Supported rates */
             u8 variable[0];
         } STRUCT_PACKED reassoc_req;
+
         struct {
             le16 reason_code;
         } STRUCT_PACKED disassoc;
+
         struct {
             u8 timestamp[8];
             le16 beacon_int;
@@ -305,10 +313,12 @@ struct ieee80211_mgmt {
              * FH Params, DS Params, CF Params, IBSS Params, TIM */
             u8 variable[0];
         } STRUCT_PACKED beacon;
+
         struct {
             /* only variable items: SSID, Supported rates */
             u8 variable[0];
         } STRUCT_PACKED probe_req;
+
         struct {
             u8 timestamp[8];
             le16 beacon_int;
@@ -317,16 +327,20 @@ struct ieee80211_mgmt {
              * FH Params, DS Params, CF Params, IBSS Params */
             u8 variable[0];
         } STRUCT_PACKED probe_resp;
+
         struct {
             u8 category;
+
             union {
+
                 struct {
                     u8 action_code;
                     u8 dialog_token;
                     u8 status_code;
                     u8 variable[0];
                 } STRUCT_PACKED wmm_action;
-                struct{
+
+                struct {
                     u8 action_code;
                     u8 element_id;
                     u8 length;
@@ -334,12 +348,14 @@ struct ieee80211_mgmt {
                     u8 new_chan;
                     u8 switch_count;
                 } STRUCT_PACKED chan_switch;
+
                 struct {
                     u8 action;
                     u8 sta_addr[ETH_ALEN];
                     u8 target_ap_addr[ETH_ALEN];
                     u8 variable[0]; /* FT Request */
                 } STRUCT_PACKED ft_action_req;
+
                 struct {
                     u8 action;
                     u8 sta_addr[ETH_ALEN];
@@ -347,10 +363,12 @@ struct ieee80211_mgmt {
                     le16 status_code;
                     u8 variable[0]; /* FT Request */
                 } STRUCT_PACKED ft_action_resp;
+
                 struct {
                     u8 action;
                     u8 trans_id[WLAN_SA_QUERY_TR_ID_LEN];
                 } STRUCT_PACKED sa_query_req;
+
                 struct {
                     u8 action; /* */
                     u8 trans_id[WLAN_SA_QUERY_TR_ID_LEN];
@@ -360,7 +378,6 @@ struct ieee80211_mgmt {
     } u;
 } STRUCT_PACKED;
 
-
 struct ieee80211_ht_capabilities {
     le16 ht_capabilities_info;
     u8 a_mpdu_params;
@@ -369,7 +386,6 @@ struct ieee80211_ht_capabilities {
     le32 tx_bf_capability_info;
     u8 asel_capabilities;
 } STRUCT_PACKED;
-
 
 struct ieee80211_ht_operation {
     u8 control_chan;
@@ -388,33 +404,33 @@ struct ieee80211_ht_operation {
 #define ERP_INFO_BARKER_PREAMBLE_MODE BIT(2)
 
 
-#define HT_CAP_INFO_LDPC_CODING_CAP		((u16) BIT(0))
-#define HT_CAP_INFO_SUPP_CHANNEL_WIDTH_SET	((u16) BIT(1))
-#define HT_CAP_INFO_SMPS_MASK			((u16) (BIT(2) | BIT(3)))
-#define HT_CAP_INFO_SMPS_STATIC			((u16) 0)
-#define HT_CAP_INFO_SMPS_DYNAMIC		((u16) BIT(2))
-#define HT_CAP_INFO_SMPS_DISABLED		((u16) (BIT(2) | BIT(3)))
-#define HT_CAP_INFO_GREEN_FIELD			((u16) BIT(4))
-#define HT_CAP_INFO_SHORT_GI20MHZ		((u16) BIT(5))
-#define HT_CAP_INFO_SHORT_GI40MHZ		((u16) BIT(6))
-#define HT_CAP_INFO_TX_STBC			((u16) BIT(7))
-#define HT_CAP_INFO_RX_STBC_MASK		((u16) (BIT(8) | BIT(9)))
-#define HT_CAP_INFO_RX_STBC_1			((u16) BIT(8))
-#define HT_CAP_INFO_RX_STBC_12			((u16) BIT(9))
-#define HT_CAP_INFO_RX_STBC_123			((u16) (BIT(8) | BIT(9)))
-#define HT_CAP_INFO_DELAYED_BA			((u16) BIT(10))
-#define HT_CAP_INFO_MAX_AMSDU_SIZE		((u16) BIT(11))
-#define HT_CAP_INFO_DSSS_CCK40MHZ		((u16) BIT(12))
-#define HT_CAP_INFO_PSMP_SUPP			((u16) BIT(13))
-#define HT_CAP_INFO_40MHZ_INTOLERANT		((u16) BIT(14))
-#define HT_CAP_INFO_LSIG_TXOP_PROTECT_SUPPORT	((u16) BIT(15))
+#define HT_CAP_INFO_LDPC_CODING_CAP  ((u16) BIT(0))
+#define HT_CAP_INFO_SUPP_CHANNEL_WIDTH_SET ((u16) BIT(1))
+#define HT_CAP_INFO_SMPS_MASK   ((u16) (BIT(2) | BIT(3)))
+#define HT_CAP_INFO_SMPS_STATIC   ((u16) 0)
+#define HT_CAP_INFO_SMPS_DYNAMIC  ((u16) BIT(2))
+#define HT_CAP_INFO_SMPS_DISABLED  ((u16) (BIT(2) | BIT(3)))
+#define HT_CAP_INFO_GREEN_FIELD   ((u16) BIT(4))
+#define HT_CAP_INFO_SHORT_GI20MHZ  ((u16) BIT(5))
+#define HT_CAP_INFO_SHORT_GI40MHZ  ((u16) BIT(6))
+#define HT_CAP_INFO_TX_STBC   ((u16) BIT(7))
+#define HT_CAP_INFO_RX_STBC_MASK  ((u16) (BIT(8) | BIT(9)))
+#define HT_CAP_INFO_RX_STBC_1   ((u16) BIT(8))
+#define HT_CAP_INFO_RX_STBC_12   ((u16) BIT(9))
+#define HT_CAP_INFO_RX_STBC_123   ((u16) (BIT(8) | BIT(9)))
+#define HT_CAP_INFO_DELAYED_BA   ((u16) BIT(10))
+#define HT_CAP_INFO_MAX_AMSDU_SIZE  ((u16) BIT(11))
+#define HT_CAP_INFO_DSSS_CCK40MHZ  ((u16) BIT(12))
+#define HT_CAP_INFO_PSMP_SUPP   ((u16) BIT(13))
+#define HT_CAP_INFO_40MHZ_INTOLERANT  ((u16) BIT(14))
+#define HT_CAP_INFO_LSIG_TXOP_PROTECT_SUPPORT ((u16) BIT(15))
 
 
-#define EXT_HT_CAP_INFO_PCO			((u16) BIT(0))
-#define EXT_HT_CAP_INFO_TRANS_TIME_OFFSET	1
-#define EXT_HT_CAP_INFO_MCS_FEEDBACK_OFFSET	8
-#define EXT_HT_CAP_INFO_HTC_SUPPORTED		((u16) BIT(10))
-#define EXT_HT_CAP_INFO_RD_RESPONDER		((u16) BIT(11))
+#define EXT_HT_CAP_INFO_PCO   ((u16) BIT(0))
+#define EXT_HT_CAP_INFO_TRANS_TIME_OFFSET 1
+#define EXT_HT_CAP_INFO_MCS_FEEDBACK_OFFSET 8
+#define EXT_HT_CAP_INFO_HTC_SUPPORTED  ((u16) BIT(10))
+#define EXT_HT_CAP_INFO_RD_RESPONDER  ((u16) BIT(11))
 
 
 #define TX_BEAMFORM_CAP_TXBF_CAP ((u32) BIT(0))
@@ -445,13 +461,13 @@ struct ieee80211_ht_operation {
 #define ASEL_CAPABILITY_RX_AS_CAP ((u8) BIT(5))
 #define ASEL_CAPABILITY_TX_SOUND_PPDUS_CAP ((u8) BIT(6))
 
-#define HT_INFO_HT_PARAM_SECONDARY_CHNL_OFF_MASK	((u8) BIT(0) | BIT(1))
-#define HT_INFO_HT_PARAM_SECONDARY_CHNL_ABOVE		((u8) BIT(0))
-#define HT_INFO_HT_PARAM_SECONDARY_CHNL_BELOW		((u8) BIT(0) | BIT(1))
-#define HT_INFO_HT_PARAM_REC_TRANS_CHNL_WIDTH		((u8) BIT(2))
-#define HT_INFO_HT_PARAM_RIFS_MODE			((u8) BIT(3))
-#define HT_INFO_HT_PARAM_CTRL_ACCESS_ONLY		((u8) BIT(4))
-#define HT_INFO_HT_PARAM_SRV_INTERVAL_GRANULARITY	((u8) BIT(5))
+#define HT_INFO_HT_PARAM_SECONDARY_CHNL_OFF_MASK ((u8) BIT(0) | BIT(1))
+#define HT_INFO_HT_PARAM_SECONDARY_CHNL_ABOVE  ((u8) BIT(0))
+#define HT_INFO_HT_PARAM_SECONDARY_CHNL_BELOW  ((u8) BIT(0) | BIT(1))
+#define HT_INFO_HT_PARAM_REC_TRANS_CHNL_WIDTH  ((u8) BIT(2))
+#define HT_INFO_HT_PARAM_RIFS_MODE   ((u8) BIT(3))
+#define HT_INFO_HT_PARAM_CTRL_ACCESS_ONLY  ((u8) BIT(4))
+#define HT_INFO_HT_PARAM_SRV_INTERVAL_GRANULARITY ((u8) BIT(5))
 
 
 #define OP_MODE_PURE                    0
@@ -459,19 +475,19 @@ struct ieee80211_ht_operation {
 #define OP_MODE_20MHZ_HT_STA_ASSOCED    2
 #define OP_MODE_MIXED                   3
 
-#define HT_INFO_OPERATION_MODE_OP_MODE_MASK	\
+#define HT_INFO_OPERATION_MODE_OP_MODE_MASK \
     ((le16) (0x0001 | 0x0002))
-#define HT_INFO_OPERATION_MODE_OP_MODE_OFFSET		0
-#define HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT	((u8) BIT(2))
-#define HT_INFO_OPERATION_MODE_TRANSMIT_BURST_LIMIT	((u8) BIT(3))
-#define HT_INFO_OPERATION_MODE_NON_HT_STA_PRESENT	((u8) BIT(4))
+#define HT_INFO_OPERATION_MODE_OP_MODE_OFFSET  0
+#define HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT ((u8) BIT(2))
+#define HT_INFO_OPERATION_MODE_TRANSMIT_BURST_LIMIT ((u8) BIT(3))
+#define HT_INFO_OPERATION_MODE_NON_HT_STA_PRESENT ((u8) BIT(4))
 
-#define HT_INFO_STBC_PARAM_DUAL_BEACON			((u16) BIT(6))
-#define HT_INFO_STBC_PARAM_DUAL_STBC_PROTECT		((u16) BIT(7))
-#define HT_INFO_STBC_PARAM_SECONDARY_BCN		((u16) BIT(8))
-#define HT_INFO_STBC_PARAM_LSIG_TXOP_PROTECT_ALLOWED	((u16) BIT(9))
-#define HT_INFO_STBC_PARAM_PCO_ACTIVE			((u16) BIT(10))
-#define HT_INFO_STBC_PARAM_PCO_PHASE			((u16) BIT(11))
+#define HT_INFO_STBC_PARAM_DUAL_BEACON   ((u16) BIT(6))
+#define HT_INFO_STBC_PARAM_DUAL_STBC_PROTECT  ((u16) BIT(7))
+#define HT_INFO_STBC_PARAM_SECONDARY_BCN  ((u16) BIT(8))
+#define HT_INFO_STBC_PARAM_LSIG_TXOP_PROTECT_ALLOWED ((u16) BIT(9))
+#define HT_INFO_STBC_PARAM_PCO_ACTIVE   ((u16) BIT(10))
+#define HT_INFO_STBC_PARAM_PCO_PHASE   ((u16) BIT(11))
 
 
 #define OUI_MICROSOFT 0x0050f2 /* Microsoft (also used in Wi-Fi specs)
@@ -531,7 +547,7 @@ struct wmm_ac_parameter {
     u8 aci_aifsn; /* AIFSN, ACM, ACI */
     u8 cw; /* ECWmin, ECWmax (CW = 2^ECW - 1) */
     le16 txop_limit;
-}  STRUCT_PACKED;
+} STRUCT_PACKED;
 
 /*
  * WMM Parameter Element (used in Beacon, Probe Response, and (Re)Association
@@ -577,7 +593,6 @@ struct wmm_tspec_element {
     le16 medium_time;
 } STRUCT_PACKED;
 
-
 /* Access Categories / ACI to AC coding */
 enum {
     WMM_AC_BE = 0 /* Best Effort */,
@@ -592,16 +607,16 @@ enum {
 #define VENDOR_HT_CAPAB_OUI_TYPE 0x33 /* 00-90-4c:0x33 */
 
 /* cipher suite selectors */
-#define WLAN_CIPHER_SUITE_USE_GROUP	0x000FAC00
-#define WLAN_CIPHER_SUITE_WEP40		0x000FAC01
-#define WLAN_CIPHER_SUITE_TKIP		0x000FAC02
+#define WLAN_CIPHER_SUITE_USE_GROUP 0x000FAC00
+#define WLAN_CIPHER_SUITE_WEP40  0x000FAC01
+#define WLAN_CIPHER_SUITE_TKIP  0x000FAC02
 /* reserved: 				0x000FAC03 */
-#define WLAN_CIPHER_SUITE_CCMP		0x000FAC04
-#define WLAN_CIPHER_SUITE_WEP104	0x000FAC05
-#define WLAN_CIPHER_SUITE_AES_CMAC	0x000FAC06
+#define WLAN_CIPHER_SUITE_CCMP  0x000FAC04
+#define WLAN_CIPHER_SUITE_WEP104 0x000FAC05
+#define WLAN_CIPHER_SUITE_AES_CMAC 0x000FAC06
 
 /* AKM suite selectors */
-#define WLAN_AKM_SUITE_8021X		0x000FAC01
-#define WLAN_AKM_SUITE_PSK		0x000FAC02
+#define WLAN_AKM_SUITE_8021X  0x000FAC01
+#define WLAN_AKM_SUITE_PSK  0x000FAC02
 
 #endif /* IEEE802_11_DEFS_H */

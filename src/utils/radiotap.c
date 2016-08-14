@@ -33,7 +33,7 @@
      typeof(*(p)) __val;				\
      } __attribute__((packed)) *__ptr = (void *) (p);	\
      \
-     __ptr->__val;						\
+     __ptr->__val;      \
      })
 
 /* function prototypes and related defs are in radiotap_iter.h */
@@ -80,8 +80,7 @@
 int ieee80211_radiotap_iterator_init(
         struct ieee80211_radiotap_iterator *iterator,
         struct ieee80211_radiotap_header *radiotap_header,
-        int max_length)
-{
+        int max_length) {
     /* Linux only supports version 0 radiotap format */
     if (radiotap_header->it_version)
         return -EINVAL;
@@ -92,19 +91,19 @@ int ieee80211_radiotap_iterator_init(
 
     iterator->rtheader = radiotap_header;
     iterator->max_length = le16_to_cpu(get_unaligned(
-                &radiotap_header->it_len));
+            &radiotap_header->it_len));
     iterator->arg_index = 0;
     iterator->bitmap_shifter = le32_to_cpu(get_unaligned(
-                &radiotap_header->it_present));
-    iterator->arg = (u8 *)radiotap_header + sizeof(*radiotap_header);
+            &radiotap_header->it_present));
+    iterator->arg = (u8 *) radiotap_header + sizeof (*radiotap_header);
     iterator->this_arg = NULL;
 
     /* find payload start allowing for extended bitmap(s) */
 
-    if (unlikely(iterator->bitmap_shifter & (1<<IEEE80211_RADIOTAP_EXT))) {
-        while (le32_to_cpu(get_unaligned((__le32 *)iterator->arg)) &
-                (1<<IEEE80211_RADIOTAP_EXT)) {
-            iterator->arg += sizeof(u32);
+    if (unlikely(iterator->bitmap_shifter & (1 << IEEE80211_RADIOTAP_EXT))) {
+        while (le32_to_cpu(get_unaligned((__le32 *) iterator->arg)) &
+                (1 << IEEE80211_RADIOTAP_EXT)) {
+            iterator->arg += sizeof (u32);
 
             /*
              * check for insanity where the present bitmaps
@@ -112,12 +111,12 @@ int ieee80211_radiotap_iterator_init(
              * stated radiotap header length
              */
 
-            if (((ulong)iterator->arg - (ulong)iterator->rtheader)
-                    > (ulong)iterator->max_length)
+            if (((ulong) iterator->arg - (ulong) iterator->rtheader)
+                    > (ulong) iterator->max_length)
                 return -EINVAL;
         }
 
-        iterator->arg += sizeof(u32);
+        iterator->arg += sizeof (u32);
 
         /*
          * no need to check again for blowing past stated radiotap
@@ -130,7 +129,6 @@ int ieee80211_radiotap_iterator_init(
 
     return 0;
 }
-
 
 /**
  * ieee80211_radiotap_iterator_next - return next radiotap parser iterator arg
@@ -156,8 +154,7 @@ int ieee80211_radiotap_iterator_init(
  */
 
 int ieee80211_radiotap_iterator_next(
-        struct ieee80211_radiotap_iterator *iterator)
-{
+        struct ieee80211_radiotap_iterator *iterator) {
 
     /*
      * small length lookup table for all radiotap types we heard of
@@ -204,7 +201,7 @@ int ieee80211_radiotap_iterator_next(
      * least skip (by knowing the length)...
      */
 
-    while (iterator->arg_index < (int) sizeof(rt_sizes)) {
+    while (iterator->arg_index < (int) sizeof (rt_sizes)) {
         int hit = 0;
         int pad;
 
@@ -231,9 +228,9 @@ int ieee80211_radiotap_iterator_next(
          * multibyte elements from the radiotap area
          */
 
-        pad = (((ulong)iterator->arg) -
-                ((ulong)iterator->rtheader)) &
-            ((rt_sizes[iterator->arg_index] >> 4) - 1);
+        pad = (((ulong) iterator->arg) -
+                ((ulong) iterator->rtheader)) &
+                ((rt_sizes[iterator->arg_index] >> 4) - 1);
 
         if (pad)
             iterator->arg +=
@@ -257,7 +254,7 @@ int ieee80211_radiotap_iterator_next(
          * max_length on the last arg, never exceeding it.
          */
 
-        if (((ulong)iterator->arg - (ulong)iterator->rtheader) >
+        if (((ulong) iterator->arg - (ulong) iterator->rtheader) >
                 (ulong) iterator->max_length)
             return -EINVAL;
 
@@ -273,7 +270,7 @@ next_entry:
                 iterator->next_bitmap++;
             } else
                 /* no more bitmaps: end */
-                iterator->arg_index = sizeof(rt_sizes);
+                iterator->arg_index = sizeof (rt_sizes);
         } else /* just try the next bit */
             iterator->bitmap_shifter >>= 1;
 

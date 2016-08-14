@@ -20,7 +20,6 @@
 #include "wps_i.h"
 #include "wps_dev_attr.h"
 
-
 /**
  * wps_init - Initialize WPS Registration protocol data
  * @cfg: WPS configuration
@@ -31,9 +30,8 @@
  * Enrollee. The caller is responsible for freeing this data after the
  * registration run has been completed by calling wps_deinit().
  */
-struct wps_data * wps_init(const struct wps_config *cfg)
-{
-    struct wps_data *data = os_zalloc(sizeof(*data));
+struct wps_data * wps_init(const struct wps_config *cfg) {
+    struct wps_data *data = os_zalloc(sizeof (*data));
     if (data == NULL)
         return NULL;
     data->wps = cfg->wps;
@@ -46,7 +44,7 @@ struct wps_data * wps_init(const struct wps_config *cfg)
     }
     if (cfg->pin) {
         data->dev_pw_id = data->wps->oob_dev_pw_id == 0 ?
-            DEV_PW_DEFAULT : data->wps->oob_dev_pw_id;
+                DEV_PW_DEFAULT : data->wps->oob_dev_pw_id;
         data->dev_password = os_malloc(cfg->pin_len);
         if (data->dev_password == NULL) {
             os_free(data);
@@ -92,13 +90,13 @@ struct wps_data * wps_init(const struct wps_config *cfg)
 
     if (cfg->new_ap_settings) {
         data->new_ap_settings =
-            os_malloc(sizeof(*data->new_ap_settings));
+                os_malloc(sizeof (*data->new_ap_settings));
         if (data->new_ap_settings == NULL) {
             os_free(data);
             return NULL;
         }
         os_memcpy(data->new_ap_settings, cfg->new_ap_settings,
-                sizeof(*data->new_ap_settings));
+                sizeof (*data->new_ap_settings));
     }
 
     if (cfg->peer_addr)
@@ -109,25 +107,23 @@ struct wps_data * wps_init(const struct wps_config *cfg)
     return data;
 }
 
-
 /**
  * wps_deinit - Deinitialize WPS Registration protocol data
  * @data: WPS Registration protocol data from wps_init()
  */
-void wps_deinit(struct wps_data *data)
-{
+void wps_deinit(struct wps_data *data) {
     if (data->wps_pin_revealed) {
         wpa_printf(MSG_DEBUG, "WPS: Full PIN information revealed and "
                 "negotiation failed");
         if (data->registrar)
             wps_registrar_invalidate_pin(data->wps->registrar,
-                    data->uuid_e);
+                data->uuid_e);
     } else if (data->registrar)
         wps_registrar_unlock_pin(data->wps->registrar, data->uuid_e);
 
     /* @@@ Free wpa key and essid pointers @@@ */
-    if(data->key) free(data->key);
-    if(data->essid) free(data->essid);
+    if (data->key) free(data->key);
+    if (data->essid) free(data->essid);
 
     wpabuf_free(data->dh_privkey);
     wpabuf_free(data->dh_pubkey_e);
@@ -140,7 +136,6 @@ void wps_deinit(struct wps_data *data)
     dh5_free(data->dh_ctx);
     os_free(data);
 }
-
 
 /**
  * wps_process_msg - Process a WPS message
@@ -156,14 +151,12 @@ void wps_deinit(struct wps_data *data)
  */
 enum wps_process_res wps_process_msg(struct wps_data *wps,
         enum wsc_op_code op_code,
-        const struct wpabuf *msg)
-{
+        const struct wpabuf *msg) {
     if (wps->registrar)
         return wps_registrar_process_msg(wps, op_code, msg);
     else
         return wps_enrollee_process_msg(wps, op_code, msg);
 }
-
 
 /**
  * wps_get_msg - Build a WPS message
@@ -174,22 +167,19 @@ enum wps_process_res wps_process_msg(struct wps_data *wps,
  * This function is used to build a response to a message processed by calling
  * wps_process_msg(). The caller is responsible for freeing the buffer.
  */
-struct wpabuf * wps_get_msg(struct wps_data *wps, enum wsc_op_code *op_code)
-{
+struct wpabuf * wps_get_msg(struct wps_data *wps, enum wsc_op_code *op_code) {
     //if (wps->registrar)
     //	return wps_registrar_get_msg(wps, op_code);
     //	else
     return wps_enrollee_get_msg(wps, op_code);
 }
 
-
 /**
  * wps_is_selected_pbc_registrar - Check whether WPS IE indicates active PBC
  * @msg: WPS IE contents from Beacon or Probe Response frame
  * Returns: 1 if PBC Registrar is active, 0 if not
  */
-int wps_is_selected_pbc_registrar(const struct wpabuf *msg)
-{
+int wps_is_selected_pbc_registrar(const struct wpabuf *msg) {
     struct wps_parse_attr attr;
 
     /*
@@ -208,14 +198,12 @@ int wps_is_selected_pbc_registrar(const struct wpabuf *msg)
     return 1;
 }
 
-
 /**
  * wps_is_selected_pin_registrar - Check whether WPS IE indicates active PIN
  * @msg: WPS IE contents from Beacon or Probe Response frame
  * Returns: 1 if PIN Registrar is active, 0 if not
  */
-int wps_is_selected_pin_registrar(const struct wpabuf *msg)
-{
+int wps_is_selected_pin_registrar(const struct wpabuf *msg) {
     struct wps_parse_attr attr;
 
     /*
@@ -239,7 +227,6 @@ int wps_is_selected_pin_registrar(const struct wpabuf *msg)
     return 1;
 }
 
-
 /**
  * wps_get_uuid_e - Get UUID-E from WPS IE
  * @msg: WPS IE contents from Beacon or Probe Response frame
@@ -248,15 +235,13 @@ int wps_is_selected_pin_registrar(const struct wpabuf *msg)
  * The returned pointer is to the msg contents and it remains valid only as
  * long as the msg buffer is valid.
  */
-const u8 * wps_get_uuid_e(const struct wpabuf *msg)
-{
+const u8 * wps_get_uuid_e(const struct wpabuf *msg) {
     struct wps_parse_attr attr;
 
     if (wps_parse_msg(msg, &attr) < 0)
         return NULL;
     return attr.uuid_e;
 }
-
 
 /**
  * wps_build_assoc_req_ie - Build WPS IE for (Re)Association Request
@@ -265,8 +250,7 @@ const u8 * wps_get_uuid_e(const struct wpabuf *msg)
  *
  * The caller is responsible for freeing the buffer.
  */
-struct wpabuf * wps_build_assoc_req_ie(enum wps_request_type req_type)
-{
+struct wpabuf * wps_build_assoc_req_ie(enum wps_request_type req_type) {
     struct wpabuf *ie;
     u8 *len;
 
@@ -291,15 +275,13 @@ struct wpabuf * wps_build_assoc_req_ie(enum wps_request_type req_type)
     return ie;
 }
 
-
 /**
  * wps_build_assoc_resp_ie - Build WPS IE for (Re)Association Response
  * Returns: WPS IE or %NULL on failure
  *
  * The caller is responsible for freeing the buffer.
  */
-struct wpabuf * wps_build_assoc_resp_ie(void)
-{
+struct wpabuf * wps_build_assoc_resp_ie(void) {
     struct wpabuf *ie;
     u8 *len;
 
@@ -324,7 +306,6 @@ struct wpabuf * wps_build_assoc_resp_ie(void)
     return ie;
 }
 
-
 /**
  * wps_build_probe_req_ie - Build WPS IE for Probe Request
  * @pbc: Whether searching for PBC mode APs
@@ -337,8 +318,7 @@ struct wpabuf * wps_build_assoc_resp_ie(void)
  */
 struct wpabuf * wps_build_probe_req_ie(int pbc, struct wps_device_data *dev,
         const u8 *uuid,
-        enum wps_request_type req_type)
-{
+        enum wps_request_type req_type) {
     struct wpabuf *ie;
     u8 *len;
     u16 methods;
@@ -357,7 +337,7 @@ struct wpabuf * wps_build_probe_req_ie(int pbc, struct wps_device_data *dev,
         methods = WPS_CONFIG_PUSHBUTTON;
     else {
         methods = WPS_CONFIG_LABEL | WPS_CONFIG_DISPLAY |
-            WPS_CONFIG_KEYPAD;
+                WPS_CONFIG_KEYPAD;
 #ifdef CONFIG_WPS_UFD
         methods |= WPS_CONFIG_USBA;
 #endif /* CONFIG_WPS_UFD */
@@ -375,7 +355,7 @@ struct wpabuf * wps_build_probe_req_ie(int pbc, struct wps_device_data *dev,
             wps_build_assoc_state(NULL, ie) ||
             wps_build_config_error(ie, WPS_CFG_NO_ERROR) ||
             wps_build_dev_password_id(ie, pbc ? DEV_PW_PUSHBUTTON :
-                DEV_PW_DEFAULT)) {
+            DEV_PW_DEFAULT)) {
         wpabuf_free(ie);
         return NULL;
     }
@@ -385,9 +365,7 @@ struct wpabuf * wps_build_probe_req_ie(int pbc, struct wps_device_data *dev,
     return ie;
 }
 
-
-void wps_free_pending_msgs(struct upnp_pending_message *msgs)
-{
+void wps_free_pending_msgs(struct upnp_pending_message *msgs) {
     struct upnp_pending_message *p, *prev;
     p = msgs;
     while (p) {
@@ -398,9 +376,7 @@ void wps_free_pending_msgs(struct upnp_pending_message *msgs)
     }
 }
 
-
-int wps_attr_text(struct wpabuf *data, char *buf, char *end)
-{
+int wps_attr_text(struct wpabuf *data, char *buf, char *end) {
     struct wps_parse_attr attr;
     char *pos = buf;
     int ret;
@@ -411,10 +387,10 @@ int wps_attr_text(struct wpabuf *data, char *buf, char *end)
     if (attr.wps_state) {
         if (*attr.wps_state == WPS_STATE_NOT_CONFIGURED)
             ret = os_snprintf(pos, end - pos,
-                    "wps_state=unconfigured\n");
+                "wps_state=unconfigured\n");
         else if (*attr.wps_state == WPS_STATE_CONFIGURED)
             ret = os_snprintf(pos, end - pos,
-                    "wps_state=configured\n");
+                "wps_state=configured\n");
         else
             ret = 0;
         if (ret < 0 || ret >= end - pos)
@@ -462,8 +438,8 @@ int wps_attr_text(struct wpabuf *data, char *buf, char *end)
         ret = os_snprintf(pos, end - pos,
                 "wps_primary_device_type=%s\n",
                 wps_dev_type_bin2str(attr.primary_dev_type,
-                    devtype,
-                    sizeof(devtype)));
+                devtype,
+                sizeof (devtype)));
         if (ret < 0 || ret >= end - pos)
             return pos - buf;
         pos += ret;

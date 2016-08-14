@@ -6,6 +6,7 @@
 /* Radiotap header iteration
  *   implemented in radiotap.c
  */
+
 /**
  * struct ieee80211_radiotap_iterator - tracks walk thru present radiotap args
  * @rtheader: pointer to the radiotap header we are walking through
@@ -31,11 +32,11 @@ struct ieee80211_radiotap_iterator {
 };
 
 extern int ieee80211_radiotap_iterator_init(
-    struct ieee80211_radiotap_iterator *iterator,
-    struct ieee80211_radiotap_header *radiotap_header,
-    int max_length);
+        struct ieee80211_radiotap_iterator *iterator,
+        struct ieee80211_radiotap_header *radiotap_header,
+        int max_length);
 
 extern int ieee80211_radiotap_iterator_next(
-    struct ieee80211_radiotap_iterator *iterator);
+        struct ieee80211_radiotap_iterator *iterator);
 
 #endif /* __RADIOTAP_ITER_H */

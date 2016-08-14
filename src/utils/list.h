@@ -23,40 +23,34 @@ struct dl_list {
     struct dl_list *prev;
 };
 
-static inline void dl_list_init(struct dl_list *list)
-{
+static inline void dl_list_init(struct dl_list *list) {
     list->next = list;
     list->prev = list;
 }
 
-static inline void dl_list_add(struct dl_list *list, struct dl_list *item)
-{
+static inline void dl_list_add(struct dl_list *list, struct dl_list *item) {
     item->next = list->next;
     item->prev = list;
     list->next->prev = item;
     list->next = item;
 }
 
-static inline void dl_list_add_tail(struct dl_list *list, struct dl_list *item)
-{
+static inline void dl_list_add_tail(struct dl_list *list, struct dl_list *item) {
     dl_list_add(list->prev, item);
 }
 
-static inline void dl_list_del(struct dl_list *item)
-{
+static inline void dl_list_del(struct dl_list *item) {
     item->next->prev = item->prev;
     item->prev->next = item->next;
     item->next = NULL;
     item->prev = NULL;
 }
 
-static inline int dl_list_empty(struct dl_list *list)
-{
+static inline int dl_list_empty(struct dl_list *list) {
     return list->next == list;
 }
 
-static inline unsigned int dl_list_len(struct dl_list *list)
-{
+static inline unsigned int dl_list_len(struct dl_list *list) {
     struct dl_list *item;
     int count = 0;
     for (item = list->next; item != list; item = item->next)

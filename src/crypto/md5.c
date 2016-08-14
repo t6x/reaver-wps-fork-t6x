@@ -18,7 +18,6 @@
 #include "md5.h"
 #include "crypto.h"
 
-
 /**
  * hmac_md5_vector - HMAC-MD5 over data vector (RFC 2104)
  * @key: Key for HMAC operations
@@ -30,11 +29,10 @@
  * Returns: 0 on success, -1 on failure
  */
 int hmac_md5_vector(const u8 *key, size_t key_len, size_t num_elem,
-        const u8 *addr[], const size_t *len, u8 *mac)
-{
+        const u8 *addr[], const size_t *len, u8 *mac) {
     u8 k_pad[64]; /* padding - key XORd with ipad/opad */
     u8 tk[16];
-    const u8 *_addr[6];
+    const u8 * _addr[6];
     size_t i, _len[6];
 
     if (num_elem > 5) {
@@ -63,7 +61,7 @@ int hmac_md5_vector(const u8 *key, size_t key_len, size_t num_elem,
      * and text is the data being protected */
 
     /* start out by storing key in ipad */
-    os_memset(k_pad, 0, sizeof(k_pad));
+    os_memset(k_pad, 0, sizeof (k_pad));
     os_memcpy(k_pad, key, key_len);
 
     /* XOR key with ipad values */
@@ -80,7 +78,7 @@ int hmac_md5_vector(const u8 *key, size_t key_len, size_t num_elem,
     if (md5_vector(1 + num_elem, _addr, _len, mac))
         return -1;
 
-    os_memset(k_pad, 0, sizeof(k_pad));
+    os_memset(k_pad, 0, sizeof (k_pad));
     os_memcpy(k_pad, key, key_len);
     /* XOR key with opad values */
     for (i = 0; i < 64; i++)
@@ -94,7 +92,6 @@ int hmac_md5_vector(const u8 *key, size_t key_len, size_t num_elem,
     return md5_vector(2, _addr, _len, mac);
 }
 
-
 /**
  * hmac_md5 - HMAC-MD5 over data buffer (RFC 2104)
  * @key: Key for HMAC operations
@@ -105,7 +102,6 @@ int hmac_md5_vector(const u8 *key, size_t key_len, size_t num_elem,
  * Returns: 0 on success, -1 on failure
  */
 int hmac_md5(const u8 *key, size_t key_len, const u8 *data, size_t data_len,
-        u8 *mac)
-{
+        u8 *mac) {
     return hmac_md5_vector(key, key_len, 1, &data, &data_len, mac);
 }

@@ -18,7 +18,6 @@
 #include "common.h"
 #include "eloop.h"
 
-
 struct eloop_sock {
     int sock;
     void *eloop_data;
@@ -76,13 +75,11 @@ struct eloop_data {
 
 static struct eloop_data eloop;
 
-
-int eloop_init(void)
-{
-    os_memset(&eloop, 0, sizeof(eloop));
+int eloop_init(void) {
+    os_memset(&eloop, 0, sizeof (eloop));
     eloop.num_handles = 1;
     eloop.handles = os_malloc(eloop.num_handles *
-            sizeof(eloop.handles[0]));
+            sizeof (eloop.handles[0]));
     if (eloop.handles == NULL)
         return -1;
 
@@ -97,15 +94,13 @@ int eloop_init(void)
     return 0;
 }
 
-
-static int eloop_prepare_handles(void)
-{
+static int eloop_prepare_handles(void) {
     HANDLE *n;
 
     if (eloop.num_handles > eloop.reader_count + eloop.event_count + 8)
         return 0;
     n = os_realloc(eloop.handles,
-            eloop.num_handles * 2 * sizeof(eloop.handles[0]));
+            eloop.num_handles * 2 * sizeof (eloop.handles[0]));
     if (n == NULL)
         return -1;
     eloop.handles = n;
@@ -113,10 +108,8 @@ static int eloop_prepare_handles(void)
     return 0;
 }
 
-
 int eloop_register_read_sock(int sock, eloop_sock_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     WSAEVENT event;
     struct eloop_sock *tmp;
 
@@ -135,7 +128,7 @@ int eloop_register_read_sock(int sock, eloop_sock_handler handler,
         return -1;
     }
     tmp = os_realloc(eloop.readers,
-            (eloop.reader_count + 1) * sizeof(struct eloop_sock));
+            (eloop.reader_count + 1) * sizeof (struct eloop_sock));
     if (tmp == NULL) {
         WSAEventSelect(sock, event, 0);
         WSACloseEvent(event);
@@ -156,9 +149,7 @@ int eloop_register_read_sock(int sock, eloop_sock_handler handler,
     return 0;
 }
 
-
-void eloop_unregister_read_sock(int sock)
-{
+void eloop_unregister_read_sock(int sock) {
     size_t i;
 
     if (eloop.readers == NULL || eloop.reader_count == 0)
@@ -177,28 +168,26 @@ void eloop_unregister_read_sock(int sock)
     if (i != eloop.reader_count - 1) {
         os_memmove(&eloop.readers[i], &eloop.readers[i + 1],
                 (eloop.reader_count - i - 1) *
-                sizeof(struct eloop_sock));
+                sizeof (struct eloop_sock));
     }
     eloop.reader_count--;
     eloop.reader_table_changed = 1;
 }
 
-
 int eloop_register_event(void *event, size_t event_size,
         eloop_event_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_event *tmp;
     HANDLE h = event;
 
-    if (event_size != sizeof(HANDLE) || h == INVALID_HANDLE_VALUE)
+    if (event_size != sizeof (HANDLE) || h == INVALID_HANDLE_VALUE)
         return -1;
 
     if (eloop_prepare_handles())
         return -1;
 
     tmp = os_realloc(eloop.events,
-            (eloop.event_count + 1) * sizeof(struct eloop_event));
+            (eloop.event_count + 1) * sizeof (struct eloop_event));
     if (tmp == NULL)
         return -1;
 
@@ -212,14 +201,12 @@ int eloop_register_event(void *event, size_t event_size,
     return 0;
 }
 
-
-void eloop_unregister_event(void *event, size_t event_size)
-{
+void eloop_unregister_event(void *event, size_t event_size) {
     size_t i;
     HANDLE h = event;
 
     if (eloop.events == NULL || eloop.event_count == 0 ||
-            event_size != sizeof(HANDLE))
+            event_size != sizeof (HANDLE))
         return;
 
     for (i = 0; i < eloop.event_count; i++) {
@@ -232,19 +219,17 @@ void eloop_unregister_event(void *event, size_t event_size)
     if (i != eloop.event_count - 1) {
         os_memmove(&eloop.events[i], &eloop.events[i + 1],
                 (eloop.event_count - i - 1) *
-                sizeof(struct eloop_event));
+                sizeof (struct eloop_event));
     }
     eloop.event_count--;
 }
 
-
 int eloop_register_timeout(unsigned int secs, unsigned int usecs,
         eloop_timeout_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *timeout, *tmp, *prev;
 
-    timeout = os_malloc(sizeof(*timeout));
+    timeout = os_malloc(sizeof (*timeout));
     if (timeout == NULL)
         return -1;
     os_get_time(&timeout->time);
@@ -284,10 +269,8 @@ int eloop_register_timeout(unsigned int secs, unsigned int usecs,
     return 0;
 }
 
-
 int eloop_cancel_timeout(eloop_timeout_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *timeout, *prev, *next;
     int removed = 0;
 
@@ -298,9 +281,9 @@ int eloop_cancel_timeout(eloop_timeout_handler handler,
 
         if (timeout->handler == handler &&
                 (timeout->eloop_data == eloop_data ||
-                 eloop_data == ELOOP_ALL_CTX) &&
+                eloop_data == ELOOP_ALL_CTX) &&
                 (timeout->user_data == user_data ||
-                 user_data == ELOOP_ALL_CTX)) {
+                user_data == ELOOP_ALL_CTX)) {
             if (prev == NULL)
                 eloop.timeout = next;
             else
@@ -316,10 +299,8 @@ int eloop_cancel_timeout(eloop_timeout_handler handler,
     return removed;
 }
 
-
 int eloop_is_timeout_registered(eloop_timeout_handler handler,
-        void *eloop_data, void *user_data)
-{
+        void *eloop_data, void *user_data) {
     struct eloop_timeout *tmp;
 
     tmp = eloop.timeout;
@@ -338,8 +319,8 @@ int eloop_is_timeout_registered(eloop_timeout_handler handler,
 
 /* TODO: replace with suitable signal handler */
 #if 0
-static void eloop_handle_signal(int sig)
-{
+
+static void eloop_handle_signal(int sig) {
     int i;
 
     eloop.signaled++;
@@ -352,9 +333,7 @@ static void eloop_handle_signal(int sig)
 }
 #endif
 
-
-static void eloop_process_pending_signals(void)
-{
+static void eloop_process_pending_signals(void) {
     int i;
 
     if (eloop.signaled == 0)
@@ -380,15 +359,13 @@ static void eloop_process_pending_signals(void)
     }
 }
 
-
 int eloop_register_signal(int sig, eloop_signal_handler handler,
-        void *user_data)
-{
+        void *user_data) {
     struct eloop_signal *tmp;
 
     tmp = os_realloc(eloop.signals,
             (eloop.signal_count + 1) *
-            sizeof(struct eloop_signal));
+            sizeof (struct eloop_signal));
     if (tmp == NULL)
         return -1;
 
@@ -406,8 +383,8 @@ int eloop_register_signal(int sig, eloop_signal_handler handler,
 
 
 #ifndef _WIN32_WCE
-static BOOL eloop_handle_console_ctrl(DWORD type)
-{
+
+static BOOL eloop_handle_console_ctrl(DWORD type) {
     switch (type) {
         case CTRL_C_EVENT:
         case CTRL_BREAK_EVENT:
@@ -421,13 +398,11 @@ static BOOL eloop_handle_console_ctrl(DWORD type)
 }
 #endif /* _WIN32_WCE */
 
-
 int eloop_register_signal_terminate(eloop_signal_handler handler,
-        void *user_data)
-{
+        void *user_data) {
 #ifndef _WIN32_WCE
     if (SetConsoleCtrlHandler((PHANDLER_ROUTINE) eloop_handle_console_ctrl,
-                TRUE) == 0) {
+            TRUE) == 0) {
         printf("SetConsoleCtrlHandler() failed: %d\n",
                 (int) GetLastError());
         return -1;
@@ -440,24 +415,20 @@ int eloop_register_signal_terminate(eloop_signal_handler handler,
     return 0;
 }
 
-
 int eloop_register_signal_reconfig(eloop_signal_handler handler,
-        void *user_data)
-{
+        void *user_data) {
     /* TODO */
     return 0;
 }
 
-
-void eloop_run(void)
-{
+void eloop_run(void) {
     struct os_time tv, now;
     DWORD count, ret, timeout, err;
     size_t i;
 
     while (!eloop.terminate &&
             (eloop.timeout || eloop.reader_count > 0 ||
-             eloop.event_count > 0)) {
+            eloop.event_count > 0)) {
         tv.sec = tv.usec = 0;
         if (eloop.timeout) {
             os_get_time(&now);
@@ -540,8 +511,8 @@ void eloop_run(void)
         for (i = 0; i < eloop.reader_count; i++) {
             WSANETWORKEVENTS events;
             if (WSAEnumNetworkEvents(eloop.readers[i].sock,
-                        eloop.readers[i].event,
-                        &events) == 0 &&
+                    eloop.readers[i].event,
+                    &events) == 0 &&
                     (events.lNetworkEvents & FD_READ)) {
                 eloop.readers[i].handler(
                         eloop.readers[i].sock,
@@ -554,16 +525,12 @@ void eloop_run(void)
     }
 }
 
-
-void eloop_terminate(void)
-{
+void eloop_terminate(void) {
     eloop.terminate = 1;
     SetEvent(eloop.term_event);
 }
 
-
-void eloop_destroy(void)
-{
+void eloop_destroy(void) {
     struct eloop_timeout *timeout, *prev;
 
     timeout = eloop.timeout;
@@ -582,15 +549,11 @@ void eloop_destroy(void)
     eloop.events = NULL;
 }
 
-
-int eloop_terminated(void)
-{
+int eloop_terminated(void) {
     return eloop.terminate;
 }
 
-
-void eloop_wait_for_read_sock(int sock)
-{
+void eloop_wait_for_read_sock(int sock) {
     WSAEVENT event;
 
     event = WSACreateEvent();
@@ -602,7 +565,7 @@ void eloop_wait_for_read_sock(int sock)
     if (WSAEventSelect(sock, event, FD_READ)) {
         printf("WSAEventSelect() failed: %d\n", WSAGetLastError());
         WSACloseEvent(event);
-        return ;
+        return;
     }
 
     WaitForSingleObject(event, INFINITE);

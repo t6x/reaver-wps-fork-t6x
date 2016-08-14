@@ -20,15 +20,13 @@
 
 #define LIBWPS_MAX_STR_LEN 256
 
-enum wps_locked_state
-{
+enum wps_locked_state {
     UNLOCKED,
     WPSLOCKED,
     UNSPECIFIED
 };
 
-struct libwps_data
-{
+struct libwps_data {
     uint8_t version;
     uint8_t state;
     uint8_t locked;
@@ -59,11 +57,10 @@ int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *w
 #define RADIO_TAP_VERSION       0
 #define FAKE_RADIO_TAP_HEADER   "\x00\x00\x00\x00\x00\x00\x00\x00"
 
-#define TIMESTAMP_LEN		8
-#define MAC_ADDR_LEN		6
+#define TIMESTAMP_LEN  8
+#define MAC_ADDR_LEN  6
 
-enum wps_el_number
-{
+enum wps_el_number {
     VERSION = 0x104A,
     STATE = 0x1044,
     LOCKED = 0x1057,
@@ -82,34 +79,29 @@ enum wps_el_number
     OS_VERSION = 0x102D
 };
 
-struct wps_element
-{
+struct wps_element {
     enum wps_el_number number;
     char *name;
 };
 
-struct data_element
-{
+struct data_element {
     uint16_t type;
     uint16_t len;
 };
 
-struct tagged_parameter
-{
+struct tagged_parameter {
     uint8_t number;
     uint8_t len;
 };
 
-struct radio_tap_header
-{
+struct radio_tap_header {
     uint8_t revision;
     uint8_t pad;
     uint16_t len;
     uint32_t present_flags;
 };
 
-struct dot11_frame_header
-{
+struct dot11_frame_header {
     uint16_t fc;
     uint16_t duration;
     unsigned char addr1[MAC_ADDR_LEN];
@@ -118,8 +110,7 @@ struct dot11_frame_header
     uint16_t frag_seq;
 };
 
-struct management_frame
-{
+struct management_frame {
     unsigned char timestamp[TIMESTAMP_LEN];
     uint16_t beacon_interval;
     uint16_t capability;

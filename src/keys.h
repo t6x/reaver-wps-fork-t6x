@@ -36,8 +36,7 @@
 
 #include "defs.h"
 
-struct key
-{
+struct key {
     char *key;
     int priority;
 };

@@ -19,7 +19,6 @@
 #include "bignum.h"
 #include "rsa.h"
 
-
 struct crypto_rsa_key {
     int private_key; /* whether private key is set */
     struct bignum *n; /* modulus (p * q) */
@@ -33,10 +32,8 @@ struct crypto_rsa_key {
     struct bignum *iqmp; /* 1 / q mod p; CRT coefficient */
 };
 
-
 static const u8 * crypto_rsa_parse_integer(const u8 *pos, const u8 *end,
-        struct bignum *num)
-{
+        struct bignum *num) {
     struct asn1_hdr hdr;
 
     if (pos == NULL)
@@ -57,21 +54,19 @@ static const u8 * crypto_rsa_parse_integer(const u8 *pos, const u8 *end,
     return hdr.payload + hdr.length;
 }
 
-
 /**
  * crypto_rsa_import_public_key - Import an RSA public key
  * @buf: Key buffer (DER encoded RSA public key)
  * @len: Key buffer length in bytes
  * Returns: Pointer to the public key or %NULL on failure
  */
-    struct crypto_rsa_key *
-crypto_rsa_import_public_key(const u8 *buf, size_t len)
-{
+struct crypto_rsa_key *
+crypto_rsa_import_public_key(const u8 *buf, size_t len) {
     struct crypto_rsa_key *key;
     struct asn1_hdr hdr;
     const u8 *pos, *end;
 
-    key = os_zalloc(sizeof(*key));
+    key = os_zalloc(sizeof (*key));
     if (key == NULL)
         return NULL;
 
@@ -121,22 +116,20 @@ error:
     return NULL;
 }
 
-
 /**
  * crypto_rsa_import_private_key - Import an RSA private key
  * @buf: Key buffer (DER encoded RSA private key)
  * @len: Key buffer length in bytes
  * Returns: Pointer to the private key or %NULL on failure
  */
-    struct crypto_rsa_key *
-crypto_rsa_import_private_key(const u8 *buf, size_t len)
-{
+struct crypto_rsa_key *
+crypto_rsa_import_private_key(const u8 *buf, size_t len) {
     struct crypto_rsa_key *key;
     struct bignum *zero;
     struct asn1_hdr hdr;
     const u8 *pos, *end;
 
-    key = os_zalloc(sizeof(*key));
+    key = os_zalloc(sizeof (*key));
     if (key == NULL)
         return NULL;
 
@@ -223,17 +216,14 @@ error:
     return NULL;
 }
 
-
 /**
  * crypto_rsa_get_modulus_len - Get the modulus length of the RSA key
  * @key: RSA key
  * Returns: Modulus length of the key
  */
-size_t crypto_rsa_get_modulus_len(struct crypto_rsa_key *key)
-{
+size_t crypto_rsa_get_modulus_len(struct crypto_rsa_key *key) {
     return bignum_get_unsigned_bin_len(key->n);
 }
-
 
 /**
  * crypto_rsa_exptmod - RSA modular exponentiation
@@ -246,8 +236,7 @@ size_t crypto_rsa_get_modulus_len(struct crypto_rsa_key *key)
  * Returns: 0 on success, -1 on failure
  */
 int crypto_rsa_exptmod(const u8 *in, size_t inlen, u8 *out, size_t *outlen,
-        struct crypto_rsa_key *key, int use_private)
-{
+        struct crypto_rsa_key *key, int use_private) {
     struct bignum *tmp, *a = NULL, *b = NULL;
     int ret = -1;
     size_t modlen;
@@ -321,8 +310,8 @@ int crypto_rsa_exptmod(const u8 *in, size_t inlen, u8 *out, size_t *outlen,
     *outlen = modlen;
     os_memset(out, 0, modlen);
     if (bignum_get_unsigned_bin(
-                tmp, out +
-                (modlen - bignum_get_unsigned_bin_len(tmp)), NULL) < 0)
+            tmp, out +
+            (modlen - bignum_get_unsigned_bin_len(tmp)), NULL) < 0)
         goto error;
 
     ret = 0;
@@ -334,7 +323,6 @@ error:
     return ret;
 }
 
-
 /**
  * crypto_rsa_free - Free RSA key
  * @key: RSA key to be freed
@@ -342,8 +330,7 @@ error:
  * This function frees an RSA key imported with either
  * crypto_rsa_import_public_key() or crypto_rsa_import_private_key().
  */
-void crypto_rsa_free(struct crypto_rsa_key *key)
-{
+void crypto_rsa_free(struct crypto_rsa_key *key) {
     if (key) {
         bignum_deinit(key->n);
         bignum_deinit(key->e);

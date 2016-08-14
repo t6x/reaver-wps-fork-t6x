@@ -20,8 +20,8 @@
 #include "asn1.h"
 #include "pkcs5.h"
 
-
 struct pkcs5_params {
+
     enum pkcs5_alg {
         PKCS5_ALG_UNKNOWN,
         PKCS5_ALG_MD5_DES_CBC
@@ -31,9 +31,7 @@ struct pkcs5_params {
     unsigned int iter_count;
 };
 
-
-enum pkcs5_alg pkcs5_get_alg(struct asn1_oid *oid)
-{
+enum pkcs5_alg pkcs5_get_alg(struct asn1_oid *oid) {
     if (oid->len == 7 &&
             oid->oid[0] == 1 /* iso */ &&
             oid->oid[1] == 2 /* member-body */ &&
@@ -47,10 +45,8 @@ enum pkcs5_alg pkcs5_get_alg(struct asn1_oid *oid)
     return PKCS5_ALG_UNKNOWN;
 }
 
-
 static int pkcs5_get_params(const u8 *enc_alg, size_t enc_alg_len,
-        struct pkcs5_params *params)
-{
+        struct pkcs5_params *params) {
     struct asn1_hdr hdr;
     const u8 *enc_alg_end, *pos, *end;
     struct asn1_oid oid;
@@ -60,7 +56,7 @@ static int pkcs5_get_params(const u8 *enc_alg, size_t enc_alg_len,
 
     enc_alg_end = enc_alg + enc_alg_len;
 
-    os_memset(params, 0, sizeof(*params));
+    os_memset(params, 0, sizeof (*params));
 
     if (asn1_get_oid(enc_alg, enc_alg_end - enc_alg, &oid, &pos)) {
         wpa_printf(MSG_DEBUG, "PKCS #5: Failed to parse OID "
@@ -68,7 +64,7 @@ static int pkcs5_get_params(const u8 *enc_alg, size_t enc_alg_len,
         return -1;
     }
 
-    asn1_oid_to_str(&oid, obuf, sizeof(obuf));
+    asn1_oid_to_str(&oid, obuf, sizeof (obuf));
     wpa_printf(MSG_DEBUG, "PKCS #5: encryption algorithm %s", obuf);
     params->alg = pkcs5_get_alg(&oid);
     if (params->alg == PKCS5_ALG_UNKNOWN) {
@@ -141,13 +137,11 @@ static int pkcs5_get_params(const u8 *enc_alg, size_t enc_alg_len,
     return 0;
 }
 
-
 static struct crypto_cipher * pkcs5_crypto_init(struct pkcs5_params *params,
-        const char *passwd)
-{
+        const char *passwd) {
     unsigned int i;
     u8 hash[MD5_MAC_LEN];
-    const u8 *addr[2];
+    const u8 * addr[2];
     size_t len[2];
 
     if (params->alg != PKCS5_ALG_MD5_DES_CBC)
@@ -172,11 +166,9 @@ static struct crypto_cipher * pkcs5_crypto_init(struct pkcs5_params *params,
     return crypto_cipher_init(CRYPTO_CIPHER_ALG_DES, hash + 8, hash, 8);
 }
 
-
 u8 * pkcs5_decrypt(const u8 *enc_alg, size_t enc_alg_len,
         const u8 *enc_data, size_t enc_data_len,
-        const char *passwd, size_t *data_len)
-{
+        const char *passwd, size_t *data_len) {
     struct crypto_cipher *ctx;
     u8 *eb, pad;
     struct pkcs5_params params;

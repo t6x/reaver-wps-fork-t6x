@@ -89,6 +89,7 @@ struct wps_device_data {
 };
 
 struct oob_conf_data {
+
     enum {
         OOB_METHOD_UNKNOWN = 0,
         OOB_METHOD_DEV_PWD_E,
@@ -188,8 +189,8 @@ enum wps_process_res {
     WPS_PENDING
 };
 enum wps_process_res wps_process_msg(struct wps_data *wps,
-                                     enum wsc_op_code op_code,
-                                     const struct wpabuf *msg);
+        enum wsc_op_code op_code,
+        const struct wpabuf *msg);
 
 struct wpabuf * wps_get_msg(struct wps_data *wps, enum wsc_op_code *op_code);
 
@@ -200,9 +201,8 @@ const u8 * wps_get_uuid_e(const struct wpabuf *msg);
 struct wpabuf * wps_build_assoc_req_ie(enum wps_request_type req_type);
 struct wpabuf * wps_build_assoc_resp_ie(void);
 struct wpabuf * wps_build_probe_req_ie(int pbc, struct wps_device_data *dev,
-                                       const u8 *uuid,
-                                       enum wps_request_type req_type);
-
+        const u8 *uuid,
+        enum wps_request_type req_type);
 
 /**
  * struct wps_registrar_config - WPS Registrar configuration
@@ -219,7 +219,7 @@ struct wps_registrar_config {
      * This callback is called when a new per-device PSK is provisioned.
      */
     int (*new_psk_cb)(void *ctx, const u8 *mac_addr, const u8 *psk,
-                      size_t psk_len);
+            size_t psk_len);
 
     /**
      * set_ie_cb - Callback for WPS IE changes
@@ -233,7 +233,7 @@ struct wps_registrar_config {
      * for freeing the buffers.
      */
     int (*set_ie_cb)(void *ctx, struct wpabuf *beacon_ie,
-                     struct wpabuf *probe_resp_ie);
+            struct wpabuf *probe_resp_ie);
 
     /**
      * pin_needed_cb - Callback for requesting a PIN
@@ -246,7 +246,7 @@ struct wps_registrar_config {
      * Registrar data.
      */
     void (*pin_needed_cb)(void *ctx, const u8 *uuid_e,
-                          const struct wps_device_data *dev);
+            const struct wps_device_data *dev);
 
     /**
      * reg_success_cb - Callback for reporting successful registration
@@ -258,7 +258,7 @@ struct wps_registrar_config {
      * successfully.
      */
     void (*reg_success_cb)(void *ctx, const u8 *mac_addr,
-                           const u8 *uuid_e);
+            const u8 *uuid_e);
 
     /**
      * set_sel_reg_cb - Callback for reporting selected registrar changes
@@ -276,7 +276,7 @@ struct wps_registrar_config {
      * state information.
      */
     void (*set_sel_reg_cb)(void *ctx, int sel_reg, u16 dev_passwd_id,
-                           u16 sel_reg_config_methods);
+            u16 sel_reg_config_methods);
 
     /**
      * enrollee_seen_cb - Callback for reporting Enrollee based on ProbeReq
@@ -290,9 +290,9 @@ struct wps_registrar_config {
      * @dev_name: Device Name (if available)
      */
     void (*enrollee_seen_cb)(void *ctx, const u8 *addr, const u8 *uuid_e,
-                             const u8 *pri_dev_type, u16 config_methods,
-                             u16 dev_password_id, u8 request_type,
-                             const char *dev_name);
+            const u8 *pri_dev_type, u16 config_methods,
+            u16 dev_password_id, u8 request_type,
+            const char *dev_name);
 
     /**
      * cb_ctx: Higher layer context data for Registrar callbacks
@@ -341,7 +341,6 @@ struct wps_registrar_config {
      */
     int static_wep_only;
 };
-
 
 /**
  * enum wps_event - WPS event types
@@ -402,6 +401,7 @@ enum wps_event {
  * union wps_event_data - WPS event data
  */
 union wps_event_data {
+
     /**
      * struct wps_event_m2d - M2D event data
      */
@@ -661,7 +661,7 @@ struct wps_context {
      * @data: Event data
      */
     void (*event_cb)(void *ctx, enum wps_event event,
-                     union wps_event_data *data);
+            union wps_event_data *data);
 
     /**
      * cb_ctx: Higher layer context data for callbacks
@@ -678,7 +678,7 @@ struct oob_device_data {
     char *device_name;
     char *device_path;
     void * (*init_func)(struct wps_context *, struct oob_device_data *,
-                        int);
+            int);
     struct wpabuf * (*read_func)(void *);
     int (*write_func)(void *, struct wpabuf *);
     void (*deinit_func)(void *);
@@ -693,18 +693,18 @@ struct oob_nfc_device_data {
 
 struct wps_registrar *
 wps_registrar_init(struct wps_context *wps,
-                   const struct wps_registrar_config *cfg);
+        const struct wps_registrar_config *cfg);
 void wps_registrar_deinit(struct wps_registrar *reg);
 int wps_registrar_add_pin(struct wps_registrar *reg, const u8 *uuid,
-                          const u8 *pin, size_t pin_len, int timeout);
+        const u8 *pin, size_t pin_len, int timeout);
 int wps_registrar_invalidate_pin(struct wps_registrar *reg, const u8 *uuid);
 int wps_registrar_unlock_pin(struct wps_registrar *reg, const u8 *uuid);
 int wps_registrar_button_pushed(struct wps_registrar *reg);
 void wps_registrar_probe_req_rx(struct wps_registrar *reg, const u8 *addr,
-                                const struct wpabuf *wps_data);
+        const struct wpabuf *wps_data);
 int wps_registrar_update_ie(struct wps_registrar *reg);
 int wps_registrar_get_info(struct wps_registrar *reg, const u8 *addr,
-                           char *buf, size_t buflen);
+        char *buf, size_t buflen);
 
 unsigned int wps_pin_checksum(unsigned int pin);
 unsigned int wps_pin_valid(unsigned int pin);
@@ -715,21 +715,21 @@ struct oob_device_data * wps_get_oob_device(char *device_type);
 struct oob_nfc_device_data * wps_get_oob_nfc_device(char *device_name);
 int wps_get_oob_method(char *method);
 int wps_process_oob(struct wps_context *wps, struct oob_device_data *oob_dev,
-                    int registrar);
+        int registrar);
 int wps_attr_text(struct wpabuf *data, char *buf, char *end);
 
 struct wps_er * wps_er_init(struct wps_context *wps, const char *ifname);
 void wps_er_refresh(struct wps_er *er);
 void wps_er_deinit(struct wps_er *er, void (*cb)(void *ctx), void *ctx);
 void wps_er_set_sel_reg(struct wps_er *er, int sel_reg, u16 dev_passwd_id,
-                        u16 sel_reg_config_methods);
+        u16 sel_reg_config_methods);
 int wps_er_pbc(struct wps_er *er, const u8 *uuid);
 int wps_er_learn(struct wps_er *er, const u8 *uuid, const u8 *pin,
-                 size_t pin_len);
+        size_t pin_len);
 
 int wps_dev_type_str2bin(const char *str, u8 dev_type[WPS_DEV_TYPE_LEN]);
 char * wps_dev_type_bin2str(const u8 dev_type[WPS_DEV_TYPE_LEN], char *buf,
-                            size_t buf_len);
+        size_t buf_len);
 void uuid_gen_mac_addr(const u8 *mac_addr, u8 *uuid);
 u16 wps_config_methods_str2bin(const char *str);
 

@@ -24,7 +24,6 @@
 #include "defs.h"
 #include "wpa_common.h"
 
-
 /**
  * wpa_eapol_key_mic - Calculate EAPOL-Key MIC
  * @key: EAPOL-Key Key Confirmation Key (KCK)
@@ -44,8 +43,7 @@
  * defined in the last draft (IEEE 802.11i/D10).
  */
 int wpa_eapol_key_mic(const u8 *key, int ver, const u8 *buf, size_t len,
-        u8 *mic)
-{
+        u8 *mic) {
     u8 hash[SHA1_MAC_LEN];
 
     switch (ver) {
@@ -66,7 +64,6 @@ int wpa_eapol_key_mic(const u8 *key, int ver, const u8 *buf, size_t len,
 
     return 0;
 }
-
 
 /**
  * wpa_pmk_to_ptk - Calculate PTK from PMK, addresses, and nonces
@@ -93,8 +90,7 @@ int wpa_eapol_key_mic(const u8 *key, int ver, const u8 *buf, size_t len,
 void wpa_pmk_to_ptk(const u8 *pmk, size_t pmk_len, const char *label,
         const u8 *addr1, const u8 *addr2,
         const u8 *nonce1, const u8 *nonce2,
-        u8 *ptk, size_t ptk_len, int use_sha256)
-{
+        u8 *ptk, size_t ptk_len, int use_sha256) {
     u8 data[2 * ETH_ALEN + 2 * WPA_NONCE_LEN];
 
     if (os_memcmp(addr1, addr2, ETH_ALEN) < 0) {
@@ -117,12 +113,12 @@ void wpa_pmk_to_ptk(const u8 *pmk, size_t pmk_len, const char *label,
 
 #ifdef CONFIG_IEEE80211W
     if (use_sha256)
-        sha256_prf(pmk, pmk_len, label, data, sizeof(data),
-                ptk, ptk_len);
+        sha256_prf(pmk, pmk_len, label, data, sizeof (data),
+            ptk, ptk_len);
     else
 #endif /* CONFIG_IEEE80211W */
-        sha1_prf(pmk, pmk_len, label, data, sizeof(data), ptk,
-                ptk_len);
+        sha1_prf(pmk, pmk_len, label, data, sizeof (data), ptk,
+            ptk_len);
 
     wpa_printf(MSG_DEBUG, "WPA: PTK derivation - A1=" MACSTR " A2=" MACSTR,
             MAC2STR(addr1), MAC2STR(addr2));
@@ -132,12 +128,12 @@ void wpa_pmk_to_ptk(const u8 *pmk, size_t pmk_len, const char *label,
 
 
 #ifdef CONFIG_IEEE80211R
+
 int wpa_ft_mic(const u8 *kck, const u8 *sta_addr, const u8 *ap_addr,
         u8 transaction_seqnum, const u8 *mdie, size_t mdie_len,
         const u8 *ftie, size_t ftie_len,
         const u8 *rsnie, size_t rsnie_len,
-        const u8 *ric, size_t ric_len, u8 *mic)
-{
+        const u8 *ric, size_t ric_len, u8 *mic) {
     u8 *buf, *pos;
     size_t buf_len;
 
@@ -163,12 +159,12 @@ int wpa_ft_mic(const u8 *kck, const u8 *sta_addr, const u8 *ap_addr,
     if (ftie) {
         struct rsn_ftie *_ftie;
         os_memcpy(pos, ftie, ftie_len);
-        if (ftie_len < 2 + sizeof(*_ftie)) {
+        if (ftie_len < 2 + sizeof (*_ftie)) {
             os_free(buf);
             return -1;
         }
         _ftie = (struct rsn_ftie *) (pos + 2);
-        os_memset(_ftie->mic, 0, sizeof(_ftie->mic));
+        os_memset(_ftie->mic, 0, sizeof (_ftie->mic));
         pos += ftie_len;
     }
     if (ric) {
@@ -190,8 +186,8 @@ int wpa_ft_mic(const u8 *kck, const u8 *sta_addr, const u8 *ap_addr,
 
 
 #ifndef CONFIG_NO_WPA2
-static int rsn_selector_to_bitfield(const u8 *s)
-{
+
+static int rsn_selector_to_bitfield(const u8 *s) {
     if (RSN_SELECTOR_GET(s) == RSN_CIPHER_SUITE_NONE)
         return WPA_CIPHER_NONE;
     if (RSN_SELECTOR_GET(s) == RSN_CIPHER_SUITE_WEP40)
@@ -209,9 +205,7 @@ static int rsn_selector_to_bitfield(const u8 *s)
     return 0;
 }
 
-
-static int rsn_key_mgmt_to_bitfield(const u8 *s)
-{
+static int rsn_key_mgmt_to_bitfield(const u8 *s) {
     if (RSN_SELECTOR_GET(s) == RSN_AUTH_KEY_MGMT_UNSPEC_802_1X)
         return WPA_KEY_MGMT_IEEE8021X;
     if (RSN_SELECTOR_GET(s) == RSN_AUTH_KEY_MGMT_PSK_OVER_802_1X)
@@ -232,7 +226,6 @@ static int rsn_key_mgmt_to_bitfield(const u8 *s)
 }
 #endif /* CONFIG_NO_WPA2 */
 
-
 /**
  * wpa_parse_wpa_ie_rsn - Parse RSN IE
  * @rsn_ie: Buffer containing RSN IE
@@ -241,15 +234,14 @@ static int rsn_key_mgmt_to_bitfield(const u8 *s)
  * Returns: 0 on success, <0 on failure
  */
 int wpa_parse_wpa_ie_rsn(const u8 *rsn_ie, size_t rsn_ie_len,
-        struct wpa_ie_data *data)
-{
+        struct wpa_ie_data *data) {
 #ifndef CONFIG_NO_WPA2
     const struct rsn_ie_hdr *hdr;
     const u8 *pos;
     int left;
     int i, count;
 
-    os_memset(data, 0, sizeof(*data));
+    os_memset(data, 0, sizeof (*data));
     data->proto = WPA_PROTO_RSN;
     data->pairwise_cipher = WPA_CIPHER_CCMP;
     data->group_cipher = WPA_CIPHER_CCMP;
@@ -268,7 +260,7 @@ int wpa_parse_wpa_ie_rsn(const u8 *rsn_ie, size_t rsn_ie_len,
         return -1;
     }
 
-    if (rsn_ie_len < sizeof(struct rsn_ie_hdr)) {
+    if (rsn_ie_len < sizeof (struct rsn_ie_hdr)) {
         wpa_printf(MSG_DEBUG, "%s: ie len too short %lu",
                 __func__, (unsigned long) rsn_ie_len);
         return -1;
@@ -285,7 +277,7 @@ int wpa_parse_wpa_ie_rsn(const u8 *rsn_ie, size_t rsn_ie_len,
     }
 
     pos = (const u8 *) (hdr + 1);
-    left = rsn_ie_len - sizeof(*hdr);
+    left = rsn_ie_len - sizeof (*hdr);
 
     if (left >= RSN_SELECTOR_LEN) {
         data->group_cipher = rsn_selector_to_bitfield(pos);
@@ -413,12 +405,11 @@ int wpa_parse_wpa_ie_rsn(const u8 *rsn_ie, size_t rsn_ie_len,
 void wpa_derive_pmk_r0(const u8 *xxkey, size_t xxkey_len,
         const u8 *ssid, size_t ssid_len,
         const u8 *mdid, const u8 *r0kh_id, size_t r0kh_id_len,
-        const u8 *s0kh_id, u8 *pmk_r0, u8 *pmk_r0_name)
-{
+        const u8 *s0kh_id, u8 *pmk_r0, u8 *pmk_r0_name) {
     u8 buf[1 + WPA_MAX_SSID_LEN + MOBILITY_DOMAIN_ID_LEN + 1 +
-        FT_R0KH_ID_MAX_LEN + ETH_ALEN];
+            FT_R0KH_ID_MAX_LEN + ETH_ALEN];
     u8 *pos, r0_key_data[48], hash[32];
-    const u8 *addr[2];
+    const u8 * addr[2];
     size_t len[2];
 
     /*
@@ -444,7 +435,7 @@ void wpa_derive_pmk_r0(const u8 *xxkey, size_t xxkey_len,
     pos += ETH_ALEN;
 
     sha256_prf(xxkey, xxkey_len, "FT-R0", buf, pos - buf,
-            r0_key_data, sizeof(r0_key_data));
+            r0_key_data, sizeof (r0_key_data));
     os_memcpy(pmk_r0, r0_key_data, PMK_LEN);
 
     /*
@@ -459,17 +450,15 @@ void wpa_derive_pmk_r0(const u8 *xxkey, size_t xxkey_len,
     os_memcpy(pmk_r0_name, hash, WPA_PMK_NAME_LEN);
 }
 
-
 /**
  * wpa_derive_pmk_r1_name - Derive PMKR1Name
  *
  * IEEE Std 802.11r-2008 - 8.5.1.5.4
  */
 void wpa_derive_pmk_r1_name(const u8 *pmk_r0_name, const u8 *r1kh_id,
-        const u8 *s1kh_id, u8 *pmk_r1_name)
-{
+        const u8 *s1kh_id, u8 *pmk_r1_name) {
     u8 hash[32];
-    const u8 *addr[4];
+    const u8 * addr[4];
     size_t len[4];
 
     /*
@@ -489,7 +478,6 @@ void wpa_derive_pmk_r1_name(const u8 *pmk_r0_name, const u8 *r1kh_id,
     os_memcpy(pmk_r1_name, hash, WPA_PMK_NAME_LEN);
 }
 
-
 /**
  * wpa_derive_pmk_r1 - Derive PMK-R1 and PMKR1Name from PMK-R0
  *
@@ -497,8 +485,7 @@ void wpa_derive_pmk_r1_name(const u8 *pmk_r0_name, const u8 *r1kh_id,
  */
 void wpa_derive_pmk_r1(const u8 *pmk_r0, const u8 *pmk_r0_name,
         const u8 *r1kh_id, const u8 *s1kh_id,
-        u8 *pmk_r1, u8 *pmk_r1_name)
-{
+        u8 *pmk_r1, u8 *pmk_r1_name) {
     u8 buf[FT_R1KH_ID_LEN + ETH_ALEN];
     u8 *pos;
 
@@ -514,7 +501,6 @@ void wpa_derive_pmk_r1(const u8 *pmk_r0, const u8 *pmk_r0_name,
     wpa_derive_pmk_r1_name(pmk_r0_name, r1kh_id, s1kh_id, pmk_r1_name);
 }
 
-
 /**
  * wpa_pmk_r1_to_ptk - Derive PTK and PTKName from PMK-R1
  *
@@ -523,11 +509,10 @@ void wpa_derive_pmk_r1(const u8 *pmk_r0, const u8 *pmk_r0_name,
 void wpa_pmk_r1_to_ptk(const u8 *pmk_r1, const u8 *snonce, const u8 *anonce,
         const u8 *sta_addr, const u8 *bssid,
         const u8 *pmk_r1_name,
-        u8 *ptk, size_t ptk_len, u8 *ptk_name)
-{
+        u8 *ptk, size_t ptk_len, u8 *ptk_name) {
     u8 buf[2 * WPA_NONCE_LEN + 2 * ETH_ALEN];
     u8 *pos, hash[32];
-    const u8 *addr[6];
+    const u8 * addr[6];
     size_t len[6];
 
     /*
@@ -569,7 +554,6 @@ void wpa_pmk_r1_to_ptk(const u8 *pmk_r1, const u8 *snonce, const u8 *anonce,
 
 #endif /* CONFIG_IEEE80211R */
 
-
 /**
  * rsn_pmkid - Calculate PMK identifier
  * @pmk: Pairwise master key
@@ -583,11 +567,10 @@ void wpa_pmk_r1_to_ptk(const u8 *pmk_r1, const u8 *snonce, const u8 *anonce,
  * PMKID = HMAC-SHA1-128(PMK, "PMK Name" || AA || SPA)
  */
 void rsn_pmkid(const u8 *pmk, size_t pmk_len, const u8 *aa, const u8 *spa,
-        u8 *pmkid, int use_sha256)
-{
+        u8 *pmkid, int use_sha256) {
     char *title = "PMK Name";
-    const u8 *addr[3];
-    const size_t len[3] = { 8, ETH_ALEN, ETH_ALEN };
+    const u8 * addr[3];
+    const size_t len[3] = {8, ETH_ALEN, ETH_ALEN};
     unsigned char hash[SHA256_MAC_LEN];
 
     addr[0] = (u8 *) title;
@@ -603,14 +586,12 @@ void rsn_pmkid(const u8 *pmk, size_t pmk_len, const u8 *aa, const u8 *spa,
     os_memcpy(pmkid, hash, PMKID_LEN);
 }
 
-
 /**
  * wpa_cipher_txt - Convert cipher suite to a text string
  * @cipher: Cipher suite (WPA_CIPHER_* enum)
  * Returns: Pointer to a text string of the cipher suite name
  */
-const char * wpa_cipher_txt(int cipher)
-{
+const char * wpa_cipher_txt(int cipher) {
     switch (cipher) {
         case WPA_CIPHER_NONE:
             return "NONE";
@@ -629,26 +610,24 @@ const char * wpa_cipher_txt(int cipher)
     }
 }
 
-
 /**
  * wpa_key_mgmt_txt - Convert key management suite to a text string
  * @key_mgmt: Key management suite (WPA_KEY_MGMT_* enum)
  * @proto: WPA/WPA2 version (WPA_PROTO_*)
  * Returns: Pointer to a text string of the key management suite name
  */
-const char * wpa_key_mgmt_txt(int key_mgmt, int proto)
-{
+const char * wpa_key_mgmt_txt(int key_mgmt, int proto) {
     switch (key_mgmt) {
         case WPA_KEY_MGMT_IEEE8021X:
             if (proto == (WPA_PROTO_RSN | WPA_PROTO_WPA))
                 return "WPA2+WPA/IEEE 802.1X/EAP";
             return proto == WPA_PROTO_RSN ?
-                "WPA2/IEEE 802.1X/EAP" : "WPA/IEEE 802.1X/EAP";
+                    "WPA2/IEEE 802.1X/EAP" : "WPA/IEEE 802.1X/EAP";
         case WPA_KEY_MGMT_PSK:
             if (proto == (WPA_PROTO_RSN | WPA_PROTO_WPA))
                 return "WPA2-PSK+WPA-PSK";
             return proto == WPA_PROTO_RSN ?
-                "WPA2-PSK" : "WPA-PSK";
+                    "WPA2-PSK" : "WPA-PSK";
         case WPA_KEY_MGMT_NONE:
             return "NONE";
         case WPA_KEY_MGMT_IEEE8021X_NO_WPA:
@@ -670,11 +649,9 @@ const char * wpa_key_mgmt_txt(int key_mgmt, int proto)
     }
 }
 
-
 int wpa_compare_rsn_ie(int ft_initial_assoc,
         const u8 *ie1, size_t ie1len,
-        const u8 *ie2, size_t ie2len)
-{
+        const u8 *ie2, size_t ie2len) {
     if (ie1 == NULL || ie2 == NULL)
         return -1;
 
@@ -709,8 +686,8 @@ int wpa_compare_rsn_ie(int ft_initial_assoc,
 
 
 #ifdef CONFIG_IEEE80211R
-int wpa_insert_pmkid(u8 *ies, size_t ies_len, const u8 *pmkid)
-{
+
+int wpa_insert_pmkid(u8 *ies, size_t ies_len, const u8 *pmkid) {
     u8 *start, *end, *rpos, *rend;
     int added = 0;
 

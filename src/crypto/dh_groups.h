@@ -26,7 +26,7 @@ struct dh_group {
 const struct dh_group * dh_groups_get(int id);
 struct wpabuf * dh_init(const struct dh_group *dh, struct wpabuf **priv);
 struct wpabuf * dh_derive_shared(const struct wpabuf *peer_public,
-                                 const struct wpabuf *own_private,
-                                 const struct dh_group *dh);
+        const struct wpabuf *own_private,
+        const struct dh_group *dh);
 
 #endif /* DH_GROUPS_H */

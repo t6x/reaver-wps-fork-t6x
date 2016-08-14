@@ -48,7 +48,7 @@
 #define EAP_PACKET_SIZE         (MIN_PACKET_SIZE + sizeof(struct eap_header))
 #define WFA_PACKET_SIZE         (EAP_PACKET_SIZE + sizeof(struct wfa_expanded_header))
 
-#define MAX_MESSAGE_RETRIES	3
+#define MAX_MESSAGE_RETRIES 3
 
 enum wps_result do_wps_exchange();
 enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header);
