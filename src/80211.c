@@ -32,7 +32,6 @@
  */
 
 #include "80211.h"
-#include "common/defs.h"
 
 /*Reads the next packet from pcap_next() and validates the FCS. */
 const u_char *next_packet(struct pcap_pkthdr *header)
@@ -173,12 +172,8 @@ int8_t signal_strength(const u_char *packet, size_t len)
             if((header->flags & FHSS_FLAG) == FHSS_FLAG)
             {
                 offset += FHSS_FLAG;
-            } 
-            
-            int ath9k = 0;
-            if (packet[offset] == 0) { //no data. ath9k
+            } else {
                 offset += 12;
-                ath9k = 1;
             }
 
             if(offset < len)
@@ -186,7 +181,7 @@ int8_t signal_strength(const u_char *packet, size_t len)
                 ssi = (int8_t) packet[offset];
             }
             
-            if (ath9k == 1) {
+            if (ssi > 100) {
                 ssi = 100 - ssi;
             }
         }
