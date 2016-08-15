@@ -299,6 +299,32 @@ iw_enum_devices(int skfd,
 /*------------------------------------------------------------------*/
 
 /*
+ * Wrapper to push some Wireless Parameter in the driver
+ */
+ int iw_set_ext(int skfd, /* Socket to the kernel */
+        const char * ifname, /* Device name */
+        int request, /* WE ID */
+        struct iwreq * pwrq) /* Fixed part of the request */ {
+    /* Set device name */
+    strncpy(pwrq->ifr_name, ifname, IFNAMSIZ);
+    /* Do the request */
+    return (ioctl(skfd, request, pwrq));
+}
+
+/*
+ * Wrapper to extract some Wireless Parameter out of the driver
+ */
+ int iw_get_ext(int skfd, /* Socket to the kernel */
+        const char * ifname, /* Device name */
+        int request, /* WE ID */
+        struct iwreq * pwrq) /* Fixed part of the request */ {
+    /* Set device name */
+    strncpy(pwrq->ifr_name, ifname, IFNAMSIZ);
+    /* Do the request */
+    return (ioctl(skfd, request, pwrq));
+}
+
+/*
  * Extract WE version number from /proc/net/wireless
  * In most cases, you really want to get version information from
  * the range info (range->we_version_compiled), see below...

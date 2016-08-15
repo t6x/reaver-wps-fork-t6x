@@ -496,30 +496,20 @@ extern "C" {
     /*
      * Wrapper to push some Wireless Parameter in the driver
      */
-    static inline int iw_set_ext(int skfd, /* Socket to the kernel */
+    int iw_set_ext(int skfd, /* Socket to the kernel */
             const char * ifname, /* Device name */
             int request, /* WE ID */
-            struct iwreq * pwrq) /* Fixed part of the request */ {
-        /* Set device name */
-        strncpy(pwrq->ifr_name, ifname, IFNAMSIZ);
-        /* Do the request */
-        return (ioctl(skfd, request, pwrq));
-    }
+            struct iwreq * pwrq); /* Fixed part of the request */
 
     /*------------------------------------------------------------------*/
 
     /*
      * Wrapper to extract some Wireless Parameter out of the driver
      */
-    static inline int iw_get_ext(int skfd, /* Socket to the kernel */
+    int iw_get_ext(int skfd, /* Socket to the kernel */
             const char * ifname, /* Device name */
             int request, /* WE ID */
-            struct iwreq * pwrq) /* Fixed part of the request */ {
-        /* Set device name */
-        strncpy(pwrq->ifr_name, ifname, IFNAMSIZ);
-        /* Do the request */
-        return (ioctl(skfd, request, pwrq));
-    }
+            struct iwreq * pwrq); /* Fixed part of the request */
 
     /*------------------------------------------------------------------*/
 
