@@ -172,17 +172,11 @@ int8_t signal_strength(const u_char *packet, size_t len)
             if((header->flags & FHSS_FLAG) == FHSS_FLAG)
             {
                 offset += FHSS_FLAG;
-            } else {
-                offset += 12;
             }
 
             if(offset < len)
             {
                 ssi = (int8_t) packet[offset];
-            }
-            
-            if (ssi > 100) {
-                ssi = 100 - ssi;
             }
         }
     }
