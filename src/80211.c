@@ -152,19 +152,10 @@ int8_t signal_strength(const u_char *packet, size_t len) {
                 offset += FHSS_FLAG;
             }
 
-            int ath9k = 0;
-            if (packet[offset] == 0) { //no data. ath9k
-                offset += 12;
-                ath9k = 1;
-            }
-
             if (offset < len) {
                 ssi = (int8_t) packet[offset];
             }
 
-            if (ath9k == 1) {
-                ssi = 100 - ssi;
-            }
         }
     }
 
@@ -225,7 +216,7 @@ int reassociate() {
         do {
             authenticate();
             tries++;
-        }        while ((associate_recv_loop() != AUTH_OK) && (tries < MAX_AUTH_TRIES));
+        } while ((associate_recv_loop() != AUTH_OK) && (tries < MAX_AUTH_TRIES));
 
         /* If authentication was successful, try MAX_AUTH_TRIES to associate with the AP */
         if (tries < MAX_AUTH_TRIES) {
@@ -234,7 +225,7 @@ int reassociate() {
             do {
                 associate();
                 tries++;
-            }            while ((associate_recv_loop() != ASSOCIATE_OK) && (tries < MAX_AUTH_TRIES));
+            } while ((associate_recv_loop() != ASSOCIATE_OK) && (tries < MAX_AUTH_TRIES));
         }
 
         if (tries < MAX_AUTH_TRIES) {
@@ -389,7 +380,7 @@ int associate_recv_loop() {
                     if ((dot11_frame->fc.sub_type == SUBTYPE_AUTHENTICATION) && (auth_frame->status == AUTHENTICATION_SUCCESS)) {
                         ret_val = AUTH_OK;
                         break;
-                    }                        /* Did we get an association packet with a successful status? */
+                    }/* Did we get an association packet with a successful status? */
                     else if ((dot11_frame->fc.sub_type == SUBTYPE_ASSOCIATION) && (assoc_frame->status == ASSOCIATION_SUCCESS)) {
                         ret_val = ASSOCIATE_OK;
                         break;
