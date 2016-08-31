@@ -1521,7 +1521,7 @@ struct wpabuf * wps_registrar_get_msg(struct wps_data *wps,
             case SEND_M2:
                 if (wps_get_dev_password(wps) >= 0) {
                     msg = wps_build_m2(wps);
-                    cprintf(VERBOSE, "[+] Sending M2 message\n");
+                    cprintf(VERBOSE, "[+] Sending \033[1;35mM2\033[0m message\n");
                     *op_code = WSC_MSG;
                     break;
                 }
@@ -1533,17 +1533,17 @@ struct wpabuf * wps_registrar_get_msg(struct wps_data *wps,
                 break;
             case SEND_M4:
                 msg = wps_build_m4(wps);
-                cprintf(VERBOSE, "[+] Sending M4 message\n");
+                cprintf(VERBOSE, "[+] Sending \033[1;35mM4\033[0m message\n");
                 *op_code = WSC_MSG;
                 break;
             case SEND_M6:
                 msg = wps_build_m6(wps);
-                cprintf(VERBOSE, "[+] Sending M6 message\n");
+                cprintf(VERBOSE, "[+] Sending \033[1;35mM6\033[0m message\n");
                 *op_code = WSC_MSG;
                 break;
             case SEND_M8:
                 msg = wps_build_m8(wps);
-                cprintf(VERBOSE, "[+] Sending M8 message\n");
+                cprintf(VERBOSE, "[+] Sending \033[1;35mM8\033[0m message\n");
                 *op_code = WSC_MSG;
                 break;
             case RECV_DONE:
@@ -2429,7 +2429,7 @@ static enum wps_process_res wps_process_m1(struct wps_data *wps,
 static enum wps_process_res wps_process_m3(struct wps_data *wps,
         const struct wpabuf *msg,
         struct wps_parse_attr *attr) {
-    wpa_printf(MSG_DEBUG, "WPS: Received M3");
+    wpa_printf(MSG_DEBUG, "WPS: Received \033[1;35mM3\033[0m");
 
     if (wps->state != RECV_M3) {
         wpa_printf(MSG_DEBUG, "WPS: Unexpected state (%d) for "

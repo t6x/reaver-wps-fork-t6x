@@ -84,7 +84,7 @@ enum wps_result do_wps_exchange() {
                 id_response_sent = 1;
                 break;
             case M1:
-                cprintf(VERBOSE, "[+] Received M1 message\n");
+                cprintf(VERBOSE, "[+] Received \033[1;35mM1\033[0m message\n");
                 if (id_response_sent && !m2_sent) {
                     tx_type = SEND_M2;
                     m2_sent = 1;
@@ -94,7 +94,7 @@ enum wps_result do_wps_exchange() {
                 }
                 break;
             case M3:
-                cprintf(VERBOSE, "[+] Received M3 message\n");
+                cprintf(VERBOSE, "[+] Received \033[1;35mM3\033[0m  message\n");
                 if (m2_sent && !m4_sent) {
                     if (globule->pixie_loop == 1) {
                         tx_type = SEND_WSC_NACK;
@@ -111,7 +111,7 @@ enum wps_result do_wps_exchange() {
                 }
                 break;
             case M5:
-                cprintf(VERBOSE, "[+] Received M5 message\n");
+                cprintf(VERBOSE, "[+] Received \033[1;35mM5\033[0m  message\n");
                 if (get_key_status() == KEY1_WIP) {
                     set_key_status(KEY2_WIP);
                 }
@@ -124,7 +124,7 @@ enum wps_result do_wps_exchange() {
                 }
                 break;
             case M7:
-                cprintf(VERBOSE, "[+] Received M7 message\n");
+                cprintf(VERBOSE, "[+] Received \033[1;35mM7\033[0m  message\n");
                 //bug fix made by flatr0ze
                 if (!m6_sent) {
                     tx_type = SEND_WSC_NACK;

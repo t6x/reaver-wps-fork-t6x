@@ -259,8 +259,8 @@ void monitor(char *bssid, int passive, int source, int channel, int mode) {
 
     if (!header_printed) {
         if (o_file_p == 0) {
-            cprintf(INFO, "BSSID              Channel  RSSI  WPS Version  WPS Locked  ESSID\n");
-            cprintf(INFO, "--------------------------------------------------------------------------------------\n");
+            cprintf(INFO, "\033[1;33mBSSID               Channel   RSSI   Version   Locked    ESSID\033[0m\n");
+            cprintf(INFO, "\033[1;32m----------------------------------------------------------------------\033[0m\n");
             header_printed = 1;
         }
 
@@ -451,7 +451,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 
                     if (o_file_p == 0) {
-                        cprintf(INFO, "%17s    %2d       %.2d   %d.%d          %s         %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+                        cprintf(INFO, "%17s     %2d      %.2d      %d.%d       %s     %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
                     } else {
                         if (get_chipset_output == 1) {
                             cprintf(INFO, "%17s|%2d|%.2d|%d.%d|%s|%s|%s|%s|%s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid, info_manufac, info_modelnum, info_modelserial);

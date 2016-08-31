@@ -87,12 +87,12 @@ void crack() {
         while (!reassociate()) {
             if (assoc_fail_count == MAX_ASSOC_FAILURES) {
                 assoc_fail_count = 0;
-                cprintf(CRITICAL, "[!] WARNING: Failed to associate with %s (ESSID: %s)\n", bssid, get_ssid());
+                cprintf(CRITICAL, "[!] \033[1;31mWARNING\033[1;37m: Failed to associate with %s (ESSID: %s)\033[0m\n", bssid, get_ssid());
             } else {
                 assoc_fail_count++;
             }
         }
-        cprintf(INFO, "[+] Associated with %s (ESSID: %s)\n", bssid, get_ssid());
+        cprintf(INFO, "[+] \033[1;32mAssociated with \033[1;33m%s (ESSID: %s)\033[0m\n", bssid, get_ssid());
 
         /* Used to calculate pin attempt rates */
         start_time = time(NULL);
@@ -125,7 +125,7 @@ void crack() {
              * Verify that the AP is not locked before attempting the next pin.
              */
             while (get_ignore_locks() == 0 && is_wps_locked()) {
-                cprintf(WARNING, "[!] WARNING: Detected AP rate limiting, waiting %d seconds before re-checking\n", get_lock_delay());
+                cprintf(WARNING, "[!] \033[1;33mWARNING\033[1;37m: Detected AP rate limiting, waiting %d seconds before re-checking\033[0m\n", get_lock_delay());
                 pcap_sleep(get_lock_delay());
 
             }
@@ -143,7 +143,7 @@ void crack() {
                 cprintf(CRITICAL, "[-] Failed to generate the next payload\n");
                 break;
             } else {
-                cprintf(WARNING, "[+] Trying pin %s.\n", pin);
+                cprintf(WARNING, "[+] \033[1;32mTrying pin \033[1;36m%s\033[0m\n", pin);
             }
 
             /* 
@@ -154,7 +154,7 @@ void crack() {
             while (!reassociate()) {
                 if (assoc_fail_count == MAX_ASSOC_FAILURES) {
                     assoc_fail_count = 0;
-                    cprintf(CRITICAL, "[!] WARNING: Failed to associate with %s (ESSID: %s)\n", bssid, get_ssid());
+                    cprintf(CRITICAL, "[!] \033[1;33mWARNING\033[1;37m: Failed to associate with %s (ESSID: %s)\033[0m\n", bssid, get_ssid());
                 } else {
                     assoc_fail_count++;
                 }
@@ -211,7 +211,7 @@ void crack() {
 
             /* If we've had an excessive number of message failures in a row, print a warning */
             if (fail_count == WARN_FAILURE_COUNT) {
-                cprintf(WARNING, "[!] WARNING: %d failed connections in a row\n", fail_count);
+                cprintf(WARNING, "[!] \033[1;33mWARNING\033[1;37m: %d failed connections in a row\033[0m\n", fail_count);
                 fail_count = 0;
                 pcap_sleep(get_fail_delay());
             }
@@ -387,7 +387,7 @@ void display_status(time_t start_time) {
     }
 
 
-    cprintf(INFO, "[+] %.2f%% complete. Elapsed time: %id%ih%im%is.\n", percentage, days, hours, minutes, seconds);
+    cprintf(INFO, "[+] \033[1;33m%.2f%% complete. Elapsed time: %id%ih%im%is.\033[0m\n", percentage, days, hours, minutes, seconds);
     if (last_display && attempts != last_attempts) {
         expected = ((now - last_display) / (attempts - last_attempts)) * (get_max_pin_attempts() - attempts);
         if (expected > 0) {
