@@ -140,7 +140,8 @@ int main(int argc, char *argv[]) {
     if (o_file_p == 0) {
         printf("\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
         printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
-        printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY\n\n");
+        printf("t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY & KokoSoft fork\n");
+        printf("MOD by vk496 for www.seguridadwireless.net\n\n");
     }
 
     /* The interface value won't be set if capture files were specified; else, there should have been an interface specified */
@@ -192,7 +193,7 @@ int main(int argc, char *argv[]) {
             } else {
                 target = argv[i];
             }
-        }            /* Else, use the specified interface name */
+        }/* Else, use the specified interface name */
         else {
             target = get_iface();
         }
