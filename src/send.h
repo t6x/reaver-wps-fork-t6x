@@ -42,11 +42,11 @@
 
 #define WFA_REGISTRAR "WFA-SimpleConfig-Registrar-1-0"
 
-int send_eapol_start();
-int send_identity_response();
+int send_eapol_start(void);
+int send_identity_response(void);
 int send_msg(int type);
-void send_termination();
-void send_wsc_nack();
+void send_termination(void);
+void send_wsc_nack(void);
 int send_packet(const void *packet, size_t len);
 
 #endif

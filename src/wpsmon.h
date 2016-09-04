@@ -1,5 +1,5 @@
 /*
- * Walsh - Main and usage functions
+ * Wash - Main and usage functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -95,7 +95,7 @@ struct global_variables
     FILE *fp;
     int bssid_count;
     unsigned char **bssids;
-	 
+
 } wpsmon;
 
 void monitor(char *bssid, int passive, int source, int channel, int mode);

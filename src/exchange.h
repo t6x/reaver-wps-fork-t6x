@@ -50,7 +50,7 @@
 
 #define MAX_MESSAGE_RETRIES	3
 
-enum wps_result do_wps_exchange();
+enum wps_result do_wps_exchange(void);
 enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header);
 enum wps_type process_wps_message(const void *data, size_t data_size);
 int parse_nack(const void *data, size_t data_size);
