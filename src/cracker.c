@@ -438,14 +438,14 @@ void display_status(time_t start_time)
     percentage = (double) (((double) attempts / (get_max_pin_attempts())) * 100);
 
     now = time(NULL);
-    diff = (int) (now - start_time);
+    diff = (now - start_time);
 
     if(diff > 0)
     {
         seconds = diff % 60;
-        int t_minutes = diff / 60;
+        time_t t_minutes = diff / 60;
         minutes = t_minutes % 60;
-        int t_hours = t_minutes / 60;
+        time_t t_hours = t_minutes / 60;
         hours = t_hours % 24;
         days = t_hours / 24;
     }

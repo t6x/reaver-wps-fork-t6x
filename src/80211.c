@@ -408,7 +408,8 @@ int associate_recv_loop()
     struct dot11_frame_header *dot11_frame = NULL;
     struct authentication_management_frame *auth_frame = NULL;
     struct association_response_management_frame *assoc_frame = NULL;
-    int ret_val = 0, start_time = 0;
+    int ret_val = 0;
+    time_t start_time = 0;
 
     start_time = time(NULL);
 

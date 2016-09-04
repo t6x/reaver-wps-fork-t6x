@@ -73,7 +73,7 @@ int send_identity_response()
 
     identity = WFA_REGISTRAR;
 
-    packet = build_eap_packet(identity, strlen(identity), &packet_len);
+    packet = build_eap_packet(identity, (uint16_t) strlen(identity), &packet_len);
 
     if(packet)
     {

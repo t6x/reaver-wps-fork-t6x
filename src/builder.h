@@ -56,8 +56,8 @@
 #define FC_PROBE_REQUEST        0x0040
 #define FC_STANDARD		0x0108
 
-#define LLC_SNAP                0xAA
-#define SEQ_MASK                0x10
+#define LLC_SNAP                0xAAu
+#define SEQ_MASK                0x10u
 
 #define LISTEN_INTERVAL         0x0064
 #define OPEN_SYSTEM             0

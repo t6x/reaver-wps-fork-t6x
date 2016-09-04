@@ -74,7 +74,7 @@ struct globals
 
     int fail_delay;                 /* Seconds to sleep after WARN_FAILURE_COUNT WPS exchange failures */
 
-    int recurring_delay;            /* Sleep recurring_delay seconds for every recurring_delay_count attempts */
+    int recurring_delay;   /* Sleep recurring_delay seconds for every recurring_delay_count attempts */
 
     int lock_delay;			/* Sleep lock_delay seconds when wpscrack detects that the AP has locked WPS pin attempts */
 
@@ -128,7 +128,7 @@ struct globals
 
     unsigned char *ap_rates;	/* Supported rates IE data, as reported by the AP */
 
-    int ap_rates_len;		/* Length of the supported rates IE data */
+    size_t ap_rates_len;		/* Length of the supported rates IE data */
 
     FILE *fp;			/* Handle to log file */
 
@@ -265,8 +265,8 @@ void set_handle(pcap_t *value);
 pcap_t *get_handle(void);
 void set_wps(struct wps_data *value);
 struct wps_data *get_wps(void);
-void set_ap_rates(unsigned char *value, int len);
-unsigned char *get_ap_rates(int *len);
+void set_ap_rates(unsigned char *value, size_t len);
+unsigned char *get_ap_rates(size_t *len);
 void set_exec_string(char *string);
 char *get_exec_string(void);
 void set_oo_send_nack(int value);

@@ -36,13 +36,13 @@
 /* Converts a raw MAC address to a colon-delimited string */
 char *mac2str(unsigned char *mac, char delim)
 {
-    int i = 0, str_len = 0;
-    int str_mult = 3;
-    int buf_size = str_mult+1;
+    size_t str_len = 0;
+    size_t str_mult = 3;
+    size_t buf_size = str_mult+1;
     char *str = NULL;
     unsigned char buf[4] = { 0 };	/* 4 == buf_size */
 
-    str_len = (MAC_ADDR_LEN * str_mult) + 1;
+    str_len = (MAC_ADDR_LEN * str_mult) + 1ul;
 
     str = malloc(str_len);
     if(!str)
@@ -51,7 +51,7 @@ char *mac2str(unsigned char *mac, char delim)
     } else {
         memset(str, 0, str_len);
 
-        for(i=0; i<MAC_ADDR_LEN; i++)
+        for(size_t i=0; i<MAC_ADDR_LEN; i++)
         {
             memset((char *) &buf, 0, buf_size);
             snprintf((char *) &buf, buf_size, "%.2X%c", mac[i], delim);
@@ -76,12 +76,12 @@ void str2mac(unsigned char *str, unsigned char *mac)
     while((delim_ptr = strchr(delim_ptr, delim)) && count < (MAC_ADDR_LEN-1))
     {
         memset(delim_ptr, 0, 1);
-        mac[count] = strtol(num_ptr, NULL, 16);
+        mac[count] = (unsigned char) strtol(num_ptr, NULL, 16);
         delim_ptr++;
         count++;
         num_ptr = delim_ptr;
     }
-    mac[count] = strtol(num_ptr, NULL, 16);
+    mac[count] = (unsigned char) strtol(num_ptr, NULL, 16);
 
     free(tmp_str);
     return;
@@ -129,7 +129,7 @@ void pcap_sleep(int seconds)
     {
         pcap_close(get_handle());
         set_handle(NULL);
-        sleep(seconds);
+        sleep((unsigned int) seconds);
         set_handle(capture_init(get_iface()));
 
         if(!get_handle())

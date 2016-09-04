@@ -538,7 +538,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
         /* Only update received signal strength if we are on the same channel as the AP, otherwise power measurements are screwy */
         if(channel == get_channel())
         {
-            update_ap_power(bssid, rssi);
+            update_ap_power(bssid, (int8_t) rssi);
         }
 
         free(bssid);
