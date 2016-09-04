@@ -40,6 +40,6 @@
 #include "session.h"
 
 void sigint_init(void);
-void sigint_handler(int x);
+void sigint_handler(int x)  __attribute__ ((noreturn));
 
 #endif

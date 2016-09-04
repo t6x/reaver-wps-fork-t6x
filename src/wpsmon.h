@@ -76,6 +76,8 @@ enum tag_type
     STRING = 1
 };
 
+extern struct global_variables wpsmon;
+
 struct elements
 {
     int number;
@@ -97,6 +99,8 @@ struct global_variables
     unsigned char **bssids;
 
 } wpsmon;
+
+extern struct global_variables wpsmon;
 
 void monitor(char *bssid, int passive, int source, int channel, int mode);
 void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *target, int passive, int mode, int source);

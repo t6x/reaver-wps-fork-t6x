@@ -37,6 +37,8 @@
 
 #include "defs.h"
 
+extern struct globals *globule;
+
 struct globals
 {
     int pixie_loop;                 /* Loops through up to M4 */
@@ -160,8 +162,6 @@ struct globals
 
 
 } *globule;
-
-
 
 int globule_init(void);
 void globule_deinit(void);

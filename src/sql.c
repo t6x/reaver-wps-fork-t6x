@@ -33,7 +33,7 @@
 
 #include "sql.h"
 
-sqlite3 *db = NULL;
+static sqlite3 *db = NULL;
 
 int sql_init(void)
 {
@@ -352,7 +352,6 @@ void *get(char *query, int *result_size, int *err_code)
                 *err_code = sqlite3_errcode(db);
                 sqlite3_finalize(stmt);
                 return NULL;
-                break;
 
             case SQLITE_BUSY:
                 /* If the table is locked, wait then try again */

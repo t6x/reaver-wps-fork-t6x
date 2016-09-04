@@ -153,15 +153,15 @@ void send_wsc_nack()
     send_msg(SEND_WSC_NACK);
 }
 
-/* 
- * All transmissions are handled here to ensure that the receive timer 
+/*
+ * All transmissions are handled here to ensure that the receive timer
  * is always started immediately after a packet is transmitted.
  */
 int send_packet(const void *packet, size_t len)
 {
     int ret_val = 0;
 
-    if(pcap_inject(get_handle(), packet, len) == len)
+    if(pcap_inject(get_handle(), packet, len) == (int) len)
     {
         ret_val = 1;
     }

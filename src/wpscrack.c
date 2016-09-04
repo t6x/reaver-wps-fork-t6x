@@ -150,9 +150,9 @@ end:
 
 int usage(char *prog_name)
 {
-    float fail_timeout = 0;
+    double fail_timeout = 0;
 
-    fail_timeout = ((float) M57_DEFAULT_TIMEOUT / (float) SEC_TO_US);
+    fail_timeout = ((double) M57_DEFAULT_TIMEOUT / (double) SEC_TO_US);
 
     fprintf(stderr, "Required Arguments:\n");
     fprintf(stderr, "\t-i, --interface=<wlan>          Name of the monitor-mode interface to use\n");

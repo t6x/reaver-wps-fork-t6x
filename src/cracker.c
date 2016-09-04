@@ -35,8 +35,8 @@
 #include "cracker.h"
 #include "globule.h"
 
-time_t last_display = 0;
-int last_attempts = 0;
+static time_t last_display = 0;
+static int last_attempts = 0;
 
 /* Brute force all possible WPS pins for a given access point */
 void crack()
@@ -211,9 +211,9 @@ void crack()
 
             switch(result)
             {
-                /* 
-                 * If the last pin attempt was rejected, increment 
-                 * the pin counter, clear the fail counter and move 
+                /*
+                 * If the last pin attempt was rejected, increment
+                 * the pin counter, clear the fail counter and move
                  * on to the next pin.
                  */
                 case KEY_REJECTED:
@@ -415,7 +415,7 @@ char *get_max_time_remaining(int average, int attempts_remaining)
 //Displays the status and rate of cracking
 void display_status(time_t start_time)
 {
-    float percentage = 0;
+    double percentage = 0;
     int attempts = 0;
     time_t now = 0, diff = 0, expected = 0;
     int days = 0, hours = 0, minutes = 0, seconds = 0;
@@ -435,7 +435,7 @@ void display_status(time_t start_time)
         attempts = get_max_pin_attempts();
     }
 
-    percentage = (float) (((float) attempts / (get_max_pin_attempts())) * 100);
+    percentage = (double) (((double) attempts / (get_max_pin_attempts())) * 100);
 
     now = time(NULL);
     diff = (int) (now - start_time);

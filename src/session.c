@@ -273,7 +273,7 @@ int save_session()
                             }
 
                             /* If we got an SSID from the WPS data, then use that; else, use whatever was used to associate with the AP */
-                            if(!essid || strlen(essid) < 0)
+                            if(!essid)
                             {
                                 essid = get_ssid();
                             }

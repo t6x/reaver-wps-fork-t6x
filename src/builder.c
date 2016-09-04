@@ -327,15 +327,15 @@ const void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *
     struct wps_data *wps = get_wps();
 
     /* Decide what type of EAP packet to build based on the current WPS state */
-    switch(wps->state)
+    if (wps->state == RECV_M1)
     {
-        case RECV_M1:
-            eap_code = EAP_RESPONSE;
-            eap_type = EAP_IDENTITY;
-            break;
-        default:
-            eap_code = EAP_RESPONSE;
-            eap_type = EAP_EXPANDED;
+        eap_code = EAP_RESPONSE;
+        eap_type = EAP_IDENTITY;
+    }
+    else
+    {
+        eap_code = EAP_RESPONSE;
+        eap_type = EAP_EXPANDED;
     }
 
     /* Total payload size may or may not be equal to payload_len depending on if we

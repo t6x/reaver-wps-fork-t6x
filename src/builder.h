@@ -82,6 +82,7 @@ const void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *
 const void *build_eap_failure_packet(size_t *len);
 const void *build_tagged_parameter(uint8_t number, uint8_t size, size_t *len);
 const void *build_ssid_tagged_parameter(size_t *len);
+const void *build_wfa_header(uint8_t op_code, size_t *len);
 const void *build_wps_tagged_parameter(size_t *len);
 const void *build_supported_rates_tagged_parameter(size_t *len);
 
