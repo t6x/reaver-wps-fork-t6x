@@ -140,10 +140,10 @@ int process_arguments(int argc, char **argv)
                 set_rx_timeout(atoi(optarg));
                 break;
             case 'T':
-                set_m57_timeout(strtof(optarg, NULL) * SEC_TO_US);
+                set_m57_timeout(atoi(optarg) * SEC_TO_US);
                 break;
             case 'c':
-                channel = strtod(optarg, NULL);
+                channel = atoi(optarg);
                 set_fixed_channel(1);
                 break;
             case '5':
@@ -158,8 +158,8 @@ int process_arguments(int argc, char **argv)
             case 'p':
                 parse_static_pin(optarg);
                 break;
-            case 's':       
-                set_session(optarg);   
+            case 's':
+                set_session(optarg);
                 break;
             case 'C':
                 set_exec_string(optarg);
@@ -234,7 +234,7 @@ int process_arguments(int argc, char **argv)
                 set_ignore_nack_reason(1);
                 break;
             case 'R':
-                set_fake_nack_reason( strtol(optarg, NULL, 0) );
+                set_fake_nack_reason( atoi(optarg) );
                 set_ignore_nack_reason(1);
                 break;
             default:
@@ -302,7 +302,7 @@ void parse_recurring_delay(char *arg)
 /* Parse the WPS pin to use into p1 and p2 */
 void parse_static_pin(char *pin)
 {
-    int len = 0;
+    size_t len = 0;
     char p1[5] = { 0 };
     char p2[4] = { 0 };
 

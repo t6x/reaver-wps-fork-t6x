@@ -45,12 +45,13 @@
 
 #define DISPLAY_PIN_COUNT	5
 #define DATE_TIME_FORMAT	"%F %T"
-#define TIME_FORMAT			"%T"
+#define TIME_FORMAT		"%T"
 
-void crack();
-void advance_pin_count();
-int get_cracking_done();
-int get_pin_count();
+void crack(void);
+void advance_pin_count(void);
+int get_cracking_done(void);
+int get_pin_count(void);
 void display_status(time_t start_time);
+char *get_max_time_remaining(int average, int attempts_remaining);
 
 #endif

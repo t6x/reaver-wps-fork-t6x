@@ -41,9 +41,9 @@
 #include "globule.h"
 #include "misc.h"
 
-void sigalrm_init();
-void start_timer();
-void stop_timer();
+void sigalrm_init(void);
+void start_timer(void);
+void stop_timer(void);
 void alarm_handler(int x);
 
 #endif

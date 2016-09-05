@@ -33,7 +33,7 @@
 
 #include "sql.h"
 
-sqlite3 *db = NULL;
+static sqlite3 *db = NULL;
 
 int sql_init(void)
 {
@@ -70,7 +70,7 @@ int create_ap_table(void)
 
 int should_probe(char *bssid)
 {
-    int n = 0, yn = 0, size = 0, err = 0, max = get_max_num_probes();
+    int size = 0, n = 0, yn = 0, err = 0, max = get_max_num_probes();
     char *ns = NULL;
     char *q = sqlite3_mprintf("SELECT probes FROM %s WHERE bssid = %Q AND complete = 0", AP_TABLE, bssid);
 
@@ -294,7 +294,7 @@ char **auto_detect_settings(char *bssid, int *argc)
                 do
                 {
                     tmp = argv;
-                    argv = realloc(argv, ((i + 1) * sizeof(char *)));
+                    argv = realloc(argv, ((size_t) (i + 1ul) * sizeof(char *)));
                     if(!argv)
                     {
                         free(tmp);
@@ -338,7 +338,7 @@ void *get(char *query, int *result_size, int *err_code)
     }
 
     /* Prepare the SQL query */
-    rc = sqlite3_prepare_v2(db,query,strlen(query),&stmt,NULL);
+    rc = sqlite3_prepare_v2(db,query,(int) strlen(query),&stmt,NULL);
     if(rc != SQLITE_OK){
         *err_code = sqlite3_errcode(db);
         return NULL;
@@ -352,7 +352,6 @@ void *get(char *query, int *result_size, int *err_code)
                 *err_code = sqlite3_errcode(db);
                 sqlite3_finalize(stmt);
                 return NULL;
-                break;
 
             case SQLITE_BUSY:
                 /* If the table is locked, wait then try again */
@@ -382,12 +381,12 @@ void *get(char *query, int *result_size, int *err_code)
 
                     /* Create a copy of tmp_result to pass back to the caller */
                     if((tmp_result != NULL) && (*result_size > 0)){
-                        if((result = malloc(*result_size+1)) == NULL){
+                        if((result = malloc((size_t) *result_size+1)) == NULL){
                             perror("Malloc failure");
                             return NULL;
                         }
-                        memset(result,0,*result_size+1);
-                        memcpy(result,tmp_result,*result_size);
+                        memset(result,0,(size_t) *result_size+1);
+                        memcpy(result,tmp_result,(size_t) *result_size);
                     }
                     break;
                 }
@@ -395,7 +394,7 @@ void *get(char *query, int *result_size, int *err_code)
     }
 
     sqlite3_finalize(stmt);
-    *err_code = sqlite3_errcode(db);        
+    *err_code = sqlite3_errcode(db);
 
     return result;
 }

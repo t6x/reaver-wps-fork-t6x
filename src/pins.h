@@ -40,12 +40,8 @@
 
 #define PIN_SIZE	8
 
-/* Defined in keys.c */
-extern struct key k1[P1_SIZE];
-extern struct key k2[P2_SIZE];
-
-char *build_wps_pin();
-char *build_next_pin();
-void generate_pins();
+char *build_wps_pin(void);
+char *build_next_pin(void);
+void generate_pins(void);
 
 #endif

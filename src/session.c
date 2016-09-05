@@ -44,7 +44,7 @@ int restore_session()
     FILE *fp = NULL;
     int ret_val = 0, i = 0;
 
-    /* 
+    /*
      * If a session file was explicitly specified, use that; else, check for the 
      * default session file name for this BSSID.
      */
@@ -85,7 +85,7 @@ int restore_session()
 
             /* Don't use cprintf here; else, if the output is sent to a file via -o, the user won't see this prompt. */
             fprintf(stderr, "[?] Restore previous session for %s? [n/Y] ", bssid);
-            answer = getc(stdin);
+            answer = (char) getc(stdin);
             free(bssid);
         }
 
@@ -273,7 +273,7 @@ int save_session()
                             }
 
                             /* If we got an SSID from the WPS data, then use that; else, use whatever was used to associate with the AP */
-                            if(!essid || strlen(essid) < 0)
+                            if(!essid)
                             {
                                 essid = get_ssid();
                             }

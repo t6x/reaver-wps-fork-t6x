@@ -1,5 +1,5 @@
 /*
- * Walsh - Main and usage functions
+ * Wash - Main and usage functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -76,6 +76,8 @@ enum tag_type
     STRING = 1
 };
 
+extern struct global_variables wpsmon;
+
 struct elements
 {
     int number;
@@ -95,8 +97,10 @@ struct global_variables
     FILE *fp;
     int bssid_count;
     unsigned char **bssids;
-	 
+
 } wpsmon;
+
+extern struct global_variables wpsmon;
 
 void monitor(char *bssid, int passive, int source, int channel, int mode);
 void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *target, int passive, int mode, int source);

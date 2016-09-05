@@ -33,9 +33,9 @@
 
 #include "wpsmon.h"
 
-int o_file_p = 0;
-int get_chipset_output = 0;
-int c_fix = 0;
+static int o_file_p = 0;
+static int get_chipset_output = 0;
+static int c_fix = 0;
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     FILE *fp = NULL;
     int long_opt_index = 0, i = 0, channel = 0, passive = 0, mode = 0;
     int source = INTERFACE, ret_val = EXIT_FAILURE;
-    struct bpf_program bpf = { 0 };
+    struct bpf_program bpf = { 0, 0 };
     char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
     char *short_options = "i:c:n:o:b:5sfuCDhPg";
     struct option long_options[] = {
@@ -538,7 +538,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
         /* Only update received signal strength if we are on the same channel as the AP, otherwise power measurements are screwy */
         if(channel == get_channel())
         {
-            update_ap_power(bssid, rssi);
+            update_ap_power(bssid, (int8_t) rssi);
         }
 
         free(bssid);

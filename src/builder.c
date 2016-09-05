@@ -327,15 +327,15 @@ const void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *
     struct wps_data *wps = get_wps();
 
     /* Decide what type of EAP packet to build based on the current WPS state */
-    switch(wps->state)
+    if (wps->state == RECV_M1)
     {
-        case RECV_M1:
-            eap_code = EAP_RESPONSE;
-            eap_type = EAP_IDENTITY;
-            break;
-        default:
-            eap_code = EAP_RESPONSE;
-            eap_type = EAP_EXPANDED;
+        eap_code = EAP_RESPONSE;
+        eap_type = EAP_IDENTITY;
+    }
+    else
+    {
+        eap_code = EAP_RESPONSE;
+        eap_type = EAP_EXPANDED;
     }
 
     /* Total payload size may or may not be equal to payload_len depending on if we
@@ -352,8 +352,8 @@ const void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *
 
     /* Build SNAP, EAP and 802.1x headers */
     snap_packet = build_snap_packet(&snap_len);
-    eap_header = build_eap_header(get_eap_id(), eap_code, eap_type, total_payload_len, &eap_len);
-    dot1x_header = build_dot1X_header(DOT1X_EAP_PACKET, (total_payload_len+eap_len), &dot1x_len);
+    eap_header = build_eap_header(get_eap_id(), eap_code, eap_type, (uint16_t) total_payload_len, &eap_len);
+    dot1x_header = build_dot1X_header(DOT1X_EAP_PACKET, (uint16_t) (total_payload_len+eap_len), &dot1x_len);
 
     if(snap_packet && eap_header && dot1x_header)
     {
@@ -402,7 +402,7 @@ const void *build_eap_failure_packet(size_t *len)
     /* Build SNAP, EAP and 802.1x headers */
     snap_packet = build_snap_packet(&snap_len);
     eap_header = build_eap_header(get_eap_id(), EAP_FAILURE, EAP_FAILURE, 0, &eap_len);
-    dot1x_header = build_dot1X_header(DOT1X_EAP_PACKET, eap_len, &dot1x_len);
+    dot1x_header = build_dot1X_header(DOT1X_EAP_PACKET, (uint16_t)eap_len, &dot1x_len);
 
     buf_len = snap_len + eap_len + dot1x_len;
 
@@ -461,7 +461,7 @@ const void *build_ssid_tagged_parameter(size_t *len)
         ssid_len = strlen(get_ssid());
     }
 
-    ssid_param = build_tagged_parameter(SSID_TAG_NUMBER, ssid_len, &ssid_param_len);
+    ssid_param = build_tagged_parameter(SSID_TAG_NUMBER, (uint8_t) ssid_len, &ssid_param_len);
 
     if(ssid_param)
     {
@@ -512,11 +512,10 @@ const void *build_supported_rates_tagged_parameter(size_t *len)
 {
     const void *buf = NULL, *supported_rates = NULL, *extended_rates = NULL;
     unsigned char *srates = NULL;
-    int srates_tag_size = 0;
-    size_t buf_len = 0, srates_len = 0, erates_len = 0, offset = 0;
+    size_t srates_tag_size = 0, buf_len = 0, srates_len = 0, erates_len = 0, offset = 0;
 
     srates = get_ap_rates(&srates_tag_size);
-    supported_rates = build_tagged_parameter(SRATES_TAG_NUMBER, srates_tag_size, &srates_len);
+    supported_rates = build_tagged_parameter(SRATES_TAG_NUMBER, (uint8_t) srates_tag_size, &srates_len);
     extended_rates = build_tagged_parameter(ERATES_TAG_NUMBER, ERATES_TAG_SIZE, &erates_len);
 
     if(supported_rates && extended_rates)
