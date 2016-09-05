@@ -614,7 +614,7 @@ struct wps_data *get_wps()
     return globule->wps;
 }
 
-void set_ap_rates(unsigned char *value, size_t len)
+void set_ap_rates(unsigned char *value, int len)
 {
     if(globule->ap_rates)
     {
@@ -631,7 +631,7 @@ void set_ap_rates(unsigned char *value, size_t len)
     }
 }
 
-unsigned char *get_ap_rates(size_t *len)
+unsigned char *get_ap_rates(int *len)
 {
     *len = globule->ap_rates_len;
     return globule->ap_rates;

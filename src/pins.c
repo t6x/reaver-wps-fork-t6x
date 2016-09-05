@@ -37,7 +37,7 @@
 char *build_wps_pin()
 {
     char *key = NULL, *pin = NULL, *p1_value = NULL, *p2_value = NULL;
-    size_t pin_len = PIN_SIZE + 1ul;
+    int pin_len = PIN_SIZE + 1;
 
     pin = malloc(pin_len);
     key = malloc(pin_len);
@@ -91,7 +91,7 @@ char *build_wps_pin()
     return pin;
 }
 
-/*
+/* 
  * Remove the last WPS pin (if any), build the next WPS pin in the p1 and p2 arrays, 
  * and populate the wps structure with the new pin.
  */

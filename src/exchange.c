@@ -74,7 +74,7 @@ enum wps_result do_wps_exchange()
 
         packet = next_packet(&header);
         if(packet == NULL)
-        {
+        {	
             break;
         }
 
@@ -181,7 +181,7 @@ enum wps_result do_wps_exchange()
         {
             send_msg(tx_type);
         }
-        /*
+        /* 
          * If get_oo_send_nack is 0, then when out of order packets come, we don't
          * NACK them. However, this also means that we wait infinitely for the expected
          * packet, since the timer is started by send_msg. Manually start the timer to
@@ -456,7 +456,7 @@ enum wps_type process_wps_message(const void *data, size_t data_size)
     struct wps_data *wps = get_wps();
     unsigned char *element_data = NULL;
     struct wfa_element_header element = { 0 };
-    size_t i = 0, header_size = sizeof(struct wfa_element_header);
+    int i = 0, header_size = sizeof(struct wfa_element_header);
 
     /* Shove data into a wpabuf structure for processing */
     msg = wpabuf_alloc_copy(data, data_size);

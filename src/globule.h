@@ -37,8 +37,6 @@
 
 #include "defs.h"
 
-extern struct globals *globule;
-
 struct globals
 {
     int pixie_loop;                 /* Loops through up to M4 */
@@ -74,7 +72,7 @@ struct globals
 
     int fail_delay;                 /* Seconds to sleep after WARN_FAILURE_COUNT WPS exchange failures */
 
-    int recurring_delay;   /* Sleep recurring_delay seconds for every recurring_delay_count attempts */
+    int recurring_delay;            /* Sleep recurring_delay seconds for every recurring_delay_count attempts */
 
     int lock_delay;			/* Sleep lock_delay seconds when wpscrack detects that the AP has locked WPS pin attempts */
 
@@ -128,7 +126,7 @@ struct globals
 
     unsigned char *ap_rates;	/* Supported rates IE data, as reported by the AP */
 
-    size_t ap_rates_len;		/* Length of the supported rates IE data */
+    int ap_rates_len;		/* Length of the supported rates IE data */
 
     FILE *fp;			/* Handle to log file */
 
@@ -153,94 +151,96 @@ struct globals
                                      * wpa_supplicant's wps_data structure, needed for almost all wpa_supplicant
                                      * function calls.
                                      */
-
-    int op_pixie;					/* make pixiewps */
+									 
+    int op_pixie;					/* make pixiewps */	
     char cmd_reaver_test[4000];		/* auto reaver with pin */
     int op_autopass;				/* auto reaver with pin */
 	int stop_in_m1;					/* stop reaver in m1 message */
 	int op_gen_pin;					/* gen default pin */
-
+	
 
 } *globule;
 
-int globule_init(void);
-void globule_deinit(void);
+
+
+int globule_init();
+void globule_deinit();
 void set_log_file(FILE *fp);
 FILE *get_log_file(void);
 void set_last_wps_state(int state);
-int get_last_wps_state(void);
-void set_session(char *value);
-char *get_session(void);
+int get_last_wps_state();
+void set_session(char *value);   
+char *get_session();
 void set_p1_index(int index);
-int get_p1_index(void);
+int get_p1_index();
 void set_p2_index(int index);
-int get_p2_index(void);
+int get_p2_index();
 void set_p1(int index, char *value);
 char *get_p1(int index);
 void set_p2(int index, char *value);
 char *get_p2(int index);
 void set_key_status(enum key_state status);
-enum key_state get_key_status(void);
+enum key_state get_key_status();
 void set_delay(int delay);
-int get_delay(void);
+int get_delay();
 void set_fail_delay(int delay);
-int get_fail_delay(void);
+int get_fail_delay();
 void set_validate_fcs(int validate);
 int get_validate_fcs(void);
 void set_recurring_delay(int delay);
-int get_recurring_delay(void);
+int get_recurring_delay();
 void set_recurring_delay_count(int value);
-int get_recurring_delay_count(void);
+int get_recurring_delay_count();
 void set_lock_delay(int value);
-int get_lock_delay(void);
+int get_lock_delay();
 void set_ignore_locks(int value);
-int get_ignore_locks(void);
+int get_ignore_locks();
 void set_fake_nack_delay(int delay);
-int get_fake_nack_delay(void);
+int get_fake_nack_delay();
 void set_eap_terminate(int value);
-int get_eap_terminate(void);
+int get_eap_terminate();
 void set_max_pin_attempts(int value);
-int get_max_pin_attempts(void);
-int get_max_num_probes(void);
+int get_max_pin_attempts();
+int get_max_num_probes();
 void set_max_num_probes(int value);
 void set_rx_timeout(int value);
-int get_rx_timeout(void);
+int get_rx_timeout();
 void set_timeout_is_nack(int value);
-int get_timeout_is_nack(void);
+int get_timeout_is_nack();
 void set_m57_timeout(int value);
-int get_m57_timeout(void);
+int get_m57_timeout();
 void set_out_of_time(int value);
-int get_out_of_time(void);
+int get_out_of_time();
 void set_debug(enum debug_level value);
-enum debug_level get_debug(void);
+enum debug_level get_debug();
 void set_eapol_start_count(int value);
-int get_eapol_start_count(void);
+int get_eapol_start_count();
 void set_fixed_channel(int value);
-int get_fixed_channel(void);
+int get_fixed_channel();
 void set_auto_channel_select(int value);
-int get_auto_channel_select(void);
+int get_auto_channel_select();
 void set_auto_detect_options(int value);
-int get_auto_detect_options(void);
+int get_auto_detect_options();
 void set_wifi_band(int value);
-int get_wifi_band(void);
+int get_wifi_band();
 void set_opcode(enum wsc_op_code value);
-enum wsc_op_code get_opcode(void);
+enum wsc_op_code get_opcode();
 void set_eap_id(uint8_t value);
-uint8_t get_eap_id(void);
+uint8_t get_eap_id();
 void set_ap_capability(uint16_t value);
-uint16_t get_ap_capability(void);
+uint16_t get_ap_capability();
 void set_bssid(unsigned char *value);
-unsigned char *get_bssid(void);
+unsigned char *get_bssid();
 void set_mac(unsigned char *value);
-unsigned char *get_mac(void);
+unsigned char *get_mac();
 void set_channel(int channel);
 int get_channel(void);
 void set_ssid(char *value);
-char *get_ssid(void);
+char *get_ssid();
 void set_iface(char *value);
-char *get_iface(void);
+char *get_iface();
 void set_pin(char *value);
-char *get_pin(void);
+char *get_pin();
 void set_static_p1(char *value);
 char *get_static_p1(void);
 void set_static_p2(char *value);
@@ -254,32 +254,32 @@ int get_dh_small(void);
 void set_external_association(int value);
 int get_external_association(void);
 void set_nack_reason(uint16_t value);
-uint16_t get_nack_reason(void);
+uint16_t get_nack_reason();
 void set_last_nack_reason(int value);
-int get_last_nack_reason(void);
+int get_last_nack_reason();
 void set_fake_nack_reason(int value);
-int get_fake_nack_reason(void);
+int get_fake_nack_reason();
 void set_ignore_nack_reason(int value);
-int get_ignore_nack_reason(void);
+int get_ignore_nack_reason();
 void set_handle(pcap_t *value);
-pcap_t *get_handle(void);
+pcap_t *get_handle();
 void set_wps(struct wps_data *value);
-struct wps_data *get_wps(void);
-void set_ap_rates(unsigned char *value, size_t len);
-unsigned char *get_ap_rates(size_t *len);
+struct wps_data *get_wps();
+void set_ap_rates(unsigned char *value, int len);
+unsigned char *get_ap_rates(int *len);
 void set_exec_string(char *string);
 char *get_exec_string(void);
 void set_oo_send_nack(int value);
 int get_oo_send_nack(void);
-int get_quit_pin_attempts(void);
+int get_quit_pin_attempts();
 void set_op_pixie(int index);
 void set_op_autopass(int index);
 void set_op_gen_pin(int index);
 void set_cmd_reaver_test(char *string);
 void set_pixie_loop(int value);
-int get_pixie_loop(void);
+int get_pixie_loop();
 void set_pixie_log(int value);
-int get_pixie_log(void);
+int get_pixie_log();
 void set_stop_in_m1(int index);
 void set_quit_pin_attempts(int value);
 

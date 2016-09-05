@@ -50,7 +50,7 @@ int read_iface_mac() {
                                 break;
                             }
                     }
-
+                
                 freeifaddrs(iflist);
             }
         return found;

@@ -249,15 +249,15 @@ static inline unsigned int wpa_swap_32(unsigned int v)
 #define WPA_GET_BE16(a) ((u16) (((a)[0] << 8) | (a)[1]))
 #define WPA_PUT_BE16(a, val)			\
     do {					\
-        (a)[0] = (u8) (((u16) (val)) >> 8);	\
-        (a)[1] = (u8) (((u16) (val)) & 0xff);	\
+        (a)[0] = ((u16) (val)) >> 8;	\
+        (a)[1] = ((u16) (val)) & 0xff;	\
     } while (0)
 
 #define WPA_GET_LE16(a) ((u16) (((a)[1] << 8) | (a)[0]))
 #define WPA_PUT_LE16(a, val)			\
     do {					\
-        (a)[1] = (u8) (((u16) (val)) >> 8);	\
-        (a)[0] = (u8) (((u16) (val)) & 0xff);	\
+        (a)[1] = ((u16) (val)) >> 8;	\
+        (a)[0] = ((u16) (val)) & 0xff;	\
     } while (0)
 
 #define WPA_GET_BE24(a) ((((u32) (a)[0]) << 16) | (((u32) (a)[1]) << 8) | \

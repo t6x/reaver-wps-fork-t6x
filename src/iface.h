@@ -58,8 +58,8 @@
 #define BG_CHANNELS		{ 14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }
 #define AN_CHANNELS		{ 16, 34, 36, 38, 40, 42, 44, 46, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 149, 153, 157, 161, 165, 183, 184, 185, 187, 188, 189, 192, 196 }
 
-int read_iface_mac(void);
-int next_channel(void);
+int read_iface_mac();
+int next_channel();
 int change_channel(int channel);
 
 #endif

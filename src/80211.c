@@ -140,7 +140,7 @@ void read_ap_beacon()
 int8_t signal_strength(const u_char *packet, size_t len)
 {
     int8_t ssi = 0;
-    size_t offset = sizeof(struct radio_tap_header);
+    int offset = sizeof(struct radio_tap_header);
     struct radio_tap_header *header = NULL;
 
     if(has_rt_header() && (len > (sizeof(struct radio_tap_header) + TSFT_SIZE + FLAGS_SIZE + RATE_SIZE + CHANNEL_SIZE + FHSS_FLAG)))
@@ -408,8 +408,7 @@ int associate_recv_loop()
     struct dot11_frame_header *dot11_frame = NULL;
     struct authentication_management_frame *auth_frame = NULL;
     struct association_response_management_frame *assoc_frame = NULL;
-    int ret_val = 0;
-    time_t start_time = 0;
+    int ret_val = 0, start_time = 0;
 
     start_time = time(NULL);
 
@@ -574,7 +573,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 unsigned char *parse_ie_data(const u_char *data, size_t len, uint8_t tag_number, size_t *ie_len, size_t *ie_offset)
 {
     unsigned char *tag_data = NULL;
-    size_t offset = 0, tag_size = 0;
+    int offset = 0, tag_size = 0;
     struct tagged_parameter *tag = NULL;
 
     tag_size = sizeof(struct tagged_parameter);
@@ -609,8 +608,7 @@ unsigned char *parse_ie_data(const u_char *data, size_t len, uint8_t tag_number,
 /* Validates a packet's reported FCS value */
 int check_fcs(const u_char *packet, size_t len)
 {
-    size_t offset = 0;
-    int match = 0;
+    int offset = 0, match = 0;
     uint32_t fcs = 0, fcs_calc = 0;
     struct radio_tap_header *rt_header = NULL;
 
@@ -623,7 +621,7 @@ int check_fcs(const u_char *packet, size_t len)
         if(has_rt_header())
         {
             rt_header = (struct radio_tap_header *) packet;
-
+            
 #ifdef __APPLE__
                         unsigned char *body = (unsigned char*) (rt_header+1);
                         uint32_t present = rt_header->flags;
@@ -635,23 +633,23 @@ int check_fcs(const u_char *packet, size_t len)
                                             case IEEE80211_RADIOTAP_TSFT:
                                                 body += sizeof(uint64_t);
                                                 break;
-
+                        
                                             case IEEE80211_RADIOTAP_FLAGS:
                                                 rflags = *((uint8_t*)body);
                                                 /* fall through */
                                             case IEEE80211_RADIOTAP_RATE:
                                                 body += sizeof(uint8_t);
                                                 break;
-
+                        
                                             case IEEE80211_RADIOTAP_CHANNEL:
                                                 body += sizeof(uint16_t)*2;
                                                 break;
-
+                        
                                             case IEEE80211_RADIOTAP_RX_FLAGS:
                                             case IEEE80211_RADIOTAP_FHSS:
                                                 body += sizeof(uint16_t);
                                                 break;
-
+                        
                                             case IEEE80211_RADIOTAP_DB_ANTSIGNAL:
                                             case IEEE80211_RADIOTAP_DBM_ANTNOISE:
                                             case IEEE80211_RADIOTAP_DBM_ANTSIGNAL:
@@ -659,18 +657,18 @@ int check_fcs(const u_char *packet, size_t len)
                                             case IEEE80211_RADIOTAP_ANTENNA:
                                                 body++;
                                                 break;
-
+                        
                                             case 18: // IEEE80211_RADIOTAP_XCHANNEL
                                                 body += sizeof(uint32_t);
                                                 body += sizeof(uint16_t);
                                                 body += sizeof(uint8_t);
                                                 body += sizeof(uint8_t);
                                                 break;
-
+                                        
                                             case 19: // IEEE80211_RADIOTAP_MCS
                                                 body += 3*sizeof(uint8_t);
                                                 break;
-
+                                        
                                             default:
                                                 i = IEEE80211_RADIOTAP_EXT+1;
                                                 break;
@@ -686,7 +684,7 @@ int check_fcs(const u_char *packet, size_t len)
                                 return 1;
                             }
 #endif
-
+            
             offset += rt_header->len;
         }
 
