@@ -54,8 +54,8 @@
 #define P1_READ_LEN     (P1_STR_LEN + 2)        /* Read lengths == (strlen + new line + null byte) */
 #define P2_READ_LEN     (P2_STR_LEN + 2)
 
-int restore_session(void);
-int save_session(void);
-int configuration_directory_exists(void);
+int restore_session();
+int save_session();
+int configuration_directory_exists();
 
 #endif

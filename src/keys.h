@@ -42,7 +42,4 @@ struct key
     int priority;
 };
 
-extern struct key k1[P1_SIZE];
-extern struct key k2[P2_SIZE];
-
 #endif
