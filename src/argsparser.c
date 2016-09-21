@@ -41,6 +41,7 @@ int process_arguments(int argc, char **argv)
     int ret_val = EXIT_SUCCESS;
     int c = 0, channel = 0;
     int long_opt_index = 0;
+    FILE *out_file;
     char bssid[MAC_ADDR_LEN] = { 0 };
     char mac[MAC_ADDR_LEN] = { 0 };
     char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:F:R:ZaA5ELfnqvDShwXNPH0I";
@@ -180,7 +181,13 @@ int process_arguments(int argc, char **argv)
                 set_auto_detect_options(1); 
                 break;
             case 'o':
-                set_log_file(fopen(optarg, "w"));
+                out_file = fopen(optarg, "w");
+                if (out_file != NULL) {
+                    set_log_file(out_file);
+                } else {
+                    fprintf(stderr, "[-] Cannot write to log file!\n");
+                    ret_val = EXIT_FAILURE;
+                }
                 break;
             case 'x':
                 set_fail_delay(atoi(optarg));
