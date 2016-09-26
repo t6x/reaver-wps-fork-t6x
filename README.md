@@ -177,13 +177,13 @@ The option `-g` of Wash, automatically runs Reaver to receive the chipset data.
 ## Contribution
 
 Modifications made by:
-`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`
+`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft` 
 
 Some ideas made by:
 `nuroo`, `kcdtv`
 
 Bug fixes made by:
-`alxchk`, `flatr0ze`, `USUARIONUEVO`, `ldm314`, `vk496`
+`alxchk`, `flatr0ze`, `USUARIONUEVO`, `ldm314`, `vk496`, `falsovsky`
 
 ## Special Thanks
 
