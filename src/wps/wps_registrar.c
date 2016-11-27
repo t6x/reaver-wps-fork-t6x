@@ -1469,7 +1469,7 @@ static struct wpabuf * wps_build_m4(struct wps_data *wps)
 
 	wpa_printf(MSG_DEBUG, "WPS: Building Message M4");
 
-	wpa_printf(MSG_DEBUG, "WPS: Dev Password Len: %d", wps->dev_password_len);
+	wpa_printf(MSG_DEBUG, "WPS: Dev Password Len: %zu", wps->dev_password_len);
 	wpa_printf(MSG_DEBUG, "WPS: Dev Password: %s", wps->dev_password);
 
 	wps_derive_psk(wps, wps->dev_password, wps->dev_password_len);
