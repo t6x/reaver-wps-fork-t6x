@@ -553,7 +553,8 @@ int pingen_dlink(char *mac, int add)
 }
 
 /* Zhaochunsheng algorithm
-   this algorithm works eventually and only with mac adresses starting with C8:3A:35 */
+   this algorithm works eventually and only with mac adresses starting with
+   C8:3A:35, 00:B0:0C or 08:10:75 */
 int pingen_zhaochunsheng(char *mac, int add)
 {
 	int pin = 0;
