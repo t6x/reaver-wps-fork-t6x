@@ -15,6 +15,7 @@
 #include "includes.h"
 
 #include "common.h"
+#include "misc.h"
 #include "wps_i.h"
 #include "wps_dev_attr.h"
 
