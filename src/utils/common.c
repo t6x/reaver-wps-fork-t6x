@@ -15,6 +15,7 @@
 #include "includes.h"
 
 #include "common.h"
+#include "wps.h"
 
 
 static int hex2num(char c)
@@ -412,23 +413,6 @@ int char2int(char c)
 }
  
 
-/* http://www.devttys0.com/2015/04/reversing-belkins-wps-pin-algorithm/ */
-/* Generates a standard WPS checksum from a 7 digit pin */
-int wps_checksum(int pin)
-{
-    int div = 0;
-
-    while(pin)
-    {
-        div += 3 * (pin % 10);
-        pin /= 10;
-        div += pin % 10;
-        pin /= 10;
-    }
-
-    return ((10 - div % 10) % 10);
-}
-
 unsigned int hexToInt(const char *hex)
 {
 	unsigned int result = 0;
@@ -530,7 +514,7 @@ int pingen_belkin(char *mac, char *serial, int len_serial, int add)
 	//pingen mac init c83a35
 	//printf("WPS PIN is: %07d%d\n",4402328%10000000,wps_checksum(4402328%10000000));
     
-    return (pin * 10) + wps_checksum(pin);
+    return (pin * 10) + wps_pin_checksum(pin);
 }
 
 
@@ -565,7 +549,7 @@ int pingen_dlink(char *mac, int add)
 		
     }
 
-    return (pin * 10) + wps_checksum(pin);
+    return (pin * 10) + wps_pin_checksum(pin);
 }
 
 /* Zhaochunsheng algorithm
@@ -589,7 +573,7 @@ int pingen_zhaochunsheng(char *mac, int add)
 
 	sscanf(last3bytes, "%x", &pin);
 	pin = pin % 10000000;
-	return (pin * 10) + wps_checksum(pin);
+	return (pin * 10) + wps_pin_checksum(pin);
 }
 
 //mac to decimal by kib0rg
