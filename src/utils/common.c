@@ -568,35 +568,28 @@ int pingen_dlink(char *mac, int add)
     return (pin * 10) + wps_checksum(pin);
 }
 
-//Zhaochunsheng algorithm/
+/* Zhaochunsheng algorithm
+   this algorithm works eventually and only with mac adresses starting with C8:3A:35 */
 int pingen_zhaochunsheng(char *mac, int add)
 {
-    int default_pin=0, pin=0, i=0, pin_len = 9;
-    //char *bssid = mac2str(get_bssid(), ':');
-    char *bssid_copy = (char *)malloc(strlen(mac) + 1);
-    char *bssid_parts, temp[7] = { 0 };
+	int pin = 0;
+	/* copy the last 3 bytes of the mac addr, i.e.
+	   input: "C8:3A:35:00:11:22" -> result: "001122" */
+	char last3bytes[6+1];
+	last3bytes[0]=mac[ 9];
+	last3bytes[1]=mac[10];
 
-    strcpy(bssid_copy, mac);
-    bssid_parts = strtok(bssid_copy, ":");
+	last3bytes[2]=mac[12];
+	last3bytes[3]=mac[13];
 
-    while(bssid_parts)
-    {
-        if(i > 2)
-        {
-            strcat(temp, bssid_parts);
-        }
+	last3bytes[4]=mac[15];
+	last3bytes[5]=mac[16];
 
-        bssid_parts = strtok(NULL, ":");
-        ++i;
-    }
+	last3bytes[6] = 0;
 
-    temp[6] = '\0';
-    sscanf(temp, "%x", &default_pin);
-    default_pin = default_pin % 10000000;
-
-    snprintf(pin, pin_len, "%08d", (default_pin * 10) + wps_checksum(default_pin));
-
-    return pin;
+	sscanf(last3bytes, "%x", &pin);
+	pin = pin % 10000000;
+	return (pin * 10) + wps_checksum(pin);
 }
 
 //mac to decimal by kib0rg
