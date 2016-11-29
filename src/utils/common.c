@@ -553,8 +553,25 @@ int pingen_dlink(char *mac, int add)
 }
 
 /* Zhaochunsheng algorithm
-   this algorithm works eventually and only with mac adresses starting with
-   C8:3A:35, 00:B0:0C or 08:10:75 */
+   This algorithm was first released in the script ComputePIN-C83A35 for Tenda W309R (April 2012)
+   The same algorithm was found on several devices from different manufacturers. 
+   This is a non exhaustive list of affected models:
+         ASUSTek COMPUTER INC.       RT-G32 
+         Belkin                      F5D8235-4v1000, F5D8231-4v5000 and F9K1104v1 
+         Conceptronic                c300brs4a v2_v1.0.0 and C300BRS4A
+         D-Link International        DIR-620  
+         Edimax                      3G-6210n and 3G-6220n 
+         Hitron Technologies. Inc    CDE-30364 
+         HUAWEI                      HG532e, HG532s and HG566a (HG532c uses a slightly modified version of this algorithm)
+         Kuzomi                      K1500 and K1550
+         Samsung                     SMT-G7440 and SWL (Samsung Wireless Link)
+         TELDAT                      iRouter1104-W
+         TENDA                       W309R
+         TP-LINK CO., LTD.           TD-W8951ND and TD-W8961ND v2.1
+         TRENDnet, Inc.              TEW-652BRP (TEW-818DRU and TEW-828DRU use a slightly modified version of this algorithm)   
+         ZyXEL Communications Co.     zyxel NBG-419n and WAP 3205                                           *
+    */
+
 int pingen_zhaochunsheng(char *mac, int add)
 {
 	int pin = 0;
