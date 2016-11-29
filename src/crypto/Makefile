@@ -11,6 +11,7 @@ include ../common/lib.rules
 
 CFLAGS += -DCONFIG_TLS_INTERNAL_CLIENT
 CFLAGS += -DCONFIG_TLS_INTERNAL_SERVER
+CFLAGS += -fno-strict-aliasing
 #CFLAGS += -DALL_DH_GROUPS
 
 LIB_OBJS= \
