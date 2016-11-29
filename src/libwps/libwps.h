@@ -12,6 +12,9 @@
 #ifndef LIBWPS_H
 #define LIBWPS_H
 
+#undef _GNU_SOURCE
+#define _GNU_SOURCE
+#include <sys/types.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
