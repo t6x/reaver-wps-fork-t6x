@@ -36,6 +36,7 @@
 int o_file_p = 0;
 int get_chipset_output = 0;
 int c_fix = 0;
+int show_all_aps = 0;
 
 int main(int argc, char *argv[])
 {
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
     int source = INTERFACE, ret_val = EXIT_FAILURE;
     struct bpf_program bpf = { 0 };
     char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
-    char *short_options = "i:c:n:o:b:5sfuCDhPg";
+    char *short_options = "i:c:n:o:b:5sfuCDhPga";
     struct option long_options[] = {
 		{ "get-chipset", no_argument, NULL, 'g' },
 	{ "output-piped", no_argument, NULL, 'P' },
@@ -60,6 +61,7 @@ int main(int argc, char *argv[])
         { "5ghz", no_argument, NULL, '5' },
         { "scan", no_argument, NULL, 's' },
         { "survey", no_argument, NULL, 'u' },
+        { "all", no_argument, NULL, 'a' },
         { "help", no_argument, NULL, 'h' },
         { 0, 0, 0, 0 }
     };
@@ -124,6 +126,9 @@ int main(int argc, char *argv[])
                 break;
             case 'D':
                 daemonize();
+                break;
+            case 'a':
+                show_all_aps = 1;
                 break;
             default:
                 usage(argv[0]);
@@ -389,9 +394,9 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                 {
                     update(bssid, ssid, wps, encryption);
                 }
-                else if(wps->version > 0)
+                else if(wps->version > 0 || show_all_aps == 1)
                 {
-                    switch(wps->locked)
+                    if(wps->version > 0) switch(wps->locked)
                     {
                         case WPSLOCKED:
                             lock_display = YES;
@@ -400,7 +405,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
                         case UNSPECIFIED:
                             lock_display = NO;
                             break;
-                    }
+                    } else lock_display = NO;
 
 					//ideas made by kcdtv
 
@@ -501,7 +506,11 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 					if (o_file_p == 0)
 					{
-						cprintf(INFO, "%17s    %2d       %.2d   %d.%d          %s         %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+						if(wps->version > 0)
+							cprintf(INFO, "%17s    %2d       %.2d   %d.%d          %s         %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+						else
+							cprintf(INFO, "%17s    %2d       %.2d                            %s\n", bssid, channel, rssi, ssid);
+
 					}
 					else
 					{
@@ -591,6 +600,7 @@ void usage(char *prog)
     fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
     fprintf(stderr, "\t-P, --output-piped                   Allows Wash output to be piped. Example. wash x|y|z...\n");
     fprintf(stderr, "\t-g, --get-chipset                    Pipes output and runs reaver alongside to get chipset\n");
+    fprintf(stderr, "\t-a, --all                            Show all APs, even those without WPS\n");
     fprintf(stderr, "\t-h, --help                           Show help\n");
 
     fprintf(stderr, "\nExample:\n");
