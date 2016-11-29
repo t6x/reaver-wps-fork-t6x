@@ -437,7 +437,7 @@ return result;
 /* Belkin Default Pin generator created by devttys0 team */
 /* http://www.devttys0.com/2015/04/reversing-belkins-wps-pin-algorithm/ */ 
 /* Munges the MAC and serial numbers to create a WPS pin */
-int pingen_belkin(char *mac, char *serial, int len_serial, int add)
+int pingen_belkin(const char *mac, const char *serial, int len_serial, int add)
 {
     #define NIC_NIBBLE_0    0
     #define NIC_NIBBLE_1    1
