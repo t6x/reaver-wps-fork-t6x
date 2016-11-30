@@ -43,7 +43,6 @@
 #include "globule.h"
 #include "misc.h"
 #include "init.h"
-#include "sql.h"
 #include "iface.h"
 #include "80211.h"
 #include "builder.h"

@@ -35,6 +35,54 @@
 
 int show_all_aps = 0;
 
+static struct mac {
+	unsigned char mac[6];
+	unsigned char probes;
+	unsigned char flags;
+} seen_list[256];
+enum seen_flags {
+	SEEN_FLAG_PRINTED = 1,
+	SEEN_FLAG_COMPLETE = 2,
+};
+static unsigned seen_count;
+static int list_insert(char *bssid) {
+	unsigned i;
+	unsigned char mac[6];
+	str2mac(bssid, mac);
+	if(seen_count >= 256) return -1;
+	for(i=0; i<seen_count; i++)
+		if(!memcmp(seen_list[i].mac, mac, 6)) return i;
+	memcpy(seen_list[seen_count].mac, mac, 6);
+	return seen_count++;
+}
+static int was_printed(char* bssid) {
+	int x = list_insert(bssid);
+	if(x >= 0 && x < 256) {
+		unsigned f = seen_list[x].flags;
+		seen_list[x].flags |= SEEN_FLAG_PRINTED;
+		return f & SEEN_FLAG_PRINTED;
+	}
+	return 1;
+}
+static void mark_ap_complete(char *bssid) {
+	int x = list_insert(bssid);
+	if(x >= 0 && x < 256) seen_list[x].flags |= SEEN_FLAG_COMPLETE;
+}
+static int is_done(char *bssid) {
+	int x = list_insert(bssid);
+	if(x >= 0 && x < 256) return seen_list[x].flags & SEEN_FLAG_COMPLETE;
+	return 1;
+}
+static int should_probe(char *bssid) {
+	int x = list_insert(bssid);
+        if(x >= 0 && x < 256) return seen_list[x].probes < get_max_num_probes();
+	return 0;
+}
+static void update_probe_count(char *bssid) {
+	int x = list_insert(bssid);
+	if(x >= 0 && x < 256) seen_list[x].probes++;
+}
+
 int main(int argc, char *argv[])
 {
 	int c = 0;
@@ -65,8 +113,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n\n");
 
 	globule_init();
-	sql_init();
-	create_ap_table();
 	set_auto_channel_select(0);
 	set_wifi_band(BG_BAND);
 	set_debug(INFO);
@@ -226,7 +272,6 @@ int main(int argc, char *argv[])
 
 end:
 	globule_deinit();
-	sql_cleanup();
 	if(bssid) free(bssid);
 	if(out_file) free(out_file);
 	if(wpsmon.fp) fclose(wpsmon.fp);
@@ -349,11 +394,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					probe_sent = 1;
 				}
 		
-				if(!insert(bssid, ssid, wps, encryption, rssi))
-				{
-					update(bssid, ssid, wps, encryption);
-				}
-				else if(wps->version > 0 || show_all_aps == 1)
+				if(!was_printed(bssid) && (wps->version > 0 || show_all_aps == 1))
 				{
 					if(wps->version > 0) switch(wps->locked)
 					{
@@ -387,12 +428,6 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				}
 	
 			}
-		}
-
-		/* Only update received signal strength if we are on the same channel as the AP, otherwise power measurements are screwy */
-		if(channel == get_channel())
-		{
-			update_ap_power(bssid, rssi);
 		}
 
 		free(bssid);
