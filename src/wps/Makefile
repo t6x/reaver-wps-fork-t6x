@@ -1,6 +1,6 @@
 CC?=gcc
 INC=-I../utils -I ../
-CFLAGS+=-Wall
+CFLAGS+=-Wall -Wno-unused-function
 
 all: wps_attr_build.o wps_attr_parse.o wps_attr_process.o wps.o wps_common.o wps_dev_attr.o wps_enrollee.o wps_registrar.o wps_ufd.o
 

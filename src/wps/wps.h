@@ -49,7 +49,7 @@ struct wps_er;
  * @cred_attr_len: Length of cred_attr in octets
  */
 struct wps_credential {
-    u8 ssid[32];
+    char ssid[32];
     size_t ssid_len;
     u16 auth_type;
     u16 encr_type;
