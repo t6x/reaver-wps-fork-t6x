@@ -1,33 +1,47 @@
 CC=@CC@
 LIBWPS_DIR=libwps
-INC=-I$(LIBWPS_DIR)
+INC=-Ilibwps -I.
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CONFDIR=@sysconfdir@/@target@
 CFLAGS=-DCONF_DIR='"$(CONFDIR)"' -DREAVER_DATABASE='"$(CONFDIR)/reaver.db"' @CFLAGS@ -Wno-unused-function
-LDFLAGS=$(LIBWPS_DIR)/*.o wps/*.o tls/bignum.o tls/libtls.a utils/libutils.a crypto/libcrypto.a lwe/libiw.a @LDFLAGS@
+
+WPS_OBJS=wps/wps_attr_build.o wps/wps_attr_parse.o wps/wps_attr_process.o \
+wps/wps.o wps/wps_common.o wps/wps_dev_attr.o wps/wps_enrollee.o \
+wps/wps_registrar.o wps/wps_ufd.o
+
+
+LIB_OBJS=libwps/libwps.o $(WPS_OBJS) utils/libutils.a \
+	crypto/libcrypto.a tls/libtls.a
+
+LDFLAGS=@LDFLAGS@
+
+LIB_OBJS+=lwe/libiw.a
+LIBIWNAME=libiw
+
+WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
+ builder.o crc.o sql.o
+REAVER_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
+ misc.o cracker.o sql.o session.o send.o pins.o 80211.o exchange.o builder.o \
+ keys.o crc.o
 
 all: wash reaver
 
-wash: wps libiw libwps.o argsparser.o globule.o init.o misc.o 80211.o iface.o
-	$(CC) $(CFLAGS) $(INC) wpsmon.c *.o $(LDFLAGS) -o wash
+$(WPS_OBJS): CFLAGS+=-I. -Iutils
 
-reaver: wps libiw libwps.o argsparser.o globule.o init.o sigint.o sigalrm.o misc.o cracker.o
-	$(CC) $(CFLAGS) $(INC) wpscrack.c *.o $(LDFLAGS) -o reaver
+wash: $(LIBIWNAME) $(WASH_OBJS) $(LIB_OBJS)
+	$(CC) $(CFLAGS) $(INC) wpsmon.c $(WASH_OBJS) $(LIB_OBJS) $(LDFLAGS) -o wash
 
-libwps.o:
-	(cd $(LIBWPS_DIR) && make)
+reaver: $(LIBIWNAME) $(REAVER_OBJS) $(LIB_OBJS)
+	$(CC) $(CFLAGS) $(INC) wpscrack.c $(REAVER_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
 
-wps: libutils libcrypto
-	(cd wps && make)
-
-libutils:
+utils/libutils.a:
 	(cd utils && make)
 
-libcrypto: libtls
+crypto/libcrypto.a: tls/libtls.a
 	(cd crypto && make)
 
-libtls:
+tls/libtls.a:
 	(cd tls && make)
 
 libiw:
@@ -92,12 +106,11 @@ install: wash reaver reaver.db
 clean:
 	rm -f *~ *.o reaver wash
 	rm -rf *.cache config.status config.log
+	rm -f $(LIB_OBJS)
 	(cd utils && make clean)
 	(cd tls && make clean)
 	(cd crypto && make clean)
-	(cd wps && make clean)
 	(cd lwe && make realclean)
-	(cd $(LIBWPS_DIR) && make clean)
 	rm -f Makefile config.h
 
 cleanbin: 
@@ -105,3 +118,6 @@ cleanbin:
 
 distclean: cleanbin clean
 	rm -rf $(CONFDIR)
+
+.PHONY: libiw clean cleanbin distclean install
+
