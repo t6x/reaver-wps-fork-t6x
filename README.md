@@ -140,36 +140,40 @@ This option was made with intent of:
 # Wash Usage
 
 ```
-Wash v1.5.2 WiFi Protected Setup Scan Tool
+Wash v1.5.3 WiFi Protected Setup Scan Tool
 Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
 mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY
 
 Required Arguments:
-		-i, --interface=<iface>              Interface to capture packets on
-		-f, --file [FILE1 FILE2 FILE3 ...]   Read packets from capture files
+	-i, --interface=<iface>              Interface to capture packets on
+	-f, --file [FILE1 FILE2 FILE3 ...]   Read packets from capture files
 
 Optional Arguments:
-		-c, --channel=<num>                  Channel to listen on [auto]
-		-o, --out-file=<file>                Write data to file
-		-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [15]
-		-D, --daemonize                      Daemonize wash
-		-C, --ignore-fcs                     Ignore frame checksum errors
-		-5, --5ghz                           Use 5GHz 802.11 channels
-		-s, --scan                           Use scan mode
-		-u, --survey                         Use survey mode [default]
-		-P, --file-output-piped              Allows Wash output to be piped. Example. wash x|y|z...
-		-g, --get-chipset                    Pipes output and runs reaver alongside to get chipset
-		-h, --help                           Show help
+	-c, --channel=<num>                  Channel to listen on [auto]
+	-o, --out-file=<file>                Write data to file
+	-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [15]
+	-D, --daemonize                      Daemonize wash
+	-C, --announce-fcs                   Ignore frame checksum errors
+	-5, --5ghz                           Use 5GHz 802.11 channels
+	-s, --scan                           Use scan mode
+	-u, --survey                         Use survey mode [default]
+	-P, --output-piped                   Allows Wash output to be piped. Example. wash x|y|z...
+	-g, --get-chipset                    Pipes output and runs reaver alongside to get chipset
+	-a, --all                            Show all APs, even those without WPS
+	-h, --help                           Show help
 
 Example:
-		wash -i wlan0mon
+	wash -i wlan0mon
 ```
 
 ## -g // --get-chipset
 
-The option `-g` of Wash, automatically runs Reaver to receive the chipset data.
+The option `-g` of Wash automatically runs Reaver to receive the chipset data.
 **If** the AP does not respond to them quickly, this option will be **slow to display the data**, because Reaver will stay running until it receives the data or until you reach your timeout limit (30 seconds).
 
+## -a // --all
+
+The option `-a` of Wash will list all access points, including those without WPS enabled.
 - - -
 
 # Acknowledgements
@@ -183,7 +187,7 @@ Some ideas made by:
 `nuroo`, `kcdtv`
 
 Bug fixes made by:
-`alxchk`, `flatr0ze`, `USUARIONUEVO`, `ldm314`, `vk496`, `falsovsky`
+`alxchk`, `flatr0ze`, `USUARIONUEVO`, `ldm314`, `vk496`, `falsovsky`, `rofl0r`
 
 ## Special Thanks
 
