@@ -64,13 +64,13 @@ char *mac2str(unsigned char *mac, char delim)
 }
 
 /* Converts a colon-delimited string to a raw MAC address */
-void str2mac(unsigned char *str, unsigned char *mac)
+void str2mac(char *str, unsigned char *mac)
 {
     char *delim_ptr = NULL, *num_ptr = NULL, *tmp_str = NULL;
     char delim = ':';
     int count = 0;
 
-    tmp_str = strdup((char *) str);
+    tmp_str = strdup(str);
     delim_ptr = num_ptr = tmp_str;
 
     while((delim_ptr = strchr(delim_ptr, delim)) && count < (MAC_ADDR_LEN-1))
