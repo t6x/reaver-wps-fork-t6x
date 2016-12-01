@@ -127,14 +127,14 @@ int process_arguments(int argc, char **argv)
                 set_iface(optarg);
                 break;
             case 'b':
-                str2mac((unsigned char *) optarg, (unsigned char *) &bssid);
+                str2mac(optarg, (unsigned char *) &bssid);
                 set_bssid((unsigned char *) &bssid);
                 break;
             case 'e':
                 set_ssid(optarg);
                 break;
             case 'm':
-                str2mac((unsigned char *) optarg, (unsigned char *) &mac);
+                str2mac(optarg, (unsigned char *) &mac);
                 set_mac((unsigned char *) &mac);
                 break;
             case 't':
