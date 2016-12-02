@@ -32,42 +32,42 @@
  */
 struct	iw15_range
 {
-    __u32		throughput;
-    __u32		min_nwid;
-    __u32		max_nwid;
-    __u16		num_channels;
-    __u8		num_frequency;
+    uint32_t		throughput;
+    uint32_t		min_nwid;
+    uint32_t		max_nwid;
+    uint16_t		num_channels;
+    uint8_t		num_frequency;
     struct iw_freq	freq[IW15_MAX_FREQUENCIES];
-    __s32		sensitivity;
+    int32_t		sensitivity;
     struct iw_quality	max_qual;
-    __u8		num_bitrates;
-    __s32		bitrate[IW15_MAX_BITRATES];
-    __s32		min_rts;
-    __s32		max_rts;
-    __s32		min_frag;
-    __s32		max_frag;
-    __s32		min_pmp;
-    __s32		max_pmp;
-    __s32		min_pmt;
-    __s32		max_pmt;
-    __u16		pmp_flags;
-    __u16		pmt_flags;
-    __u16		pm_capa;
-    __u16		encoding_size[IW15_MAX_ENCODING_SIZES];
-    __u8		num_encoding_sizes;
-    __u8		max_encoding_tokens;
-    __u16		txpower_capa;
-    __u8		num_txpower;
-    __s32		txpower[IW15_MAX_TXPOWER];
-    __u8		we_version_compiled;
-    __u8		we_version_source;
-    __u16		retry_capa;
-    __u16		retry_flags;
-    __u16		r_time_flags;
-    __s32		min_retry;
-    __s32		max_retry;
-    __s32		min_r_time;
-    __s32		max_r_time;
+    uint8_t		num_bitrates;
+    int32_t		bitrate[IW15_MAX_BITRATES];
+    int32_t		min_rts;
+    int32_t		max_rts;
+    int32_t		min_frag;
+    int32_t		max_frag;
+    int32_t		min_pmp;
+    int32_t		max_pmp;
+    int32_t		min_pmt;
+    int32_t		max_pmt;
+    uint16_t		pmp_flags;
+    uint16_t		pmt_flags;
+    uint16_t		pm_capa;
+    uint16_t		encoding_size[IW15_MAX_ENCODING_SIZES];
+    uint8_t		num_encoding_sizes;
+    uint8_t		max_encoding_tokens;
+    uint16_t		txpower_capa;
+    uint8_t		num_txpower;
+    int32_t		txpower[IW15_MAX_TXPOWER];
+    uint8_t		we_version_compiled;
+    uint8_t		we_version_source;
+    uint16_t		retry_capa;
+    uint16_t		retry_flags;
+    uint16_t		r_time_flags;
+    int32_t		min_retry;
+    int32_t		max_retry;
+    int32_t		min_r_time;
+    int32_t		max_r_time;
     struct iw_quality	avg_qual;
 };
 
@@ -1658,7 +1658,7 @@ iw_in_key_full(int		skfd,
         const char *	ifname,
         const char *	input,
         unsigned char *	key,
-        __u16 *		flags)
+        uint16_t *		flags)
 {
     int		keylen = 0;
     char *	p;
@@ -2315,7 +2315,7 @@ static const int priv_type_size[] = {
     1,				/* IW_PRIV_TYPE_BYTE */
     1,				/* IW_PRIV_TYPE_CHAR */
     0,				/* Not defined */
-    sizeof(__u32),			/* IW_PRIV_TYPE_INT */
+    sizeof(uint32_t),			/* IW_PRIV_TYPE_INT */
     sizeof(struct iw_freq),		/* IW_PRIV_TYPE_FLOAT */
     sizeof(struct sockaddr),	/* IW_PRIV_TYPE_ADDR */
     0,				/* Not defined */
@@ -2347,7 +2347,7 @@ iw_get_priv_size(int	args)
 /* Type of headers we know about (basically union iwreq_data) */
 #define IW_HEADER_TYPE_NULL	0	/* Not available */
 #define IW_HEADER_TYPE_CHAR	2	/* char [IFNAMSIZ] */
-#define IW_HEADER_TYPE_UINT	4	/* __u32 */
+#define IW_HEADER_TYPE_UINT	4	/* uint32_t */
 #define IW_HEADER_TYPE_FREQ	5	/* struct iw_freq */
 #define IW_HEADER_TYPE_ADDR	6	/* struct sockaddr */
 #define IW_HEADER_TYPE_POINT	8	/* struct iw_point */
@@ -2374,12 +2374,12 @@ iw_get_priv_size(int	args)
  */
 struct iw_ioctl_description
 {
-    __u8	header_type;		/* NULL, iw_point or other */
-    __u8	token_type;		/* Future */
-    __u16	token_size;		/* Granularity of payload */
-    __u16	min_tokens;		/* Min acceptable token number */
-    __u16	max_tokens;		/* Max acceptable token number */
-    __u32	flags;			/* Special handling of the request */
+    uint8_t	header_type;		/* NULL, iw_point or other */
+    uint8_t	token_type;		/* Future */
+    uint16_t	token_size;		/* Granularity of payload */
+    uint16_t	min_tokens;		/* Min acceptable token number */
+    uint16_t	max_tokens;		/* Max acceptable token number */
+    uint32_t	flags;			/* Special handling of the request */
 };
 
 /* -------------------------- VARIABLES -------------------------- */
@@ -2827,7 +2827,7 @@ iw_extract_event_stream(struct stream_descr *	stream,	/* Stream of events */
                  * Fixing that in the kernel would break 64 bits userspace. */
                 if((token_len != extra_len) && (extra_len >= 4))
                 {
-                    __u16		alt_dlen = *((__u16 *) pointer);
+                    uint16_t		alt_dlen = *((uint16_t *) pointer);
                     unsigned int	alt_token_len = alt_dlen * descr->token_size;
                     if((alt_token_len + 8) == extra_len)
                     {

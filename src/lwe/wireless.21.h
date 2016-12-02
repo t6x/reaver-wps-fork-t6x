@@ -10,6 +10,8 @@
 #ifndef _LINUX_WIRELESS_H
 #define _LINUX_WIRELESS_H
 
+#include <stdint.h>
+
 /************************** DOCUMENTATION **************************/
 /*
  * Initial APIs (1996 -> onward) :
@@ -72,11 +74,6 @@
 /* This header is used in user-space, therefore need to be sanitised
  * for that purpose. Those includes are usually not compatible with glibc.
  * To know which includes to use in user-space, check iwlib.h. */
-#ifdef __KERNEL__
-#include <linux/types.h>		/* for "caddr_t" et al		*/
-#include <linux/socket.h>		/* for "struct sockaddr" et al	*/
-#include <linux/if.h>			/* for IFNAMSIZ and co... */
-#endif	/* __KERNEL__ */
 
 /***************************** VERSION *****************************/
 /*
@@ -669,10 +666,10 @@
                                        */
                                       struct	iw_param
 {
-    __s32		value;		/* The value of the parameter itself */
-    __u8		fixed;		/* Hardware should not use auto select */
-    __u8		disabled;	/* Disable the feature */
-    __u16		flags;		/* Various specifc flags (if any) */
+    int32_t		value;		/* The value of the parameter itself */
+    uint8_t		fixed;		/* Hardware should not use auto select */
+    uint8_t		disabled;	/* Disable the feature */
+    uint16_t		flags;		/* Various specifc flags (if any) */
 };
 
 /*
@@ -681,9 +678,9 @@
  */
 struct	iw_point
 {
-    void __user	*pointer;	/* Pointer to the data  (in user space) */
-    __u16		length;		/* number of fields or size in bytes */
-    __u16		flags;		/* Optional params */
+    void *pointer;	/* Pointer to the data  (in user space) */
+    uint16_t		length;		/* number of fields or size in bytes */
+    uint16_t		flags;		/* Optional params */
 };
 
 /*
@@ -696,10 +693,10 @@ struct	iw_point
  */
 struct	iw_freq
 {
-    __s32		m;		/* Mantissa */
-    __s16		e;		/* Exponent */
-    __u8		i;		/* List index (when in range struct) */
-    __u8		flags;		/* Flags (fixed/auto) */
+    int32_t		m;		/* Mantissa */
+    int16_t		e;		/* Exponent */
+    uint8_t		i;		/* List index (when in range struct) */
+    uint8_t		flags;		/* Flags (fixed/auto) */
 };
 
 /*
@@ -707,11 +704,11 @@ struct	iw_freq
  */
 struct	iw_quality
 {
-    __u8		qual;		/* link quality (%retries, SNR,
+    uint8_t		qual;		/* link quality (%retries, SNR,
                                %missed beacons or better...) */
-    __u8		level;		/* signal level (dBm) */
-    __u8		noise;		/* noise level (dBm) */
-    __u8		updated;	/* Flags to know if updated */
+    uint8_t		level;		/* signal level (dBm) */
+    uint8_t		noise;		/* noise level (dBm) */
+    uint8_t		updated;	/* Flags to know if updated */
 };
 
 /*
@@ -723,11 +720,11 @@ struct	iw_quality
  */
 struct	iw_discarded
 {
-    __u32		nwid;		/* Rx : Wrong nwid/essid */
-    __u32		code;		/* Rx : Unable to code/decode (WEP) */
-    __u32		fragment;	/* Rx : Can't perform MAC reassembly */
-    __u32		retries;	/* Tx : Max MAC retries num reached */
-    __u32		misc;		/* Others cases */
+    uint32_t		nwid;		/* Rx : Wrong nwid/essid */
+    uint32_t		code;		/* Rx : Unable to code/decode (WEP) */
+    uint32_t		fragment;	/* Rx : Can't perform MAC reassembly */
+    uint32_t		retries;	/* Tx : Max MAC retries num reached */
+    uint32_t		misc;		/* Others cases */
 };
 
 /*
@@ -736,7 +733,7 @@ struct	iw_discarded
  */
 struct	iw_missed
 {
-    __u32		beacon;		/* Missed beacons/superframe */
+    uint32_t		beacon;		/* Missed beacons/superframe */
 };
 
 /*
@@ -763,11 +760,11 @@ struct	iw_thrspy
  */
 struct	iw_scan_req
 {
-    __u8		scan_type; /* IW_SCAN_TYPE_{ACTIVE,PASSIVE} */
-    __u8		essid_len;
-    __u8		num_channels; /* num entries in channel_list;
+    uint8_t		scan_type; /* IW_SCAN_TYPE_{ACTIVE,PASSIVE} */
+    uint8_t		essid_len;
+    uint8_t		num_channels; /* num entries in channel_list;
                                * 0 = scan all allowed channels */
-    __u8		flags; /* reserved as padding; use zero, this may
+    uint8_t		flags; /* reserved as padding; use zero, this may
                         * be used in the future for adding flags
                         * to request different scan behavior */
     struct sockaddr	bssid; /* ff:ff:ff:ff:ff:ff for broadcast BSSID or
@@ -779,7 +776,7 @@ struct	iw_scan_req
      * without having to change the current ESSID and potentially breaking
      * the current association.
      */
-    __u8		essid[IW_ESSID_MAX_SIZE];
+    uint8_t		essid[IW_ESSID_MAX_SIZE];
 
     /*
      * Optional parameters for changing the default scanning behavior.
@@ -791,8 +788,8 @@ struct	iw_scan_req
      * replies are received, total time waited on the channel is defined by
      * max_channel_time.
      */
-    __u32		min_channel_time; /* in TU */
-    __u32		max_channel_time; /* in TU */
+    uint32_t		min_channel_time; /* in TU */
+    uint32_t		max_channel_time; /* in TU */
 
     struct iw_freq	channel_list[IW_MAX_FREQUENCIES];
 };
@@ -825,22 +822,22 @@ struct	iw_scan_req
  */
 struct	iw_encode_ext
 {
-    __u32		ext_flags; /* IW_ENCODE_EXT_* */
-    __u8		tx_seq[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
-    __u8		rx_seq[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
+    uint32_t		ext_flags; /* IW_ENCODE_EXT_* */
+    uint8_t		tx_seq[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
+    uint8_t		rx_seq[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
     struct sockaddr	addr; /* ff:ff:ff:ff:ff:ff for broadcast/multicast
                            * (group) keys or unicast address for
                            * individual keys */
-    __u16		alg; /* IW_ENCODE_ALG_* */
-    __u16		key_len;
-    __u8		key[0];
+    uint16_t		alg; /* IW_ENCODE_ALG_* */
+    uint16_t		key_len;
+    uint8_t		key[0];
 };
 
 /* SIOCSIWMLME data */
 struct	iw_mlme
 {
-    __u16		cmd; /* IW_MLME_* */
-    __u16		reason_code;
+    uint16_t		cmd; /* IW_MLME_* */
+    uint16_t		reason_code;
     struct sockaddr	addr;
 };
 
@@ -853,25 +850,25 @@ struct	iw_mlme
 
 struct	iw_pmksa
 {
-    __u32		cmd; /* IW_PMKSA_* */
+    uint32_t		cmd; /* IW_PMKSA_* */
     struct sockaddr	bssid;
-    __u8		pmkid[IW_PMKID_LEN];
+    uint8_t		pmkid[IW_PMKID_LEN];
 };
 
 /* IWEVMICHAELMICFAILURE data */
 struct	iw_michaelmicfailure
 {
-    __u32		flags;
+    uint32_t		flags;
     struct sockaddr	src_addr;
-    __u8		tsc[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
+    uint8_t		tsc[IW_ENCODE_SEQ_MAX_SIZE]; /* LSB first */
 };
 
 /* IWEVPMKIDCAND data */
 #define IW_PMKID_CAND_PREAUTH	0x00000001 /* RNS pre-authentication enabled */
 struct	iw_pmkid_cand
 {
-    __u32		flags; /* IW_PMKID_CAND_* */
-    __u32		index; /* the smaller the index, the higher the
+    uint32_t		flags; /* IW_PMKID_CAND_* */
+    uint32_t		index; /* the smaller the index, the higher the
                         * priority */
     struct sockaddr	bssid;
 };
@@ -882,7 +879,7 @@ struct	iw_pmkid_cand
  */
 struct	iw_statistics
 {
-    __u16		status;		/* Status
+    uint16_t		status;		/* Status
                              * - device dependent for now */
 
     struct iw_quality	qual;		/* Quality of the link
@@ -920,7 +917,7 @@ union	iwreq_data
     struct iw_param	txpower;	/* default transmit power */
     struct iw_param	rts;		/* RTS threshold threshold */
     struct iw_param	frag;		/* Fragmentation threshold */
-    __u32		mode;		/* Operation mode */
+    uint32_t		mode;		/* Operation mode */
     struct iw_param	retry;		/* Retry limits & lifetime */
 
     struct iw_point	encoding;	/* Encoding stuff : tokens */
@@ -964,7 +961,7 @@ struct	iwreq
 struct	iw_range
 {
     /* Informative stuff (to choose between different interface) */
-    __u32		throughput;	/* To give an idea... */
+    uint32_t		throughput;	/* To give an idea... */
     /* In theory this value should be the maximum benchmarked
      * TCP/IP throughput, because with most of these devices the
      * bit rate is meaningless (overhead an co) to estimate how
@@ -973,18 +970,18 @@ struct	iw_range
      */
 
     /* NWID (or domain id) */
-    __u32		min_nwid;	/* Minimal NWID we are able to set */
-    __u32		max_nwid;	/* Maximal NWID we are able to set */
+    uint32_t		min_nwid;	/* Minimal NWID we are able to set */
+    uint32_t		max_nwid;	/* Maximal NWID we are able to set */
 
     /* Old Frequency (backward compat - moved lower ) */
-    __u16		old_num_channels;
-    __u8		old_num_frequency;
+    uint16_t		old_num_channels;
+    uint8_t		old_num_frequency;
 
     /* Wireless event capability bitmasks */
-    __u32		event_capa[6];
+    uint32_t		event_capa[6];
 
     /* signal level threshold range */
-    __s32		sensitivity;
+    int32_t		sensitivity;
 
     /* Quality of link & SNR stuff */
     /* Quality range (link, level, noise)
@@ -1004,70 +1001,70 @@ struct	iw_range
     struct iw_quality	avg_qual;	/* Quality of the link */
 
     /* Rates */
-    __u8		num_bitrates;	/* Number of entries in the list */
-    __s32		bitrate[IW_MAX_BITRATES];	/* list, in bps */
+    uint8_t		num_bitrates;	/* Number of entries in the list */
+    int32_t		bitrate[IW_MAX_BITRATES];	/* list, in bps */
 
     /* RTS threshold */
-    __s32		min_rts;	/* Minimal RTS threshold */
-    __s32		max_rts;	/* Maximal RTS threshold */
+    int32_t		min_rts;	/* Minimal RTS threshold */
+    int32_t		max_rts;	/* Maximal RTS threshold */
 
     /* Frag threshold */
-    __s32		min_frag;	/* Minimal frag threshold */
-    __s32		max_frag;	/* Maximal frag threshold */
+    int32_t		min_frag;	/* Minimal frag threshold */
+    int32_t		max_frag;	/* Maximal frag threshold */
 
     /* Power Management duration & timeout */
-    __s32		min_pmp;	/* Minimal PM period */
-    __s32		max_pmp;	/* Maximal PM period */
-    __s32		min_pmt;	/* Minimal PM timeout */
-    __s32		max_pmt;	/* Maximal PM timeout */
-    __u16		pmp_flags;	/* How to decode max/min PM period */
-    __u16		pmt_flags;	/* How to decode max/min PM timeout */
-    __u16		pm_capa;	/* What PM options are supported */
+    int32_t		min_pmp;	/* Minimal PM period */
+    int32_t		max_pmp;	/* Maximal PM period */
+    int32_t		min_pmt;	/* Minimal PM timeout */
+    int32_t		max_pmt;	/* Maximal PM timeout */
+    uint16_t		pmp_flags;	/* How to decode max/min PM period */
+    uint16_t		pmt_flags;	/* How to decode max/min PM timeout */
+    uint16_t		pm_capa;	/* What PM options are supported */
 
     /* Encoder stuff */
-    __u16	encoding_size[IW_MAX_ENCODING_SIZES];	/* Different token sizes */
-    __u8	num_encoding_sizes;	/* Number of entry in the list */
-    __u8	max_encoding_tokens;	/* Max number of tokens */
+    uint16_t	encoding_size[IW_MAX_ENCODING_SIZES];	/* Different token sizes */
+    uint8_t	num_encoding_sizes;	/* Number of entry in the list */
+    uint8_t	max_encoding_tokens;	/* Max number of tokens */
     /* For drivers that need a "login/passwd" form */
-    __u8	encoding_login_index;	/* token index for login token */
+    uint8_t	encoding_login_index;	/* token index for login token */
 
     /* Transmit power */
-    __u16		txpower_capa;	/* What options are supported */
-    __u8		num_txpower;	/* Number of entries in the list */
-    __s32		txpower[IW_MAX_TXPOWER];	/* list, in bps */
+    uint16_t		txpower_capa;	/* What options are supported */
+    uint8_t		num_txpower;	/* Number of entries in the list */
+    int32_t		txpower[IW_MAX_TXPOWER];	/* list, in bps */
 
     /* Wireless Extension version info */
-    __u8		we_version_compiled;	/* Must be WIRELESS_EXT */
-    __u8		we_version_source;	/* Last update of source */
+    uint8_t		we_version_compiled;	/* Must be WIRELESS_EXT */
+    uint8_t		we_version_source;	/* Last update of source */
 
     /* Retry limits and lifetime */
-    __u16		retry_capa;	/* What retry options are supported */
-    __u16		retry_flags;	/* How to decode max/min retry limit */
-    __u16		r_time_flags;	/* How to decode max/min retry life */
-    __s32		min_retry;	/* Minimal number of retries */
-    __s32		max_retry;	/* Maximal number of retries */
-    __s32		min_r_time;	/* Minimal retry lifetime */
-    __s32		max_r_time;	/* Maximal retry lifetime */
+    uint16_t		retry_capa;	/* What retry options are supported */
+    uint16_t		retry_flags;	/* How to decode max/min retry limit */
+    uint16_t		r_time_flags;	/* How to decode max/min retry life */
+    int32_t		min_retry;	/* Minimal number of retries */
+    int32_t		max_retry;	/* Maximal number of retries */
+    int32_t		min_r_time;	/* Minimal retry lifetime */
+    int32_t		max_r_time;	/* Maximal retry lifetime */
 
     /* Frequency */
-    __u16		num_channels;	/* Number of channels [0; num - 1] */
-    __u8		num_frequency;	/* Number of entry in the list */
+    uint16_t		num_channels;	/* Number of channels [0; num - 1] */
+    uint8_t		num_frequency;	/* Number of entry in the list */
     struct iw_freq	freq[IW_MAX_FREQUENCIES];	/* list */
     /* Note : this frequency list doesn't need to fit channel numbers,
      * because each entry contain its channel index */
 
-    __u32		enc_capa;	/* IW_ENC_CAPA_* bit field */
+    uint32_t		enc_capa;	/* IW_ENC_CAPA_* bit field */
 
     /* More power management stuff */
-    __s32		min_pms;	/* Minimal PM saving */
-    __s32		max_pms;	/* Maximal PM saving */
-    __u16		pms_flags;	/* How to decode max/min PM saving */
+    int32_t		min_pms;	/* Minimal PM saving */
+    int32_t		max_pms;	/* Maximal PM saving */
+    uint16_t		pms_flags;	/* How to decode max/min PM saving */
 
     /* All available modulations for driver (hw may support less) */
-    __s32		modul_capa;	/* IW_MODUL_* bit field */
+    int32_t		modul_capa;	/* IW_MODUL_* bit field */
 
     /* More bitrate stuff */
-    __u32		bitrate_capa;	/* Types of bitrates supported */
+    uint32_t		bitrate_capa;	/* Types of bitrates supported */
 };
 
 /*
@@ -1076,9 +1073,9 @@ struct	iw_range
 
 struct	iw_priv_args
 {
-    __u32		cmd;		/* Number of the ioctl to issue */
-    __u16		set_args;	/* Type and number of args */
-    __u16		get_args;	/* Type and number of args */
+    uint32_t		cmd;		/* Number of the ioctl to issue */
+    uint16_t		set_args;	/* Type and number of args */
+    uint16_t		get_args;	/* Type and number of args */
     char		name[IFNAMSIZ];	/* Name of the extension */
 };
 
@@ -1094,8 +1091,8 @@ struct	iw_priv_args
  */
 struct iw_event
 {
-    __u16		len;			/* Real lenght of this stuff */
-    __u16		cmd;			/* Wireless IOCTL */
+    uint16_t		len;			/* Real lenght of this stuff */
+    uint16_t		cmd;			/* Wireless IOCTL */
     union iwreq_data	u;		/* IOCTL fixed payload */
 };
 
@@ -1103,7 +1100,7 @@ struct iw_event
 #define IW_EV_LCP_LEN	(sizeof(struct iw_event) - sizeof(union iwreq_data))
 /* Size of the various events */
 #define IW_EV_CHAR_LEN	(IW_EV_LCP_LEN + IFNAMSIZ)
-#define IW_EV_UINT_LEN	(IW_EV_LCP_LEN + sizeof(__u32))
+#define IW_EV_UINT_LEN	(IW_EV_LCP_LEN + sizeof(uint32_t))
 #define IW_EV_FREQ_LEN	(IW_EV_LCP_LEN + sizeof(struct iw_freq))
 #define IW_EV_PARAM_LEN	(IW_EV_LCP_LEN + sizeof(struct iw_param))
 #define IW_EV_ADDR_LEN	(IW_EV_LCP_LEN + sizeof(struct sockaddr))
