@@ -577,8 +577,8 @@ MAKEFLAGS=
 # Identity of this package.
 PACKAGE_NAME='reaver'
 PACKAGE_TARNAME='reaver'
-PACKAGE_VERSION='1.5.3'
-PACKAGE_STRING='reaver 1.5.3'
+PACKAGE_VERSION='1.5'
+PACKAGE_STRING='reaver 1.5'
 PACKAGE_BUGREPORT=''
 PACKAGE_URL=''
 
@@ -2806,8 +2806,18 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+
 CFLAGS="-Wall $CFLAGS"
-LDFLAGS="-ldl -lm -lpcap -lsqlite3 $LDFLAGS"
+
+
+if test `uname` = "FreeBSD"; then
+  LDFLAGS="-lpcap -lsqlite3 $LDFLAGS"
+else
+  LDFLAGS="-ldl -lm -lpcap -lsqlite3 $LDFLAGS"
+fi
+
+
+
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcap_open_live in -lpcap" >&5
