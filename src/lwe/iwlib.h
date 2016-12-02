@@ -17,6 +17,10 @@
 /***************************** INCLUDES *****************************/
 
 /* Standard headers */
+#undef _GNU_SOURCE
+#define _GNU_SOURCE
+#undef _BSD_SOURCE
+#define _BSD_SOURCE
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <stdio.h>
@@ -45,15 +49,7 @@
 #include <netinet/in.h>         /* For struct sockaddr_in */
 #include <netinet/if_ether.h>
 
-/* Fixup to be able to include kernel includes in userspace.
- * Basically, kill the sparse annotations... Jean II */
-#ifndef __user
-#define __user
-#endif
-
-#include <linux/types.h>		/* for "caddr_t" et al		*/
-
-/* Glibc systems headers are supposedly less problematic than kernel ones */
+/* system headers are supposedly less problematic than kernel ones */
 #include <sys/socket.h>			/* for "struct sockaddr" et al	*/
 #include <net/if.h>			/* for IFNAMSIZ and co... */
 
@@ -129,7 +125,7 @@ extern "C" {
 #define IW_EV_LCP_PK_LEN	(4)
 /* Size of the various events when packed in stream */
 #define IW_EV_CHAR_PK_LEN	(IW_EV_LCP_PK_LEN + IFNAMSIZ)
-#define IW_EV_UINT_PK_LEN	(IW_EV_LCP_PK_LEN + sizeof(__u32))
+#define IW_EV_UINT_PK_LEN	(IW_EV_LCP_PK_LEN + sizeof(uint32_t))
 #define IW_EV_FREQ_PK_LEN	(IW_EV_LCP_PK_LEN + sizeof(struct iw_freq))
 #define IW_EV_PARAM_PK_LEN	(IW_EV_LCP_PK_LEN + sizeof(struct iw_param))
 #define IW_EV_ADDR_PK_LEN	(IW_EV_LCP_PK_LEN + sizeof(struct sockaddr))
@@ -138,15 +134,15 @@ extern "C" {
 
 struct iw_pk_event
 {
-	__u16		len;			/* Real lenght of this stuff */
-	__u16		cmd;			/* Wireless IOCTL */
+	uint16_t		len;			/* Real lenght of this stuff */
+	uint16_t		cmd;			/* Wireless IOCTL */
 	union iwreq_data	u;		/* IOCTL fixed payload */
 } __attribute__ ((packed));
 struct	iw_pk_point
 {
-  void __user	*pointer;	/* Pointer to the data  (in user space) */
-  __u16		length;		/* number of fields or size in bytes */
-  __u16		flags;		/* Optional params */
+  void		*pointer;	/* Pointer to the data  (in user space) */
+  uint16_t		length;		/* number of fields or size in bytes */
+  uint16_t		flags;		/* Optional params */
 } __attribute__ ((packed));
 
 #define IW_EV_LCP_PK2_LEN	(sizeof(struct iw_pk_event) - sizeof(union iwreq_data))
@@ -384,7 +380,7 @@ int
 		       const char *	ifname,
 		       const char *	input,
 		       unsigned char *	key,
-		       __u16 *		flags);
+		       uint16_t *	flags);
 /* ----------------- POWER MANAGEMENT SUBROUTINES ----------------- */
 void
 	iw_print_pm_value(char *	buffer,
