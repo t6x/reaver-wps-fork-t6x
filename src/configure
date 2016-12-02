@@ -2781,7 +2781,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 CFLAGS="-Wall $CFLAGS"
-LDFLAGS="-ldl -lm -lpcap -lsqlite3 $LDFLAGS"
+LDFLAGS="-lm -lpcap -lsqlite3 $LDFLAGS"
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcap_open_live in -lpcap" >&5

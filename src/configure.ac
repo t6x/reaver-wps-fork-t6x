@@ -4,7 +4,7 @@ AC_PROG_CC
 AC_LANG(C)
 
 CFLAGS="-Wall $CFLAGS"
-LDFLAGS="-ldl -lm -lpcap -lsqlite3 $LDFLAGS"
+LDFLAGS="-lm -lpcap -lsqlite3 $LDFLAGS"
 
 AC_CHECK_LIB(pcap, pcap_open_live, [], [echo "error: pcap library not found!"; exit -1])
 AC_CHECK_LIB(sqlite3, sqlite3_open, [], [echo "error: sqlite3 library not found!"; exit -1])
