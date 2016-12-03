@@ -17,8 +17,6 @@
 /***************************** INCLUDES *****************************/
 
 /* Standard headers */
-#include <sys/types.h>
-#include <sys/ioctl.h>
 #include <stdio.h>
 #include <math.h>
 #include <errno.h>
@@ -27,35 +25,54 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <netdb.h>		/* gethostbyname, getnetbyname */
-#include <net/ethernet.h>	/* struct ether_addr */
-#include <sys/time.h>		/* struct timeval */
 #include <unistd.h>
+#include <stdint.h>
+
+#include <netdb.h>          /* gethostbyname, getnetbyname */
+#include <net/ethernet.h>   /* struct ether_addr */
+#include <net/if.h>         /* for IFNAMSIZ and co... */
+#include <net/if_arp.h>     /* For ARPHRD_ETHER */
+
+#include <netinet/in.h>     /* For struct sockaddr_in */
+#include <netinet/if_ether.h>
+#include <arpa/inet.h>
+
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>     /* For AF_INET & struct sockaddr */
+#include <sys/time.h>       /* struct timeval */
+
+/*
+ * This are types for compatibily
+ */
+#ifdef __linux__
+  #include "linux/types.h"
+#else
+
+typedef unsigned char  u_char;
+typedef unsigned short u_short;
+typedef unsigned int   u_int;
+typedef unsigned long  u_long;
+typedef int32_t  __s32;
+typedef uint32_t __u32;
+typedef uint16_t __u16;
+typedef int16_t  __s16;
+typedef uint8_t  __u8;
+
+#endif
 
 /* This is our header selection. Try to hide the mess and the misery :-(
  * Don't look, you would go blind ;-)
  * Note : compatibility with *old* distributions has been removed,
- * you will need Glibc 2.2 and older to compile (which means 
+ * you will need Glibc 2.2 and older to compile (which means
  * Mandrake 8.0, Debian 2.3, RH 7.1 or older).
  */
-
-/* Set of headers proposed by Dr. Michael Rietz <rietz@mail.amps.de>, 27.3.2 */
-#include <net/if_arp.h>		/* For ARPHRD_ETHER */
-#include <sys/socket.h>		/* For AF_INET & struct sockaddr */
-#include <netinet/in.h>         /* For struct sockaddr_in */
-#include <netinet/if_ether.h>
 
 /* Fixup to be able to include kernel includes in userspace.
  * Basically, kill the sparse annotations... Jean II */
 #ifndef __user
 #define __user
 #endif
-
-#include <linux/types.h>		/* for "caddr_t" et al		*/
-
-/* Glibc systems headers are supposedly less problematic than kernel ones */
-#include <sys/socket.h>			/* for "struct sockaddr" et al	*/
-#include <net/if.h>			/* for IFNAMSIZ and co... */
 
 /* Private copy of Wireless extensions (in this directoty) */
 #include "wireless.h"
