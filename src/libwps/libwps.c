@@ -304,24 +304,14 @@ const u_char *libwps_radio_header(const u_char *packet, size_t len)
 /* Convert raw data to a hex string */
 char *hex2str(unsigned char *hex, int len)
 {
-    char *str = NULL;
-    int str_len = 0, i = 0;
-    char tmp_str[3] = { 0 };
-
-    str_len = (len * 2);
-
-    str = malloc(str_len+1);
-    if(str)
-    {
-        memset(str, 0, (str_len+1));
-
-        for(i=0; i<len; i++)
-        {
-            memset((char *) &tmp_str, 0, sizeof(tmp_str));
-            snprintf((char *) &tmp_str, sizeof(tmp_str), "%.2X", hex[i]);
-            strncat(str, (char *) &tmp_str, 2);
-        }
-    }
-
-    return str;
+        static const char atab[] = "0123456789abcdef";
+	char *str = malloc((len*2)+1), *out=str;
+	if(!str) return 0;
+        for(;len;hex++,len--) {
+                *(out++) = atab[*hex >> 4];
+                *(out++) = atab[*hex & 0xf];
+	}
+	*out = 0;
+	return str;
 }
+
