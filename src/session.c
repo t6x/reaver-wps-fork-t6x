@@ -192,7 +192,7 @@ int save_session()
          */
         if(get_session())
         {
-            memcpy((char *) &file_name, get_session(), FILENAME_MAX-1);
+            memcpy(file_name, get_session(), strlen(get_session())+1);
         }
         else
         {	
