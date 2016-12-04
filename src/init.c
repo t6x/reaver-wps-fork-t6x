@@ -134,7 +134,7 @@ pcap_t *capture_init(char *capture_source)
     
         handle = pcap_create(capture_source,errbuf);
         if (handle) {
-                pcap_set_snaplen(handle, BUFSIZ);
+                pcap_set_snaplen(handle, 65535);
                 pcap_set_timeout(handle, 50);
                 pcap_set_rfmon(handle, 1);
                 pcap_set_promisc(handle, 1);
@@ -143,7 +143,7 @@ pcap_t *capture_init(char *capture_source)
                         cprintf(CRITICAL, "pcap_activate status %d\n", status);
             }
     #else
-            handle = pcap_open_live(capture_source, BUFSIZ, 1, 0, errbuf);
+            handle = pcap_open_live(capture_source, 65535, 1, 0, errbuf);
     #endif
     if(!handle)
     {
