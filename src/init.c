@@ -121,7 +121,7 @@ pcap_t *capture_init(char *capture_source)
 	pcap_t *handle = NULL;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
 	
-	handle = pcap_open_live(capture_source, BUFSIZ, 1, 0, errbuf);
+	handle = pcap_open_live(capture_source, 65536, 1, 0, errbuf);
 	if(!handle)
 	{
 		handle = pcap_open_offline(capture_source, errbuf);
