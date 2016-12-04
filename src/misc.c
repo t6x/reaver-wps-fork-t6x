@@ -34,33 +34,13 @@
 #include "misc.h"
 
 /* Converts a raw MAC address to a colon-delimited string */
-unsigned char *mac2str(unsigned char *mac, char delim)
+char *mac2str(unsigned char *mac, char delim)
 {
-	int i = 0, str_len = 0;
-	int str_mult = 3;
-	int buf_size = str_mult+1;
-	unsigned char *str = NULL;
-	unsigned char buf[4] = { 0 };	/* 4 == buf_size */
-
-	str_len = (MAC_ADDR_LEN * str_mult) + 1;
-
-	str = malloc(str_len);
-	if(!str)
-	{
-		perror("malloc");
-	} else {
-		memset(str, 0, str_len);
-	
-		for(i=0; i<MAC_ADDR_LEN; i++)
-		{
-			memset((char *) &buf, 0, buf_size);
-			snprintf((char *) &buf, buf_size, "%.2X%c", mac[i], delim);
-			strncat((char *) str, (char *) &buf, str_mult);
-		}
-		memset(str+((MAC_ADDR_LEN*str_mult)-1), 0, 1);
-	}
-
-	return str;
+	char nyu[6*3];
+#define PAT "%.2X%c"
+#define PRT(X) mac[X], delim
+	snprintf(nyu, sizeof nyu, PAT PAT PAT PAT PAT "%.2X", PRT(0), PRT(1), PRT(2), PRT(3), PRT(4), mac[5]);
+	return strdup(nyu);
 }
 
 /* Converts a colon-delimited string to a raw MAC address */
