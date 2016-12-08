@@ -39,7 +39,11 @@ char *mac2str(unsigned char *mac, char delim)
 	char nyu[6*3];
 #define PAT "%.2X%c"
 #define PRT(X) mac[X], delim
-	snprintf(nyu, sizeof nyu, PAT PAT PAT PAT PAT "%.2X", PRT(0), PRT(1), PRT(2), PRT(3), PRT(4), mac[5]);
+#define PBT "%.2X"
+	if(delim)
+		snprintf(nyu, sizeof nyu, PAT PAT PAT PAT PAT PBT, PRT(0), PRT(1), PRT(2), PRT(3), PRT(4), mac[5]);
+	else
+		snprintf(nyu, sizeof nyu, PBT PBT PBT PBT PBT PBT, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	return strdup(nyu);
 }
 
