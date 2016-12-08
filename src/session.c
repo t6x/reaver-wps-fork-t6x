@@ -94,45 +94,45 @@ int restore_session()
             if((fp = fopen(file, "r")))
             {
                 /* Get the key1 index value */
-                if(fgets((char *) &line, MAX_LINE_SIZE, fp) != NULL)
+                if(fgets(line, MAX_LINE_SIZE, fp) != NULL)
                 {
                     set_p1_index(atoi(line));
-                    memset((char *) &line, 0, MAX_LINE_SIZE);
+                    memset(line, 0, MAX_LINE_SIZE);
 
                     /* Get the key2 index value */
-                    if(fgets((char *) &line, MAX_LINE_SIZE, fp) != NULL)
+                    if(fgets(line, MAX_LINE_SIZE, fp) != NULL)
                     {
                         set_p2_index(atoi(line));
-                        memset((char *) &line, 0, MAX_LINE_SIZE);
+                        memset(line, 0, MAX_LINE_SIZE);
 
                         /* Get the key status value */
-                        if(fgets((char *) &line, MAX_LINE_SIZE, fp) != NULL)
+                        if(fgets(line, MAX_LINE_SIZE, fp) != NULL)
                         {
                             set_key_status(atoi(line));
 
                             /* Read in all p1 values */
                             for(i=0; i<P1_SIZE; i++)
                             {
-                                memset((char *) &temp, 0, P1_READ_LEN);
+                                memset(temp, 0, P1_READ_LEN);
 
-                                if(fgets((char *) &temp, P1_READ_LEN, fp) != NULL)
+                                if(fgets(temp, P1_READ_LEN, fp) != NULL)
                                 {
                                     /* NULL out the new line character */
                                     temp[P1_STR_LEN] = 0;
-                                    set_p1(i, (char *) &temp);
+                                    set_p1(i, temp);
                                 }
                             }
 
                             /* Read in all p2 values */
                             for(i=0; i<P2_SIZE; i++)
                             {
-                                memset((char *) &temp, 0, P1_READ_LEN);
+                                memset(temp, 0, P1_READ_LEN);
 
-                                if(fgets((char *) &temp, P2_READ_LEN, fp) != NULL)
+                                if(fgets(temp, P2_READ_LEN, fp) != NULL)
                                 {
                                     /* NULL out the new line character */
                                     temp[P2_STR_LEN] = 0;
-                                    set_p2(i, (char *) &temp);
+                                    set_p2(i, temp);
                                 }
                             }
 
@@ -172,7 +172,7 @@ int save_session()
 
     wps = get_wps();
     bssid = mac2str(get_bssid(), '\0');
-    pretty_bssid = (char *) mac2str(get_bssid(), ':');
+    pretty_bssid = mac2str(get_bssid(), ':');
 
     if(wps)
     {
@@ -203,43 +203,43 @@ int save_session()
              
             if(configuration_directory_exists())
             {
-                snprintf((char *) &file_name, FILENAME_MAX, "%s/%s.%s", CONF_DIR, bssid, CONF_EXT);
+                snprintf(file_name, FILENAME_MAX, "%s/%s.%s", CONF_DIR, bssid, CONF_EXT);
             }
             else
             {
-                snprintf((char *) &file_name, FILENAME_MAX, "%s.%s", bssid, CONF_EXT);
+                snprintf(file_name, FILENAME_MAX, "%s.%s", bssid, CONF_EXT);
             }
             
             
             
             /* save session to the current directory - OpenWRT*/
-			//snprintf((char *) &file_name, FILENAME_MAX, "%s.%s", bssid, CONF_EXT);
+			//snprintf(file_name, FILENAME_MAX, "%s.%s", bssid, CONF_EXT);
         }
 
         /* Don't bother saving anything if nothing has been done */
         if((get_p1_index() > 0) || (get_p2_index() > 0))
         {
-            if((fp = fopen((char *) &file_name, "w")))
+            if((fp = fopen(file_name, "w")))
             {
-                snprintf((char *) &line, MAX_LINE_SIZE, "%d\n", get_p1_index());
-                write_size = strlen((char *) &line);
+                snprintf(line, MAX_LINE_SIZE, "%d\n", get_p1_index());
+                write_size = strlen(line);
 
                 /* Save key1 index value */
-                if(fwrite((char *) &line, 1, write_size, fp) == write_size)
+                if(fwrite(line, 1, write_size, fp) == write_size)
                 {
-                    memset((char *) &line, 0, MAX_LINE_SIZE);
-                    snprintf((char *) &line, MAX_LINE_SIZE, "%d\n", get_p2_index());
-                    write_size = strlen((char *) &line);
+                    memset(line, 0, MAX_LINE_SIZE);
+                    snprintf(line, MAX_LINE_SIZE, "%d\n", get_p2_index());
+                    write_size = strlen(line);
 
                     /* Save key2 index value */
-                    if(fwrite((char *) &line, 1, write_size, fp) == write_size)
+                    if(fwrite(line, 1, write_size, fp) == write_size)
                     {
-                        memset((char *) &line, 0, MAX_LINE_SIZE);
-                        snprintf((char *) &line, MAX_LINE_SIZE, "%d\n", get_key_status());
-                        write_size = strlen((char *) &line);
+                        memset(line, 0, MAX_LINE_SIZE);
+                        snprintf(line, MAX_LINE_SIZE, "%d\n", get_key_status());
+                        write_size = strlen(line);
 
                         /* Save key status value */
-                        if(fwrite((char *) &line, 1, write_size, fp) == write_size)
+                        if(fwrite(line, 1, write_size, fp) == write_size)
                         {
                             /* Save all the p1 values */
                             for(i=0; i<P1_SIZE; i++)
