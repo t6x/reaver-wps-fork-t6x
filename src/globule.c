@@ -386,20 +386,20 @@ int get_channel(void)
 
 void set_bssid(unsigned char *value)
 {
-	memcpy((unsigned char *) &globule->bssid, value, MAC_ADDR_LEN);
+	memcpy(globule->bssid, value, MAC_ADDR_LEN);
 }
 unsigned char *get_bssid()
 {
-	return (unsigned char *) &globule->bssid;
+	return globule->bssid;
 }
 
 void set_mac(unsigned char *value)
 {
-	memcpy((unsigned char *) &globule->mac, value, MAC_ADDR_LEN);
+	memcpy(globule->mac, value, MAC_ADDR_LEN);
 }
 unsigned char *get_mac()
 {
-	return (unsigned char *) &globule->mac;
+	return globule->mac;
 }
 
 void set_ssid(char *value)
