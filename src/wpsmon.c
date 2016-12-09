@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
 	if (o_file_p == 0)
 	{
 		printf("\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
-		printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
+		printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner\n");
 		printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY\n\n");
 	}
 
