@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
 	if (o_file_p == 0)
 	{
 		printf("\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
-		printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
+		printf("Copyright (c) 2011, Tactical Network Solutions, Craig Heffner\n");
 		printf("mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY\n\n");
 	}
 
@@ -335,8 +335,9 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
     {
 		if (o_file_p == 0)
 		{
-			cprintf(INFO, "BSSID              Channel  RSSI  WPS Version  WPS Locked  ESSID\n");
-			cprintf(INFO, "--------------------------------------------------------------------------------------\n");
+			cprintf  (INFO, "BSSID              Ch  dBm  WPS  Lck  ESSID\n");
+			//cprintf(INFO, "00:11:22:33:44:55  12  -77  1.0  Yes  0123456789abcdef0123456789abcdef\n");
+			cprintf  (INFO, "--------------------------------------------------------------------------------\n");
 			header_printed = 1;
 		}
 
@@ -543,10 +544,9 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					if (o_file_p == 0)
 					{
 						if(wps->version > 0)
-							cprintf(INFO, "%17s    %2d       %.2d   %d.%d          %s         %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
+							cprintf(INFO, "%17s  %2d  %.2d  %d.%d  %3s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
 						else
-							cprintf(INFO, "%17s    %2d       %.2d                            %s\n", bssid, channel, rssi, ssid);
-
+							cprintf(INFO, "%17s  %2d  %.2d            %s\n", bssid, channel, rssi, ssid);
 					}
 					else
 					{
