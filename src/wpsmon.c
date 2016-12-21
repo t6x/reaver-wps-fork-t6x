@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
         { "probes", required_argument, NULL, 'n' },
         { "daemonize", no_argument, NULL, 'D' },
         { "file", no_argument, NULL, 'f' },
-        { "announce-fcs", no_argument, NULL, 'C' }, //mod by flatr0ze
+        { "ignore-fcs", no_argument, NULL, 'C' },
         { "5ghz", no_argument, NULL, '5' },
         { "scan", no_argument, NULL, 's' },
         { "survey", no_argument, NULL, 'u' },
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     set_auto_channel_select(0);
     set_wifi_band(BG_BAND);
     set_debug(INFO);
-    set_validate_fcs(0); //mod by flatr0ze
+    set_validate_fcs(1);
     set_log_file(stdout);
     set_max_num_probes(DEFAULT_MAX_NUM_PROBES);
 
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
                 mode = SURVEY;
                 break;
             case 'C':
-                set_validate_fcs(1); //mod by flatr0ze
+                set_validate_fcs(0);
                 break;
             case 'D':
                 daemonize();
@@ -624,7 +624,7 @@ void usage(char *prog)
     fprintf(stderr, "\t-o, --out-file=<file>                Write data to file\n");
     fprintf(stderr, "\t-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [%d]\n", DEFAULT_MAX_NUM_PROBES);
     fprintf(stderr, "\t-D, --daemonize                      Daemonize wash\n");
-    fprintf(stderr, "\t-C, --announce-fcs                   Ignore frame checksum errors\n"); //mod by flatr0ze
+    fprintf(stderr, "\t-C, --ignore-fcs                     Ignore frame checksum errors\n");
     fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
     fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
     fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");

@@ -312,11 +312,6 @@ int get_pin_count()
     {
         pin_count = P1_SIZE + get_p2_index();
     }
-     
-    if(get_max_pin_attempts() > 0 && get_max_pin_attempts() < 10000 )
-    {
-        pin_count = get_p1_index() + get_p2_index();
-    }
     return pin_count;
 }
 
