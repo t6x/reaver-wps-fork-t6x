@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     int source = INTERFACE, ret_val = EXIT_FAILURE;
     struct bpf_program bpf = { 0 };
     char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
-    char *short_options = "i:c:n:o:b:5sfuCDhPga";
+    char *short_options = "i:c:n:o:b:5sfuCFDhPga";
     struct option long_options[] = {
 		{ "get-chipset", no_argument, NULL, 'g' },
 	{ "output-piped", no_argument, NULL, 'P' },
@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
         { "daemonize", no_argument, NULL, 'D' },
         { "file", no_argument, NULL, 'f' },
         { "ignore-fcs", no_argument, NULL, 'C' },
+        { "announce-fcs", no_argument, NULL, 'F' },
         { "5ghz", no_argument, NULL, '5' },
         { "scan", no_argument, NULL, 's' },
         { "survey", no_argument, NULL, 'u' },
@@ -165,6 +166,9 @@ int main(int argc, char *argv[])
                 break;
             case 'C':
                 set_validate_fcs(0);
+                break;
+            case 'F':
+                set_validate_fcs(1); //mod by flatr0ze
                 break;
             case 'D':
                 daemonize();
@@ -625,6 +629,7 @@ void usage(char *prog)
     fprintf(stderr, "\t-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [%d]\n", DEFAULT_MAX_NUM_PROBES);
     fprintf(stderr, "\t-D, --daemonize                      Daemonize wash\n");
     fprintf(stderr, "\t-C, --ignore-fcs                     Ignore frame checksum errors\n");
+    fprintf(stderr, "\t-F, --announce-fcs                   Announce frame checksum errors\n");
     fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
     fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
     fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
