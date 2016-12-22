@@ -33,6 +33,13 @@
 
 #include "session.h"
 
+/* Does the configuration directory exist? Returns 1 for yes, 0 for no. */
+static int configuration_directory_exists()
+{
+    struct stat dirstat;
+    return (stat(CONF_DIR, &dirstat) == 0);
+}
+
 static void gen_sessionfile_name(const char* bssid, char* outbuf) {
 #ifdef SAVETOCURRENT
 	snprintf(outbuf, FILENAME_MAX, "%s.%s", bssid, CONF_EXT);
@@ -284,16 +291,3 @@ int save_session()
     return ret_val;
 }
 
-/* Does the configuration directory exist? Returns 1 for yes, 0 for no. */
-int configuration_directory_exists()
-{
-    struct stat dirstat = { 0 };
-    int retval = 0;
-
-    if(stat(CONF_DIR, &dirstat) == 0)
-    {
-        retval = 1;
-    }
-
-    return retval;
-}
