@@ -33,12 +33,22 @@
 
 #include "session.h"
 
+static void gen_sessionfile_name(const char* bssid, char* outbuf) {
+#ifdef SAVETOCURRENT
+	snprintf(outbuf, FILENAME_MAX, "%s.%s", bssid, CONF_EXT);
+#else
+	int cde = configuration_directory_exists();
+	snprintf(outbuf, FILENAME_MAX, "%s%s%s.%s",
+	         cde?CONF_DIR:"", cde?"/":"", bssid, CONF_EXT);
+#endif
+}
+
 int restore_session()
 {
     struct stat wpstat = { 0 };
     char line[MAX_LINE_SIZE] = { 0 };
     char temp[P1_READ_LEN] = { 0 };
-    char *file = NULL;
+    char file[FILENAME_MAX];
     char *bssid = NULL;
     char answer = 0;
     FILE *fp = NULL;
@@ -50,19 +60,12 @@ int restore_session()
      */
     if(get_session())
     {
-        file = strdup(get_session());
+        strcpy(file, get_session());
     }
     else
     {
-        file = malloc(FILENAME_MAX);
-        if(!file)
-        {
-            return ret_val;
-        }
-        memset(file, 0, FILENAME_MAX);
-
         bssid = mac2str(get_bssid(), '\0');
-        snprintf(file, FILENAME_MAX, "%s.%s", bssid, CONF_EXT);
+        gen_sessionfile_name(bssid, file);
         free(bssid);
     }
 
@@ -154,7 +157,6 @@ int restore_session()
         cprintf(INFO, "[+] Restored previous session\n");
     }
 
-    free(file);
     return ret_val;
 }
 
@@ -191,12 +193,11 @@ int save_session()
          */
         if(get_session())
         {
-            memcpy(file_name, get_session(), strlen(get_session())+1);
+            strcpy(file_name, get_session());
         }
         else
         {
-            /* save session to the current directory */
-            snprintf(file_name, FILENAME_MAX, "%s.%s", bssid, CONF_EXT);
+            gen_sessionfile_name(bssid, file_name);
         }
 
         /* Don't bother saving anything if nothing has been done */
