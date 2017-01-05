@@ -7,7 +7,6 @@ CFLAGS="-Wall $CFLAGS"
 LDFLAGS="-lm -lpcap $LDFLAGS"
 
 AC_CHECK_LIB(pcap, pcap_open_live, [], [echo "error: pcap library not found!"; exit -1])
-AC_CHECK_LIB(sqlite3, sqlite3_open, [], [echo "error: sqlite3 library not found!"; exit -1])
 AC_CHECK_HEADERS([stdlib.h stdint.h string.h],[],[echo "error: missing standard header files" && exit -1])
 AC_CHECK_HEADERS([pcap.h],[],[echo "error: missing sqlite3 header files" && exit -1])
 
