@@ -38,7 +38,6 @@
 #include <getopt.h>
 #include "defs.h"
 #include "iface.h"
-#include "sql.h"
 #include "config.h"
 
 int process_arguments(int argc, char **argv);

@@ -36,8 +36,8 @@
 
 #include "defs.h"
 #include "globule.h"
+#include <libwps.h>
 #include "argsparser.h"
-#include "sql.h"
 #include "builder.h"
 #include "iface.h"
 #include "crc.h"

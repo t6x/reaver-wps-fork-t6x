@@ -44,7 +44,6 @@ int main(int argc, char **argv)
 
 
     globule_init();
-    sql_init();
     init_default_settings();
 
     int cont_arg_rev;
