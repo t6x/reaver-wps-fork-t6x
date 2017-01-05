@@ -85,26 +85,6 @@ int sql_exec(char *query)
     return result;
 }
 
-char *get_db_ssid(char *bssid)
-{
-    char *ssid = NULL;
-    int size = 0, err = 0;
-    char *q = sqlite3_mprintf("SELECT essid FROM %s WHERE bssid = %Q LIMIT 1", AP_TABLE, bssid);
-
-    if(q)
-    {
-        ssid = (char *) get(q, &size, &err);
-        if(err != SQLITE_OK || size < 0)
-        {
-            if(ssid) free(ssid);
-            ssid = NULL;
-        }
-
-        sqlite3_free(q);
-    }
-
-    return ssid;
-}
 
 char **auto_detect_settings(char *bssid, int *argc)
 {

@@ -349,17 +349,6 @@ void process_auto_options(void)
 
         if(bssid)
         {
-            /* If we didn't get the SSID from the beacon packet, check the database */
-            if(get_ssid() == NULL)
-            {
-                ssid = get_db_ssid(bssid);
-                if(ssid)
-                {
-                    set_ssid(ssid);
-                    free(ssid);
-                }
-            }
-
             argv = auto_detect_settings(bssid, &argc);
             if(argc > 1 && argv != NULL)
             {
