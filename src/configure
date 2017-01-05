@@ -2816,7 +2816,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 CFLAGS="-Wall $CFLAGS"
-LDFLAGS="-lm -lpcap -lsqlite3 $LDFLAGS"
+LDFLAGS="-lm -lpcap $LDFLAGS"
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcap_open_live in -lpcap" >&5
@@ -3331,20 +3331,6 @@ do :
 if test "x$ac_cv_header_pcap_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_PCAP_H 1
-_ACEOF
-
-else
-  echo "error: missing sqlite3 header files" && exit -1
-fi
-
-done
-
-for ac_header in sqlite3.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sqlite3.h" "ac_cv_header_sqlite3_h" "$ac_includes_default"
-if test "x$ac_cv_header_sqlite3_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SQLITE3_H 1
 _ACEOF
 
 else

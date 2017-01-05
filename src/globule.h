@@ -104,8 +104,6 @@ struct globals
 
     int auto_channel_select;	/* Diables automatic parsing and changing of the current channel number, as specified in the AP's beacon packet */
 
-    int auto_detect_options;	/* If true, Reaver will auto detect the best command line options for the attack */
-
     int wifi_band;			/* Determines if we use the A/N bands or B/G bands */
 
     int channel;			/* Holds the current channel number */
@@ -219,8 +217,6 @@ void set_fixed_channel(int value);
 int get_fixed_channel();
 void set_auto_channel_select(int value);
 int get_auto_channel_select();
-void set_auto_detect_options(int value);
-int get_auto_detect_options();
 void set_wifi_band(int value);
 int get_wifi_band();
 void set_opcode(enum wsc_op_code value);

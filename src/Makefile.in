@@ -26,7 +26,7 @@ endif
 WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
  builder.o crc.o
 REAVER_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
- misc.o cracker.o sql.o session.o send.o pins.o 80211.o exchange.o builder.o \
+ misc.o cracker.o session.o send.o pins.o 80211.o exchange.o builder.o \
  keys.o crc.o
 
 all: wash reaver
@@ -54,9 +54,6 @@ libiw:
 init.o:
 	$(CC) $(CFLAGS) init.c -c
 
-sql.o:
-	$(CC) $(CFLAGS) $(INC) sql.c -c
-
 crc.o:
 	$(CC) $(CFLAGS) crc.c -c
 
@@ -78,7 +75,7 @@ send.o: globule.o builder.o sigalrm.o
 session.o: globule.o
 	$(CC) $(CFLAGS) $(INC) session.c -c
 
-80211.o: globule.o sql.o builder.o crc.o
+80211.o: globule.o builder.o crc.o
 	$(CC) $(CFLAGS) $(INC) 80211.c -c
 
 iface.o: globule.o
