@@ -4,7 +4,7 @@ INC=-Ilibwps -I.
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CONFDIR=@sysconfdir@/@target@
-CFLAGS=-DCONF_DIR='"$(CONFDIR)"' -DREAVER_DATABASE='"$(CONFDIR)/reaver.db"' @CFLAGS@ -Wno-unused-function
+CFLAGS=-DCONF_DIR='"$(CONFDIR)"' @CFLAGS@ -Wno-unused-function
 
 WPS_OBJS=wps/wps_attr_build.o wps/wps_attr_parse.o wps/wps_attr_process.o \
 wps/wps.o wps/wps_common.o wps/wps_dev_attr.o wps/wps_enrollee.o \
@@ -22,7 +22,7 @@ LIBIWNAME=libiw
 WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
  builder.o crc.o
 REAVER_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
- misc.o cracker.o sql.o session.o send.o pins.o 80211.o exchange.o builder.o \
+ misc.o cracker.o session.o send.o pins.o 80211.o exchange.o builder.o \
  keys.o crc.o
 
 all: wash reaver
@@ -50,9 +50,6 @@ libiw:
 init.o:
 	$(CC) $(CFLAGS) init.c -c
 
-sql.o:
-	$(CC) $(CFLAGS) $(INC) sql.c -c
-
 crc.o:
 	$(CC) $(CFLAGS) crc.c -c
 
@@ -74,7 +71,7 @@ send.o: globule.o builder.o sigalrm.o
 session.o: globule.o
 	$(CC) $(CFLAGS) $(INC) session.c -c
 
-80211.o: globule.o sql.o builder.o crc.o
+80211.o: globule.o builder.o crc.o
 	$(CC) $(CFLAGS) $(INC) 80211.c -c
 
 iface.o: globule.o
@@ -98,8 +95,7 @@ cracker.o: globule.o init.o pins.o iface.o exchange.o session.o 80211.o
 globule.o:
 	$(CC) $(CFLAGS) globule.c -c 
 
-install: wash reaver reaver.db
-	install -D -m 644 reaver.db $(DESTDIR)$(CONFDIR)/reaver.db
+install: wash reaver
 	install -D -m 755 wash $(DESTDIR)$(exec_prefix)/bin/wash
 	install -D -m 755 reaver $(DESTDIR)$(exec_prefix)/bin/reaver
 

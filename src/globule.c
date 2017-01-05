@@ -330,15 +330,6 @@ int get_auto_channel_select()
 	return globule->auto_channel_select;
 }
 
-void set_auto_detect_options(int value)
-{
-	globule->auto_detect_options = value;
-}
-int get_auto_detect_options()
-{
-	return globule->auto_detect_options;
-}
-
 void set_wifi_band(int value)
 {
 	globule->wifi_band = value;

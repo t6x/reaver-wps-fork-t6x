@@ -40,7 +40,6 @@ int main(int argc, char **argv)
 	struct wps_data *wps = NULL;
 
 	globule_init();
-	sql_init();
 	init_default_settings();
 
 	fprintf(stderr, "\nReaver v%s WiFi Protected Setup Attack Tool\n", PACKAGE_VERSION);
@@ -153,7 +152,6 @@ int usage(char *prog_name)
 	fprintf(stderr, "\t-s, --session=<file>            Restore a previous session file\n");
 	fprintf(stderr, "\t-C, --exec=<command>            Execute the supplied command upon successful pin recovery\n");
 	fprintf(stderr, "\t-D, --daemonize                 Daemonize reaver\n");
-	fprintf(stderr, "\t-a, --auto                      Auto detect the best advanced options for the target AP\n");
         fprintf(stderr, "\t-f, --fixed                     Disable channel hopping\n");
         fprintf(stderr, "\t-5, --5ghz                      Use 5GHz 802.11 channels\n");
         fprintf(stderr, "\t-v, --verbose                   Display non-critical warnings (-vv for more)\n");

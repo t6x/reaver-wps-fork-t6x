@@ -41,7 +41,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:aA5ELfnqvDShwN";
+	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN";
 	struct option long_options[] = {
 		{ "interface", required_argument, NULL, 'i' },
 		{ "bssid", required_argument, NULL, 'b' },
@@ -64,7 +64,6 @@ int process_arguments(int argc, char **argv)
 		{ "no-nacks", no_argument, NULL, 'N' },
 		{ "eap-terminate", no_argument, NULL, 'E' },
 		{ "dh-small", no_argument, NULL, 'S' },
-		{ "auto", no_argument, NULL, 'a' },
 		{ "fixed", no_argument, NULL, 'f' },
 		{ "daemonize", no_argument, NULL, 'D' },
 		{ "5ghz", no_argument, NULL, '5' },
@@ -131,9 +130,6 @@ int process_arguments(int argc, char **argv)
                         case 'L':
                                 set_ignore_locks(1);
                                 break;
-			case 'a':       
-				set_auto_detect_options(1); 
-				break;
 			case 'o':
 				set_log_file(fopen(optarg, "w"));
 				break;
@@ -250,48 +246,3 @@ void parse_static_pin(char *pin)
 	}
 }
 
-/* Process auto-applied options from the database. read_ap_beacon should be called before this. */
-void process_auto_options(void)
-{
-	char **argv = NULL;
-	int argc = 0, i = 0;
-	char *bssid = NULL, *ssid = NULL;
-
-	if(get_auto_detect_options())
-	{
-		bssid = (char *) mac2str(get_bssid(), ':');
-
-
-		if(bssid)
-		{
-			/* If we didn't get the SSID from the beacon packet, check the database */
-			if(get_ssid() == NULL)
-			{
-				ssid = get_db_ssid(bssid);
-				if(ssid)
-				{
-					set_ssid(ssid);
-					free(ssid);
-				}
-			}
-
-			argv = auto_detect_settings(bssid, &argc);
-			if(argc > 1 && argv != NULL)
-			{
-				/* Process the command line arguments */
-				process_arguments(argc, argv);
-
-				/* Clean up argument memory allocation */
-				for(i=0; i<argc; i++)
-				{
-					free(argv[i]);
-				}
-				free(argv);
-			}
-
-			free(bssid);
-		}
-	}
-
-	return;
-}

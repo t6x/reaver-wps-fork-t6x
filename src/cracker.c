@@ -76,7 +76,6 @@ void crack()
 		 */
 		cprintf(INFO, "[+] Waiting for beacon from %s\n", bssid);
 		read_ap_beacon();
-		process_auto_options();
 	
 		/* I'm fairly certian there's a reason I put this in twice. Can't remember what it was now though... */	
 		if(get_max_pin_attempts() == -1)
