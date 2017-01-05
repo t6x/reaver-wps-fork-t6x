@@ -55,7 +55,6 @@
 int sql_init(void);
 int update_history(char *bssid, char *essid, int attempts, char *key);
 int sql_exec(char *query);
-void *get(char *query, int *result_size, int *err_code);
 char *sql_error_string(void);
 void sql_cleanup(void);
 
