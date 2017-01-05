@@ -53,7 +53,6 @@
 #define CREATE_TABLE		"CREATE TABLE %s (bssid TEXT PRIMARY KEY NOT NULL, essid TEXT, manufacturer TEXT, model_name TEXT, model_number TEXT, device_name TEXT, version INTEGER DEFAULT 0, state INTEGER DEFAULT 0, locked INTEGER DEFAULT 0, encryption INTEGER DEFAULT 0, probes INTEGER DEFAULT 0, rssi TEXT, complete INTEGER DEFAULT 0, rowid INTEGER NOT NULL)"
 
 int sql_init(void);
-int update_history(char *bssid, char *essid, int attempts, char *key);
 int sql_exec(char *query);
 char *sql_error_string(void);
 void sql_cleanup(void);

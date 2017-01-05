@@ -50,24 +50,6 @@ int sql_init(void)
     return retval;
 }
 
-int update_history(char *bssid, char *essid, int attempts, char *key)
-{
-    int result = 0;
-    char *q = sqlite3_mprintf("INSERT OR REPLACE INTO %s (bssid, essid, attempts, key) VALUES (%Q, %Q, '%d', %Q)", HISTORY_TABLE, bssid, essid, attempts, key);
-
-    if(q)
-    {
-        if(sql_exec(q) == SQLITE_OK)
-        {
-            result = 1;
-        }
-
-        sqlite3_free(q);
-    }
-
-    return result;
-}
-
 int sql_exec(char *query)
 {
     int result = SQLITE_ERROR;

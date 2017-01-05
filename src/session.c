@@ -269,8 +269,6 @@ int save_session()
                                 essid = get_ssid();
                             }
 
-                            update_history(pretty_bssid, essid, attempts, wpa_key);
-
                             ret_val = 1;
                         }
                     }
