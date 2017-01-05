@@ -56,6 +56,5 @@
 
 int restore_session();
 int save_session();
-int configuration_directory_exists();
 
 #endif

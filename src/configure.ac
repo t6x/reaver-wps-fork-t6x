@@ -12,6 +12,11 @@ AC_CHECK_HEADERS([stdlib.h stdint.h string.h],[],[echo "error: missing standard 
 AC_CHECK_HEADERS([pcap.h],[],[echo "error: missing sqlite3 header files" && exit -1])
 AC_CHECK_HEADERS([sqlite3.h],[],[echo "error: missing sqlite3 header files" && exit -1])
 
+AC_ARG_ENABLE(savetocurrent,
+AC_HELP_STRING([--enable-savetocurrent],
+  [saves the current session file to the directory reaver was started from])
+, [ CFLAGS="$CFLAGS -DSAVETOCURRENT" ])
+
 cp confdefs.h config.h
 
 AC_SUBST(target, $PACKAGE_NAME)
