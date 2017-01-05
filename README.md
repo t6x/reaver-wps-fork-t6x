@@ -142,7 +142,7 @@ This option was made with intent of:
 ```
 Wash v1.5.3 WiFi Protected Setup Scan Tool
 Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
-mod by t6_x <t6_x@hotmail.com> & DataHead & Soxrok2212 & Wiire & AAnarchYY
+mod by t6_x<t6_x@hotmail.com>, DataHead, Soxrok2212, Wiire, AAnarchYY & rofl0r
 
 Required Arguments:
 	-i, --interface=<iface>              Interface to capture packets on
@@ -153,7 +153,6 @@ Optional Arguments:
 	-o, --out-file=<file>                Write data to file
 	-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [15]
 	-D, --daemonize                      Daemonize wash
-	-C, --announce-fcs                   Ignore frame checksum errors
 	-5, --5ghz                           Use 5GHz 802.11 channels
 	-s, --scan                           Use scan mode
 	-u, --survey                         Use survey mode [default]
