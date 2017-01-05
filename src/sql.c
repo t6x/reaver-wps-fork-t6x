@@ -86,64 +86,6 @@ int sql_exec(char *query)
 }
 
 
-char **auto_detect_settings(char *bssid, int *argc)
-{
-    int size = 0, err = 0, i = 0;
-    char *args = NULL, *token = NULL;
-    char **argv = NULL, **tmp = NULL;
-    char *q1 = sqlite3_mprintf("SELECT args FROM %s WHERE model_name = (SELECT model_name FROM %s WHERE bssid = %Q LIMIT 1) AND model_number = (SELECT model_number FROM %s WHERE bssid = %Q LIMIT 1) AND device_name = (SELECT device_name FROM %s WHERE bssid = %Q LIMIT 1) LIMIT 1", SETTINGS_TABLE, AP_TABLE, bssid, AP_TABLE, bssid, AP_TABLE, bssid);
-    char *q2 = sqlite3_mprintf("SELECT args FROM %s WHERE manufacturer LIKE (SELECT manufacturer FROM %s WHERE bssid = %Q LIMIT 1) LIMIT 1", SETTINGS_TABLE, AP_TABLE, bssid);
-
-    if(q1 && q2)
-    {
-        args = (char *) get(q1, &size, &err);
-        if(err != SQLITE_OK || size <= 0 || args == NULL)
-        {
-            args = (char *) get(q2, &size, &err);
-        }
-
-        if(err == SQLITE_OK && size > 0 && args != NULL)
-        {
-            token = strtok(args, " ");
-            if(token)
-            {
-                argv = malloc(sizeof(char *));
-                argv[i] = strdup("reaver");
-                i++;
-
-                do
-                {
-                    tmp = argv;
-                    argv = realloc(argv, ((i + 1) * sizeof(char *)));
-                    if(!argv)
-                    {
-                        free(tmp);
-                        i = 0;
-                        break;
-                    }
-                    else if(argv != tmp)
-                    {
-                        free(tmp);
-                    }
-
-                    argv[i] = strdup(token);
-                    i++;
-
-                } while((token = strtok(NULL, " ")) != NULL);
-            }
-
-            free(args);
-        }
-
-        sqlite3_free(q1);
-        sqlite3_free(q2);
-    }
-
-    *argc = i;
-
-    return argv;
-}
-
 /* Execute given SQL query. Will only return the FIRST row of the FIRST column of data. Caller must free the returned pointer. */
 void *get(char *query, int *result_size, int *err_code)
 {

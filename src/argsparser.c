@@ -44,7 +44,7 @@ int process_arguments(int argc, char **argv)
     FILE *out_file;
     char bssid[MAC_ADDR_LEN] = { 0 };
     char mac[MAC_ADDR_LEN] = { 0 };
-    char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:F:R:ZaA5ELfnqvDShwXNPH0I";
+    char *short_options = "W:K:b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:1:2:F:R:ZA5ELfnqvDShwXNPH0I";
     struct option long_options[] = {
 		{ "generate-pin", required_argument, NULL, 'W' },
 		{ "stop-in-m1", no_argument, NULL, '0' },
@@ -76,7 +76,6 @@ int process_arguments(int argc, char **argv)
         { "no-nacks", no_argument, NULL, 'N' },
         { "eap-terminate", no_argument, NULL, 'E' },
         { "dh-small", no_argument, NULL, 'S' },
-        { "auto", no_argument, NULL, 'a' },
         { "fixed", no_argument, NULL, 'f' },
         { "daemonize", no_argument, NULL, 'D' },
         { "5ghz", no_argument, NULL, '5' },
@@ -176,9 +175,6 @@ int process_arguments(int argc, char **argv)
                 break;
             case 'L':
                 set_ignore_locks(1);
-                break;
-            case 'a':       
-                set_auto_detect_options(1); 
                 break;
             case 'o':
                 out_file = fopen(optarg, "w");
@@ -335,37 +331,3 @@ void parse_static_pin(char *pin)
     }
 }
 
-/* Process auto-applied options from the database. read_ap_beacon should be called before this. */
-void process_auto_options(void)
-{
-    char **argv = NULL;
-    int argc = 0, i = 0;
-    char *bssid = NULL, *ssid = NULL;
-
-    if(get_auto_detect_options())
-    {
-        bssid = (char *) mac2str(get_bssid(), ':');
-
-
-        if(bssid)
-        {
-            argv = auto_detect_settings(bssid, &argc);
-            if(argc > 1 && argv != NULL)
-            {
-                /* Process the command line arguments */
-                process_arguments(argc, argv);
-
-                /* Clean up argument memory allocation */
-                for(i=0; i<argc; i++)
-                {
-                    free(argv[i]);
-                }
-                free(argv);
-            }
-
-            free(bssid);
-        }
-    }
-
-    return;
-}

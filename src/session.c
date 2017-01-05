@@ -80,7 +80,7 @@ int restore_session()
      * If a session was explicitly specified, or if the auto detect option was specified,
      * then the answer to any of the following questions will be 'yes'.
      */
-    if(get_session() || get_auto_detect_options())
+    if(get_session())
     {
         answer = 'y';
     }

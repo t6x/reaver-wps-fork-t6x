@@ -54,7 +54,6 @@
 
 int sql_init(void);
 int update_history(char *bssid, char *essid, int attempts, char *key);
-char **auto_detect_settings(char *bssid, int *argc);
 int sql_exec(char *query);
 void *get(char *query, int *result_size, int *err_code);
 char *sql_error_string(void);
