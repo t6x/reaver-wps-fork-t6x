@@ -3,7 +3,6 @@ INC=-Ilibwps -I.
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CONFDIR=@sysconfdir@/@target@
-CFLAGS=-DCONF_DIR='"$(CONFDIR)"' -DREAVER_DATABASE='"$(CONFDIR)/reaver.db"' @CFLAGS@ -Wno-unused-function
 
 WPS_OBJS=wps/wps_attr_build.o wps/wps_attr_parse.o wps/wps_attr_process.o \
 wps/wps.o wps/wps_common.o wps/wps_dev_attr.o wps/wps_enrollee.o \
@@ -101,7 +100,6 @@ globule.o:
 
 install: cleanbin
 	if [ ! -d $(CONFDIR) ]; then mkdir -p $(CONFDIR); fi
-	if [ ! -e $(CONFDIR)/reaver.db ]; then cp reaver.db $(CONFDIR)/reaver.db && chmod -R a+rw $(CONFDIR); fi
 	if [ -e wash ]; then cp wash @bindir@/wash; fi
 	if [ -e reaver ]; then cp reaver @bindir@/reaver; fi
 
