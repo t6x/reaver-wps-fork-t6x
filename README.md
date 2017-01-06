@@ -19,7 +19,7 @@ When using the **offline attack**, **if** the AP is vulnerable, it may take only
 # Requirements
 
 ```
-apt-get -y install build-essential libpcap-dev sqlite3 libsqlite3-dev aircrack-ng pixiewps
+apt-get -y install build-essential libpcap-dev aircrack-ng pixiewps
 ```
 _The example uses [Kali Linux](https://www.kali.org/) as the Operating System (OS) as `pixiewps` is included._
 
@@ -186,7 +186,7 @@ Some ideas made by:
 `nuroo`, `kcdtv`
 
 Bug fixes made by:
-`alxchk`, `USUARIONUEVO`, `ldm314`, `vk496`, `falsovsky`, `rofl0r`
+`alxchk`, `USUARIONUEVO`, `ldm314`, `vk496`, `falsovsky`, `rofl0r`, `xhebox`
 
 ## Special Thanks
 
