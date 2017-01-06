@@ -186,7 +186,7 @@ Some ideas made by:
 `nuroo`, `kcdtv`
 
 Bug fixes made by:
-`alxchk`, `USUARIONUEVO`, `ldm314`, `vk496`, `falsovsky`, `rofl0r`
+`alxchk`, `USUARIONUEVO`, `ldm314`, `vk496`, `falsovsky`, `rofl0r`, `xhebox`
 
 ## Special Thanks
 
