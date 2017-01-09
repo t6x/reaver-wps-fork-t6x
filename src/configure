@@ -3287,7 +3287,7 @@ if test "x$ac_cv_header_pcap_h" = xyes; then :
 _ACEOF
 
 else
-  echo "error: missing sqlite3 header files" && exit -1
+  echo "error: missing pcap header files" && exit -1
 fi
 
 done
