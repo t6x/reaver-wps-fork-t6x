@@ -132,11 +132,6 @@ int main(int argc, char *argv[])
 		usage(argv[0]);
 		goto end;
 	}
-    else if(get_iface())
-    {
-        /* Get the MAC address of the specified interface */
-        read_iface_mac();
-    }
 
 	if(get_iface() && source == PCAP_FILE)
 	{
@@ -305,7 +300,6 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 	set_ssid(NULL);
 	bssid = (char *) mac2str(frame_header->addr3, ':');
-    set_bssid((unsigned char *) frame_header->addr3);
 
 	if(bssid)
 	{
@@ -389,7 +383,6 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 end:
 	if(wps) free(wps);
-    set_bssid((unsigned char *) NULL_MAC);
 
 	return;
 }

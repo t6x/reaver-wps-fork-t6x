@@ -514,7 +514,6 @@ static int wps_process_uuid_r(struct wps_data *wps, const u8 *uuid_r)
 static int wps_process_pubkey(struct wps_data *wps, const u8 *pk,
 			      size_t pk_len)
 {
-printf("--------------------------------------------------------------------------------------");
 	if (pk == NULL || pk_len == 0) {
 		wpa_printf(MSG_DEBUG, "WPS: No Public Key received");
 		return -1;
@@ -544,26 +543,6 @@ printf("------------------------------------------------------------------------
 
 	if (wps_derive_keys(wps) < 0)
 		return -1;
-
-
-    /****** ADD THIS PART ******/
-	
-	
-    printf("[P] PKR: ");
-    int pixiecnt = 0;
-    for (; pixiecnt < 192; pixiecnt++) {
-        printf("%02x", pk[pixiecnt]);
-        if (pixiecnt != 191) {
-            printf(":");
-        }
-    }
-    printf("\n");
-    /******/
-
-
-
-
-
 
 	return 0;
 }
@@ -784,7 +763,6 @@ static enum wps_process_res wps_process_m2(struct wps_data *wps,
 					   const struct wpabuf *msg,
 					   struct wps_parse_attr *attr)
 {
-
 	wpa_printf(MSG_DEBUG, "WPS: Received M2");
 
 	if (wps->state != RECV_M2) {

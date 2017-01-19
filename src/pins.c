@@ -36,7 +36,7 @@
 /* Builds a WPS PIN from the key tables */
 char *build_wps_pin()
 {
-    char *key = NULL, *pin = NULL, *p1_value = NULL, *p2_value = NULL;
+        char *key = NULL, *pin = NULL;
         int pin_len = PIN_SIZE + 1;
 
         pin = malloc(pin_len);
@@ -46,44 +46,11 @@ char *build_wps_pin()
                 memset(key, 0, pin_len);
                 memset(pin, 0, pin_len);
 
-        if(get_static_p1())
-        {
-            p1_value = get_static_p1();
-        }
-        else
-        {
-            p1_value = get_p1(get_p1_index());
-        }
-
-        if(get_static_p2())
-        {
-            p2_value = get_static_p2();
-        }
-        else
-        {
-            if(get_exhaustive())
-            {
-                p2_value = get_p1(get_p2_index());
-            }
-            else
-            {
-                p2_value = get_p2(get_p2_index());
-            }
-        }
-
-        if(get_exhaustive())
-        {
-            /* Generate an 8-digit pin from the given key index values */
-            snprintf(pin, pin_len, "%s%s", p1_value, p2_value);
-        }
-        else
-        {
                 /* Generate a 7-digit pin from the given key index values */
-            snprintf(key, pin_len, "%s%s", p1_value, p2_value);
+                snprintf(key, pin_len, "%s%s", get_p1(get_p1_index()), get_p2(get_p2_index()));
 
                 /* Generate and append the pin checksum digit */
                 snprintf(pin, pin_len, "%s%d", key, wps_pin_checksum(atoi(key)));
-        }
 
                 free(key);
         }
@@ -124,8 +91,8 @@ void generate_pins()
         int i = 0, index = 0;
 
 	/* If the first half of the pin was not specified, generate a list of possible pins */
-    //if(!get_static_p1())
-    //{
+	if(!get_static_p1())
+	{
 		/* 
 		 * Look for P1 keys marked as priority. These are pins that have been 
 		 * reported to be commonly used on some APs and should be tried first. 
@@ -148,19 +115,19 @@ void generate_pins()
 	                        index++;
 			}
 		}
-    //}
-    //else
-    //{
+        }
+	else
+	{
 		/* If the first half of the pin was specified by the user, only use that */
-    /*for(index=0; index<P1_SIZE; index++)
+		for(index=0; index<P1_SIZE; index++)
 		{
 			set_p1(index, get_static_p1());
 		}
-      }*/
+	}
 
 	/* If the second half of the pin was not specified, generate a list of possible pins */
-    //if(!get_static_p2())
-    //{
+	if(!get_static_p2())
+	{
 		/* 
 		 * Look for P2 keys statically marked as priority. These are pins that have been 
 		 * reported to be commonly used on some APs and should be tried first. 
@@ -183,15 +150,15 @@ void generate_pins()
                 	        index++;
 			}
                 }
-    //}
-    //else
-    //{
+        }
+	else
+	{
 		/* If the second half of the pin was specified by the user, only use that */
-    /*for(index=0; index<P2_SIZE; index++)
+		for(index=0; index<P2_SIZE; index++)
 		{
 			set_p2(index, get_static_p2());
 		}
-      }*/
+	}
 
         return;
 }

@@ -62,8 +62,6 @@ struct globals
 
 	int win7_compat;		/* Set to 1 to make WPS messages mimic Windows 7 settings. */
 
-    int exhaustive;		/* Set to 1 to use exhaustive pin generation instead of checksum the last digit */
-
         int delay;                      /* Seconds to sleep in between key attempts */
 
         int fail_delay;                 /* Seconds to sleep after WARN_FAILURE_COUNT WPS exchange failures */
@@ -140,10 +138,7 @@ struct globals
 					 * wpa_supplicant's wps_data structure, needed for almost all wpa_supplicant
                                          * function calls.
                                          */
-    int op_pixie;
 } *globule;
-
-
 
 int globule_init();
 void globule_deinit();
@@ -227,8 +222,6 @@ void set_static_p2(char *value);
 char *get_static_p2(void);
 void set_win7_compat(int value);
 int get_win7_compat(void);
-void set_exhaustive(int value);
-int get_exhaustive(void);
 void set_dh_small(int value);
 int get_dh_small(void);
 void set_external_association(int value);
