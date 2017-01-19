@@ -1,0 +1,14 @@
+*.o
+*.a
+*.d
+*.so
+*.wpc
+*.patch
+src/wash
+src/reaver
+src/config.log
+src/config.status
+src/config.h
+src/autom4te.cache
+src/Makefile
+
