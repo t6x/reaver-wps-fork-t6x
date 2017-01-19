@@ -35,9 +35,9 @@
 #define SCARD_CHV1_FLAG		0x80
 
 typedef enum {
-    SCARD_GSM_SIM_ONLY,
-    SCARD_USIM_ONLY,
-    SCARD_TRY_BOTH
+	SCARD_GSM_SIM_ONLY,
+	SCARD_USIM_ONLY,
+	SCARD_TRY_BOTH
 } scard_sim_type;
 
 
@@ -48,11 +48,11 @@ void scard_deinit(struct scard_data *scard);
 int scard_set_pin(struct scard_data *scard, const char *pin);
 int scard_get_imsi(struct scard_data *scard, char *imsi, size_t *len);
 int scard_gsm_auth(struct scard_data *scard, const unsigned char *_rand,
-                   unsigned char *sres, unsigned char *kc);
+		   unsigned char *sres, unsigned char *kc);
 int scard_umts_auth(struct scard_data *scard, const unsigned char *_rand,
-                    const unsigned char *autn,
-                    unsigned char *res, size_t *res_len,
-                    unsigned char *ik, unsigned char *ck, unsigned char *auts);
+		    const unsigned char *autn,
+		    unsigned char *res, size_t *res_len,
+		    unsigned char *ik, unsigned char *ck, unsigned char *auts);
 
 #else /* PCSC_FUNCS */
 

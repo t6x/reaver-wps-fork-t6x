@@ -16,8 +16,8 @@
 #define DES_I_H
 
 struct des3_key_s {
-    u32 ek[3][32];
-    u32 dk[3][32];
+	u32 ek[3][32];
+	u32 dk[3][32];
 };
 
 void des_key_setup(const u8 *key, u32 *ek, u32 *dk);

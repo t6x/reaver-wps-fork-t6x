@@ -297,10 +297,10 @@
  */
 struct	iw_param
 {
-    __s32		value;		/* The value of the parameter itself */
-    __u8		fixed;		/* Hardware should not use auto select */
-    __u8		disabled;	/* Disable the feature */
-    __u16		flags;		/* Various specifc flags (if any) */
+  __s32		value;		/* The value of the parameter itself */
+  __u8		fixed;		/* Hardware should not use auto select */
+  __u8		disabled;	/* Disable the feature */
+  __u16		flags;		/* Various specifc flags (if any) */
 };
 
 /*
@@ -309,9 +309,9 @@ struct	iw_param
  */
 struct	iw_point
 {
-    caddr_t	pointer;	/* Pointer to the data  (in user space) */
-    __u16		length;		/* number of fields or size in bytes */
-    __u16		flags;		/* Optional params */
+  caddr_t	pointer;	/* Pointer to the data  (in user space) */
+  __u16		length;		/* number of fields or size in bytes */
+  __u16		flags;		/* Optional params */
 };
 
 /*
@@ -324,9 +324,9 @@ struct	iw_point
  */
 struct	iw_freq
 {
-    __u32		m;		/* Mantissa */
-    __u16		e;		/* Exponent */
-    __u8		i;		/* List index (when in range struct) */
+	__u32		m;		/* Mantissa */
+	__u16		e;		/* Exponent */
+	__u8		i;		/* List index (when in range struct) */
 };
 
 /*
@@ -334,10 +334,10 @@ struct	iw_freq
  */
 struct	iw_quality
 {
-    __u8		qual;		/* link quality (%retries, SNR or better...) */
-    __u8		level;		/* signal level */
-    __u8		noise;		/* noise level */
-    __u8		updated;	/* Flags to know if updated */
+	__u8		qual;		/* link quality (%retries, SNR or better...) */
+	__u8		level;		/* signal level */
+	__u8		noise;		/* noise level */
+	__u8		updated;	/* Flags to know if updated */
 };
 
 /*
@@ -346,9 +346,9 @@ struct	iw_quality
  */
 struct	iw_discarded
 {
-    __u32		nwid;		/* Wrong nwid */
-    __u32		code;		/* Unable to code/decode */
-    __u32		misc;		/* Others cases */
+	__u32		nwid;		/* Wrong nwid */
+	__u32		code;		/* Unable to code/decode */
+	__u32		misc;		/* Others cases */
 };
 
 /* ------------------------ WIRELESS STATS ------------------------ */
@@ -357,12 +357,12 @@ struct	iw_discarded
  */
 struct	iw_statistics
 {
-    __u16		status;		/* Status
-                             * - device dependent for now */
+	__u16		status;		/* Status
+					 * - device dependent for now */
 
-    struct iw_quality	qual;		/* Quality of the link
-                                     * (instant/mean/max) */
-    struct iw_discarded	discard;	/* Packet discarded counts */
+	struct iw_quality	qual;		/* Quality of the link
+						 * (instant/mean/max) */
+	struct iw_discarded	discard;	/* Packet discarded counts */
 };
 
 /* ------------------------ IOCTL REQUEST ------------------------ */
@@ -377,40 +377,40 @@ struct	iw_statistics
  */
 struct	iwreq 
 {
-    union
-    {
-        char	ifrn_name[IFNAMSIZ];	/* if name, e.g. "eth0" */
-    } ifr_ifrn;
+	union
+	{
+		char	ifrn_name[IFNAMSIZ];	/* if name, e.g. "eth0" */
+	} ifr_ifrn;
 
-    /* Data part */
-    union
-    {
-        /* Config - generic */
-        char		name[IFNAMSIZ];
-        /* Name : used to verify the presence of  wireless extensions.
-         * Name of the protocol/provider... */
+	/* Data part */
+	union
+	{
+		/* Config - generic */
+		char		name[IFNAMSIZ];
+		/* Name : used to verify the presence of  wireless extensions.
+		 * Name of the protocol/provider... */
 
-        struct iw_point	essid;	/* Extended network name */
-        struct iw_param	nwid;	/* network id (or domain - the cell) */
-        struct iw_freq	freq;	/* frequency or channel :
-                                 * 0-1000 = channel
-                                 * > 1000 = frequency in Hz */
+		struct iw_point	essid;	/* Extended network name */
+		struct iw_param	nwid;	/* network id (or domain - the cell) */
+		struct iw_freq	freq;	/* frequency or channel :
+					 * 0-1000 = channel
+					 * > 1000 = frequency in Hz */
 
-        struct iw_param	sens;		/* signal level threshold */
-        struct iw_param	bitrate;	/* default bit rate */
-        struct iw_param	txpower;	/* default transmit power */
-        struct iw_param	rts;		/* RTS threshold threshold */
-        struct iw_param	frag;		/* Fragmentation threshold */
-        __u32		mode;		/* Operation mode */
-        struct iw_param	retry;		/* Retry limits & lifetime */
+		struct iw_param	sens;		/* signal level threshold */
+		struct iw_param	bitrate;	/* default bit rate */
+		struct iw_param	txpower;	/* default transmit power */
+		struct iw_param	rts;		/* RTS threshold threshold */
+		struct iw_param	frag;		/* Fragmentation threshold */
+		__u32		mode;		/* Operation mode */
+		struct iw_param	retry;		/* Retry limits & lifetime */
 
-        struct iw_point	encoding;	/* Encoding stuff : tokens */
-        struct iw_param	power;		/* PM duration/timeout */
+		struct iw_point	encoding;	/* Encoding stuff : tokens */
+		struct iw_param	power;		/* PM duration/timeout */
 
-        struct sockaddr	ap_addr;	/* Access point address */
+		struct sockaddr	ap_addr;	/* Access point address */
 
-        struct iw_point	data;		/* Other large parameters */
-    }	u;
+		struct iw_point	data;		/* Other large parameters */
+	}	u;
 };
 
 /* -------------------------- IOCTL DATA -------------------------- */
@@ -425,86 +425,86 @@ struct	iwreq
 
 struct	iw_range
 {
-    /* Informative stuff (to choose between different interface) */
-    __u32		throughput;	/* To give an idea... */
-    /* In theory this value should be the maximum benchmarked
-     * TCP/IP throughput, because with most of these devices the
-     * bit rate is meaningless (overhead an co) to estimate how
-     * fast the connection will go and pick the fastest one.
-     * I suggest people to play with Netperf or any benchmark...
-     */
+	/* Informative stuff (to choose between different interface) */
+	__u32		throughput;	/* To give an idea... */
+	/* In theory this value should be the maximum benchmarked
+	 * TCP/IP throughput, because with most of these devices the
+	 * bit rate is meaningless (overhead an co) to estimate how
+	 * fast the connection will go and pick the fastest one.
+	 * I suggest people to play with Netperf or any benchmark...
+	 */
 
-    /* NWID (or domain id) */
-    __u32		min_nwid;	/* Minimal NWID we are able to set */
-    __u32		max_nwid;	/* Maximal NWID we are able to set */
+	/* NWID (or domain id) */
+	__u32		min_nwid;	/* Minimal NWID we are able to set */
+	__u32		max_nwid;	/* Maximal NWID we are able to set */
 
-    /* Frequency */
-    __u16		num_channels;	/* Number of channels [0; num - 1] */
-    __u8		num_frequency;	/* Number of entry in the list */
-    struct iw_freq	freq[IW_MAX_FREQUENCIES];	/* list */
-    /* Note : this frequency list doesn't need to fit channel numbers */
+	/* Frequency */
+	__u16		num_channels;	/* Number of channels [0; num - 1] */
+	__u8		num_frequency;	/* Number of entry in the list */
+	struct iw_freq	freq[IW_MAX_FREQUENCIES];	/* list */
+	/* Note : this frequency list doesn't need to fit channel numbers */
 
-    /* signal level threshold range */
-    __s32	sensitivity;
+	/* signal level threshold range */
+	__s32	sensitivity;
 
-    /* Quality of link & SNR stuff */
-    struct iw_quality	max_qual;	/* Quality of the link */
+	/* Quality of link & SNR stuff */
+	struct iw_quality	max_qual;	/* Quality of the link */
 
-    /* Rates */
-    __u8		num_bitrates;	/* Number of entries in the list */
-    __s32		bitrate[IW_MAX_BITRATES];	/* list, in bps */
+	/* Rates */
+	__u8		num_bitrates;	/* Number of entries in the list */
+	__s32		bitrate[IW_MAX_BITRATES];	/* list, in bps */
 
-    /* RTS threshold */
-    __s32		min_rts;	/* Minimal RTS threshold */
-    __s32		max_rts;	/* Maximal RTS threshold */
+	/* RTS threshold */
+	__s32		min_rts;	/* Minimal RTS threshold */
+	__s32		max_rts;	/* Maximal RTS threshold */
 
-    /* Frag threshold */
-    __s32		min_frag;	/* Minimal frag threshold */
-    __s32		max_frag;	/* Maximal frag threshold */
+	/* Frag threshold */
+	__s32		min_frag;	/* Minimal frag threshold */
+	__s32		max_frag;	/* Maximal frag threshold */
 
-    /* Power Management duration & timeout */
-    __s32		min_pmp;	/* Minimal PM period */
-    __s32		max_pmp;	/* Maximal PM period */
-    __s32		min_pmt;	/* Minimal PM timeout */
-    __s32		max_pmt;	/* Maximal PM timeout */
-    __u16		pmp_flags;	/* How to decode max/min PM period */
-    __u16		pmt_flags;	/* How to decode max/min PM timeout */
-    __u16		pm_capa;	/* What PM options are supported */
+	/* Power Management duration & timeout */
+	__s32		min_pmp;	/* Minimal PM period */
+	__s32		max_pmp;	/* Maximal PM period */
+	__s32		min_pmt;	/* Minimal PM timeout */
+	__s32		max_pmt;	/* Maximal PM timeout */
+	__u16		pmp_flags;	/* How to decode max/min PM period */
+	__u16		pmt_flags;	/* How to decode max/min PM timeout */
+	__u16		pm_capa;	/* What PM options are supported */
 
-    /* Encoder stuff */
-    __u16	encoding_size[IW_MAX_ENCODING_SIZES];	/* Different token sizes */
-    __u8	num_encoding_sizes;	/* Number of entry in the list */
-    __u8	max_encoding_tokens;	/* Max number of tokens */
+	/* Encoder stuff */
+	__u16	encoding_size[IW_MAX_ENCODING_SIZES];	/* Different token sizes */
+	__u8	num_encoding_sizes;	/* Number of entry in the list */
+	__u8	max_encoding_tokens;	/* Max number of tokens */
 
-    /* Transmit power */
-    __u16		txpower_capa;	/* What options are supported */
-    __u8		num_txpower;	/* Number of entries in the list */
-    __s32		txpower[IW_MAX_TXPOWER];	/* list, in bps */
+	/* Transmit power */
+	__u16		txpower_capa;	/* What options are supported */
+	__u8		num_txpower;	/* Number of entries in the list */
+	__s32		txpower[IW_MAX_TXPOWER];	/* list, in bps */
 
-    /* Wireless Extension version info */
-    __u8		we_version_compiled;	/* Must be WIRELESS_EXT */
-    __u8		we_version_source;	/* Last update of source */
+	/* Wireless Extension version info */
+	__u8		we_version_compiled;	/* Must be WIRELESS_EXT */
+	__u8		we_version_source;	/* Last update of source */
 
-    /* Retry limits and lifetime */
-    __u16		retry_capa;	/* What retry options are supported */
-    __u16		retry_flags;	/* How to decode max/min retry limit */
-    __u16		r_time_flags;	/* How to decode max/min retry life */
-    __s32		min_retry;	/* Minimal number of retries */
-    __s32		max_retry;	/* Maximal number of retries */
-    __s32		min_r_time;	/* Minimal retry lifetime */
-    __s32		max_r_time;	/* Maximal retry lifetime */
+	/* Retry limits and lifetime */
+	__u16		retry_capa;	/* What retry options are supported */
+	__u16		retry_flags;	/* How to decode max/min retry limit */
+	__u16		r_time_flags;	/* How to decode max/min retry life */
+	__s32		min_retry;	/* Minimal number of retries */
+	__s32		max_retry;	/* Maximal number of retries */
+	__s32		min_r_time;	/* Minimal retry lifetime */
+	__s32		max_r_time;	/* Maximal retry lifetime */
 };
 
 /*
  * Private ioctl interface information
  */
-
+ 
 struct	iw_priv_args
 {
-    __u32		cmd;		/* Number of the ioctl to issue */
-    __u16		set_args;	/* Type and number of args */
-    __u16		get_args;	/* Type and number of args */
-    char		name[IFNAMSIZ];	/* Name of the extension */
+	__u32		cmd;		/* Number of the ioctl to issue */
+	__u16		set_args;	/* Type and number of args */
+	__u16		get_args;	/* Type and number of args */
+	char		name[IFNAMSIZ];	/* Name of the extension */
 };
 
 #endif	/* _LINUX_WIRELESS_H */

@@ -38,8 +38,8 @@
 
 struct key
 {
-    char *key;
-    int priority;
+        char *key;
+        int priority;
 };
 
 #endif

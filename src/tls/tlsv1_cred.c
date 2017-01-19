@@ -23,46 +23,46 @@
 
 struct tlsv1_credentials * tlsv1_cred_alloc(void)
 {
-    struct tlsv1_credentials *cred;
-    cred = os_zalloc(sizeof(*cred));
-    return cred;
+	struct tlsv1_credentials *cred;
+	cred = os_zalloc(sizeof(*cred));
+	return cred;
 }
 
 
 void tlsv1_cred_free(struct tlsv1_credentials *cred)
 {
-    if (cred == NULL)
-        return;
+	if (cred == NULL)
+		return;
 
-    x509_certificate_chain_free(cred->trusted_certs);
-    x509_certificate_chain_free(cred->cert);
-    crypto_private_key_free(cred->key);
-    os_free(cred->dh_p);
-    os_free(cred->dh_g);
-    os_free(cred);
+	x509_certificate_chain_free(cred->trusted_certs);
+	x509_certificate_chain_free(cred->cert);
+	crypto_private_key_free(cred->key);
+	os_free(cred->dh_p);
+	os_free(cred->dh_g);
+	os_free(cred);
 }
 
 
 static int tlsv1_add_cert_der(struct x509_certificate **chain,
-        const u8 *buf, size_t len)
+			      const u8 *buf, size_t len)
 {
-    struct x509_certificate *cert;
-    char name[128];
+	struct x509_certificate *cert;
+	char name[128];
 
-    cert = x509_certificate_parse(buf, len);
-    if (cert == NULL) {
-        wpa_printf(MSG_INFO, "TLSv1: %s - failed to parse certificate",
-                __func__);
-        return -1;
-    }
+	cert = x509_certificate_parse(buf, len);
+	if (cert == NULL) {
+		wpa_printf(MSG_INFO, "TLSv1: %s - failed to parse certificate",
+			   __func__);
+		return -1;
+	}
 
-    cert->next = *chain;
-    *chain = cert;
+	cert->next = *chain;
+	*chain = cert;
 
-    x509_name_string(&cert->subject, name, sizeof(name));
-    wpa_printf(MSG_DEBUG, "TLSv1: Added certificate: %s", name);
+	x509_name_string(&cert->subject, name, sizeof(name));
+	wpa_printf(MSG_DEBUG, "TLSv1: Added certificate: %s", name);
 
-    return 0;
+	return 0;
 }
 
 
@@ -78,96 +78,96 @@ static const char *pem_key_enc_end = "-----END ENCRYPTED PRIVATE KEY-----";
 
 static const u8 * search_tag(const char *tag, const u8 *buf, size_t len)
 {
-    size_t i, plen;
+	size_t i, plen;
 
-    plen = os_strlen(tag);
-    if (len < plen)
-        return NULL;
+	plen = os_strlen(tag);
+	if (len < plen)
+		return NULL;
 
-    for (i = 0; i < len - plen; i++) {
-        if (os_memcmp(buf + i, tag, plen) == 0)
-            return buf + i;
-    }
+	for (i = 0; i < len - plen; i++) {
+		if (os_memcmp(buf + i, tag, plen) == 0)
+			return buf + i;
+	}
 
-    return NULL;
+	return NULL;
 }
 
 
 static int tlsv1_add_cert(struct x509_certificate **chain,
-        const u8 *buf, size_t len)
+			  const u8 *buf, size_t len)
 {
-    const u8 *pos, *end;
-    unsigned char *der;
-    size_t der_len;
+	const u8 *pos, *end;
+	unsigned char *der;
+	size_t der_len;
 
-    pos = search_tag(pem_cert_begin, buf, len);
-    if (!pos) {
-        wpa_printf(MSG_DEBUG, "TLSv1: No PEM certificate tag found - "
-                "assume DER format");
-        return tlsv1_add_cert_der(chain, buf, len);
-    }
+	pos = search_tag(pem_cert_begin, buf, len);
+	if (!pos) {
+		wpa_printf(MSG_DEBUG, "TLSv1: No PEM certificate tag found - "
+			   "assume DER format");
+		return tlsv1_add_cert_der(chain, buf, len);
+	}
 
-    wpa_printf(MSG_DEBUG, "TLSv1: Converting PEM format certificate into "
-            "DER format");
+	wpa_printf(MSG_DEBUG, "TLSv1: Converting PEM format certificate into "
+		   "DER format");
 
-    while (pos) {
-        pos += os_strlen(pem_cert_begin);
-        end = search_tag(pem_cert_end, pos, buf + len - pos);
-        if (end == NULL) {
-            wpa_printf(MSG_INFO, "TLSv1: Could not find PEM "
-                    "certificate end tag (%s)", pem_cert_end);
-            return -1;
-        }
+	while (pos) {
+		pos += os_strlen(pem_cert_begin);
+		end = search_tag(pem_cert_end, pos, buf + len - pos);
+		if (end == NULL) {
+			wpa_printf(MSG_INFO, "TLSv1: Could not find PEM "
+				   "certificate end tag (%s)", pem_cert_end);
+			return -1;
+		}
 
-        der = base64_decode(pos, end - pos, &der_len);
-        if (der == NULL) {
-            wpa_printf(MSG_INFO, "TLSv1: Could not decode PEM "
-                    "certificate");
-            return -1;
-        }
+		der = base64_decode(pos, end - pos, &der_len);
+		if (der == NULL) {
+			wpa_printf(MSG_INFO, "TLSv1: Could not decode PEM "
+				   "certificate");
+			return -1;
+		}
 
-        if (tlsv1_add_cert_der(chain, der, der_len) < 0) {
-            wpa_printf(MSG_INFO, "TLSv1: Failed to parse PEM "
-                    "certificate after DER conversion");
-            os_free(der);
-            return -1;
-        }
+		if (tlsv1_add_cert_der(chain, der, der_len) < 0) {
+			wpa_printf(MSG_INFO, "TLSv1: Failed to parse PEM "
+				   "certificate after DER conversion");
+			os_free(der);
+			return -1;
+		}
 
-        os_free(der);
+		os_free(der);
 
-        end += os_strlen(pem_cert_end);
-        pos = search_tag(pem_cert_begin, end, buf + len - end);
-    }
+		end += os_strlen(pem_cert_end);
+		pos = search_tag(pem_cert_begin, end, buf + len - end);
+	}
 
-    return 0;
+	return 0;
 }
 
 
 static int tlsv1_set_cert_chain(struct x509_certificate **chain,
-        const char *cert, const u8 *cert_blob,
-        size_t cert_blob_len)
+				const char *cert, const u8 *cert_blob,
+				size_t cert_blob_len)
 {
-    if (cert_blob)
-        return tlsv1_add_cert(chain, cert_blob, cert_blob_len);
+	if (cert_blob)
+		return tlsv1_add_cert(chain, cert_blob, cert_blob_len);
 
-    if (cert) {
-        u8 *buf;
-        size_t len;
-        int ret;
+	if (cert) {
+		u8 *buf;
+		size_t len;
+		int ret;
 
-        buf = (u8 *) os_readfile(cert, &len);
-        if (buf == NULL) {
-            wpa_printf(MSG_INFO, "TLSv1: Failed to read '%s'",
-                    cert);
-            return -1;
-        }
+		buf = (u8 *) os_readfile(cert, &len);
+		if (buf == NULL) {
+			wpa_printf(MSG_INFO, "TLSv1: Failed to read '%s'",
+				   cert);
+			return -1;
+		}
 
-        ret = tlsv1_add_cert(chain, buf, len);
-        os_free(buf);
-        return ret;
-    }
+		ret = tlsv1_add_cert(chain, buf, len);
+		os_free(buf);
+		return ret;
+	}
 
-    return 0;
+	return 0;
 }
 
 
@@ -181,21 +181,21 @@ static int tlsv1_set_cert_chain(struct x509_certificate **chain,
  * Returns: 0 on success, -1 on failure
  */
 int tlsv1_set_ca_cert(struct tlsv1_credentials *cred, const char *cert,
-        const u8 *cert_blob, size_t cert_blob_len,
-        const char *path)
+		      const u8 *cert_blob, size_t cert_blob_len,
+		      const char *path)
 {
-    if (tlsv1_set_cert_chain(&cred->trusted_certs, cert,
-                cert_blob, cert_blob_len) < 0)
-        return -1;
+	if (tlsv1_set_cert_chain(&cred->trusted_certs, cert,
+				 cert_blob, cert_blob_len) < 0)
+		return -1;
 
-    if (path) {
-        /* TODO: add support for reading number of certificate files */
-        wpa_printf(MSG_INFO, "TLSv1: Use of CA certificate directory "
-                "not yet supported");
-        return -1;
-    }
+	if (path) {
+		/* TODO: add support for reading number of certificate files */
+		wpa_printf(MSG_INFO, "TLSv1: Use of CA certificate directory "
+			   "not yet supported");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 
@@ -208,86 +208,86 @@ int tlsv1_set_ca_cert(struct tlsv1_credentials *cred, const char *cert,
  * Returns: 0 on success, -1 on failure
  */
 int tlsv1_set_cert(struct tlsv1_credentials *cred, const char *cert,
-        const u8 *cert_blob, size_t cert_blob_len)
+		   const u8 *cert_blob, size_t cert_blob_len)
 {
-    return tlsv1_set_cert_chain(&cred->cert, cert,
-            cert_blob, cert_blob_len);
+	return tlsv1_set_cert_chain(&cred->cert, cert,
+				    cert_blob, cert_blob_len);
 }
 
 
 static struct crypto_private_key * tlsv1_set_key_pem(const u8 *key, size_t len)
 {
-    const u8 *pos, *end;
-    unsigned char *der;
-    size_t der_len;
-    struct crypto_private_key *pkey;
+	const u8 *pos, *end;
+	unsigned char *der;
+	size_t der_len;
+	struct crypto_private_key *pkey;
 
-    pos = search_tag(pem_key_begin, key, len);
-    if (!pos) {
-        pos = search_tag(pem_key2_begin, key, len);
-        if (!pos)
-            return NULL;
-        pos += os_strlen(pem_key2_begin);
-        end = search_tag(pem_key2_end, pos, key + len - pos);
-        if (!end)
-            return NULL;
-    } else {
-        pos += os_strlen(pem_key_begin);
-        end = search_tag(pem_key_end, pos, key + len - pos);
-        if (!end)
-            return NULL;
-    }
+	pos = search_tag(pem_key_begin, key, len);
+	if (!pos) {
+		pos = search_tag(pem_key2_begin, key, len);
+		if (!pos)
+			return NULL;
+		pos += os_strlen(pem_key2_begin);
+		end = search_tag(pem_key2_end, pos, key + len - pos);
+		if (!end)
+			return NULL;
+	} else {
+		pos += os_strlen(pem_key_begin);
+		end = search_tag(pem_key_end, pos, key + len - pos);
+		if (!end)
+			return NULL;
+	}
 
-    der = base64_decode(pos, end - pos, &der_len);
-    if (!der)
-        return NULL;
-    pkey = crypto_private_key_import(der, der_len, NULL);
-    os_free(der);
-    return pkey;
+	der = base64_decode(pos, end - pos, &der_len);
+	if (!der)
+		return NULL;
+	pkey = crypto_private_key_import(der, der_len, NULL);
+	os_free(der);
+	return pkey;
 }
 
 
 static struct crypto_private_key * tlsv1_set_key_enc_pem(const u8 *key,
-        size_t len,
-        const char *passwd)
+							 size_t len,
+							 const char *passwd)
 {
-    const u8 *pos, *end;
-    unsigned char *der;
-    size_t der_len;
-    struct crypto_private_key *pkey;
+	const u8 *pos, *end;
+	unsigned char *der;
+	size_t der_len;
+	struct crypto_private_key *pkey;
 
-    if (passwd == NULL)
-        return NULL;
-    pos = search_tag(pem_key_enc_begin, key, len);
-    if (!pos)
-        return NULL;
-    pos += os_strlen(pem_key_enc_begin);
-    end = search_tag(pem_key_enc_end, pos, key + len - pos);
-    if (!end)
-        return NULL;
+	if (passwd == NULL)
+		return NULL;
+	pos = search_tag(pem_key_enc_begin, key, len);
+	if (!pos)
+		return NULL;
+	pos += os_strlen(pem_key_enc_begin);
+	end = search_tag(pem_key_enc_end, pos, key + len - pos);
+	if (!end)
+		return NULL;
 
-    der = base64_decode(pos, end - pos, &der_len);
-    if (!der)
-        return NULL;
-    pkey = crypto_private_key_import(der, der_len, passwd);
-    os_free(der);
-    return pkey;
+	der = base64_decode(pos, end - pos, &der_len);
+	if (!der)
+		return NULL;
+	pkey = crypto_private_key_import(der, der_len, passwd);
+	os_free(der);
+	return pkey;
 }
 
 
 static int tlsv1_set_key(struct tlsv1_credentials *cred,
-        const u8 *key, size_t len, const char *passwd)
+			 const u8 *key, size_t len, const char *passwd)
 {
-    cred->key = crypto_private_key_import(key, len, passwd);
-    if (cred->key == NULL)
-        cred->key = tlsv1_set_key_pem(key, len);
-    if (cred->key == NULL)
-        cred->key = tlsv1_set_key_enc_pem(key, len, passwd);
-    if (cred->key == NULL) {
-        wpa_printf(MSG_INFO, "TLSv1: Failed to parse private key");
-        return -1;
-    }
-    return 0;
+	cred->key = crypto_private_key_import(key, len, passwd);
+	if (cred->key == NULL)
+		cred->key = tlsv1_set_key_pem(key, len);
+	if (cred->key == NULL)
+		cred->key = tlsv1_set_key_enc_pem(key, len, passwd);
+	if (cred->key == NULL) {
+		wpa_printf(MSG_INFO, "TLSv1: Failed to parse private key");
+		return -1;
+	}
+	return 0;
 }
 
 
@@ -302,111 +302,111 @@ static int tlsv1_set_key(struct tlsv1_credentials *cred,
  * Returns: 0 on success, -1 on failure
  */
 int tlsv1_set_private_key(struct tlsv1_credentials *cred,
-        const char *private_key,
-        const char *private_key_passwd,
-        const u8 *private_key_blob,
-        size_t private_key_blob_len)
+			  const char *private_key,
+			  const char *private_key_passwd,
+			  const u8 *private_key_blob,
+			  size_t private_key_blob_len)
 {
-    crypto_private_key_free(cred->key);
-    cred->key = NULL;
+	crypto_private_key_free(cred->key);
+	cred->key = NULL;
 
-    if (private_key_blob)
-        return tlsv1_set_key(cred, private_key_blob,
-                private_key_blob_len,
-                private_key_passwd);
+	if (private_key_blob)
+		return tlsv1_set_key(cred, private_key_blob,
+				     private_key_blob_len,
+				     private_key_passwd);
 
-    if (private_key) {
-        u8 *buf;
-        size_t len;
-        int ret;
+	if (private_key) {
+		u8 *buf;
+		size_t len;
+		int ret;
 
-        buf = (u8 *) os_readfile(private_key, &len);
-        if (buf == NULL) {
-            wpa_printf(MSG_INFO, "TLSv1: Failed to read '%s'",
-                    private_key);
-            return -1;
-        }
+		buf = (u8 *) os_readfile(private_key, &len);
+		if (buf == NULL) {
+			wpa_printf(MSG_INFO, "TLSv1: Failed to read '%s'",
+				   private_key);
+			return -1;
+		}
 
-        ret = tlsv1_set_key(cred, buf, len, private_key_passwd);
-        os_free(buf);
-        return ret;
-    }
+		ret = tlsv1_set_key(cred, buf, len, private_key_passwd);
+		os_free(buf);
+		return ret;
+	}
 
-    return 0;
+	return 0;
 }
 
 
 static int tlsv1_set_dhparams_der(struct tlsv1_credentials *cred,
-        const u8 *dh, size_t len)
+				  const u8 *dh, size_t len)
 {
-    struct asn1_hdr hdr;
-    const u8 *pos, *end;
+	struct asn1_hdr hdr;
+	const u8 *pos, *end;
 
-    pos = dh;
-    end = dh + len;
+	pos = dh;
+	end = dh + len;
 
-    /*
-     * DHParameter ::= SEQUENCE {
-     *   prime INTEGER, -- p
-     *   base INTEGER, -- g
-     *   privateValueLength INTEGER OPTIONAL }
-     */
+	/*
+	 * DHParameter ::= SEQUENCE {
+	 *   prime INTEGER, -- p
+	 *   base INTEGER, -- g
+	 *   privateValueLength INTEGER OPTIONAL }
+	 */
 
-    /* DHParamer ::= SEQUENCE */
-    if (asn1_get_next(pos, len, &hdr) < 0 ||
-            hdr.class != ASN1_CLASS_UNIVERSAL ||
-            hdr.tag != ASN1_TAG_SEQUENCE) {
-        wpa_printf(MSG_DEBUG, "DH: DH parameters did not start with a "
-                "valid SEQUENCE - found class %d tag 0x%x",
-                hdr.class, hdr.tag);
-        return -1;
-    }
-    pos = hdr.payload;
+	/* DHParamer ::= SEQUENCE */
+	if (asn1_get_next(pos, len, &hdr) < 0 ||
+	    hdr.class != ASN1_CLASS_UNIVERSAL ||
+	    hdr.tag != ASN1_TAG_SEQUENCE) {
+		wpa_printf(MSG_DEBUG, "DH: DH parameters did not start with a "
+			   "valid SEQUENCE - found class %d tag 0x%x",
+			   hdr.class, hdr.tag);
+		return -1;
+	}
+	pos = hdr.payload;
 
-    /* prime INTEGER */
-    if (asn1_get_next(pos, end - pos, &hdr) < 0)
-        return -1;
+	/* prime INTEGER */
+	if (asn1_get_next(pos, end - pos, &hdr) < 0)
+		return -1;
 
-    if (hdr.class != ASN1_CLASS_UNIVERSAL ||
-            hdr.tag != ASN1_TAG_INTEGER) {
-        wpa_printf(MSG_DEBUG, "DH: No INTEGER tag found for p; "
-                "class=%d tag=0x%x", hdr.class, hdr.tag);
-        return -1;
-    }
+	if (hdr.class != ASN1_CLASS_UNIVERSAL ||
+	    hdr.tag != ASN1_TAG_INTEGER) {
+		wpa_printf(MSG_DEBUG, "DH: No INTEGER tag found for p; "
+			   "class=%d tag=0x%x", hdr.class, hdr.tag);
+		return -1;
+	}
 
-    wpa_hexdump(MSG_MSGDUMP, "DH: prime (p)", hdr.payload, hdr.length);
-    if (hdr.length == 0)
-        return -1;
-    os_free(cred->dh_p);
-    cred->dh_p = os_malloc(hdr.length);
-    if (cred->dh_p == NULL)
-        return -1;
-    os_memcpy(cred->dh_p, hdr.payload, hdr.length);
-    cred->dh_p_len = hdr.length;
-    pos = hdr.payload + hdr.length;
+	wpa_hexdump(MSG_MSGDUMP, "DH: prime (p)", hdr.payload, hdr.length);
+	if (hdr.length == 0)
+		return -1;
+	os_free(cred->dh_p);
+	cred->dh_p = os_malloc(hdr.length);
+	if (cred->dh_p == NULL)
+		return -1;
+	os_memcpy(cred->dh_p, hdr.payload, hdr.length);
+	cred->dh_p_len = hdr.length;
+	pos = hdr.payload + hdr.length;
 
-    /* base INTEGER */
-    if (asn1_get_next(pos, end - pos, &hdr) < 0)
-        return -1;
+	/* base INTEGER */
+	if (asn1_get_next(pos, end - pos, &hdr) < 0)
+		return -1;
 
-    if (hdr.class != ASN1_CLASS_UNIVERSAL ||
-            hdr.tag != ASN1_TAG_INTEGER) {
-        wpa_printf(MSG_DEBUG, "DH: No INTEGER tag found for g; "
-                "class=%d tag=0x%x", hdr.class, hdr.tag);
-        return -1;
-    }
+	if (hdr.class != ASN1_CLASS_UNIVERSAL ||
+	    hdr.tag != ASN1_TAG_INTEGER) {
+		wpa_printf(MSG_DEBUG, "DH: No INTEGER tag found for g; "
+			   "class=%d tag=0x%x", hdr.class, hdr.tag);
+		return -1;
+	}
 
-    wpa_hexdump(MSG_MSGDUMP, "DH: base (g)", hdr.payload, hdr.length);
-    if (hdr.length == 0)
-        return -1;
-    os_free(cred->dh_g);
-    cred->dh_g = os_malloc(hdr.length);
-    if (cred->dh_g == NULL)
-        return -1;
-    os_memcpy(cred->dh_g, hdr.payload, hdr.length);
-    cred->dh_g_len = hdr.length;
+	wpa_hexdump(MSG_MSGDUMP, "DH: base (g)", hdr.payload, hdr.length);
+	if (hdr.length == 0)
+		return -1;
+	os_free(cred->dh_g);
+	cred->dh_g = os_malloc(hdr.length);
+	if (cred->dh_g == NULL)
+		return -1;
+	os_memcpy(cred->dh_g, hdr.payload, hdr.length);
+	cred->dh_g_len = hdr.length;
 
-    return 0;
+	return 0;
 }
 
 
@@ -415,46 +415,46 @@ static const char *pem_dhparams_end = "-----END DH PARAMETERS-----";
 
 
 static int tlsv1_set_dhparams_blob(struct tlsv1_credentials *cred,
-        const u8 *buf, size_t len)
+				   const u8 *buf, size_t len)
 {
-    const u8 *pos, *end;
-    unsigned char *der;
-    size_t der_len;
+	const u8 *pos, *end;
+	unsigned char *der;
+	size_t der_len;
 
-    pos = search_tag(pem_dhparams_begin, buf, len);
-    if (!pos) {
-        wpa_printf(MSG_DEBUG, "TLSv1: No PEM dhparams tag found - "
-                "assume DER format");
-        return tlsv1_set_dhparams_der(cred, buf, len);
-    }
+	pos = search_tag(pem_dhparams_begin, buf, len);
+	if (!pos) {
+		wpa_printf(MSG_DEBUG, "TLSv1: No PEM dhparams tag found - "
+			   "assume DER format");
+		return tlsv1_set_dhparams_der(cred, buf, len);
+	}
 
-    wpa_printf(MSG_DEBUG, "TLSv1: Converting PEM format dhparams into DER "
-            "format");
+	wpa_printf(MSG_DEBUG, "TLSv1: Converting PEM format dhparams into DER "
+		   "format");
 
-    pos += os_strlen(pem_dhparams_begin);
-    end = search_tag(pem_dhparams_end, pos, buf + len - pos);
-    if (end == NULL) {
-        wpa_printf(MSG_INFO, "TLSv1: Could not find PEM dhparams end "
-                "tag (%s)", pem_dhparams_end);
-        return -1;
-    }
+	pos += os_strlen(pem_dhparams_begin);
+	end = search_tag(pem_dhparams_end, pos, buf + len - pos);
+	if (end == NULL) {
+		wpa_printf(MSG_INFO, "TLSv1: Could not find PEM dhparams end "
+			   "tag (%s)", pem_dhparams_end);
+		return -1;
+	}
 
-    der = base64_decode(pos, end - pos, &der_len);
-    if (der == NULL) {
-        wpa_printf(MSG_INFO, "TLSv1: Could not decode PEM dhparams");
-        return -1;
-    }
+	der = base64_decode(pos, end - pos, &der_len);
+	if (der == NULL) {
+		wpa_printf(MSG_INFO, "TLSv1: Could not decode PEM dhparams");
+		return -1;
+	}
 
-    if (tlsv1_set_dhparams_der(cred, der, der_len) < 0) {
-        wpa_printf(MSG_INFO, "TLSv1: Failed to parse PEM dhparams "
-                "DER conversion");
-        os_free(der);
-        return -1;
-    }
+	if (tlsv1_set_dhparams_der(cred, der, der_len) < 0) {
+		wpa_printf(MSG_INFO, "TLSv1: Failed to parse PEM dhparams "
+			   "DER conversion");
+		os_free(der);
+		return -1;
+	}
 
-    os_free(der);
+	os_free(der);
 
-    return 0;
+	return 0;
 }
 
 
@@ -467,27 +467,27 @@ static int tlsv1_set_dhparams_blob(struct tlsv1_credentials *cred,
  * Returns: 0 on success, -1 on failure
  */
 int tlsv1_set_dhparams(struct tlsv1_credentials *cred, const char *dh_file,
-        const u8 *dh_blob, size_t dh_blob_len)
+		       const u8 *dh_blob, size_t dh_blob_len)
 {
-    if (dh_blob)
-        return tlsv1_set_dhparams_blob(cred, dh_blob, dh_blob_len);
+	if (dh_blob)
+		return tlsv1_set_dhparams_blob(cred, dh_blob, dh_blob_len);
 
-    if (dh_file) {
-        u8 *buf;
-        size_t len;
-        int ret;
+	if (dh_file) {
+		u8 *buf;
+		size_t len;
+		int ret;
 
-        buf = (u8 *) os_readfile(dh_file, &len);
-        if (buf == NULL) {
-            wpa_printf(MSG_INFO, "TLSv1: Failed to read '%s'",
-                    dh_file);
-            return -1;
-        }
+		buf = (u8 *) os_readfile(dh_file, &len);
+		if (buf == NULL) {
+			wpa_printf(MSG_INFO, "TLSv1: Failed to read '%s'",
+				   dh_file);
+			return -1;
+		}
 
-        ret = tlsv1_set_dhparams_blob(cred, buf, len);
-        os_free(buf);
-        return ret;
-    }
+		ret = tlsv1_set_dhparams_blob(cred, buf, len);
+		os_free(buf);
+		return ret;
+	}
 
-    return 0;
+	return 0;
 }

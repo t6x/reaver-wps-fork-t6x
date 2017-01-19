@@ -33,80 +33,80 @@
  */
 struct wps_data * wps_init(const struct wps_config *cfg)
 {
-    struct wps_data *data = os_zalloc(sizeof(*data));
-    if (data == NULL)
-        return NULL;
-    data->wps = cfg->wps;
-    data->registrar = cfg->registrar;
-    if (cfg->registrar) {
-        os_memcpy(data->uuid_r, cfg->wps->uuid, WPS_UUID_LEN);
-    } else {
-        os_memcpy(data->mac_addr_e, cfg->wps->dev.mac_addr, ETH_ALEN);
-        os_memcpy(data->uuid_e, cfg->wps->uuid, WPS_UUID_LEN);
-    }
-    if (cfg->pin) {
-        data->dev_pw_id = data->wps->oob_dev_pw_id == 0 ?
-            DEV_PW_DEFAULT : data->wps->oob_dev_pw_id;
-        data->dev_password = os_malloc(cfg->pin_len);
-        if (data->dev_password == NULL) {
-            os_free(data);
-            return NULL;
-        }
-        os_memcpy(data->dev_password, cfg->pin, cfg->pin_len);
-        data->dev_password_len = cfg->pin_len;
-    }
+	struct wps_data *data = os_zalloc(sizeof(*data));
+	if (data == NULL)
+		return NULL;
+	data->wps = cfg->wps;
+	data->registrar = cfg->registrar;
+	if (cfg->registrar) {
+		os_memcpy(data->uuid_r, cfg->wps->uuid, WPS_UUID_LEN);
+	} else {
+		os_memcpy(data->mac_addr_e, cfg->wps->dev.mac_addr, ETH_ALEN);
+		os_memcpy(data->uuid_e, cfg->wps->uuid, WPS_UUID_LEN);
+	}
+	if (cfg->pin) {
+		data->dev_pw_id = data->wps->oob_dev_pw_id == 0 ?
+			DEV_PW_DEFAULT : data->wps->oob_dev_pw_id;
+		data->dev_password = os_malloc(cfg->pin_len);
+		if (data->dev_password == NULL) {
+			os_free(data);
+			return NULL;
+		}
+		os_memcpy(data->dev_password, cfg->pin, cfg->pin_len);
+		data->dev_password_len = cfg->pin_len;
+	}
 
-    data->pbc = cfg->pbc;
-    if (cfg->pbc) {
-        /* Use special PIN '00000000' for PBC */
-        data->dev_pw_id = DEV_PW_PUSHBUTTON;
-        os_free(data->dev_password);
-        data->dev_password = os_malloc(8);
-        if (data->dev_password == NULL) {
-            os_free(data);
-            return NULL;
-        }
-        os_memset(data->dev_password, '0', 8);
-        data->dev_password_len = 8;
-    }
+	data->pbc = cfg->pbc;
+	if (cfg->pbc) {
+		/* Use special PIN '00000000' for PBC */
+		data->dev_pw_id = DEV_PW_PUSHBUTTON;
+		os_free(data->dev_password);
+		data->dev_password = os_malloc(8);
+		if (data->dev_password == NULL) {
+			os_free(data);
+			return NULL;
+		}
+		os_memset(data->dev_password, '0', 8);
+		data->dev_password_len = 8;
+	}
 
-    data->state = data->registrar ? RECV_M1 : SEND_M1;
+	data->state = data->registrar ? RECV_M1 : SEND_M1;
 
-    if (cfg->assoc_wps_ie) {
-        struct wps_parse_attr attr;
-        wpa_hexdump_buf(MSG_DEBUG, "WPS: WPS IE from (Re)AssocReq",
-                cfg->assoc_wps_ie);
-        if (wps_parse_msg(cfg->assoc_wps_ie, &attr) < 0) {
-            wpa_printf(MSG_DEBUG, "WPS: Failed to parse WPS IE "
-                    "from (Re)AssocReq");
-        } else if (attr.request_type == NULL) {
-            wpa_printf(MSG_DEBUG, "WPS: No Request Type attribute "
-                    "in (Re)AssocReq WPS IE");
-        } else {
-            wpa_printf(MSG_DEBUG, "WPS: Request Type (from WPS IE "
-                    "in (Re)AssocReq WPS IE): %d",
-                    *attr.request_type);
-            data->request_type = *attr.request_type;
-        }
-    }
+	if (cfg->assoc_wps_ie) {
+		struct wps_parse_attr attr;
+		wpa_hexdump_buf(MSG_DEBUG, "WPS: WPS IE from (Re)AssocReq",
+				cfg->assoc_wps_ie);
+		if (wps_parse_msg(cfg->assoc_wps_ie, &attr) < 0) {
+			wpa_printf(MSG_DEBUG, "WPS: Failed to parse WPS IE "
+				   "from (Re)AssocReq");
+		} else if (attr.request_type == NULL) {
+			wpa_printf(MSG_DEBUG, "WPS: No Request Type attribute "
+				   "in (Re)AssocReq WPS IE");
+		} else {
+			wpa_printf(MSG_DEBUG, "WPS: Request Type (from WPS IE "
+				   "in (Re)AssocReq WPS IE): %d",
+				   *attr.request_type);
+			data->request_type = *attr.request_type;
+		}
+	}
 
-    if (cfg->new_ap_settings) {
-        data->new_ap_settings =
-            os_malloc(sizeof(*data->new_ap_settings));
-        if (data->new_ap_settings == NULL) {
-            os_free(data);
-            return NULL;
-        }
-        os_memcpy(data->new_ap_settings, cfg->new_ap_settings,
-                sizeof(*data->new_ap_settings));
-    }
+	if (cfg->new_ap_settings) {
+		data->new_ap_settings =
+			os_malloc(sizeof(*data->new_ap_settings));
+		if (data->new_ap_settings == NULL) {
+			os_free(data);
+			return NULL;
+		}
+		os_memcpy(data->new_ap_settings, cfg->new_ap_settings,
+			  sizeof(*data->new_ap_settings));
+	}
 
-    if (cfg->peer_addr)
-        os_memcpy(data->peer_dev.mac_addr, cfg->peer_addr, ETH_ALEN);
+	if (cfg->peer_addr)
+		os_memcpy(data->peer_dev.mac_addr, cfg->peer_addr, ETH_ALEN);
 
-    data->use_psk_key = cfg->use_psk_key;
+	data->use_psk_key = cfg->use_psk_key;
 
-    return data;
+	return data;
 }
 
 
@@ -116,29 +116,29 @@ struct wps_data * wps_init(const struct wps_config *cfg)
  */
 void wps_deinit(struct wps_data *data)
 {
-    if (data->wps_pin_revealed) {
-        wpa_printf(MSG_DEBUG, "WPS: Full PIN information revealed and "
-                "negotiation failed");
-        if (data->registrar)
-            wps_registrar_invalidate_pin(data->wps->registrar,
-                    data->uuid_e);
-    } else if (data->registrar)
-        wps_registrar_unlock_pin(data->wps->registrar, data->uuid_e);
+	if (data->wps_pin_revealed) {
+		wpa_printf(MSG_DEBUG, "WPS: Full PIN information revealed and "
+			   "negotiation failed");
+		if (data->registrar)
+			wps_registrar_invalidate_pin(data->wps->registrar,
+						     data->uuid_e);
+	} else if (data->registrar)
+		wps_registrar_unlock_pin(data->wps->registrar, data->uuid_e);
 
-    /* @@@ Free wpa key and essid pointers @@@ */
-    if(data->key) free(data->key);
-    if(data->essid) free(data->essid);
+	/* @@@ Free wpa key and essid pointers @@@ */
+	if(data->key) free(data->key);
+	if(data->essid) free(data->essid);
 
-    wpabuf_free(data->dh_privkey);
-    wpabuf_free(data->dh_pubkey_e);
-    wpabuf_free(data->dh_pubkey_r);
-    wpabuf_free(data->last_msg);
-    os_free(data->dev_password);
-    os_free(data->new_psk);
-    wps_device_data_free(&data->peer_dev);
-    os_free(data->new_ap_settings);
-    dh5_free(data->dh_ctx);
-    os_free(data);
+	wpabuf_free(data->dh_privkey);
+	wpabuf_free(data->dh_pubkey_e);
+	wpabuf_free(data->dh_pubkey_r);
+	wpabuf_free(data->last_msg);
+	os_free(data->dev_password);
+	os_free(data->new_psk);
+	wps_device_data_free(&data->peer_dev);
+	os_free(data->new_ap_settings);
+	dh5_free(data->dh_ctx);
+	os_free(data);
 }
 
 
@@ -155,13 +155,13 @@ void wps_deinit(struct wps_data *data)
  * Response to this message is built by calling wps_get_msg().
  */
 enum wps_process_res wps_process_msg(struct wps_data *wps,
-        enum wsc_op_code op_code,
-        const struct wpabuf *msg)
+				     enum wsc_op_code op_code,
+				     const struct wpabuf *msg)
 {
-    if (wps->registrar)
-        return wps_registrar_process_msg(wps, op_code, msg);
-    else
-        return wps_enrollee_process_msg(wps, op_code, msg);
+	if (wps->registrar)
+		return wps_registrar_process_msg(wps, op_code, msg);
+	else
+		return wps_enrollee_process_msg(wps, op_code, msg);
 }
 
 
@@ -176,10 +176,10 @@ enum wps_process_res wps_process_msg(struct wps_data *wps,
  */
 struct wpabuf * wps_get_msg(struct wps_data *wps, enum wsc_op_code *op_code)
 {
-    //if (wps->registrar)
-    //	return wps_registrar_get_msg(wps, op_code);
-    //	else
-    return wps_enrollee_get_msg(wps, op_code);
+	//if (wps->registrar)
+	//	return wps_registrar_get_msg(wps, op_code);
+//	else
+		return wps_enrollee_get_msg(wps, op_code);
 }
 
 
@@ -190,22 +190,22 @@ struct wpabuf * wps_get_msg(struct wps_data *wps, enum wsc_op_code *op_code)
  */
 int wps_is_selected_pbc_registrar(const struct wpabuf *msg)
 {
-    struct wps_parse_attr attr;
+	struct wps_parse_attr attr;
 
-    /*
-     * In theory, this could also verify that attr.sel_reg_config_methods
-     * includes WPS_CONFIG_PUSHBUTTON, but some deployed AP implementations
-     * do not set Selected Registrar Config Methods attribute properly, so
-     * it is safer to just use Device Password ID here.
-     */
+	/*
+	 * In theory, this could also verify that attr.sel_reg_config_methods
+	 * includes WPS_CONFIG_PUSHBUTTON, but some deployed AP implementations
+	 * do not set Selected Registrar Config Methods attribute properly, so
+	 * it is safer to just use Device Password ID here.
+	 */
 
-    if (wps_parse_msg(msg, &attr) < 0 ||
-            !attr.selected_registrar || *attr.selected_registrar == 0 ||
-            !attr.dev_password_id ||
-            WPA_GET_BE16(attr.dev_password_id) != DEV_PW_PUSHBUTTON)
-        return 0;
+	if (wps_parse_msg(msg, &attr) < 0 ||
+	    !attr.selected_registrar || *attr.selected_registrar == 0 ||
+	    !attr.dev_password_id ||
+	    WPA_GET_BE16(attr.dev_password_id) != DEV_PW_PUSHBUTTON)
+		return 0;
 
-    return 1;
+	return 1;
 }
 
 
@@ -216,27 +216,27 @@ int wps_is_selected_pbc_registrar(const struct wpabuf *msg)
  */
 int wps_is_selected_pin_registrar(const struct wpabuf *msg)
 {
-    struct wps_parse_attr attr;
+	struct wps_parse_attr attr;
 
-    /*
-     * In theory, this could also verify that attr.sel_reg_config_methods
-     * includes WPS_CONFIG_LABEL, WPS_CONFIG_DISPLAY, or WPS_CONFIG_KEYPAD,
-     * but some deployed AP implementations do not set Selected Registrar
-     * Config Methods attribute properly, so it is safer to just use
-     * Device Password ID here.
-     */
+	/*
+	 * In theory, this could also verify that attr.sel_reg_config_methods
+	 * includes WPS_CONFIG_LABEL, WPS_CONFIG_DISPLAY, or WPS_CONFIG_KEYPAD,
+	 * but some deployed AP implementations do not set Selected Registrar
+	 * Config Methods attribute properly, so it is safer to just use
+	 * Device Password ID here.
+	 */
 
-    if (wps_parse_msg(msg, &attr) < 0)
-        return 0;
+	if (wps_parse_msg(msg, &attr) < 0)
+		return 0;
 
-    if (!attr.selected_registrar || *attr.selected_registrar == 0)
-        return 0;
+	if (!attr.selected_registrar || *attr.selected_registrar == 0)
+		return 0;
 
-    if (attr.dev_password_id != NULL &&
-            WPA_GET_BE16(attr.dev_password_id) == DEV_PW_PUSHBUTTON)
-        return 0;
+	if (attr.dev_password_id != NULL &&
+	    WPA_GET_BE16(attr.dev_password_id) == DEV_PW_PUSHBUTTON)
+		return 0;
 
-    return 1;
+	return 1;
 }
 
 
@@ -250,11 +250,11 @@ int wps_is_selected_pin_registrar(const struct wpabuf *msg)
  */
 const u8 * wps_get_uuid_e(const struct wpabuf *msg)
 {
-    struct wps_parse_attr attr;
+	struct wps_parse_attr attr;
 
-    if (wps_parse_msg(msg, &attr) < 0)
-        return NULL;
-    return attr.uuid_e;
+	if (wps_parse_msg(msg, &attr) < 0)
+		return NULL;
+	return attr.uuid_e;
 }
 
 
@@ -267,28 +267,28 @@ const u8 * wps_get_uuid_e(const struct wpabuf *msg)
  */
 struct wpabuf * wps_build_assoc_req_ie(enum wps_request_type req_type)
 {
-    struct wpabuf *ie;
-    u8 *len;
+	struct wpabuf *ie;
+	u8 *len;
 
-    wpa_printf(MSG_DEBUG, "WPS: Building WPS IE for (Re)Association "
-            "Request");
-    ie = wpabuf_alloc(100);
-    if (ie == NULL)
-        return NULL;
+	wpa_printf(MSG_DEBUG, "WPS: Building WPS IE for (Re)Association "
+		   "Request");
+	ie = wpabuf_alloc(100);
+	if (ie == NULL)
+		return NULL;
 
-    wpabuf_put_u8(ie, WLAN_EID_VENDOR_SPECIFIC);
-    len = wpabuf_put(ie, 1);
-    wpabuf_put_be32(ie, WPS_DEV_OUI_WFA);
+	wpabuf_put_u8(ie, WLAN_EID_VENDOR_SPECIFIC);
+	len = wpabuf_put(ie, 1);
+	wpabuf_put_be32(ie, WPS_DEV_OUI_WFA);
 
-    if (wps_build_version(ie) ||
-            wps_build_req_type(ie, req_type)) {
-        wpabuf_free(ie);
-        return NULL;
-    }
+	if (wps_build_version(ie) ||
+	    wps_build_req_type(ie, req_type)) {
+		wpabuf_free(ie);
+		return NULL;
+	}
 
-    *len = wpabuf_len(ie) - 2;
+	*len = wpabuf_len(ie) - 2;
 
-    return ie;
+	return ie;
 }
 
 
@@ -300,28 +300,28 @@ struct wpabuf * wps_build_assoc_req_ie(enum wps_request_type req_type)
  */
 struct wpabuf * wps_build_assoc_resp_ie(void)
 {
-    struct wpabuf *ie;
-    u8 *len;
+	struct wpabuf *ie;
+	u8 *len;
 
-    wpa_printf(MSG_DEBUG, "WPS: Building WPS IE for (Re)Association "
-            "Response");
-    ie = wpabuf_alloc(100);
-    if (ie == NULL)
-        return NULL;
+	wpa_printf(MSG_DEBUG, "WPS: Building WPS IE for (Re)Association "
+		   "Response");
+	ie = wpabuf_alloc(100);
+	if (ie == NULL)
+		return NULL;
 
-    wpabuf_put_u8(ie, WLAN_EID_VENDOR_SPECIFIC);
-    len = wpabuf_put(ie, 1);
-    wpabuf_put_be32(ie, WPS_DEV_OUI_WFA);
+	wpabuf_put_u8(ie, WLAN_EID_VENDOR_SPECIFIC);
+	len = wpabuf_put(ie, 1);
+	wpabuf_put_be32(ie, WPS_DEV_OUI_WFA);
 
-    if (wps_build_version(ie) ||
-            wps_build_resp_type(ie, WPS_RESP_AP)) {
-        wpabuf_free(ie);
-        return NULL;
-    }
+	if (wps_build_version(ie) ||
+	    wps_build_resp_type(ie, WPS_RESP_AP)) {
+		wpabuf_free(ie);
+		return NULL;
+	}
 
-    *len = wpabuf_len(ie) - 2;
+	*len = wpabuf_len(ie) - 2;
 
-    return ie;
+	return ie;
 }
 
 
@@ -336,166 +336,166 @@ struct wpabuf * wps_build_assoc_resp_ie(void)
  * The caller is responsible for freeing the buffer.
  */
 struct wpabuf * wps_build_probe_req_ie(int pbc, struct wps_device_data *dev,
-        const u8 *uuid,
-        enum wps_request_type req_type)
+				       const u8 *uuid,
+				       enum wps_request_type req_type)
 {
-    struct wpabuf *ie;
-    u8 *len;
-    u16 methods;
+	struct wpabuf *ie;
+	u8 *len;
+	u16 methods;
 
-    wpa_printf(MSG_DEBUG, "WPS: Building WPS IE for Probe Request");
+	wpa_printf(MSG_DEBUG, "WPS: Building WPS IE for Probe Request");
 
-    ie = wpabuf_alloc(200);
-    if (ie == NULL)
-        return NULL;
+	ie = wpabuf_alloc(200);
+	if (ie == NULL)
+		return NULL;
 
-    wpabuf_put_u8(ie, WLAN_EID_VENDOR_SPECIFIC);
-    len = wpabuf_put(ie, 1);
-    wpabuf_put_be32(ie, WPS_DEV_OUI_WFA);
+	wpabuf_put_u8(ie, WLAN_EID_VENDOR_SPECIFIC);
+	len = wpabuf_put(ie, 1);
+	wpabuf_put_be32(ie, WPS_DEV_OUI_WFA);
 
-    if (pbc)
-        methods = WPS_CONFIG_PUSHBUTTON;
-    else {
-        methods = WPS_CONFIG_LABEL | WPS_CONFIG_DISPLAY |
-            WPS_CONFIG_KEYPAD;
+	if (pbc)
+		methods = WPS_CONFIG_PUSHBUTTON;
+	else {
+		methods = WPS_CONFIG_LABEL | WPS_CONFIG_DISPLAY |
+			WPS_CONFIG_KEYPAD;
 #ifdef CONFIG_WPS_UFD
-        methods |= WPS_CONFIG_USBA;
+		methods |= WPS_CONFIG_USBA;
 #endif /* CONFIG_WPS_UFD */
 #ifdef CONFIG_WPS_NFC
-        methods |= WPS_CONFIG_NFC_INTERFACE;
+		methods |= WPS_CONFIG_NFC_INTERFACE;
 #endif /* CONFIG_WPS_NFC */
-    }
+	}
 
-    if (wps_build_version(ie) ||
-            wps_build_req_type(ie, req_type) ||
-            wps_build_config_methods(ie, methods) ||
-            wps_build_uuid_e(ie, uuid) ||
-            wps_build_primary_dev_type(dev, ie) ||
-            wps_build_rf_bands(dev, ie) ||
-            wps_build_assoc_state(NULL, ie) ||
-            wps_build_config_error(ie, WPS_CFG_NO_ERROR) ||
-            wps_build_dev_password_id(ie, pbc ? DEV_PW_PUSHBUTTON :
-                DEV_PW_DEFAULT)) {
-        wpabuf_free(ie);
-        return NULL;
-    }
+	if (wps_build_version(ie) ||
+	    wps_build_req_type(ie, req_type) ||
+	    wps_build_config_methods(ie, methods) ||
+	    wps_build_uuid_e(ie, uuid) ||
+	    wps_build_primary_dev_type(dev, ie) ||
+	    wps_build_rf_bands(dev, ie) ||
+	    wps_build_assoc_state(NULL, ie) ||
+	    wps_build_config_error(ie, WPS_CFG_NO_ERROR) ||
+	    wps_build_dev_password_id(ie, pbc ? DEV_PW_PUSHBUTTON :
+				      DEV_PW_DEFAULT)) {
+		wpabuf_free(ie);
+		return NULL;
+	}
 
-    *len = wpabuf_len(ie) - 2;
+	*len = wpabuf_len(ie) - 2;
 
-    return ie;
+	return ie;
 }
 
 
 void wps_free_pending_msgs(struct upnp_pending_message *msgs)
 {
-    struct upnp_pending_message *p, *prev;
-    p = msgs;
-    while (p) {
-        prev = p;
-        p = p->next;
-        wpabuf_free(prev->msg);
-        os_free(prev);
-    }
+	struct upnp_pending_message *p, *prev;
+	p = msgs;
+	while (p) {
+		prev = p;
+		p = p->next;
+		wpabuf_free(prev->msg);
+		os_free(prev);
+	}
 }
 
 
 int wps_attr_text(struct wpabuf *data, char *buf, char *end)
 {
-    struct wps_parse_attr attr;
-    char *pos = buf;
-    int ret;
+	struct wps_parse_attr attr;
+	char *pos = buf;
+	int ret;
 
-    if (wps_parse_msg(data, &attr) < 0)
-        return -1;
+	if (wps_parse_msg(data, &attr) < 0)
+		return -1;
 
-    if (attr.wps_state) {
-        if (*attr.wps_state == WPS_STATE_NOT_CONFIGURED)
-            ret = os_snprintf(pos, end - pos,
-                    "wps_state=unconfigured\n");
-        else if (*attr.wps_state == WPS_STATE_CONFIGURED)
-            ret = os_snprintf(pos, end - pos,
-                    "wps_state=configured\n");
-        else
-            ret = 0;
-        if (ret < 0 || ret >= end - pos)
-            return pos - buf;
-        pos += ret;
-    }
+	if (attr.wps_state) {
+		if (*attr.wps_state == WPS_STATE_NOT_CONFIGURED)
+			ret = os_snprintf(pos, end - pos,
+					  "wps_state=unconfigured\n");
+		else if (*attr.wps_state == WPS_STATE_CONFIGURED)
+			ret = os_snprintf(pos, end - pos,
+					  "wps_state=configured\n");
+		else
+			ret = 0;
+		if (ret < 0 || ret >= end - pos)
+			return pos - buf;
+		pos += ret;
+	}
 
-    if (attr.ap_setup_locked && *attr.ap_setup_locked) {
-        ret = os_snprintf(pos, end - pos,
-                "wps_ap_setup_locked=1\n");
-        if (ret < 0 || ret >= end - pos)
-            return pos - buf;
-        pos += ret;
-    }
+	if (attr.ap_setup_locked && *attr.ap_setup_locked) {
+		ret = os_snprintf(pos, end - pos,
+				  "wps_ap_setup_locked=1\n");
+		if (ret < 0 || ret >= end - pos)
+			return pos - buf;
+		pos += ret;
+	}
 
-    if (attr.selected_registrar && *attr.selected_registrar) {
-        ret = os_snprintf(pos, end - pos,
-                "wps_selected_registrar=1\n");
-        if (ret < 0 || ret >= end - pos)
-            return pos - buf;
-        pos += ret;
-    }
+	if (attr.selected_registrar && *attr.selected_registrar) {
+		ret = os_snprintf(pos, end - pos,
+				  "wps_selected_registrar=1\n");
+		if (ret < 0 || ret >= end - pos)
+			return pos - buf;
+		pos += ret;
+	}
 
-    if (attr.dev_password_id) {
-        ret = os_snprintf(pos, end - pos,
-                "wps_device_password_id=%u\n",
-                WPA_GET_BE16(attr.dev_password_id));
-        if (ret < 0 || ret >= end - pos)
-            return pos - buf;
-        pos += ret;
-    }
+	if (attr.dev_password_id) {
+		ret = os_snprintf(pos, end - pos,
+				  "wps_device_password_id=%u\n",
+				  WPA_GET_BE16(attr.dev_password_id));
+		if (ret < 0 || ret >= end - pos)
+			return pos - buf;
+		pos += ret;
+	}
 
-    if (attr.sel_reg_config_methods) {
-        ret = os_snprintf(pos, end - pos,
-                "wps_selected_registrar_config_methods="
-                "0x%04x\n",
-                WPA_GET_BE16(attr.sel_reg_config_methods));
-        if (ret < 0 || ret >= end - pos)
-            return pos - buf;
-        pos += ret;
-    }
+	if (attr.sel_reg_config_methods) {
+		ret = os_snprintf(pos, end - pos,
+				  "wps_selected_registrar_config_methods="
+				  "0x%04x\n",
+				  WPA_GET_BE16(attr.sel_reg_config_methods));
+		if (ret < 0 || ret >= end - pos)
+			return pos - buf;
+		pos += ret;
+	}
 
-    if (attr.primary_dev_type) {
-        char devtype[WPS_DEV_TYPE_BUFSIZE];
-        ret = os_snprintf(pos, end - pos,
-                "wps_primary_device_type=%s\n",
-                wps_dev_type_bin2str(attr.primary_dev_type,
-                    devtype,
-                    sizeof(devtype)));
-        if (ret < 0 || ret >= end - pos)
-            return pos - buf;
-        pos += ret;
-    }
+	if (attr.primary_dev_type) {
+		char devtype[WPS_DEV_TYPE_BUFSIZE];
+		ret = os_snprintf(pos, end - pos,
+				  "wps_primary_device_type=%s\n",
+				  wps_dev_type_bin2str(attr.primary_dev_type,
+						       devtype,
+						       sizeof(devtype)));
+		if (ret < 0 || ret >= end - pos)
+			return pos - buf;
+		pos += ret;
+	}
 
-    if (attr.dev_name) {
-        char *str = os_malloc(attr.dev_name_len + 1);
-        size_t i;
-        if (str == NULL)
-            return pos - buf;
-        for (i = 0; i < attr.dev_name_len; i++) {
-            if (attr.dev_name[i] < 32)
-                str[i] = '_';
-            else
-                str[i] = attr.dev_name[i];
-        }
-        str[i] = '\0';
-        ret = os_snprintf(pos, end - pos, "wps_device_name=%s\n", str);
-        os_free(str);
-        if (ret < 0 || ret >= end - pos)
-            return pos - buf;
-        pos += ret;
-    }
+	if (attr.dev_name) {
+		char *str = os_malloc(attr.dev_name_len + 1);
+		size_t i;
+		if (str == NULL)
+			return pos - buf;
+		for (i = 0; i < attr.dev_name_len; i++) {
+			if (attr.dev_name[i] < 32)
+				str[i] = '_';
+			else
+				str[i] = attr.dev_name[i];
+		}
+		str[i] = '\0';
+		ret = os_snprintf(pos, end - pos, "wps_device_name=%s\n", str);
+		os_free(str);
+		if (ret < 0 || ret >= end - pos)
+			return pos - buf;
+		pos += ret;
+	}
 
-    if (attr.config_methods) {
-        ret = os_snprintf(pos, end - pos,
-                "wps_config_methods=0x%04x\n",
-                WPA_GET_BE16(attr.config_methods));
-        if (ret < 0 || ret >= end - pos)
-            return pos - buf;
-        pos += ret;
-    }
+	if (attr.config_methods) {
+		ret = os_snprintf(pos, end - pos,
+				  "wps_config_methods=0x%04x\n",
+				  WPA_GET_BE16(attr.config_methods));
+		if (ret < 0 || ret >= end - pos)
+			return pos - buf;
+		pos += ret;
+	}
 
-    return pos - buf;
+	return pos - buf;
 }

@@ -55,18 +55,18 @@
 
 
 /*
-   Te0[x] = S [x].[02, 01, 01, 03];
-   Te1[x] = S [x].[03, 02, 01, 01];
-   Te2[x] = S [x].[01, 03, 02, 01];
-   Te3[x] = S [x].[01, 01, 03, 02];
-   Te4[x] = S [x].[01, 01, 01, 01];
+Te0[x] = S [x].[02, 01, 01, 03];
+Te1[x] = S [x].[03, 02, 01, 01];
+Te2[x] = S [x].[01, 03, 02, 01];
+Te3[x] = S [x].[01, 01, 03, 02];
+Te4[x] = S [x].[01, 01, 01, 01];
 
-   Td0[x] = Si[x].[0e, 09, 0d, 0b];
-   Td1[x] = Si[x].[0b, 0e, 09, 0d];
-   Td2[x] = Si[x].[0d, 0b, 0e, 09];
-   Td3[x] = Si[x].[09, 0d, 0b, 0e];
-   Td4[x] = Si[x].[01, 01, 01, 01];
-   */
+Td0[x] = Si[x].[0e, 09, 0d, 0b];
+Td1[x] = Si[x].[0b, 0e, 09, 0d];
+Td2[x] = Si[x].[0d, 0b, 0e, 09];
+Td3[x] = Si[x].[09, 0d, 0b, 0e];
+Td4[x] = Si[x].[01, 01, 01, 01];
+*/
 
 const u32 Te0[256] = {
     0xc66363a5U, 0xf87c7c84U, 0xee777799U, 0xf67b7b8dU,
@@ -734,9 +734,9 @@ const u32 Td4[256] = {
     0x55555555U, 0x21212121U, 0x0c0c0c0cU, 0x7d7d7d7dU,
 };
 const u32 rcon[] = {
-    0x01000000, 0x02000000, 0x04000000, 0x08000000,
-    0x10000000, 0x20000000, 0x40000000, 0x80000000,
-    0x1B000000, 0x36000000, /* for 128-bit blocks, Rijndael never uses more than 10 rcon values */
+	0x01000000, 0x02000000, 0x04000000, 0x08000000,
+	0x10000000, 0x20000000, 0x40000000, 0x80000000,
+	0x1B000000, 0x36000000, /* for 128-bit blocks, Rijndael never uses more than 10 rcon values */
 };
 #else /* AES_SMALL_TABLES */
 const u8 Td4s[256] = {
@@ -774,8 +774,8 @@ const u8 Td4s[256] = {
     0xe1U, 0x69U, 0x14U, 0x63U, 0x55U, 0x21U, 0x0cU, 0x7dU,
 };
 const u8 rcons[] = {
-    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36
-        /* for 128-bit blocks, Rijndael never uses more than 10 rcon values */
+	0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36
+	/* for 128-bit blocks, Rijndael never uses more than 10 rcon values */
 };
 #endif /* AES_SMALL_TABLES */
 /**
@@ -785,21 +785,21 @@ const u8 rcons[] = {
  */
 void rijndaelKeySetupEnc(u32 rk[/*44*/], const u8 cipherKey[])
 {
-    int i;
-    u32 temp;
+	int i;
+	u32 temp;
 
-    rk[0] = GETU32(cipherKey     );
-    rk[1] = GETU32(cipherKey +  4);
-    rk[2] = GETU32(cipherKey +  8);
-    rk[3] = GETU32(cipherKey + 12);
-    for (i = 0; i < 10; i++) {
-        temp  = rk[3];
-        rk[4] = rk[0] ^
-            TE421(temp) ^ TE432(temp) ^ TE443(temp) ^ TE414(temp) ^
-            RCON(i);
-        rk[5] = rk[1] ^ rk[4];
-        rk[6] = rk[2] ^ rk[5];
-        rk[7] = rk[3] ^ rk[6];
-        rk += 4;
-    }
+	rk[0] = GETU32(cipherKey     );
+	rk[1] = GETU32(cipherKey +  4);
+	rk[2] = GETU32(cipherKey +  8);
+	rk[3] = GETU32(cipherKey + 12);
+	for (i = 0; i < 10; i++) {
+		temp  = rk[3];
+		rk[4] = rk[0] ^
+			TE421(temp) ^ TE432(temp) ^ TE443(temp) ^ TE414(temp) ^
+			RCON(i);
+		rk[5] = rk[1] ^ rk[4];
+		rk[6] = rk[2] ^ rk[5];
+		rk[7] = rk[3] ^ rk[6];
+		rk += 4;
+	}
 }

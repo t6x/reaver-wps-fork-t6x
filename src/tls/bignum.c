@@ -35,14 +35,14 @@
  */
 struct bignum * bignum_init(void)
 {
-    struct bignum *n = os_zalloc(sizeof(mp_int));
-    if (n == NULL)
-        return NULL;
-    if (mp_init((mp_int *) n) != MP_OKAY) {
-        os_free(n);
-        n = NULL;
-    }
-    return n;
+	struct bignum *n = os_zalloc(sizeof(mp_int));
+	if (n == NULL)
+		return NULL;
+	if (mp_init((mp_int *) n) != MP_OKAY) {
+		os_free(n);
+		n = NULL;
+	}
+	return n;
 }
 
 
@@ -52,10 +52,10 @@ struct bignum * bignum_init(void)
  */
 void bignum_deinit(struct bignum *n)
 {
-    if (n) {
-        mp_clear((mp_int *) n);
-        os_free(n);
-    }
+	if (n) {
+		mp_clear((mp_int *) n);
+		os_free(n);
+	}
 }
 
 
@@ -66,7 +66,7 @@ void bignum_deinit(struct bignum *n)
  */
 size_t bignum_get_unsigned_bin_len(struct bignum *n)
 {
-    return mp_unsigned_bin_size((mp_int *) n);
+	return mp_unsigned_bin_size((mp_int *) n);
 }
 
 
@@ -80,18 +80,18 @@ size_t bignum_get_unsigned_bin_len(struct bignum *n)
  */
 int bignum_get_unsigned_bin(const struct bignum *n, u8 *buf, size_t *len)
 {
-    size_t need = mp_unsigned_bin_size((mp_int *) n);
-    if (len && need > *len) {
-        *len = need;
-        return -1;
-    }
-    if (mp_to_unsigned_bin((mp_int *) n, buf) != MP_OKAY) {
-        wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
-        return -1;
-    }
-    if (len)
-        *len = need;
-    return 0;
+	size_t need = mp_unsigned_bin_size((mp_int *) n);
+	if (len && need > *len) {
+		*len = need;
+		return -1;
+	}
+	if (mp_to_unsigned_bin((mp_int *) n, buf) != MP_OKAY) {
+		wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
+		return -1;
+	}
+	if (len)
+		*len = need;
+	return 0;
 }
 
 
@@ -104,11 +104,11 @@ int bignum_get_unsigned_bin(const struct bignum *n, u8 *buf, size_t *len)
  */
 int bignum_set_unsigned_bin(struct bignum *n, const u8 *buf, size_t len)
 {
-    if (mp_read_unsigned_bin((mp_int *) n, (u8 *) buf, len) != MP_OKAY) {
-        wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
-        return -1;
-    }
-    return 0;
+	if (mp_read_unsigned_bin((mp_int *) n, (u8 *) buf, len) != MP_OKAY) {
+		wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
+		return -1;
+	}
+	return 0;
 }
 
 
@@ -120,7 +120,7 @@ int bignum_set_unsigned_bin(struct bignum *n, const u8 *buf, size_t len)
  */
 int bignum_cmp(const struct bignum *a, const struct bignum *b)
 {
-    return mp_cmp((mp_int *) a, (mp_int *) b);
+	return mp_cmp((mp_int *) a, (mp_int *) b);
 }
 
 
@@ -132,7 +132,7 @@ int bignum_cmp(const struct bignum *a, const struct bignum *b)
  */
 int bignum_cmp_d(const struct bignum *a, unsigned long b)
 {
-    return mp_cmp_d((mp_int *) a, b);
+	return mp_cmp_d((mp_int *) a, b);
 }
 
 
@@ -144,13 +144,13 @@ int bignum_cmp_d(const struct bignum *a, unsigned long b)
  * Returns: 0 on success, -1 on failure
  */
 int bignum_add(const struct bignum *a, const struct bignum *b,
-        struct bignum *c)
+	       struct bignum *c)
 {
-    if (mp_add((mp_int *) a, (mp_int *) b, (mp_int *) c) != MP_OKAY) {
-        wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
-        return -1;
-    }
-    return 0;
+	if (mp_add((mp_int *) a, (mp_int *) b, (mp_int *) c) != MP_OKAY) {
+		wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
+		return -1;
+	}
+	return 0;
 }
 
 
@@ -162,13 +162,13 @@ int bignum_add(const struct bignum *a, const struct bignum *b,
  * Returns: 0 on success, -1 on failure
  */
 int bignum_sub(const struct bignum *a, const struct bignum *b,
-        struct bignum *c)
+	       struct bignum *c)
 {
-    if (mp_sub((mp_int *) a, (mp_int *) b, (mp_int *) c) != MP_OKAY) {
-        wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
-        return -1;
-    }
-    return 0;
+	if (mp_sub((mp_int *) a, (mp_int *) b, (mp_int *) c) != MP_OKAY) {
+		wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
+		return -1;
+	}
+	return 0;
 }
 
 
@@ -180,13 +180,13 @@ int bignum_sub(const struct bignum *a, const struct bignum *b,
  * Returns: 0 on success, -1 on failure
  */
 int bignum_mul(const struct bignum *a, const struct bignum *b,
-        struct bignum *c)
+	       struct bignum *c)
 {
-    if (mp_mul((mp_int *) a, (mp_int *) b, (mp_int *) c) != MP_OKAY) {
-        wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
-        return -1;
-    }
-    return 0;
+	if (mp_mul((mp_int *) a, (mp_int *) b, (mp_int *) c) != MP_OKAY) {
+		wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
+		return -1;
+	}
+	return 0;
 }
 
 
@@ -199,14 +199,14 @@ int bignum_mul(const struct bignum *a, const struct bignum *b,
  * Returns: 0 on success, -1 on failure
  */
 int bignum_mulmod(const struct bignum *a, const struct bignum *b,
-        const struct bignum *c, struct bignum *d)
+		  const struct bignum *c, struct bignum *d)
 {
-    if (mp_mulmod((mp_int *) a, (mp_int *) b, (mp_int *) c, (mp_int *) d)
-            != MP_OKAY) {
-        wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
-        return -1;
-    }
-    return 0;
+	if (mp_mulmod((mp_int *) a, (mp_int *) b, (mp_int *) c, (mp_int *) d)
+	    != MP_OKAY) {
+		wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
+		return -1;
+	}
+	return 0;
 }
 
 
@@ -219,12 +219,12 @@ int bignum_mulmod(const struct bignum *a, const struct bignum *b,
  * Returns: 0 on success, -1 on failure
  */
 int bignum_exptmod(const struct bignum *a, const struct bignum *b,
-        const struct bignum *c, struct bignum *d)
+		   const struct bignum *c, struct bignum *d)
 {
-    if (mp_exptmod((mp_int *) a, (mp_int *) b, (mp_int *) c, (mp_int *) d)
-            != MP_OKAY) {
-        wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
-        return -1;
-    }
-    return 0;
+	if (mp_exptmod((mp_int *) a, (mp_int *) b, (mp_int *) c, (mp_int *) d)
+	    != MP_OKAY) {
+		wpa_printf(MSG_DEBUG, "BIGNUM: %s failed", __func__);
+		return -1;
+	}
+	return 0;
 }

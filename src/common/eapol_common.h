@@ -22,10 +22,10 @@
 #endif /* _MSC_VER */
 
 struct ieee802_1x_hdr {
-    u8 version;
-    u8 type;
-    be16 length;
-    /* followed by length octets of data */
+	u8 version;
+	u8 type;
+	be16 length;
+	/* followed by length octets of data */
 } STRUCT_PACKED;
 
 #ifdef _MSC_VER
@@ -35,13 +35,13 @@ struct ieee802_1x_hdr {
 #define EAPOL_VERSION 2
 
 enum { IEEE802_1X_TYPE_EAP_PACKET = 0,
-    IEEE802_1X_TYPE_EAPOL_START = 1,
-    IEEE802_1X_TYPE_EAPOL_LOGOFF = 2,
-    IEEE802_1X_TYPE_EAPOL_KEY = 3,
-    IEEE802_1X_TYPE_EAPOL_ENCAPSULATED_ASF_ALERT = 4
+       IEEE802_1X_TYPE_EAPOL_START = 1,
+       IEEE802_1X_TYPE_EAPOL_LOGOFF = 2,
+       IEEE802_1X_TYPE_EAPOL_KEY = 3,
+       IEEE802_1X_TYPE_EAPOL_ENCAPSULATED_ASF_ALERT = 4
 };
 
 enum { EAPOL_KEY_TYPE_RC4 = 1, EAPOL_KEY_TYPE_RSN = 2,
-    EAPOL_KEY_TYPE_WPA = 254 };
+       EAPOL_KEY_TYPE_WPA = 254 };
 
 #endif /* EAPOL_COMMON_H */

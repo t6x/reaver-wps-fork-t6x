@@ -28,11 +28,11 @@
  */
 int aes_128_encrypt_block(const u8 *key, const u8 *in, u8 *out)
 {
-    void *ctx;
-    ctx = aes_encrypt_init(key, 16);
-    if (ctx == NULL)
-        return -1;
-    aes_encrypt(ctx, in, out);
-    aes_encrypt_deinit(ctx);
-    return 0;
+	void *ctx;
+	ctx = aes_encrypt_init(key, 16);
+	if (ctx == NULL)
+		return -1;
+	aes_encrypt(ctx, in, out);
+	aes_encrypt_deinit(ctx);
+	return 0;
 }

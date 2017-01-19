@@ -36,8 +36,8 @@
  * entered by calling SM_ENTER or SM_ENTER_GLOBAL.
  */
 #define SM_STATE(machine, state) \
-    static void sm_ ## machine ## _ ## state ## _Enter(STATE_MACHINE_DATA *sm, \
-                                                       int global)
+static void sm_ ## machine ## _ ## state ## _Enter(STATE_MACHINE_DATA *sm, \
+	int global)
 
 /**
  * SM_ENTRY - State machine function entry point
@@ -50,11 +50,11 @@
  * information about state transition and update the state machine state.
  */
 #define SM_ENTRY(machine, state) \
-    if (!global || sm->machine ## _state != machine ## _ ## state) { \
-        sm->changed = TRUE; \
-        wpa_printf(MSG_DEBUG, STATE_MACHINE_DEBUG_PREFIX ": " #machine \
-                   " entering state " #state); \
-    } \
+if (!global || sm->machine ## _state != machine ## _ ## state) { \
+	sm->changed = TRUE; \
+	wpa_printf(MSG_DEBUG, STATE_MACHINE_DEBUG_PREFIX ": " #machine \
+		   " entering state " #state); \
+} \
 sm->machine ## _state = machine ## _ ## state;
 
 /**
@@ -69,11 +69,11 @@ sm->machine ## _state = machine ## _ ## state;
  * than one state variable to be stored in the same data structure.
  */
 #define SM_ENTRY_M(machine, _state, data) \
-    if (!global || sm->data ## _ ## state != machine ## _ ## _state) { \
-        sm->changed = TRUE; \
-        wpa_printf(MSG_DEBUG, STATE_MACHINE_DEBUG_PREFIX ": " \
-#machine " entering state " #_state); \
-    } \
+if (!global || sm->data ## _ ## state != machine ## _ ## _state) { \
+	sm->changed = TRUE; \
+	wpa_printf(MSG_DEBUG, STATE_MACHINE_DEBUG_PREFIX ": " \
+		   #machine " entering state " #_state); \
+} \
 sm->data ## _ ## state = machine ## _ ## _state;
 
 /**
@@ -87,12 +87,12 @@ sm->data ## _ ## state = machine ## _ ## _state;
  * be included in debug.
  */
 #define SM_ENTRY_MA(machine, _state, data) \
-    if (!global || sm->data ## _ ## state != machine ## _ ## _state) { \
-        sm->changed = TRUE; \
-        wpa_printf(MSG_DEBUG, STATE_MACHINE_DEBUG_PREFIX ": " MACSTR " " \
-#machine " entering state " #_state, \
-                   MAC2STR(STATE_MACHINE_ADDR)); \
-    } \
+if (!global || sm->data ## _ ## state != machine ## _ ## _state) { \
+	sm->changed = TRUE; \
+	wpa_printf(MSG_DEBUG, STATE_MACHINE_DEBUG_PREFIX ": " MACSTR " " \
+		   #machine " entering state " #_state, \
+		   MAC2STR(STATE_MACHINE_ADDR)); \
+} \
 sm->data ## _ ## state = machine ## _ ## _state;
 
 /**
@@ -105,7 +105,7 @@ sm->data ## _ ## state = machine ## _ ## _state;
  * move the state machine to a new state.
  */
 #define SM_ENTER(machine, state) \
-    sm_ ## machine ## _ ## state ## _Enter(sm, 0)
+sm_ ## machine ## _ ## state ## _Enter(sm, 0)
 
 /**
  * SM_ENTER_GLOBAL - Enter a new state machine state based on global rule
@@ -118,7 +118,7 @@ sm->data ## _ ## state = machine ## _ ## _state;
  * rule is forcing a state machine to remain in on state.
  */
 #define SM_ENTER_GLOBAL(machine, state) \
-    sm_ ## machine ## _ ## state ## _Enter(sm, 1)
+sm_ ## machine ## _ ## state ## _Enter(sm, 1)
 
 /**
  * SM_STEP - Declaration of a state machine step function
@@ -130,7 +130,7 @@ sm->data ## _ ## state = machine ## _ ## _state;
  * SM_ENTER and SM_ENTER_GLOBAL macros to enter new state.
  */
 #define SM_STEP(machine) \
-    static void sm_ ## machine ## _Step(STATE_MACHINE_DATA *sm)
+static void sm_ ## machine ## _Step(STATE_MACHINE_DATA *sm)
 
 /**
  * SM_STEP_RUN - Call the state machine step function

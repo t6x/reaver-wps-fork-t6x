@@ -26,19 +26,19 @@
 
 /* HandshakeType */
 enum {
-    TLS_HANDSHAKE_TYPE_HELLO_REQUEST = 0,
-    TLS_HANDSHAKE_TYPE_CLIENT_HELLO = 1,
-    TLS_HANDSHAKE_TYPE_SERVER_HELLO = 2,
-    TLS_HANDSHAKE_TYPE_NEW_SESSION_TICKET = 4 /* RFC 4507 */,
-    TLS_HANDSHAKE_TYPE_CERTIFICATE = 11,
-    TLS_HANDSHAKE_TYPE_SERVER_KEY_EXCHANGE = 12,
-    TLS_HANDSHAKE_TYPE_CERTIFICATE_REQUEST = 13,
-    TLS_HANDSHAKE_TYPE_SERVER_HELLO_DONE = 14,
-    TLS_HANDSHAKE_TYPE_CERTIFICATE_VERIFY = 15,
-    TLS_HANDSHAKE_TYPE_CLIENT_KEY_EXCHANGE = 16,
-    TLS_HANDSHAKE_TYPE_FINISHED = 20,
-    TLS_HANDSHAKE_TYPE_CERTIFICATE_URL = 21 /* RFC 4366 */,
-    TLS_HANDSHAKE_TYPE_CERTIFICATE_STATUS = 22 /* RFC 4366 */
+	TLS_HANDSHAKE_TYPE_HELLO_REQUEST = 0,
+	TLS_HANDSHAKE_TYPE_CLIENT_HELLO = 1,
+	TLS_HANDSHAKE_TYPE_SERVER_HELLO = 2,
+	TLS_HANDSHAKE_TYPE_NEW_SESSION_TICKET = 4 /* RFC 4507 */,
+	TLS_HANDSHAKE_TYPE_CERTIFICATE = 11,
+	TLS_HANDSHAKE_TYPE_SERVER_KEY_EXCHANGE = 12,
+	TLS_HANDSHAKE_TYPE_CERTIFICATE_REQUEST = 13,
+	TLS_HANDSHAKE_TYPE_SERVER_HELLO_DONE = 14,
+	TLS_HANDSHAKE_TYPE_CERTIFICATE_VERIFY = 15,
+	TLS_HANDSHAKE_TYPE_CLIENT_KEY_EXCHANGE = 16,
+	TLS_HANDSHAKE_TYPE_FINISHED = 20,
+	TLS_HANDSHAKE_TYPE_CERTIFICATE_URL = 21 /* RFC 4366 */,
+	TLS_HANDSHAKE_TYPE_CERTIFICATE_STATUS = 22 /* RFC 4366 */
 };
 
 /* CipherSuite */
@@ -122,7 +122,7 @@ enum {
 
 /* ChangeCipherSpec */
 enum {
-    TLS_CHANGE_CIPHER_SPEC = 1
+	TLS_CHANGE_CIPHER_SPEC = 1
 };
 
 /* TLS Extensions */
@@ -138,69 +138,69 @@ enum {
 
 
 typedef enum {
-    TLS_KEY_X_NULL,
-    TLS_KEY_X_RSA,
-    TLS_KEY_X_RSA_EXPORT,
-    TLS_KEY_X_DH_DSS_EXPORT,
-    TLS_KEY_X_DH_DSS,
-    TLS_KEY_X_DH_RSA_EXPORT,
-    TLS_KEY_X_DH_RSA,
-    TLS_KEY_X_DHE_DSS_EXPORT,
-    TLS_KEY_X_DHE_DSS,
-    TLS_KEY_X_DHE_RSA_EXPORT,
-    TLS_KEY_X_DHE_RSA,
-    TLS_KEY_X_DH_anon_EXPORT,
-    TLS_KEY_X_DH_anon
+	TLS_KEY_X_NULL,
+	TLS_KEY_X_RSA,
+	TLS_KEY_X_RSA_EXPORT,
+	TLS_KEY_X_DH_DSS_EXPORT,
+	TLS_KEY_X_DH_DSS,
+	TLS_KEY_X_DH_RSA_EXPORT,
+	TLS_KEY_X_DH_RSA,
+	TLS_KEY_X_DHE_DSS_EXPORT,
+	TLS_KEY_X_DHE_DSS,
+	TLS_KEY_X_DHE_RSA_EXPORT,
+	TLS_KEY_X_DHE_RSA,
+	TLS_KEY_X_DH_anon_EXPORT,
+	TLS_KEY_X_DH_anon
 } tls_key_exchange;
 
 typedef enum {
-    TLS_CIPHER_NULL,
-    TLS_CIPHER_RC4_40,
-    TLS_CIPHER_RC4_128,
-    TLS_CIPHER_RC2_CBC_40,
-    TLS_CIPHER_IDEA_CBC,
-    TLS_CIPHER_DES40_CBC,
-    TLS_CIPHER_DES_CBC,
-    TLS_CIPHER_3DES_EDE_CBC,
-    TLS_CIPHER_AES_128_CBC,
-    TLS_CIPHER_AES_256_CBC
+	TLS_CIPHER_NULL,
+	TLS_CIPHER_RC4_40,
+	TLS_CIPHER_RC4_128,
+	TLS_CIPHER_RC2_CBC_40,
+	TLS_CIPHER_IDEA_CBC,
+	TLS_CIPHER_DES40_CBC,
+	TLS_CIPHER_DES_CBC,
+	TLS_CIPHER_3DES_EDE_CBC,
+	TLS_CIPHER_AES_128_CBC,
+	TLS_CIPHER_AES_256_CBC
 } tls_cipher;
 
 typedef enum {
-    TLS_HASH_NULL,
-    TLS_HASH_MD5,
-    TLS_HASH_SHA
+	TLS_HASH_NULL,
+	TLS_HASH_MD5,
+	TLS_HASH_SHA
 } tls_hash;
 
 struct tls_cipher_suite {
-    u16 suite;
-    tls_key_exchange key_exchange;
-    tls_cipher cipher;
-    tls_hash hash;
+	u16 suite;
+	tls_key_exchange key_exchange;
+	tls_cipher cipher;
+	tls_hash hash;
 };
 
 typedef enum {
-    TLS_CIPHER_STREAM,
-    TLS_CIPHER_BLOCK
+	TLS_CIPHER_STREAM,
+	TLS_CIPHER_BLOCK
 } tls_cipher_type;
 
 struct tls_cipher_data {
-    tls_cipher cipher;
-    tls_cipher_type type;
-    size_t key_material;
-    size_t expanded_key_material;
-    size_t block_size; /* also iv_size */
-    enum crypto_cipher_alg alg;
+	tls_cipher cipher;
+	tls_cipher_type type;
+	size_t key_material;
+	size_t expanded_key_material;
+	size_t block_size; /* also iv_size */
+	enum crypto_cipher_alg alg;
 };
 
 
 struct tls_verify_hash {
-    struct crypto_hash *md5_client;
-    struct crypto_hash *sha1_client;
-    struct crypto_hash *md5_server;
-    struct crypto_hash *sha1_server;
-    struct crypto_hash *md5_cert;
-    struct crypto_hash *sha1_cert;
+	struct crypto_hash *md5_client;
+	struct crypto_hash *sha1_client;
+	struct crypto_hash *md5_server;
+	struct crypto_hash *sha1_server;
+	struct crypto_hash *md5_cert;
+	struct crypto_hash *sha1_cert;
 };
 
 
@@ -210,7 +210,7 @@ int tls_server_key_exchange_allowed(tls_cipher cipher);
 int tls_parse_cert(const u8 *buf, size_t len, struct crypto_public_key **pk);
 int tls_verify_hash_init(struct tls_verify_hash *verify);
 void tls_verify_hash_add(struct tls_verify_hash *verify, const u8 *buf,
-                         size_t len);
+			 size_t len);
 void tls_verify_hash_free(struct tls_verify_hash *verify);
 
 #endif /* TLSV1_COMMON_H */

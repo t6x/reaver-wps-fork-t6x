@@ -36,37 +36,37 @@
 /* Populates globule->mac with the MAC address of the interface globule->iface */
 int read_iface_mac()
 {
-    struct ifreq ifr;
-    struct ether_addr *eth = NULL;
-    int sock = 0, ret_val = 0;
+	struct ifreq ifr;
+	struct ether_addr *eth = NULL;
+	int sock = 0, ret_val = 0;
 
-    /* Need a socket for the ioctl call */
-    sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    if(sock != -1)
-    {
-        eth = malloc(sizeof(struct ether_addr));
-        if(eth)
-        {
-            memset(eth, 0, sizeof(struct ether_addr));
+	/* Need a socket for the ioctl call */
+	sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+	if(sock != -1)
+	{
+		eth = malloc(sizeof(struct ether_addr));
+		if(eth)
+		{
+			memset(eth, 0, sizeof(struct ether_addr));
 
-            /* Prepare request */
-            memset(&ifr, 0, sizeof(struct ifreq));
-            strncpy(ifr.ifr_name, get_iface(), IFNAMSIZ);
+			/* Prepare request */
+			memset(&ifr, 0, sizeof(struct ifreq));
+			strncpy(ifr.ifr_name, get_iface(), IFNAMSIZ);
 
-            /* Do it */
-            if(ioctl(sock, SIOCGIFHWADDR, &ifr) == 0)
-            {
-                set_mac((unsigned char *) &ifr.ifr_hwaddr.sa_data);
-                ret_val = 1;
-            }
+			/* Do it */
+			if(ioctl(sock, SIOCGIFHWADDR, &ifr) == 0)
+			{
+				set_mac((unsigned char *) &ifr.ifr_hwaddr.sa_data);
+				ret_val = 1;
+			}
 
-            free(eth);
-        }
+			free(eth);
+		}
 
-        close(sock);
-    }
+		close(sock);
+	}
 
-    return ret_val;
+	return ret_val;
 }
 
 /* 
@@ -77,72 +77,72 @@ int read_iface_mac()
  */
 int next_channel()
 {
-    static int i;
-    int n = 0;
-    int bg_channels[] = BG_CHANNELS;
-    int an_channels[] = AN_CHANNELS;
-    int *channels = NULL;
+        static int i;
+	int n = 0;
+        int bg_channels[] = BG_CHANNELS;
+	int an_channels[] = AN_CHANNELS;
+	int *channels = NULL;
 
-    /* Select the appropriate channels for the target 802.11 band */
-    if(get_wifi_band() == AN_BAND)
-    {
-        channels = (int *) &an_channels;
-        n = sizeof(an_channels) / sizeof(int);
-    }
-    else
-    {
-        channels = (int *) &bg_channels;
-        n = sizeof(bg_channels) / sizeof(int);
-    }
+	/* Select the appropriate channels for the target 802.11 band */
+	if(get_wifi_band() == AN_BAND)
+	{
+		channels = (int *) &an_channels;
+		n = sizeof(an_channels) / sizeof(int);
+	}
+	else
+	{
+		channels = (int *) &bg_channels;
+		n = sizeof(bg_channels) / sizeof(int);
+	}
 
-    /* Only switch channels if fixed channel operation is disabled */
-    if(!get_fixed_channel())
-    {
-        i++;
+	/* Only switch channels if fixed channel operation is disabled */
+	if(!get_fixed_channel())
+	{
+        	i++;
 
-        if((i >= n) || i < 0)
-        {
-            i = 0;
-        }
+        	if((i >= n) || i < 0)
+        	{
+        	        i = 0;
+        	}
 
-        return change_channel(channels[i]);
-    }
-
-    return 0;
+        	return change_channel(channels[i]);
+	}
+	
+	return 0;
 }
 
 /* Sets the 802.11 channel for the selected interface */
 int change_channel(int channel)
 {
-    int skfd = 0, ret_val = 0;
-    struct iwreq wrq;
+        int skfd = 0, ret_val = 0;
+        struct iwreq wrq;
 
-    memset((void *) &wrq, 0, sizeof(struct iwreq));
+        memset((void *) &wrq, 0, sizeof(struct iwreq));
 
-    /* Open NET socket */
-    if((skfd = iw_sockets_open()) < 0)
-    {
-        perror("iw_sockets_open");
-    }
-    else if(get_iface())
-    {
-        /* Convert channel to a frequency */
-        iw_float2freq((double) channel, &(wrq.u.freq));
-
-        /* Fixed frequency */
-        wrq.u.freq.flags = IW_FREQ_FIXED;
-
-        cprintf(VERBOSE, "[+] Switching %s to channel %d\n", get_iface(), channel);
-
-        /* Set frequency */
-        if(iw_set_ext(skfd, get_iface(), SIOCSIWFREQ, &wrq) >= 0)
+        /* Open NET socket */
+        if((skfd = iw_sockets_open()) < 0)
         {
-            set_channel(channel);
-            ret_val = 1;
+                perror("iw_sockets_open");
+        }
+        else if(get_iface())
+        {
+                /* Convert channel to a frequency */
+                iw_float2freq((double) channel, &(wrq.u.freq));
+
+                /* Fixed frequency */
+                wrq.u.freq.flags = IW_FREQ_FIXED;
+
+        	cprintf(VERBOSE, "[+] Switching %s to channel %d\n", get_iface(), channel);
+
+                /* Set frequency */
+                if(iw_set_ext(skfd, get_iface(), SIOCSIWFREQ, &wrq) >= 0)
+                {
+			set_channel(channel);
+                        ret_val = 1;
+                }
+
+                iw_sockets_close(skfd);
         }
 
-        iw_sockets_close(skfd);
-    }
-
-    return ret_val;
+        return ret_val;
 }

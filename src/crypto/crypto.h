@@ -57,7 +57,7 @@ int md5_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac);
  * Returns: 0 on success, -1 on failure
  */
 int md5_vector_non_fips_allow(size_t num_elem, const u8 *addr[],
-                              const size_t *len, u8 *mac);
+			      const size_t *len, u8 *mac);
 #else /* CONFIG_FIPS */
 #define md5_vector_non_fips_allow md5_vector
 #endif /* CONFIG_FIPS */
@@ -72,7 +72,7 @@ int md5_vector_non_fips_allow(size_t num_elem, const u8 *addr[],
  * Returns: 0 on success, -1 on failure
  */
 int sha1_vector(size_t num_elem, const u8 *addr[], const size_t *len,
-                u8 *mac);
+		u8 *mac);
 
 /**
  * fips186_2-prf - NIST FIPS Publication 186-2 change notice 1 PRF
@@ -87,7 +87,7 @@ int sha1_vector(size_t num_elem, const u8 *addr[], const size_t *len,
  * SHA-1, but has different message padding.
  */
 int __must_check fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x,
-                               size_t xlen);
+			       size_t xlen);
 
 /**
  * sha256_vector - SHA256 hash for data vector
@@ -98,7 +98,7 @@ int __must_check fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x,
  * Returns: 0 on success, -1 on failure
  */
 int sha256_vector(size_t num_elem, const u8 *addr[], const size_t *len,
-                  u8 *mac);
+		  u8 *mac);
 
 /**
  * des_encrypt - Encrypt one block with DES
@@ -154,8 +154,8 @@ void aes_decrypt_deinit(void *ctx);
 
 
 enum crypto_hash_alg {
-    CRYPTO_HASH_ALG_MD5, CRYPTO_HASH_ALG_SHA1,
-    CRYPTO_HASH_ALG_HMAC_MD5, CRYPTO_HASH_ALG_HMAC_SHA1
+	CRYPTO_HASH_ALG_MD5, CRYPTO_HASH_ALG_SHA1,
+	CRYPTO_HASH_ALG_HMAC_MD5, CRYPTO_HASH_ALG_HMAC_SHA1
 };
 
 struct crypto_hash;
@@ -173,7 +173,7 @@ struct crypto_hash;
  * to implement this.
  */
 struct crypto_hash * crypto_hash_init(enum crypto_hash_alg alg, const u8 *key,
-                                      size_t key_len);
+				      size_t key_len);
 
 /**
  * crypto_hash_update - Add data to hash calculation
@@ -208,8 +208,8 @@ int crypto_hash_finish(struct crypto_hash *ctx, u8 *hash, size_t *len);
 
 
 enum crypto_cipher_alg {
-    CRYPTO_CIPHER_NULL = 0, CRYPTO_CIPHER_ALG_AES, CRYPTO_CIPHER_ALG_3DES,
-    CRYPTO_CIPHER_ALG_DES, CRYPTO_CIPHER_ALG_RC2, CRYPTO_CIPHER_ALG_RC4
+	CRYPTO_CIPHER_NULL = 0, CRYPTO_CIPHER_ALG_AES, CRYPTO_CIPHER_ALG_3DES,
+	CRYPTO_CIPHER_ALG_DES, CRYPTO_CIPHER_ALG_RC2, CRYPTO_CIPHER_ALG_RC4
 };
 
 struct crypto_cipher;
@@ -228,8 +228,8 @@ struct crypto_cipher;
  * to implement this.
  */
 struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
-                                          const u8 *iv, const u8 *key,
-                                          size_t key_len);
+					  const u8 *iv, const u8 *key,
+					  size_t key_len);
 
 /**
  * crypto_cipher_encrypt - Cipher encrypt
@@ -244,7 +244,7 @@ struct crypto_cipher * crypto_cipher_init(enum crypto_cipher_alg alg,
  * to implement this.
  */
 int __must_check crypto_cipher_encrypt(struct crypto_cipher *ctx,
-                                       const u8 *plain, u8 *crypt, size_t len);
+				       const u8 *plain, u8 *crypt, size_t len);
 
 /**
  * crypto_cipher_decrypt - Cipher decrypt
@@ -259,7 +259,7 @@ int __must_check crypto_cipher_encrypt(struct crypto_cipher *ctx,
  * to implement this.
  */
 int __must_check crypto_cipher_decrypt(struct crypto_cipher *ctx,
-                                       const u8 *crypt, u8 *plain, size_t len);
+				       const u8 *crypt, u8 *plain, size_t len);
 
 /**
  * crypto_cipher_decrypt - Free cipher context
@@ -303,8 +303,8 @@ struct crypto_public_key * crypto_public_key_import(const u8 *key, size_t len);
  * to implement this.
  */
 struct crypto_private_key * crypto_private_key_import(const u8 *key,
-                                                      size_t len,
-                                                      const char *passwd);
+						      size_t len,
+						      const char *passwd);
 
 /**
  * crypto_public_key_from_cert - Import an RSA public key from a certificate
@@ -321,7 +321,7 @@ struct crypto_private_key * crypto_private_key_import(const u8 *key,
  * to implement this.
  */
 struct crypto_public_key * crypto_public_key_from_cert(const u8 *buf,
-                                                       size_t len);
+						       size_t len);
 
 /**
  * crypto_public_key_encrypt_pkcs1_v15 - Public key encryption (PKCS #1 v1.5)
@@ -337,8 +337,8 @@ struct crypto_public_key * crypto_public_key_from_cert(const u8 *buf,
  * to implement this.
  */
 int __must_check crypto_public_key_encrypt_pkcs1_v15(
-    struct crypto_public_key *key, const u8 *in, size_t inlen,
-    u8 *out, size_t *outlen);
+	struct crypto_public_key *key, const u8 *in, size_t inlen,
+	u8 *out, size_t *outlen);
 
 /**
  * crypto_private_key_decrypt_pkcs1_v15 - Private key decryption (PKCS #1 v1.5)
@@ -354,8 +354,8 @@ int __must_check crypto_public_key_encrypt_pkcs1_v15(
  * to implement this.
  */
 int __must_check crypto_private_key_decrypt_pkcs1_v15(
-    struct crypto_private_key *key, const u8 *in, size_t inlen,
-    u8 *out, size_t *outlen);
+	struct crypto_private_key *key, const u8 *in, size_t inlen,
+	u8 *out, size_t *outlen);
 
 /**
  * crypto_private_key_sign_pkcs1 - Sign with private key (PKCS #1)
@@ -371,8 +371,8 @@ int __must_check crypto_private_key_decrypt_pkcs1_v15(
  * to implement this.
  */
 int __must_check crypto_private_key_sign_pkcs1(struct crypto_private_key *key,
-                                               const u8 *in, size_t inlen,
-                                               u8 *out, size_t *outlen);
+					       const u8 *in, size_t inlen,
+					       u8 *out, size_t *outlen);
 
 /**
  * crypto_public_key_free - Free public key
@@ -404,8 +404,8 @@ void crypto_private_key_free(struct crypto_private_key *key);
  * Returns: 0 on success, -1 on failure
  */
 int __must_check crypto_public_key_decrypt_pkcs1(
-    struct crypto_public_key *key, const u8 *crypt, size_t crypt_len,
-    u8 *plain, size_t *plain_len);
+	struct crypto_public_key *key, const u8 *crypt, size_t crypt_len,
+	u8 *plain, size_t *plain_len);
 
 /**
  * crypto_global_init - Initialize crypto wrapper
@@ -446,9 +446,9 @@ void crypto_global_deinit(void);
  * to implement this.
  */
 int __must_check crypto_mod_exp(const u8 *base, size_t base_len,
-                                const u8 *power, size_t power_len,
-                                const u8 *modulus, size_t modulus_len,
-                                u8 *result, size_t *result_len);
+				const u8 *power, size_t power_len,
+				const u8 *modulus, size_t modulus_len,
+				u8 *result, size_t *result_len);
 
 /**
  * rc4_skip - XOR RC4 stream to given data with skip-stream-start
@@ -464,6 +464,6 @@ int __must_check crypto_mod_exp(const u8 *base, size_t base_len,
  * encryption/decryption.
  */
 int rc4_skip(const u8 *key, size_t keylen, size_t skip,
-             u8 *data, size_t data_len);
+	     u8 *data, size_t data_len);
 
 #endif /* CRYPTO_H */

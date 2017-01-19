@@ -20,20 +20,20 @@
 
 /* Prototypes of the main of each tool */
 extern int
-main_iwconfig(int	argc,
-        char **	argv);
+	main_iwconfig(int	argc,
+		      char **	argv);
 extern int
-main_iwlist(int	argc,
-        char **	argv);
+	main_iwlist(int	argc,
+		    char **	argv);
 extern int
-main_iwspy(int	argc,
-        char **	argv);
+	main_iwspy(int	argc,
+		   char **	argv);
 extern int
-main_iwpriv(int	argc,
-        char **	argv);
+	main_iwpriv(int	argc,
+		    char **	argv);
 extern int
-main_iwgetid(int	argc,
-        char **	argv);
+	main_iwgetid(int	argc,
+		     char **	argv);
 
 /************************** MULTICALL HACK **************************/
 /*
@@ -108,36 +108,36 @@ main_iwgetid(int	argc,
 /*
  * The main !
  */
-    int
+int
 main(int	argc,
-        char **	argv)
+     char **	argv)
 {
-    char *	call_name = basename(argv[0]);	/* Strip path */
+  char *	call_name = basename(argv[0]);	/* Strip path */
 
-    /* This is a testing hack */
-    if(!strcmp(call_name, "iwmulticall") && (argc > 0))
+  /* This is a testing hack */
+  if(!strcmp(call_name, "iwmulticall") && (argc > 0))
     {
-        argv++;
-        argc--;
-        call_name = basename(argv[0]);
+      argv++;
+      argc--;
+      call_name = basename(argv[0]);
     }
 
-    /* Just check the name under which we were called... */
+  /* Just check the name under which we were called... */
 
-    if(!strcmp(call_name, "iwconfig"))
-        return(main_iwconfig(argc, argv));
-    if(!strcmp(call_name, "iwlist"))
-        return(main_iwlist(argc, argv));
+  if(!strcmp(call_name, "iwconfig"))
+    return(main_iwconfig(argc, argv));
+  if(!strcmp(call_name, "iwlist"))
+    return(main_iwlist(argc, argv));
 #ifndef WE_ESSENTIAL
-    if(!strcmp(call_name, "iwspy"))
-        return(main_iwspy(argc, argv));
+  if(!strcmp(call_name, "iwspy"))
+    return(main_iwspy(argc, argv));
 #endif	/* WE_ESSENTIAL */
-    if(!strcmp(call_name, "iwpriv"))
-        return(main_iwpriv(argc, argv));
-    if(!strcmp(call_name, "iwgetid"))
-        return(main_iwgetid(argc, argv));
+  if(!strcmp(call_name, "iwpriv"))
+    return(main_iwpriv(argc, argv));
+  if(!strcmp(call_name, "iwgetid"))
+    return(main_iwgetid(argc, argv));
 
-    /* Uh oh... Not supposed to come here. */
-    printf("iwmulticall : you are not supposed to call me this way...\n");
-    return(0);
+  /* Uh oh... Not supposed to come here. */
+  printf("iwmulticall : you are not supposed to call me this way...\n");
+  return(0);
 }

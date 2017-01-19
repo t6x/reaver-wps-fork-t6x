@@ -62,24 +62,24 @@
  * All data in the header is little endian on all platforms.
  */
 struct ieee80211_radiotap_header {
-    uint8_t it_version;	/* Version 0. Only increases
-                         * for drastic changes,
-                         * introduction of compatible
-                         * new fields does not count.
-                         */
-    uint8_t it_pad;
-    uint16_t it_len;	/* length of the whole
-                         * header in bytes, including
-                         * it_version, it_pad,
-                         * it_len, and data fields.
-                         */
-    uint32_t it_present;	/* A bitmap telling which
-                             * fields are present. Set bit 31
-                             * (0x80000000) to extend the
-                             * bitmap by another 32 bits.
-                             * Additional extensions are made
-                             * by setting bit 31.
-                             */
+	uint8_t it_version;	/* Version 0. Only increases
+				 * for drastic changes,
+				 * introduction of compatible
+				 * new fields does not count.
+				 */
+	uint8_t it_pad;
+	uint16_t it_len;	/* length of the whole
+				 * header in bytes, including
+				 * it_version, it_pad,
+				 * it_len, and data fields.
+				 */
+	uint32_t it_present;	/* A bitmap telling which
+				 * fields are present. Set bit 31
+				 * (0x80000000) to extend the
+				 * bitmap by another 32 bits.
+				 * Additional extensions are made
+				 * by setting bit 31.
+				 */
 };
 
 /* Name                                 Data type    Units
@@ -153,52 +153,52 @@ struct ieee80211_radiotap_header {
  *      the antenna port.
  *
  * IEEE80211_RADIOTAP_FLAGS             u8           bitmap
-*
-*      Properties of transmitted and received frames. See flags
-*      defined below.
-*
-* IEEE80211_RADIOTAP_ANTENNA           u8           antenna index
-*
-*      Unitless indication of the Rx/Tx antenna for this packet.
-*      The first antenna is antenna 0.
-*
-* IEEE80211_RADIOTAP_RX_FLAGS          uint16_t       bitmap
-*
-*     Properties of received frames. See flags defined below.
-*
-* IEEE80211_RADIOTAP_TX_FLAGS          uint16_t       bitmap
-*
-*     Properties of transmitted frames. See flags defined below.
-*
-* IEEE80211_RADIOTAP_RTS_RETRIES       u8           data
-*
-*     Number of rts retries a transmitted frame used.
-*
-* IEEE80211_RADIOTAP_DATA_RETRIES      u8           data
-*
-*     Number of unicast retries a transmitted frame used.
-*
-*/
+ *
+ *      Properties of transmitted and received frames. See flags
+ *      defined below.
+ *
+ * IEEE80211_RADIOTAP_ANTENNA           u8           antenna index
+ *
+ *      Unitless indication of the Rx/Tx antenna for this packet.
+ *      The first antenna is antenna 0.
+ *
+ * IEEE80211_RADIOTAP_RX_FLAGS          uint16_t       bitmap
+ *
+ *     Properties of received frames. See flags defined below.
+ *
+ * IEEE80211_RADIOTAP_TX_FLAGS          uint16_t       bitmap
+ *
+ *     Properties of transmitted frames. See flags defined below.
+ *
+ * IEEE80211_RADIOTAP_RTS_RETRIES       u8           data
+ *
+ *     Number of rts retries a transmitted frame used.
+ *
+ * IEEE80211_RADIOTAP_DATA_RETRIES      u8           data
+ *
+ *     Number of unicast retries a transmitted frame used.
+ *
+ */
 enum ieee80211_radiotap_type {
-    IEEE80211_RADIOTAP_TSFT = 0,
-    IEEE80211_RADIOTAP_FLAGS = 1,
-    IEEE80211_RADIOTAP_RATE = 2,
-    IEEE80211_RADIOTAP_CHANNEL = 3,
-    IEEE80211_RADIOTAP_FHSS = 4,
-    IEEE80211_RADIOTAP_DBM_ANTSIGNAL = 5,
-    IEEE80211_RADIOTAP_DBM_ANTNOISE = 6,
-    IEEE80211_RADIOTAP_LOCK_QUALITY = 7,
-    IEEE80211_RADIOTAP_TX_ATTENUATION = 8,
-    IEEE80211_RADIOTAP_DB_TX_ATTENUATION = 9,
-    IEEE80211_RADIOTAP_DBM_TX_POWER = 10,
-    IEEE80211_RADIOTAP_ANTENNA = 11,
-    IEEE80211_RADIOTAP_DB_ANTSIGNAL = 12,
-    IEEE80211_RADIOTAP_DB_ANTNOISE = 13,
-    IEEE80211_RADIOTAP_RX_FLAGS = 14,
-    IEEE80211_RADIOTAP_TX_FLAGS = 15,
-    IEEE80211_RADIOTAP_RTS_RETRIES = 16,
-    IEEE80211_RADIOTAP_DATA_RETRIES = 17,
-    IEEE80211_RADIOTAP_EXT = 31
+	IEEE80211_RADIOTAP_TSFT = 0,
+	IEEE80211_RADIOTAP_FLAGS = 1,
+	IEEE80211_RADIOTAP_RATE = 2,
+	IEEE80211_RADIOTAP_CHANNEL = 3,
+	IEEE80211_RADIOTAP_FHSS = 4,
+	IEEE80211_RADIOTAP_DBM_ANTSIGNAL = 5,
+	IEEE80211_RADIOTAP_DBM_ANTNOISE = 6,
+	IEEE80211_RADIOTAP_LOCK_QUALITY = 7,
+	IEEE80211_RADIOTAP_TX_ATTENUATION = 8,
+	IEEE80211_RADIOTAP_DB_TX_ATTENUATION = 9,
+	IEEE80211_RADIOTAP_DBM_TX_POWER = 10,
+	IEEE80211_RADIOTAP_ANTENNA = 11,
+	IEEE80211_RADIOTAP_DB_ANTSIGNAL = 12,
+	IEEE80211_RADIOTAP_DB_ANTNOISE = 13,
+	IEEE80211_RADIOTAP_RX_FLAGS = 14,
+	IEEE80211_RADIOTAP_TX_FLAGS = 15,
+	IEEE80211_RADIOTAP_RTS_RETRIES = 16,
+	IEEE80211_RADIOTAP_DATA_RETRIES = 17,
+	IEEE80211_RADIOTAP_EXT = 31
 };
 
 /* Channel flags. */
@@ -213,29 +213,29 @@ enum ieee80211_radiotap_type {
 
 /* For IEEE80211_RADIOTAP_FLAGS */
 #define	IEEE80211_RADIOTAP_F_CFP	0x01	/* sent/received
-                                             * during CFP
-                                             */
+						 * during CFP
+						 */
 #define	IEEE80211_RADIOTAP_F_SHORTPRE	0x02	/* sent/received
-                                                 * with short
-                                                 * preamble
-                                                 */
+						 * with short
+						 * preamble
+						 */
 #define	IEEE80211_RADIOTAP_F_WEP	0x04	/* sent/received
-                                             * with WEP encryption
-                                             */
+						 * with WEP encryption
+						 */
 #define	IEEE80211_RADIOTAP_F_FRAG	0x08	/* sent/received
-                                             * with fragmentation
-                                             */
+						 * with fragmentation
+						 */
 #define	IEEE80211_RADIOTAP_F_FCS	0x10	/* frame includes FCS */
 #define	IEEE80211_RADIOTAP_F_DATAPAD	0x20	/* frame has padding between
-                                                 * 802.11 header and payload
-                                                 * (to 32-bit boundary)
-                                                 */
+						 * 802.11 header and payload
+						 * (to 32-bit boundary)
+						 */
 /* For IEEE80211_RADIOTAP_RX_FLAGS */
 #define IEEE80211_RADIOTAP_F_RX_BADFCS	0x0001	/* frame failed crc check */
 
 /* For IEEE80211_RADIOTAP_TX_FLAGS */
 #define IEEE80211_RADIOTAP_F_TX_FAIL	0x0001	/* failed due to excessive
-                                                 * retries */
+						 * retries */
 #define IEEE80211_RADIOTAP_F_TX_CTS	0x0002	/* used cts 'protection' */
 #define IEEE80211_RADIOTAP_F_TX_RTS	0x0004	/* used rts/cts handshake */
 

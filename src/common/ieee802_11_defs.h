@@ -33,7 +33,7 @@
 
 #define WLAN_GET_SEQ_FRAG(seq) ((seq) & (BIT(3) | BIT(2) | BIT(1) | BIT(0)))
 #define WLAN_GET_SEQ_SEQ(seq) \
-    (((seq) & (~(BIT(3) | BIT(2) | BIT(1) | BIT(0)))) >> 4)
+	(((seq) & (~(BIT(3) | BIT(2) | BIT(1) | BIT(0)))) >> 4)
 
 #define WLAN_FC_TYPE_MGMT		0
 #define WLAN_FC_TYPE_CTRL		1
@@ -238,14 +238,14 @@
 #endif /* _MSC_VER */
 
 struct ieee80211_hdr {
-    le16 frame_control;
-    le16 duration_id;
-    u8 addr1[6];
-    u8 addr2[6];
-    u8 addr3[6];
-    le16 seq_ctrl;
-    /* followed by 'u8 addr4[6];' if ToDS and FromDS is set in data frame
-    */
+	le16 frame_control;
+	le16 duration_id;
+	u8 addr1[6];
+	u8 addr2[6];
+	u8 addr3[6];
+	le16 seq_ctrl;
+	/* followed by 'u8 addr4[6];' if ToDS and FromDS is set in data frame
+	 */
 } STRUCT_PACKED;
 
 #define IEEE80211_DA_FROMDS addr1
@@ -257,126 +257,126 @@ struct ieee80211_hdr {
 #define IEEE80211_FC(type, stype) host_to_le16((type << 2) | (stype << 4))
 
 struct ieee80211_mgmt {
-    le16 frame_control;
-    le16 duration;
-    u8 da[6];
-    u8 sa[6];
-    u8 bssid[6];
-    le16 seq_ctrl;
-    union {
-        struct {
-            le16 auth_alg;
-            le16 auth_transaction;
-            le16 status_code;
-            /* possibly followed by Challenge text */
-            u8 variable[0];
-        } STRUCT_PACKED auth;
-        struct {
-            le16 reason_code;
-        } STRUCT_PACKED deauth;
-        struct {
-            le16 capab_info;
-            le16 listen_interval;
-            /* followed by SSID and Supported rates */
-            u8 variable[0];
-        } STRUCT_PACKED assoc_req;
-        struct {
-            le16 capab_info;
-            le16 status_code;
-            le16 aid;
-            /* followed by Supported rates */
-            u8 variable[0];
-        } STRUCT_PACKED assoc_resp, reassoc_resp;
-        struct {
-            le16 capab_info;
-            le16 listen_interval;
-            u8 current_ap[6];
-            /* followed by SSID and Supported rates */
-            u8 variable[0];
-        } STRUCT_PACKED reassoc_req;
-        struct {
-            le16 reason_code;
-        } STRUCT_PACKED disassoc;
-        struct {
-            u8 timestamp[8];
-            le16 beacon_int;
-            le16 capab_info;
-            /* followed by some of SSID, Supported rates,
-             * FH Params, DS Params, CF Params, IBSS Params, TIM */
-            u8 variable[0];
-        } STRUCT_PACKED beacon;
-        struct {
-            /* only variable items: SSID, Supported rates */
-            u8 variable[0];
-        } STRUCT_PACKED probe_req;
-        struct {
-            u8 timestamp[8];
-            le16 beacon_int;
-            le16 capab_info;
-            /* followed by some of SSID, Supported rates,
-             * FH Params, DS Params, CF Params, IBSS Params */
-            u8 variable[0];
-        } STRUCT_PACKED probe_resp;
-        struct {
-            u8 category;
-            union {
-                struct {
-                    u8 action_code;
-                    u8 dialog_token;
-                    u8 status_code;
-                    u8 variable[0];
-                } STRUCT_PACKED wmm_action;
-                struct{
-                    u8 action_code;
-                    u8 element_id;
-                    u8 length;
-                    u8 switch_mode;
-                    u8 new_chan;
-                    u8 switch_count;
-                } STRUCT_PACKED chan_switch;
-                struct {
-                    u8 action;
-                    u8 sta_addr[ETH_ALEN];
-                    u8 target_ap_addr[ETH_ALEN];
-                    u8 variable[0]; /* FT Request */
-                } STRUCT_PACKED ft_action_req;
-                struct {
-                    u8 action;
-                    u8 sta_addr[ETH_ALEN];
-                    u8 target_ap_addr[ETH_ALEN];
-                    le16 status_code;
-                    u8 variable[0]; /* FT Request */
-                } STRUCT_PACKED ft_action_resp;
-                struct {
-                    u8 action;
-                    u8 trans_id[WLAN_SA_QUERY_TR_ID_LEN];
-                } STRUCT_PACKED sa_query_req;
-                struct {
-                    u8 action; /* */
-                    u8 trans_id[WLAN_SA_QUERY_TR_ID_LEN];
-                } STRUCT_PACKED sa_query_resp;
-            } u;
-        } STRUCT_PACKED action;
-    } u;
+	le16 frame_control;
+	le16 duration;
+	u8 da[6];
+	u8 sa[6];
+	u8 bssid[6];
+	le16 seq_ctrl;
+	union {
+		struct {
+			le16 auth_alg;
+			le16 auth_transaction;
+			le16 status_code;
+			/* possibly followed by Challenge text */
+			u8 variable[0];
+		} STRUCT_PACKED auth;
+		struct {
+			le16 reason_code;
+		} STRUCT_PACKED deauth;
+		struct {
+			le16 capab_info;
+			le16 listen_interval;
+			/* followed by SSID and Supported rates */
+			u8 variable[0];
+		} STRUCT_PACKED assoc_req;
+		struct {
+			le16 capab_info;
+			le16 status_code;
+			le16 aid;
+			/* followed by Supported rates */
+			u8 variable[0];
+		} STRUCT_PACKED assoc_resp, reassoc_resp;
+		struct {
+			le16 capab_info;
+			le16 listen_interval;
+			u8 current_ap[6];
+			/* followed by SSID and Supported rates */
+			u8 variable[0];
+		} STRUCT_PACKED reassoc_req;
+		struct {
+			le16 reason_code;
+		} STRUCT_PACKED disassoc;
+		struct {
+			u8 timestamp[8];
+			le16 beacon_int;
+			le16 capab_info;
+			/* followed by some of SSID, Supported rates,
+			 * FH Params, DS Params, CF Params, IBSS Params, TIM */
+			u8 variable[0];
+		} STRUCT_PACKED beacon;
+		struct {
+			/* only variable items: SSID, Supported rates */
+			u8 variable[0];
+		} STRUCT_PACKED probe_req;
+		struct {
+			u8 timestamp[8];
+			le16 beacon_int;
+			le16 capab_info;
+			/* followed by some of SSID, Supported rates,
+			 * FH Params, DS Params, CF Params, IBSS Params */
+			u8 variable[0];
+		} STRUCT_PACKED probe_resp;
+		struct {
+			u8 category;
+			union {
+				struct {
+					u8 action_code;
+					u8 dialog_token;
+					u8 status_code;
+					u8 variable[0];
+				} STRUCT_PACKED wmm_action;
+				struct{
+					u8 action_code;
+					u8 element_id;
+					u8 length;
+					u8 switch_mode;
+					u8 new_chan;
+					u8 switch_count;
+				} STRUCT_PACKED chan_switch;
+				struct {
+					u8 action;
+					u8 sta_addr[ETH_ALEN];
+					u8 target_ap_addr[ETH_ALEN];
+					u8 variable[0]; /* FT Request */
+				} STRUCT_PACKED ft_action_req;
+				struct {
+					u8 action;
+					u8 sta_addr[ETH_ALEN];
+					u8 target_ap_addr[ETH_ALEN];
+					le16 status_code;
+					u8 variable[0]; /* FT Request */
+				} STRUCT_PACKED ft_action_resp;
+				struct {
+					u8 action;
+					u8 trans_id[WLAN_SA_QUERY_TR_ID_LEN];
+				} STRUCT_PACKED sa_query_req;
+				struct {
+					u8 action; /* */
+					u8 trans_id[WLAN_SA_QUERY_TR_ID_LEN];
+				} STRUCT_PACKED sa_query_resp;
+			} u;
+		} STRUCT_PACKED action;
+	} u;
 } STRUCT_PACKED;
 
 
 struct ieee80211_ht_capabilities {
-    le16 ht_capabilities_info;
-    u8 a_mpdu_params;
-    u8 supported_mcs_set[16];
-    le16 ht_extended_capabilities;
-    le32 tx_bf_capability_info;
-    u8 asel_capabilities;
+	le16 ht_capabilities_info;
+	u8 a_mpdu_params;
+	u8 supported_mcs_set[16];
+	le16 ht_extended_capabilities;
+	le32 tx_bf_capability_info;
+	u8 asel_capabilities;
 } STRUCT_PACKED;
 
 
 struct ieee80211_ht_operation {
-    u8 control_chan;
-    u8 ht_param;
-    le16 operation_mode;
-    le16 stbc_param;
-    u8 basic_set[16];
+	u8 control_chan;
+	u8 ht_param;
+	le16 operation_mode;
+	le16 stbc_param;
+	u8 basic_set[16];
 } STRUCT_PACKED;
 
 #ifdef _MSC_VER
@@ -460,7 +460,7 @@ struct ieee80211_ht_operation {
 #define OP_MODE_MIXED                   3
 
 #define HT_INFO_OPERATION_MODE_OP_MODE_MASK	\
-    ((le16) (0x0001 | 0x0002))
+		((le16) (0x0001 | 0x0002))
 #define HT_INFO_OPERATION_MODE_OP_MODE_OFFSET		0
 #define HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT	((u8) BIT(2))
 #define HT_INFO_OPERATION_MODE_TRANSMIT_BURST_LIMIT	((u8) BIT(3))
@@ -475,7 +475,7 @@ struct ieee80211_ht_operation {
 
 
 #define OUI_MICROSOFT 0x0050f2 /* Microsoft (also used in Wi-Fi specs)
-                                * 00:50:F2 */
+				* 00:50:F2 */
 #define WPA_IE_VENDOR_TYPE 0x0050f201
 #define WPS_IE_VENDOR_TYPE 0x0050f204
 
@@ -506,13 +506,13 @@ struct ieee80211_ht_operation {
  * used in Beacon frames)
  */
 struct wmm_information_element {
-    /* Element ID: 221 (0xdd); Length: 7 */
-    /* required fields for WMM version 1 */
-    u8 oui[3]; /* 00:50:f2 */
-    u8 oui_type; /* 2 */
-    u8 oui_subtype; /* 0 */
-    u8 version; /* 1 for WMM version 1.0 */
-    u8 qos_info; /* AP/STA specific QoS info */
+	/* Element ID: 221 (0xdd); Length: 7 */
+	/* required fields for WMM version 1 */
+	u8 oui[3]; /* 00:50:f2 */
+	u8 oui_type; /* 2 */
+	u8 oui_subtype; /* 0 */
+	u8 version; /* 1 for WMM version 1.0 */
+	u8 qos_info; /* AP/STA specific QoS info */
 
 } STRUCT_PACKED;
 
@@ -528,9 +528,9 @@ struct wmm_information_element {
 #define WMM_AC_ECWMAX_SHIFT 4
 
 struct wmm_ac_parameter {
-    u8 aci_aifsn; /* AIFSN, ACM, ACI */
-    u8 cw; /* ECWmin, ECWmax (CW = 2^ECW - 1) */
-    le16 txop_limit;
+	u8 aci_aifsn; /* AIFSN, ACM, ACI */
+	u8 cw; /* ECWmin, ECWmax (CW = 2^ECW - 1) */
+	le16 txop_limit;
 }  STRUCT_PACKED;
 
 /*
@@ -538,52 +538,52 @@ struct wmm_ac_parameter {
  * Response frmaes)
  */
 struct wmm_parameter_element {
-    /* Element ID: 221 (0xdd); Length: 24 */
-    /* required fields for WMM version 1 */
-    u8 oui[3]; /* 00:50:f2 */
-    u8 oui_type; /* 2 */
-    u8 oui_subtype; /* 1 */
-    u8 version; /* 1 for WMM version 1.0 */
-    u8 qos_info; /* AP/STA specif QoS info */
-    u8 reserved; /* 0 */
-    struct wmm_ac_parameter ac[4]; /* AC_BE, AC_BK, AC_VI, AC_VO */
+	/* Element ID: 221 (0xdd); Length: 24 */
+	/* required fields for WMM version 1 */
+	u8 oui[3]; /* 00:50:f2 */
+	u8 oui_type; /* 2 */
+	u8 oui_subtype; /* 1 */
+	u8 version; /* 1 for WMM version 1.0 */
+	u8 qos_info; /* AP/STA specif QoS info */
+	u8 reserved; /* 0 */
+	struct wmm_ac_parameter ac[4]; /* AC_BE, AC_BK, AC_VI, AC_VO */
 
 } STRUCT_PACKED;
 
 /* WMM TSPEC Element */
 struct wmm_tspec_element {
-    u8 eid; /* 221 = 0xdd */
-    u8 length; /* 6 + 55 = 61 */
-    u8 oui[3]; /* 00:50:f2 */
-    u8 oui_type; /* 2 */
-    u8 oui_subtype; /* 2 */
-    u8 version; /* 1 */
-    /* WMM TSPEC body (55 octets): */
-    u8 ts_info[3];
-    le16 nominal_msdu_size;
-    le16 maximum_msdu_size;
-    le32 minimum_service_interval;
-    le32 maximum_service_interval;
-    le32 inactivity_interval;
-    le32 suspension_interval;
-    le32 service_start_time;
-    le32 minimum_data_rate;
-    le32 mean_data_rate;
-    le32 peak_data_rate;
-    le32 maximum_burst_size;
-    le32 delay_bound;
-    le32 minimum_phy_rate;
-    le16 surplus_bandwidth_allowance;
-    le16 medium_time;
+	u8 eid; /* 221 = 0xdd */
+	u8 length; /* 6 + 55 = 61 */
+	u8 oui[3]; /* 00:50:f2 */
+	u8 oui_type; /* 2 */
+	u8 oui_subtype; /* 2 */
+	u8 version; /* 1 */
+	/* WMM TSPEC body (55 octets): */
+	u8 ts_info[3];
+	le16 nominal_msdu_size;
+	le16 maximum_msdu_size;
+	le32 minimum_service_interval;
+	le32 maximum_service_interval;
+	le32 inactivity_interval;
+	le32 suspension_interval;
+	le32 service_start_time;
+	le32 minimum_data_rate;
+	le32 mean_data_rate;
+	le32 peak_data_rate;
+	le32 maximum_burst_size;
+	le32 delay_bound;
+	le32 minimum_phy_rate;
+	le16 surplus_bandwidth_allowance;
+	le16 medium_time;
 } STRUCT_PACKED;
 
 
 /* Access Categories / ACI to AC coding */
 enum {
-    WMM_AC_BE = 0 /* Best Effort */,
-    WMM_AC_BK = 1 /* Background */,
-    WMM_AC_VI = 2 /* Video */,
-    WMM_AC_VO = 3 /* Voice */
+	WMM_AC_BE = 0 /* Best Effort */,
+	WMM_AC_BK = 1 /* Background */,
+	WMM_AC_VI = 2 /* Video */,
+	WMM_AC_VO = 3 /* Voice */
 };
 
 

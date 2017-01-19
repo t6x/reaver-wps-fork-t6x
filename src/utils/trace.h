@@ -25,26 +25,26 @@
 #define WPA_TRACE_INFO void *btrace[WPA_TRACE_LEN]; int btrace_num;
 
 struct wpa_trace_ref {
-    struct dl_list list;
-    const void *addr;
-    WPA_TRACE_INFO
+	struct dl_list list;
+	const void *addr;
+	WPA_TRACE_INFO
 };
 #define WPA_TRACE_REF(name) struct wpa_trace_ref wpa_trace_ref_##name
 
 #define wpa_trace_dump(title, ptr) \
-    wpa_trace_dump_func((title), (ptr)->btrace, (ptr)->btrace_num)
+	wpa_trace_dump_func((title), (ptr)->btrace, (ptr)->btrace_num)
 void wpa_trace_dump_func(const char *title, void **btrace, int btrace_num);
 #define wpa_trace_record(ptr) \
-    (ptr)->btrace_num = backtrace((ptr)->btrace, WPA_TRACE_LEN)
+	(ptr)->btrace_num = backtrace((ptr)->btrace, WPA_TRACE_LEN)
 void wpa_trace_show(const char *title);
 #define wpa_trace_add_ref(ptr, name, addr) \
-    wpa_trace_add_ref_func(&(ptr)->wpa_trace_ref_##name, (addr))
+	wpa_trace_add_ref_func(&(ptr)->wpa_trace_ref_##name, (addr))
 void wpa_trace_add_ref_func(struct wpa_trace_ref *ref, const void *addr);
 #define wpa_trace_remove_ref(ptr, name, addr)	\
-    do { \
-        if ((addr)) \
-        dl_list_del(&(ptr)->wpa_trace_ref_##name.list); \
-    } while (0)
+	do { \
+		if ((addr)) \
+			dl_list_del(&(ptr)->wpa_trace_ref_##name.list); \
+	} while (0)
 void wpa_trace_check_ref(const void *addr);
 
 #else /* WPA_TRACE */

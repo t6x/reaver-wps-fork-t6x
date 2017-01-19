@@ -35,9 +35,9 @@
  * @EVENT_TYPE_EXCEPTION: An exception has been reported
  */
 typedef enum {
-    EVENT_TYPE_READ = 0,
-    EVENT_TYPE_WRITE,
-    EVENT_TYPE_EXCEPTION
+	EVENT_TYPE_READ = 0,
+	EVENT_TYPE_WRITE,
+	EVENT_TYPE_EXCEPTION
 } eloop_event_type;
 
 /**
@@ -94,7 +94,7 @@ int eloop_init(void);
  * for the same event.
  */
 int eloop_register_read_sock(int sock, eloop_sock_handler handler,
-                             void *eloop_data, void *user_data);
+			     void *eloop_data, void *user_data);
 
 /**
  * eloop_unregister_read_sock - Unregister handler for read events
@@ -121,8 +121,8 @@ void eloop_unregister_read_sock(int sock);
  * for the same event.
  */
 int eloop_register_sock(int sock, eloop_event_type type,
-                        eloop_sock_handler handler,
-                        void *eloop_data, void *user_data);
+			eloop_sock_handler handler,
+			void *eloop_data, void *user_data);
 
 /**
  * eloop_unregister_sock - Unregister handler for socket events
@@ -157,8 +157,8 @@ void eloop_unregister_sock(int sock, eloop_event_type type);
  * ...).
  */
 int eloop_register_event(void *event, size_t event_size,
-                         eloop_event_handler handler,
-                         void *eloop_data, void *user_data);
+			 eloop_event_handler handler,
+			 void *eloop_data, void *user_data);
 
 /**
  * eloop_unregister_event - Unregister handler for a generic event
@@ -183,8 +183,8 @@ void eloop_unregister_event(void *event, size_t event_size);
  * given time.
  */
 int eloop_register_timeout(unsigned int secs, unsigned int usecs,
-                           eloop_timeout_handler handler,
-                           void *eloop_data, void *user_data);
+			   eloop_timeout_handler handler,
+			   void *eloop_data, void *user_data);
 
 /**
  * eloop_cancel_timeout - Cancel timeouts
@@ -198,7 +198,7 @@ int eloop_register_timeout(unsigned int secs, unsigned int usecs,
  * cancelling all timeouts regardless of eloop_data/user_data.
  */
 int eloop_cancel_timeout(eloop_timeout_handler handler,
-                         void *eloop_data, void *user_data);
+			 void *eloop_data, void *user_data);
 
 /**
  * eloop_is_timeout_registered - Check if a timeout is already registered
@@ -211,7 +211,7 @@ int eloop_cancel_timeout(eloop_timeout_handler handler,
  * with eloop_register_timeout().
  */
 int eloop_is_timeout_registered(eloop_timeout_handler handler,
-                                void *eloop_data, void *user_data);
+				void *eloop_data, void *user_data);
 
 /**
  * eloop_register_signal - Register handler for signals
@@ -227,7 +227,7 @@ int eloop_is_timeout_registered(eloop_timeout_handler handler,
  * callback.
  */
 int eloop_register_signal(int sig, eloop_signal_handler handler,
-                          void *user_data);
+			  void *user_data);
 
 /**
  * eloop_register_signal_terminate - Register handler for terminate signals
@@ -247,7 +247,7 @@ int eloop_register_signal(int sig, eloop_signal_handler handler,
  * registers handlers for SIGINT and SIGTERM.
  */
 int eloop_register_signal_terminate(eloop_signal_handler handler,
-                                    void *user_data);
+				    void *user_data);
 
 /**
  * eloop_register_signal_reconfig - Register handler for reconfig signals
@@ -267,7 +267,7 @@ int eloop_register_signal_terminate(eloop_signal_handler handler,
  * registers a handler for SIGHUP.
  */
 int eloop_register_signal_reconfig(eloop_signal_handler handler,
-                                   void *user_data);
+				   void *user_data);
 
 /**
  * eloop_run - Start the event loop

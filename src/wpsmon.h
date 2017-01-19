@@ -72,29 +72,29 @@
 
 enum tag_type
 {
-    HEX = 0,
-    STRING = 1
+        HEX = 0,
+        STRING = 1
 };
 
 struct elements
 {
-    int number;
-    enum tag_type type;
-    char *name;
+        int number;
+        enum tag_type type;
+        char *name;
 };
 
 struct data_element
 {
-    uint16_t type;
-    uint16_t len;
+	uint16_t type;
+	uint16_t len;
 };
 
 struct global_variables
 {
-    int csv;
-    FILE *fp;
-    int bssid_count;
-    unsigned char **bssids;
+	int csv;
+	FILE *fp;
+	int bssid_count;
+	unsigned char **bssids;
 } wpsmon;
 
 void monitor(char *bssid, int passive, int source, int channel, int mode);

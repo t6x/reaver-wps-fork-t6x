@@ -16,13 +16,13 @@
 #define PKCS1_H
 
 int pkcs1_encrypt(int block_type, struct crypto_rsa_key *key,
-                  int use_private, const u8 *in, size_t inlen,
-                  u8 *out, size_t *outlen);
+		  int use_private, const u8 *in, size_t inlen,
+		  u8 *out, size_t *outlen);
 int pkcs1_v15_private_key_decrypt(struct crypto_rsa_key *key,
-                                  const u8 *in, size_t inlen,
-                                  u8 *out, size_t *outlen);
+				  const u8 *in, size_t inlen,
+				  u8 *out, size_t *outlen);
 int pkcs1_decrypt_public_key(struct crypto_rsa_key *key,
-                             const u8 *crypt, size_t crypt_len,
-                             u8 *plain, size_t *plain_len);
+			     const u8 *crypt, size_t crypt_len,
+			     u8 *plain, size_t *plain_len);
 
 #endif /* PKCS1_H */

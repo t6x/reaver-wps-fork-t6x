@@ -25,8 +25,8 @@ typedef long os_time_t;
 void os_sleep(os_time_t sec, os_time_t usec);
 
 struct os_time {
-    os_time_t sec;
-    os_time_t usec;
+	os_time_t sec;
+	os_time_t usec;
 };
 
 /**
@@ -40,16 +40,16 @@ int os_get_time(struct os_time *t);
 /* Helper macros for handling struct os_time */
 
 #define os_time_before(a, b) \
-    ((a)->sec < (b)->sec || \
-     ((a)->sec == (b)->sec && (a)->usec < (b)->usec))
+	((a)->sec < (b)->sec || \
+	 ((a)->sec == (b)->sec && (a)->usec < (b)->usec))
 
 #define os_time_sub(a, b, res) do { \
-    (res)->sec = (a)->sec - (b)->sec; \
-    (res)->usec = (a)->usec - (b)->usec; \
-    if ((res)->usec < 0) { \
-        (res)->sec--; \
-        (res)->usec += 1000000; \
-    } \
+	(res)->sec = (a)->sec - (b)->sec; \
+	(res)->usec = (a)->usec - (b)->usec; \
+	if ((res)->usec < 0) { \
+		(res)->sec--; \
+		(res)->usec += 1000000; \
+	} \
 } while (0)
 
 /**
@@ -68,7 +68,7 @@ int os_get_time(struct os_time *t);
  * which is used by POSIX mktime().
  */
 int os_mktime(int year, int month, int day, int hour, int min, int sec,
-              os_time_t *t);
+	      os_time_t *t);
 
 
 /**

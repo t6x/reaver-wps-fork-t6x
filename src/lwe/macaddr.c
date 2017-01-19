@@ -24,31 +24,31 @@
 int main(int argc, char** argv)
 {
 
-    int devsock;
-    struct ifreq ifbuffer;
-    char buf[20];
+	int devsock;
+	struct ifreq ifbuffer;
+	char buf[20];
 
-    if ((argc != 2) || (argv[1][0] == '-')) {
-        printf("Usage: macaddr interface\n");
-        exit(1);
-    }
+	if ((argc != 2) || (argv[1][0] == '-')) {
+		printf("Usage: macaddr interface\n");
+		exit(1);
+	}
 
-    devsock = socket(AF_INET, SOCK_STREAM, 0);
+	devsock = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (devsock == -1) {
-        perror("Failed opening socket");
-        exit (1);
-    }
+	if (devsock == -1) {
+		perror("Failed opening socket");
+		exit (1);
+	}
 
-    memset(&ifbuffer, 0, sizeof(ifbuffer));
-    strncpy(ifbuffer.ifr_name, argv[1], sizeof(ifbuffer.ifr_name));
-    if (ioctl(devsock, SIOCGIFHWADDR, &ifbuffer) == -1) {
-        fprintf(stderr, "There is no MACADDR for %s\n", argv[1]);
-        exit(1);
-    }
-    close(devsock);
+	memset(&ifbuffer, 0, sizeof(ifbuffer));
+	strncpy(ifbuffer.ifr_name, argv[1], sizeof(ifbuffer.ifr_name));
+	if (ioctl(devsock, SIOCGIFHWADDR, &ifbuffer) == -1) {
+		fprintf(stderr, "There is no MACADDR for %s\n", argv[1]);
+		exit(1);
+	}
+	close(devsock);
 
-    puts(iw_saether_ntop(&ifbuffer.ifr_ifru.ifru_hwaddr, buf));
+	puts(iw_saether_ntop(&ifbuffer.ifr_ifru.ifru_hwaddr, buf));
 
-    exit(0);
+	exit(0);
 }

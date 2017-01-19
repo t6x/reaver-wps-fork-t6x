@@ -20,6 +20,6 @@
 
 int fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x, size_t xlen)
 {
-    /* FIX: how to do this with CryptoAPI? */
-    return -1;
+	/* FIX: how to do this with CryptoAPI? */
+	return -1;
 }

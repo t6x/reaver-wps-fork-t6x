@@ -21,5 +21,5 @@
 
 int fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x, size_t xlen)
 {
-    return -1;
+	return -1;
 }
