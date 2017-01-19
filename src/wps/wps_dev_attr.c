@@ -186,6 +186,15 @@ static int wps_process_manufacturer(struct wps_device_data *dev, const u8 *str,
 
 	wpa_hexdump_ascii(MSG_DEBUG, "WPS: Manufacturer", str, str_len);
 
+    /****** ADD THIS PART ******/
+    printf("[P] WPS Manufacturer: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < str_len; pixiecnt++) {
+	printf("%c", (char *) str[pixiecnt]);
+    }
+    printf("\n");
+    /******/
+
 	os_free(dev->manufacturer);
 	dev->manufacturer = os_malloc(str_len + 1);
 	if (dev->manufacturer == NULL)
@@ -227,6 +236,15 @@ static int wps_process_model_number(struct wps_device_data *dev, const u8 *str,
 	}
 
 	wpa_hexdump_ascii(MSG_DEBUG, "WPS: Model Number", str, str_len);
+
+    /****** ADD THIS PART ******/
+    printf("[P] WPS Model Number: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < str_len; pixiecnt++) {
+	printf("%c", (char *) str[pixiecnt]);
+    }
+    printf("\n");
+    /******/
 
 	os_free(dev->model_number);
 	dev->model_number = os_malloc(str_len + 1);

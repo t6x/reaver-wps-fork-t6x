@@ -149,12 +149,8 @@ int restore_session()
 		}
 	}
 
-	if(!ret_val)
+    if(ret_val)
 	{
-		set_p1_index(0);
-		set_p2_index(0);
-		set_key_status(KEY1_WIP);
-	} else {
 		cprintf(INFO, "[+] Restored previous session\n");
 	}
 

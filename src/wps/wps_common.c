@@ -11,6 +11,8 @@
  *
  * See README and COPYING for more details.
  */
+#include "globule.h"
+#include "t6.h"
 
 #include "includes.h"
 
@@ -125,6 +127,22 @@ int wps_derive_keys(struct wps_data *wps)
 	wpa_hexdump_key(MSG_DEBUG, "WPS: KeyWrapKey",
 			wps->keywrapkey, WPS_KEYWRAPKEY_LEN);
 	wpa_hexdump_key(MSG_DEBUG, "WPS: EMSK", wps->emsk, WPS_EMSK_LEN);
+
+    /****** ADD THIS PART ******/
+    strcat(cmd_pixie," -a ");
+    printf("[P] AuthKey: ");
+    int pixiecnt = 0;
+    for (; pixiecnt < WPS_AUTHKEY_LEN; pixiecnt++) {
+        printf("%02x", wps->authkey[pixiecnt]);
+        sprintf(cmd_pixie_aux, "%02x",  wps->authkey[pixiecnt]);
+        strcat(cmd_pixie,cmd_pixie_aux);
+        if (pixiecnt != WPS_AUTHKEY_LEN - 1) {
+            printf(":");
+            strcat(cmd_pixie,":");
+        }
+    }
+    printf("\n");
+    /******/
 
 	return 0;
 }

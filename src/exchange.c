@@ -343,6 +343,7 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 					/* EAP session termination. Break and move on. */
 					if(eap->code == EAP_FAILURE)
 					{
+                        cprintf(VERBOSE, "[!] EAP_FAILURE: TERMINATE\n");
 						type = TERMINATE;
 					} 
 					/* If we've received an EAP request and then this should be a WPS message */

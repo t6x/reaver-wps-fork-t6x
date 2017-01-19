@@ -44,7 +44,8 @@ int main(int argc, char **argv)
 	init_default_settings();
 
 	fprintf(stderr, "\nReaver v%s WiFi Protected Setup Attack Tool\n", PACKAGE_VERSION);
-	fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n\n");
+    fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n");
+    fprintf(stderr, "mod by t6_x <t6_x@hotmail.com>\n\n");
 
 	if(argc < 2)
 	{
@@ -158,6 +159,7 @@ int usage(char *prog_name)
         fprintf(stderr, "\t-5, --5ghz                      Use 5GHz 802.11 channels\n");
         fprintf(stderr, "\t-v, --verbose                   Display non-critical warnings (-vv for more)\n");
         fprintf(stderr, "\t-q, --quiet                     Only display critical messages\n");
+    fprintf(stderr, "\t-K, --pixie-dust                Test Pixie Dust [1] Basic(-S) [2] With E-Once(-S) [3] With PKR \n");
         fprintf(stderr, "\t-h, --help                      Show help\n");
         
         fprintf(stderr, "\nAdvanced Options:\n");
@@ -176,6 +178,9 @@ int usage(char *prog_name)
         fprintf(stderr, "\t-E, --eap-terminate             Terminate each WPS session with an EAP FAIL packet\n");
         fprintf(stderr, "\t-n, --nack                      Target AP always sends a NACK [Auto]\n");
 	fprintf(stderr, "\t-w, --win7                      Mimic a Windows 7 registrar [False]\n");
+    fprintf(stderr, "\t-X, --exhaustive                Set exhaustive mode from the beginning of the session [False]\n");
+    fprintf(stderr, "\t-1, --p1-index                  Set initial array index for the first half of the pin [False]\n");
+    fprintf(stderr, "\t-2, --p2-index                  Set initial array index for the second half of the pin [False]\n");
 
         fprintf(stderr, "\nExample:\n\t%s -i mon0 -b 00:90:4C:C1:AC:21 -vv\n\n", prog_name);
 
