@@ -56,7 +56,7 @@ int restore_session()
 	char line[MAX_LINE_SIZE] = { 0 };
 	char temp[P1_READ_LEN] = { 0 };
 	char file[FILENAME_MAX];
-	unsigned char *bssid = NULL;
+	char *bssid = NULL;
 	char answer = 0;
 	FILE *fp = NULL;
 	int ret_val = 0, i = 0;
@@ -173,7 +173,7 @@ int restore_session()
 
 int save_session()
 {
-	unsigned char *bssid = NULL;
+	char *bssid = NULL;
 	char *wpa_key = NULL, *essid = NULL, *pretty_bssid = NULL;
         char file_name[FILENAME_MAX] = { 0 };
         char line[MAX_LINE_SIZE] = { 0 };

@@ -36,7 +36,7 @@
 /* Brute force all possible WPS pins for a given access point */
 void crack()
 {
-	unsigned char *bssid = NULL;
+	char *bssid = NULL;
 	char *pin = NULL;
 	int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
 	float pin_count = 0;
