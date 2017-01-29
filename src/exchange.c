@@ -451,9 +451,17 @@ enum wps_type process_wps_message(const void *data, size_t data_size)
     struct wfa_element_header element = { 0 };
     int i = 0, header_size = sizeof(struct wfa_element_header);
 
+    if (data_size == 0)
+    {
+        /*
+         * Treat zero data length WPS messages as NACKs.
+         * Required for certain APs that emit empty WPS messages in place of NACKs.
+         */
+        type = NACK;
+        set_nack_reason(NO_ERROR);
+    }
     /* Shove data into a wpabuf structure for processing */
-    msg = wpabuf_alloc_copy(data, data_size);
-    if(msg)
+    else if (msg = wpabuf_alloc_copy(data, data_size))
     {
         /* Process the incoming message */
         wps_registrar_process_msg(wps, get_opcode(), msg);
