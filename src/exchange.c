@@ -158,12 +158,12 @@ enum wps_result do_wps_exchange()
             case TERMINATE:
                 terminated = 1;
                 break;
+            case UNKNOWN:
+                // cprintf(VERBOSE, "[+] Received UNKNOWN packet\n");
+                break;
             default:
-                if(packet_type != 0)
-                {
-                    cprintf(VERBOSE, "[!] WARNING: Unexpected packet received (0x%.02X), terminating transaction\n", packet_type);
-                    terminated = 1;
-                }
+                cprintf(VERBOSE, "[!] WARNING: Unexpected packet received (0x%.02X), terminating transaction\n", packet_type);
+                terminated = 1;
                 break;
         }
 
@@ -181,7 +181,7 @@ enum wps_result do_wps_exchange()
          * packet, since the timer is started by send_msg. Manually start the timer to
          * prevent infinite loops.
          */
-        else if(packet_type != 0)
+        else if(packet_type != UNKNOWN)
         {
             start_timer();
         }
