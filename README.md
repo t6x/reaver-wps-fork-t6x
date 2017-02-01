@@ -180,7 +180,7 @@ The option `-a` of Wash will list all access points, including those without WPS
 ## Contribution
 
 Modifications made by:
-`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`
+`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho` 
 
 Some ideas made by:
 `nuroo`, `kcdtv`
