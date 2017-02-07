@@ -162,7 +162,7 @@ void crack()
             }
             else
             {
-                cprintf(WARNING, "[+] Trying pin %s.\n", pin);
+                cprintf(WARNING, "[+] Trying pin %s\n", pin);
             }
 
             /* 
