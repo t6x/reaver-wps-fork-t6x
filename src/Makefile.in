@@ -99,10 +99,10 @@ cracker.o: globule.o init.o pins.o iface.o exchange.o session.o 80211.o
 globule.o:
 	$(CC) $(CFLAGS) globule.c -c 
 
-install: cleanbin
-	if [ ! -d $(CONFDIR) ]; then mkdir -p $(CONFDIR); fi
-	if [ -e wash ]; then cp wash @bindir@/wash; fi
-	if [ -e reaver ]; then cp reaver @bindir@/reaver; fi
+install: all
+	install -d $(DESTDIR)$(CONFDIR)
+	install -Dm 755 wash $(DESTDIR)@bindir@/wash
+	install -Dm 755 reaver $(DESTDIR)@bindir@/reaver
 
 clean:
 	rm -f *~ *.o reaver wash
@@ -114,10 +114,6 @@ clean:
 	(cd lwe && $(MAKE) realclean)
 	rm -f Makefile config.h
 
-cleanbin: 
-	rm -f @bindir@/reaver @bindir@/wash @bindir@/walsh
+distclean: clean
 
-distclean: cleanbin clean
-	rm -rf $(CONFDIR)
-
-.PHONY: libiw clean cleanbin distclean install
+.PHONY: libiw clean distclean install
