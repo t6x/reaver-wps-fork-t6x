@@ -113,7 +113,7 @@ Example:
 
 ## -K // --pixie-dust
 
-The `-K 1` option performances the offline attack, Pixie Dust _(`pixiewps`)_, by automatically passing the **PKE**, **PKR**, **E-Hash1**, **E-Hash2**, **E-Nonce** and **Authkey** variables. `pixiewps` will then try to attack **Ralink**, **Broadcom** and **Realtek** detected chipset.
+The `-K 1` option performs the offline attack, Pixie Dust _(`pixiewps`)_, by automatically passing the **PKE**, **PKR**, **E-Hash1**, **E-Hash2**, **E-Nonce** and **Authkey** variables. `pixiewps` will then try to attack **Ralink**, **Broadcom** and **Realtek** detected chipset.
 **Special note**: If you are attacking a **Realtek AP**, **do NOT** use small DH Keys (`-S`) option.
 
 ## -H // --pixiedust-log
