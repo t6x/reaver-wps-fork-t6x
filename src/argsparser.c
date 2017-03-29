@@ -32,6 +32,7 @@
  */
 
 #include "argsparser.h"
+#include "pixie.h"
 
 /* Processes Reaver command line options */
 int process_arguments(int argc, char **argv)
@@ -41,8 +42,9 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN";
+	char *short_options = "Kb:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN";
 	struct option long_options[] = {
+		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
 		{ "bssid", required_argument, NULL, 'b' },
 		{ "essid", required_argument, NULL, 'e' },
@@ -82,6 +84,9 @@ int process_arguments(int argc, char **argv)
         {
                 switch(c)
                 {
+                        case 'K':
+                                pixie.do_pixie = 1;
+                                break;
                         case 'i':
                                 set_iface(optarg);
                                 break;
@@ -194,6 +199,7 @@ void init_default_settings(void)
         set_timeout_is_nack(1);
 	set_oo_send_nack(1);
         set_wifi_band(BG_BAND);
+	pixie.do_pixie = 0;
 }
 
 /* Parses the recurring delay optarg */

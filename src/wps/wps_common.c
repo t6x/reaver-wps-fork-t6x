@@ -22,6 +22,8 @@
 #include "crypto/sha256.h"
 #include "wps_i.h"
 #include "wps_dev_attr.h"
+#include "globule.h"
+#include "pixie.h"
 
 
 void wps_kdf(const u8 *key, const u8 *label_prefix, size_t label_prefix_len,
@@ -125,6 +127,12 @@ int wps_derive_keys(struct wps_data *wps)
 	wpa_hexdump_key(MSG_DEBUG, "WPS: KeyWrapKey",
 			wps->keywrapkey, WPS_KEYWRAPKEY_LEN);
 	wpa_hexdump_key(MSG_DEBUG, "WPS: EMSK", wps->emsk, WPS_EMSK_LEN);
+
+	if(pixie.do_pixie) {
+		char buf[4096];
+		pixie_format(wps->authkey, WPS_AUTHKEY_LEN, buf);
+		PIXIE_SET(authkey, buf);
+	}
 
 	return 0;
 }
