@@ -103,13 +103,13 @@ void read_ap_beacon()
         if(header.len >= MIN_BEACON_SIZE)
         {
             rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-            frame_header = (struct dot11_frame_header *) (packet + rt_header->len);
+            frame_header = (struct dot11_frame_header *) (packet + rt_header_len(rt_header));
 
             if(is_target(frame_header))
             {
                 if(frame_header->fc.type == MANAGEMENT_FRAME && frame_header->fc.sub_type == SUBTYPE_BEACON)
                 {
-                    beacon = (struct beacon_management_frame *) (packet + rt_header->len + sizeof(struct dot11_frame_header));
+                    beacon = (struct beacon_management_frame *) (packet + rt_header_len(rt_header) + sizeof(struct dot11_frame_header));
                     set_ap_capability(beacon->capability);
 
                     /* Obtain the SSID and channel number from the beacon packet */
@@ -142,36 +142,44 @@ int8_t signal_strength(const u_char *packet, size_t len)
     int8_t ssi = 0;
     int offset = sizeof(struct radio_tap_header);
     struct radio_tap_header *header = NULL;
+    uint32_t flags, flags2;
 
     if(has_rt_header() && (len > (sizeof(struct radio_tap_header) + TSFT_SIZE + FLAGS_SIZE + RATE_SIZE + CHANNEL_SIZE + FHSS_FLAG)))
     {
         header = (struct radio_tap_header *) packet;
+        flags = flags2 = rt_header_flags(header);
 
-        if((header->flags & SSI_FLAG) == SSI_FLAG)
+        while ((flags2 & (1u << 31)) && offset <= len - 4)
         {
-            if((header->flags & TSFT_FLAG) == TSFT_FLAG)
+            flags2 = le_to_host32(*(uint32_t *)(packet + offset));
+            offset += sizeof(flags2);
+        }
+
+        if((flags & SSI_FLAG) == SSI_FLAG)
+        {
+            if((flags & TSFT_FLAG) == TSFT_FLAG)
             {
                 offset += TSFT_SIZE;
             }
 
-            if((header->flags & FLAGS_FLAG) == FLAGS_FLAG)
+            if((flags & FLAGS_FLAG) == FLAGS_FLAG)
             {
                 offset += FLAGS_SIZE;
             }
 
-            if((header->flags & RATE_FLAG) == RATE_FLAG)
+            if((flags & RATE_FLAG) == RATE_FLAG)
             {
                 offset += RATE_SIZE;
             }
 
-            if((header->flags & CHANNEL_FLAG) == CHANNEL_FLAG)
+            if((flags & CHANNEL_FLAG) == CHANNEL_FLAG)
             {
                 offset += CHANNEL_SIZE;
             }
 
-            if((header->flags & FHSS_FLAG) == FHSS_FLAG)
+            if((flags & FHSS_FLAG) == FHSS_FLAG)
             {
-                offset += FHSS_FLAG;
+                offset += FHSS_SIZE;
             }
 
             if(offset < len)
@@ -208,7 +216,7 @@ int is_wps_locked()
         if(header.len >= MIN_BEACON_SIZE)
         {
             rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-            frame_header = (struct dot11_frame_header *) (packet + rt_header->len);
+            frame_header = (struct dot11_frame_header *) (packet + rt_header_len(rt_header));
 
             if(memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN) == 0)
             {
@@ -423,15 +431,15 @@ int associate_recv_loop()
         if(header.len >= MIN_AUTH_SIZE)
         {
             rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-            dot11_frame = (struct dot11_frame_header *) (packet + rt_header->len);
+            dot11_frame = (struct dot11_frame_header *) (packet + rt_header_len(rt_header));
 
             if((memcmp(dot11_frame->addr3, get_bssid(), MAC_ADDR_LEN) == 0) &&
                     (memcmp(dot11_frame->addr1, get_mac(), MAC_ADDR_LEN) == 0))
             {
                 if(dot11_frame->fc.type == MANAGEMENT_FRAME)
                 {
-                    auth_frame = (struct authentication_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header->len);
-                    assoc_frame = (struct association_response_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header->len);
+                    auth_frame = (struct authentication_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header_len(rt_header));
+                    assoc_frame = (struct association_response_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header_len(rt_header));
 
                     /* Did we get an authentication packet with a successful status? */
                     if((dot11_frame->fc.sub_type == SUBTYPE_AUTHENTICATION) && (auth_frame->status == AUTHENTICATION_SUCCESS))
@@ -467,8 +475,8 @@ enum encryption_type supported_encryption(const u_char *packet, size_t len)
     if(len > MIN_BEACON_SIZE)
     {
         rt_header = (struct radio_tap_header *) radio_header(packet, len);
-        beacon = (struct beacon_management_frame *) (packet + rt_header->len + sizeof(struct dot11_frame_header));
-        offset = tag_offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
+        beacon = (struct beacon_management_frame *) (packet + rt_header_len(rt_header) + sizeof(struct dot11_frame_header));
+        offset = tag_offset = rt_header_len(rt_header) + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
 
         tag_len = len - tag_offset;
         tag_data = (const u_char *) (packet + tag_offset);
@@ -521,7 +529,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
     struct radio_tap_header *rt_header = NULL;
 
     rt_header = (struct radio_tap_header *) radio_header(packet, len);
-    tag_offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
+    tag_offset = rt_header_len(rt_header) + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
 
     if(tag_offset < len)
     {
@@ -560,7 +568,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
         {
             if(ie_len  == 1)
             {
-                memcpy((int *) &channel, channel_data, ie_len);
+                channel = *channel_data;
             }
             free(channel_data);
         }
@@ -624,7 +632,7 @@ int check_fcs(const u_char *packet, size_t len)
             
 #ifdef __APPLE__
                         unsigned char *body = (unsigned char*) (rt_header+1);
-                        uint32_t present = rt_header->flags;
+                        uint32_t present = rt_header_flags(rt_header);
                         uint8_t rflags = 0;
                         int i;
                         for (i = IEEE80211_RADIOTAP_TSFT; i <= IEEE80211_RADIOTAP_EXT; i++) {
@@ -685,7 +693,7 @@ int check_fcs(const u_char *packet, size_t len)
                             }
 #endif
             
-            offset += rt_header->len;
+            offset += rt_header_len(rt_header);
         }
 
         if(len > offset)

@@ -21,6 +21,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+#include "../utils/common.h"
+
 #define LIBWPS_MAX_STR_LEN 256
 
 enum wps_locked_state
@@ -128,6 +130,11 @@ struct management_frame
     uint16_t capability;
 };
 
+
+static inline uint16_t rt_header_len(struct radio_tap_header *h)
+{
+    return le_to_host16(h->len);
+}
 
 int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps);
 unsigned char *get_wps_data(const u_char *data, size_t len, size_t *tag_len);

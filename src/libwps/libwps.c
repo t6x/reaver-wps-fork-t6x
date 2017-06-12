@@ -40,11 +40,11 @@ int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *w
         {
             rt_header = (struct radio_tap_header *) libwps_radio_header(packet, len);
 
-            offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct management_frame);
+            offset = rt_header_len(rt_header) + sizeof(struct dot11_frame_header) + sizeof(struct management_frame);
             data = (packet + offset);
             data_len = (len - offset);
 
-            ret_val = parse_wps_tag(data, len, wps);
+            ret_val = parse_wps_tag(data, data_len, wps);
         }
     }
 
@@ -83,7 +83,7 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 
     if(wps_ie_data)
     {
-        for(i=0; i<sizeof(elements); i++)
+        for(i=0; i<sizeof(elements)/sizeof(elements[0]); i++)
         {
             /* Search for each WPS element inside the WPS IE data blob */
             el = get_wps_data_element(wps_ie_data, wps_data_len, elements[i], &el_len);
@@ -274,8 +274,8 @@ int libwps_has_rt_header(const u_char *packet, size_t len)
     rt_header = (struct radio_tap_header *) packet;
 
     if((rt_header->revision != RADIO_TAP_VERSION) ||
-            ((int) rt_header->len <= 0) ||
-            (rt_header->len >= len)
+            ((int) rt_header_len(rt_header) <= 0) ||
+            (rt_header_len(rt_header) >= len)
       )
     {
         yn = 0;

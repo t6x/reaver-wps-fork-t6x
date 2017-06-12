@@ -44,9 +44,8 @@ const void *build_radio_tap_header(size_t *len)
         memset((void *) buf, 0, sizeof(struct radio_tap_header));
         rt_header = (struct radio_tap_header *) buf;
 
-        rt_header->len = sizeof(struct radio_tap_header);
-
-        *len = rt_header->len;
+        *len = sizeof(struct radio_tap_header);
+        rt_header->len = host_to_le16(*len);
     }
 
     return buf;
