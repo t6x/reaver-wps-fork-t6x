@@ -163,7 +163,7 @@ int8_t signal_strength(const u_char *packet, size_t len)
 
 			if((flags & FHSS_FLAG) == FHSS_FLAG)
 			{
-				offset += FHSS_FLAG;
+				offset += FHSS_SIZE;
 			}
 
 			if(offset < len)
