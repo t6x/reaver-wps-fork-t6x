@@ -142,12 +142,18 @@ int8_t signal_strength(const u_char *packet, size_t len)
     int8_t ssi = 0;
     int offset = sizeof(struct radio_tap_header);
     struct radio_tap_header *header = NULL;
-    uint32_t flags;
+    uint32_t flags, flags2;
 
     if(has_rt_header() && (len > (sizeof(struct radio_tap_header) + TSFT_SIZE + FLAGS_SIZE + RATE_SIZE + CHANNEL_SIZE + FHSS_FLAG)))
     {
         header = (struct radio_tap_header *) packet;
-        flags = rt_header_flags(header);
+        flags = flags2 = rt_header_flags(header);
+
+        while ((flags2 & (1u << 31)) && offset <= len - 4)
+        {
+            flags2 = le_to_host32(*(uint32_t *)(packet + offset));
+            offset += sizeof(flags2);
+        }
 
         if((flags & SSI_FLAG) == SSI_FLAG)
         {
