@@ -43,6 +43,7 @@
 #include <time.h>
 #include <pcap.h>
 
+#include "utils/common.h"
 #include "wps.h"
 
 #define NULL_MAC		"\x00\x00\x00\x00\x00\x00"
@@ -296,18 +297,33 @@ struct radio_tap_header
 
 struct frame_control
 {
-    unsigned version : 2;
-    unsigned type : 2;
-    unsigned sub_type : 4;
+#if __BYTE_ORDER == __BIG_ENDIAN
+    uint8_t sub_type : 4;
+    uint8_t type : 2;
+    uint8_t version : 2;
 
-    unsigned to_ds : 1;
-    unsigned from_ds : 1;
-    unsigned more_frag : 1;
-    unsigned retry : 1;
-    unsigned pwr_mgt : 1;
-    unsigned more_data : 1;
-    unsigned protected_frame : 1;
-    unsigned order : 1;
+    uint8_t order : 1;
+    uint8_t protected_frame : 1;
+    uint8_t more_data : 1;
+    uint8_t pwr_mgt : 1;
+    uint8_t retry : 1;
+    uint8_t more_frag : 1;
+    uint8_t from_ds : 1;
+    uint8_t to_ds : 1;
+#else
+    uint8_t version : 2;
+    uint8_t type : 2;
+    uint8_t sub_type : 4;
+
+    uint8_t to_ds : 1;
+    uint8_t from_ds : 1;
+    uint8_t more_frag : 1;
+    uint8_t retry : 1;
+    uint8_t pwr_mgt : 1;
+    uint8_t more_data : 1;
+    uint8_t protected_frame : 1;
+    uint8_t order : 1;
+#endif
 };
 
 struct dot11_frame_header
@@ -393,5 +409,15 @@ struct tagged_parameter
 #pragma pack()
 
 #define MIN_BEACON_SIZE		(sizeof(struct radio_tap_header) + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame))
+
+static inline uint16_t rt_header_len(struct radio_tap_header *h)
+{
+    return le_to_host16(h->len);
+}
+
+static inline uint32_t rt_header_flags(struct radio_tap_header *h)
+{
+    return le_to_host32(h->flags);
+}
 
 #endif

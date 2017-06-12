@@ -374,7 +374,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
     rt_header = (struct radio_tap_header *) radio_header(packet, header->len);
 
-    frame_header = (struct dot11_frame_header *) (packet + rt_header->len);
+    frame_header = (struct dot11_frame_header *) (packet + rt_header_len(rt_header));
 
     /* If a specific BSSID was specified, only parse packets from that BSSID */
     if(!is_target(frame_header))

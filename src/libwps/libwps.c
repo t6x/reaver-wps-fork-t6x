@@ -40,7 +40,7 @@ int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *w
         {
             rt_header = (struct radio_tap_header *) libwps_radio_header(packet, len);
 
-            offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct management_frame);
+            offset = rt_header_len(rt_header) + sizeof(struct dot11_frame_header) + sizeof(struct management_frame);
             data = (packet + offset);
             data_len = (len - offset);
 
@@ -274,8 +274,8 @@ int libwps_has_rt_header(const u_char *packet, size_t len)
     rt_header = (struct radio_tap_header *) packet;
 
     if((rt_header->revision != RADIO_TAP_VERSION) ||
-            ((int) rt_header->len <= 0) ||
-            (rt_header->len >= len)
+            ((int) rt_header_len(rt_header) <= 0) ||
+            (rt_header_len(rt_header) >= len)
       )
     {
         yn = 0;
