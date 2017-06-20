@@ -4,7 +4,14 @@ INC=-Ilibwps -I.
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CONFDIR=@sysconfdir@/@target@
-CFLAGS=-DCONF_DIR='"$(CONFDIR)"' @CFLAGS@ -Wno-unused-function
+
+DISABLED_WARNINGS= \
+ -Wno-unused-variable \
+ -Wno-unused-but-set-variable \
+ -Wno-unused-function \
+ -Wno-pointer-sign
+
+CFLAGS=-DCONF_DIR='"$(CONFDIR)"' @CFLAGS@ $(DISABLED_WARNINGS)
 
 WPS_OBJS=wps/wps_attr_build.o wps/wps_attr_parse.o wps/wps_attr_process.o \
 wps/wps.o wps/wps_common.o wps/wps_dev_attr.o wps/wps_enrollee.o \
