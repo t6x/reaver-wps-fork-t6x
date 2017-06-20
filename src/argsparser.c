@@ -42,7 +42,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "Kb:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN";
+	char *short_options = "KZb:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN";
 	struct option long_options[] = {
 		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
@@ -84,6 +84,7 @@ int process_arguments(int argc, char **argv)
         {
                 switch(c)
                 {
+                        case 'Z':
                         case 'K':
                                 pixie.do_pixie = 1;
                                 break;
