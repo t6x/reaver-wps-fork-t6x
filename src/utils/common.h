@@ -413,11 +413,15 @@ void perror(const char *s);
  * (http://kernel.org/pub/linux/kernel/people/josh/sparse/)
  */
 #ifdef __CHECKER__
-#define __force __attribute__((force))
-#define __bitwise __attribute__((bitwise))
+# define __force __attribute__((force))
+# define __bitwise __attribute__((bitwise))
 #else
-#define __force
-#define __bitwise
+# ifndef __force
+#  define __force
+# endif
+# ifndef __bitwise
+#  define __bitwise
+# endif
 #endif
 
 typedef u16 __bitwise be16;
