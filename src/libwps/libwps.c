@@ -83,7 +83,7 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 
 	if(wps_ie_data)
 	{
-		for(i=0; i<sizeof(elements); i++)
+		for(i=0; i<sizeof(elements)/sizeof(elements[0]); i++)
 		{
 			/* Search for each WPS element inside the WPS IE data blob */
 			el = get_wps_data_element(wps_ie_data, wps_data_len, elements[i], &el_len);
