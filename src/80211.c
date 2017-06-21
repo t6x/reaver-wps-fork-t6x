@@ -99,7 +99,7 @@ void read_ap_beacon()
 				   __cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
                                 {
                                        	beacon = (struct beacon_management_frame *) (packet + rt_header_len + sizeof(struct dot11_frame_header));
-                                       	set_ap_capability(beacon->capability);
+                                       	set_ap_capability(__le16_to_cpu(beacon->capability));
 
 					/* Obtain the SSID and channel number from the beacon packet */
 					tag_offset = rt_header_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
