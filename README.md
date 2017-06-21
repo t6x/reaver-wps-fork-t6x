@@ -11,8 +11,8 @@ When using the **offline attack**, **if** the AP is vulnerable, it may take only
 * The original Reaver (v1.4) can be found here: [https://code.google.com/p/reaver-wps/](https://code.google.com/p/reaver-wps/).
 * The discontinued reaver-wps-fork-t6x community edition (which includes the Pixie Dust attack. v1.5.3) is now the old-master branch from this repository
 * reaver-wps-fork-t6x community edition of Reaver version 1.6b (which includes the Pixie Dust attack): [https://github.com/t6x/reaver-wps-fork-t6x](https://github.com/t6x/reaver-wps-fork-t6x).
-* For more information about the Pixie Dust attack (including **which APs are vulnerable**) can be found here: 			[https://github.com/wiire/pixiewps](https://github.com/wiire/pixiewps), 
-[https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)) & 									[https://docs.google.com/spreadsheets/d/1tSlbqVQ59kGn8hgmwcPTHUECQ3o9YhXR91A_p7Nnj5Y/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1tSlbqVQ59kGn8hgmwcPTHUECQ3o9YhXR91A_p7Nnj5Y/edit?usp=sharing)
+* For more information about the Pixie Dust attack (including **which APs are vulnerable**) can be found here:                  [https://github.com/wiire/pixiewps](https://github.com/wiire/pixiewps), 
+[https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)) &                                                                    [https://docs.google.com/spreadsheets/d/1tSlbqVQ59kGn8hgmwcPTHUECQ3o9YhXR91A_p7Nnj5Y/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1tSlbqVQ59kGn8hgmwcPTHUECQ3o9YhXR91A_p7Nnj5Y/edit?usp=sharing)
 
 - - -
 
@@ -55,7 +55,7 @@ make
 
 # About Reaver 1.6b Options 
 
- Please notice that work is in progress and the situation will evoluate soon, stay tuned! ;)
+ Please notice that work is in progress and the situation will progress soon, stay tuned! ;)
 
 ## -K and-or -Z  // --pixie-dust (in reaver)
 
@@ -72,20 +72,20 @@ The option `-a` of Wash will list all access points, including those without WPS
 ## Deprecated and temporary left behind options
 
 **- n** (reaver): Automatically enabled, no need to invocate it. 
-**- W** (reaver): Temporary left behind. Integration of the default PIN generators was unstable, leading to many warnings at compilation time. It was also an issue to use a PIN attempt (risk of AP rating limit) in order to get a bSSID and an eSSID. For the moment PIN generation has to be done externally using the scripts provided in "doc"
+**- W** (reaver): Temporary left behind. Integration of the default PIN generators was unstable, leading to many warnings at compilation time. It was also an issue to use a PIN attempt (risk of AP rating limit) in order to get a BSSID and an ESSID. For the moment PIN generation has to be done externally using the scripts provided in "doc"
 - a (reaver): This option was the only option which required sqlite3 adding an extra dependency. It was only designed for automation scripts and this task (execute the last reaver command again) can be easily done internally by the script that calls reaver
 - p1 and -p2 (reaver): Too much warnings and bugs.
-- H (reaver): There is a need to find a way to perform it more cleanly, work is on progress
+- H (reaver): There is a need to find a way to perform it more cleanly, work is in progress
 - vvv (reaver): The highest level of verbose is temporary removed for the same reason. 
 - g (wash): Option was broken in latest release and need to be seriously rethought. 
 
 ## Options repaired/solved issues
   
-  Issues with -g and -p (and their crossed usage) are left behind
-Code is much more clean, robust and with less dependencies. 
+  Issues with -g and -p (and their crossed usage) are left behind.
+Code is much more clean, robust and has less dependencies. 
   We know that it looks like at first time as a regression but it is not!
-We were stucked with issues since years due the dificulty of the task and the lack of global direction
-Now we have a much more healthy base and it will be worth it. 
+We were stuck with issues for years due the dificulty of the task and the lack of global direction.
+Now we have a much healthier base and it will be worth it. 
 
 # Acknowledgements
 
@@ -109,4 +109,4 @@ Bug fixes made by:
 * `Soxrok2212` for all work done to help in the development of tools
 * `Wiire` for developing Pixiewps
 * `Craig Heffner` for creating Reaver and for the creation of default pin generators (D-Link, Belkin) - http://www.devttys0.com/
-* `Dominique bongart` for the pixe dust breach and the three known attack modes.
+* `Dominique Bongard` for discovering the Pixie Dust attack.
