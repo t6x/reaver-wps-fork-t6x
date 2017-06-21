@@ -71,22 +71,22 @@ The option `-a` of Wash will list all access points, including those without WPS
 
 ## Deprecated and temporary left behind options
 
-**- n** (reaver): Automatically enabled, no need to invocate it. 
-**- W** (reaver): Temporary left behind. Integration of the default PIN generators was unstable, leading to many warnings at compilation time. It was also an issue to use a PIN attempt (risk of AP rating limit) in order to get a BSSID and an ESSID. For the moment PIN generation has to be done externally using the scripts provided in "doc"
-- a (reaver): This option was the only option which required sqlite3 adding an extra dependency. It was only designed for automation scripts and this task (execute the last reaver command again) can be easily done internally by the script that calls reaver
-- p1 and -p2 (reaver): Too much warnings and bugs.
-- H (reaver): There is a need to find a way to perform it more cleanly, work is in progress
-- vvv (reaver): The highest level of verbose is temporary removed for the same reason. 
-- g (wash): Option was broken in latest release and need to be seriously rethought. 
+* **- n** (reaver): Automatically enabled, no need to invocate it. 
+* **- W** (reaver): Temporary left behind. Integration of the default PIN generators was unstable, leading to many warnings at compilation time. It was also an issue to use a PIN attempt (risk of AP rating limit) in order to get a BSSID and an ESSID. For the moment PIN generation has to be done externally using the scripts provided in "doc".  
+* **- a** (reaver): This option was the only option which required sqlite3 adding an extra dependency. It was only designed for automation scripts and this task (execute the last reaver command again) can be easily done internally by the script that calls reaver  
+* **- p1** and **-p2** (reaver): Too much warnings and bugs.  
+* **-H** (reaver): There is a need to find a way to perform it more cleanly, work is in progress.  
+* **- vvv** (reaver): The highest level of verbose is temporary removed for the same reason.  
+* **- g** (wash): Option was broken in latest release and need to be seriously rethought.  
 
 ## Options repaired/solved issues
   
-  Issues with -g and -p (and their crossed usage) are left behind.
-Code is much more clean, robust and has less dependencies. 
-  We know that it looks like at first time as a regression but it is not!
+  Issues with -g and -p (and their crossed usage) are left behind.  
+Code is much more clean, robust and has less dependencies.  
+We know that it looks like at first time as a regression but it is not!  
 We were stuck with issues for years due the dificulty of the task and the lack of global direction.
-Now we have a much healthier base and it will be worth it. 
-
+  Now we have a much healthier base and it will be worth it.  
+  
 # Acknowledgements
 
 ## Contribution
