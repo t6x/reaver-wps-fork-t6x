@@ -99,7 +99,7 @@ void read_ap_beacon()
 				   __cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
                                 {
                                        	beacon = (struct beacon_management_frame *) (packet + rt_header_len + sizeof(struct dot11_frame_header));
-                                       	set_ap_capability(beacon->capability);
+                                       	set_ap_capability(__le16_to_cpu(beacon->capability));
 
 					/* Obtain the SSID and channel number from the beacon packet */
 					tag_offset = rt_header_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
@@ -132,13 +132,19 @@ int8_t signal_strength(const u_char *packet, size_t len)
 	int8_t ssi = 0;
 	int offset = sizeof(struct radio_tap_header);
 	struct radio_tap_header *header = NULL;
+	uint32_t flags, flags2;
 
 	if(has_rt_header() && (len > (sizeof(struct radio_tap_header) + TSFT_SIZE + FLAGS_SIZE + RATE_SIZE + CHANNEL_SIZE + FHSS_FLAG)))
 	{
 		header = (struct radio_tap_header *) packet;
 
-		uint32_t flags = __le32_to_cpu(header->flags);
-		
+		flags = flags2 = __le32_to_cpu(header->flags);
+		while ((flags2 & (1u << 31)) && offset <= len - 4)
+		{
+			flags2 = __le32_to_cpu(*(uint32_t *)(packet + offset));
+			offset += sizeof(flags2);
+		}
+
 		if((flags & SSI_FLAG) == SSI_FLAG)
 		{
 			if((flags & TSFT_FLAG) == TSFT_FLAG)
@@ -163,7 +169,7 @@ int8_t signal_strength(const u_char *packet, size_t len)
 
 			if((flags & FHSS_FLAG) == FHSS_FLAG)
 			{
-				offset += FHSS_FLAG;
+				offset += FHSS_SIZE;
 			}
 
 			if(offset < len)
