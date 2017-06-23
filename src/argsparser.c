@@ -201,6 +201,7 @@ void init_default_settings(void)
 	set_oo_send_nack(1);
         set_wifi_band(BG_BAND);
 	pixie.do_pixie = 0;
+	set_pin_string_mode(0);
 }
 
 /* Parses the recurring delay optarg */
@@ -223,6 +224,29 @@ void parse_recurring_delay(char *arg)
         free(x);
 }
 
+int is_valid_pin(char *pin)
+{
+    if(!pin)
+        return 0;
+
+    int i;
+    for (i = 0; i < strlen(pin); i++)
+    {
+         if(!isdigit(pin[i]))
+             return 0;
+    }
+    if(strlen(pin) == 8)
+    {
+        char pin7[8] = { 0 };
+        char pin8[9] = { 0 };
+        memcpy((void *) &pin7, pin, sizeof(pin7)-1);
+        snprintf(pin8, 9, "%s%d", pin7, wps_pin_checksum(atoi(pin7)));
+        if (strcmp(pin, pin8) != 0)
+            return 0;
+    }
+    return 1;
+}
+
 /* Parse the WPS pin to use into p1 and p2 */
 void parse_static_pin(char *pin)
 {
@@ -234,7 +258,7 @@ void parse_static_pin(char *pin)
 	{
 		len = strlen(pin);
 
-		if(len == 4 || len == 7 || len == 8)
+		if((len == 4 || len == 7 || len == 8) && is_valid_pin(pin) != 0)
 		{
 			memcpy((void *) &p1, pin, sizeof(p1)-1);
 			set_static_p1((char *) &p1);
@@ -248,7 +272,9 @@ void parse_static_pin(char *pin)
 		}
 		else
 		{
-			cprintf(CRITICAL, "[X] ERROR: Invalid pin specified! Ignoring '%s'.\n", pin);
+			//cprintf(CRITICAL, "[X] ERROR: Invalid pin specified! Ignoring '%s'.\n", pin);
+			set_pin_string_mode(1);
+			set_static_p1(pin);
 		}
 	}
 }

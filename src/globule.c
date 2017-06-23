@@ -465,6 +465,16 @@ char *get_static_p2(void)
 	return globule->static_p2;
 }
 
+void set_pin_string_mode(int value)
+{
+	globule->use_pin_string = value;
+}
+
+int get_pin_string_mode(void)
+{
+	return globule->use_pin_string;
+}
+
 void set_win7_compat(int value)
 {
 	globule->win7_compat = value;

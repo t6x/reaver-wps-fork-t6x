@@ -96,7 +96,7 @@ Main developer since version 1.6b
 
 Credits for previous reaver community versions:
 Modifications made by:
-`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho` 
+`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho`, `binarymaster`
 
 Some ideas made by:
 `nuroo`, `kcdtv`

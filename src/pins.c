@@ -70,16 +70,28 @@ char *build_next_pin()
         /* Remove previous pin */
         wps_registrar_invalidate_pin(wps->wps->registrar, wps->uuid_e);
 
-        /* Build a new pin */
-        pin = build_wps_pin();
-        if(pin)
+        int add_result = 0;
+        if (get_pin_string_mode())
         {
+                /* Use an arbitrary string as WPS pin */
+                pin = strdup(get_static_p1());
                 /* Add the new pin */
-                if(wps_registrar_add_pin(wps->wps->registrar, NULL, (const u8 *) pin, PIN_SIZE, 0) != 0)
+                add_result = wps_registrar_add_pin(wps->wps->registrar, NULL, (const u8 *) pin, strlen(pin), 0);
+        }
+        else
+        {
+                /* Build a new pin */
+                pin = build_wps_pin();
+                if(pin)
                 {
-                        free(pin);
-                        pin = NULL;
+                        /* Add the new pin */
+                        add_result = wps_registrar_add_pin(wps->wps->registrar, NULL, (const u8 *) pin, PIN_SIZE, 0);
                 }
+        }
+        if(add_result != 0)
+        {
+                free(pin);
+                pin = NULL;
         }
 
         return pin;

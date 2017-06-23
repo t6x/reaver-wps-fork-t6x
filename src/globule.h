@@ -52,6 +52,8 @@ struct globals
 	
 	char *static_p2;		/* Static P2, as supplied by the user */
 
+	int use_pin_string;		/* Use arbitrary string pin */
+
         enum key_state key_status;      /* Indicates the status of the key cracking: KEY1_WIP | KEY2_WIP | KEY_DONE */
 
 	int dh_small;			/* Use small DH keys to improve WPS speed */
@@ -216,6 +218,8 @@ void set_static_p1(char *value);
 char *get_static_p1(void);
 void set_static_p2(char *value);
 char *get_static_p2(void);
+void set_pin_string_mode(int value);
+int get_pin_string_mode(void);
 void set_win7_compat(int value);
 int get_win7_compat(void);
 void set_dh_small(int value);
