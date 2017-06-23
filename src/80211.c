@@ -149,6 +149,7 @@ int8_t signal_strength(const u_char *packet, size_t len)
 		{
 			if((flags & TSFT_FLAG) == TSFT_FLAG)
 			{
+				RADIOTAP_ALIGN(offset, TSFT_ALIGNMENT);
 				offset += TSFT_SIZE;
 			}
 
@@ -164,6 +165,7 @@ int8_t signal_strength(const u_char *packet, size_t len)
 
 			if((flags & CHANNEL_FLAG) == CHANNEL_FLAG)
 			{
+				RADIOTAP_ALIGN(offset, CHANNEL_ALIGNMENT);
 				offset += CHANNEL_SIZE;
 			}
 

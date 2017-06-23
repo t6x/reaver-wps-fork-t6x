@@ -94,6 +94,12 @@
 #define CHANNEL_SIZE 		4
 #define FHSS_SIZE 		2
 
+#define TSFT_ALIGNMENT		8
+#define CHANNEL_ALIGNMENT	2
+
+#define RADIOTAP_ALIGN(offset, a) \
+	offset = (offset + (a) - 1) & ~((a) - 1)
+
 #define WPS_DEVICE_NAME		"Glau"
 #define WPS_MANUFACTURER	"Microsoft"
 #define WPS_MODEL_NAME		"Windows"
