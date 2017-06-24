@@ -1,6 +1,6 @@
 CC=@CC@
 LIBWPS_DIR=libwps
-INC=-Ilibwps -I.
+INC=-Ilibwps -I. -Ilwe
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CONFDIR=@sysconfdir@/@target@
@@ -18,14 +18,12 @@ WPS_OBJS=wps/wps_attr_build.o wps/wps_attr_parse.o wps/wps_attr_process.o \
 wps/wps.o wps/wps_common.o wps/wps_dev_attr.o wps/wps_enrollee.o \
 wps/wps_registrar.o wps/wps_ufd.o
 
+LWE_OBJS=lwe/iwlib.o
 
 LIB_OBJS=libwps/libwps.o $(WPS_OBJS) utils/libutils.a \
-	crypto/libcrypto.a tls/libtls.a
+	crypto/libcrypto.a tls/libtls.a $(LWE_OBJS)
 
 LDFLAGS=@LDFLAGS@
-
-LIB_OBJS+=lwe/libiw.a
-LIBIWNAME=libiw
 
 WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
  builder.o crc.o pixie.o
@@ -33,14 +31,22 @@ REAVER_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
  misc.o cracker.o session.o send.o pins.o 80211.o exchange.o builder.o \
  keys.o crc.o pixie.o
 
+# Version of the Wireless Tools
+WT_VERSION := $(shell sed -ne "/WT_VERSION/{s:\([^0-9]*\)::;p;q;}" < lwe/iwlib.h )
+# Version of Wireless Extensions.
+WE_VERSION := $(shell sed -ne "/WE_VERSION/{s:\([^0-9]*\)::;p;q;}" < lwe/iwlib.h )
+# Always use local header for wireless extensions
+WEXT_HEADER = lwe/wireless.$(WE_VERSION).h
+
+
 all: wash reaver
 
 $(WPS_OBJS): CFLAGS+=-I. -Iutils
 
-wash: $(LIBIWNAME) $(WASH_OBJS) $(LIB_OBJS)
+wash: $(WASH_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) wpsmon.c $(WASH_OBJS) $(LIB_OBJS) $(LDFLAGS) -o wash
 
-reaver: $(LIBIWNAME) $(REAVER_OBJS) $(LIB_OBJS)
+reaver: $(REAVER_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) wpscrack.c $(REAVER_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
 
 utils/libutils.a:
@@ -52,8 +58,10 @@ crypto/libcrypto.a: tls/libtls.a
 tls/libtls.a:
 	(cd tls && make)
 
-libiw:
-	(cd lwe && make BUILD_STATIC=y libiw.a)
+lwe/wireless.h: $(WEXT_HEADER)
+	cp $(WEXT_HEADER) lwe/wireless.h
+
+$(WASH_OBJS) $(REAVER_OBJS) $(LWE_OBJS): lwe/wireless.h
 
 install: wash reaver
 	install -D -m 755 wash $(DESTDIR)$(exec_prefix)/bin/wash
@@ -66,7 +74,7 @@ clean:
 	(cd utils && make clean)
 	(cd tls && make clean)
 	(cd crypto && make clean)
-	(cd lwe && make realclean)
+	rm -f lwe/wireless.h
 	rm -f Makefile config.h
 
 cleanbin: 
@@ -75,5 +83,5 @@ cleanbin:
 distclean: cleanbin clean
 	rm -rf $(CONFDIR)
 
-.PHONY: libiw clean cleanbin distclean install
+.PHONY: all clean cleanbin distclean install
 
