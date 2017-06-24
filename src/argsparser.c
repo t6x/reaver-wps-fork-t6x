@@ -273,6 +273,7 @@ void parse_static_pin(char *pin)
 		else
 		{
 			//cprintf(CRITICAL, "[X] ERROR: Invalid pin specified! Ignoring '%s'.\n", pin);
+			set_max_pin_attempts(1);
 			set_pin_string_mode(1);
 			set_static_p1(pin);
 		}

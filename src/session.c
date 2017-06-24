@@ -85,6 +85,14 @@ int restore_session()
 		answer = 'y';
 	}
 
+	/*
+	 * Do not restore the session when arbitrary string pin is specified.
+	 */
+	if(get_pin_string_mode())
+	{
+		answer = 'n';
+	}
+
 	if(stat(file, &wpstat) == 0)
 	{
 		/* If the user explicitly specified a session file, don't prompt them */
@@ -181,10 +189,12 @@ int save_session()
 	size_t write_size = 0;
         int attempts = 0, ret_val = 0, i = 0;
 	struct wps_data *wps = NULL;
+	int pin_string;
 
 	wps = get_wps();
 	bssid = mac2str(get_bssid(), '\0');
 	pretty_bssid = mac2str(get_bssid(), ':');
+	pin_string = get_pin_string_mode();
 
 	if(wps)
 	{
@@ -192,9 +202,16 @@ int save_session()
 		essid = wps->essid;
 	}
 	
-	if(!bssid || !pretty_bssid)
+	if(!bssid || !pretty_bssid || pin_string)
 	{
-		cprintf(CRITICAL, "[X] ERROR: Failed to save session data (memory error).\n");
+		if (pin_string)
+		{
+			cprintf(VERBOSE, "[*] String pin was specified, nothing to save.\n");
+		}
+		else
+		{
+			cprintf(CRITICAL, "[X] ERROR: Failed to save session data (memory error).\n");
+		}
 	}
 	else
 	{
