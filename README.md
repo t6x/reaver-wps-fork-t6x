@@ -90,13 +90,14 @@ We were stuck with issues for years due the dificulty of the task and the lack o
 # Acknowledgements
 
 ## Contribution
+Creator of reaver-wps-fork-t6x "community edition": 
+`t6x`  
+  
+Main developer since version 1.6b: 
+`rofl0r`  
 
-Main developer since version 1.6b 
-`rofl0r`
-
-Credits for previous reaver community versions:
 Modifications made by:
-`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho`, `binarymaster`
+`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho`, `binarymaster`, `Ǹotaz`  
 
 Some ideas made by:
 `nuroo`, `kcdtv`
