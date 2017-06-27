@@ -1,5 +1,5 @@
 AC_INIT(reaver, 1.6b)
-
+AC_CONFIG_FILES([config.mak])
 AC_PROG_CC
 AC_LANG(C)
 
@@ -18,4 +18,4 @@ AC_HELP_STRING([--enable-savetocurrent],
 cp confdefs.h config.h
 
 AC_SUBST(target, $PACKAGE_NAME)
-AC_OUTPUT(Makefile)
+AC_OUTPUT()

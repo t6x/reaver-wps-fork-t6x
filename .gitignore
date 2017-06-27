@@ -7,8 +7,8 @@
 src/wash
 src/reaver
 src/config.log
+src/config.mak
 src/config.status
 src/config.h
 src/autom4te.cache
-src/Makefile
 

@@ -1,9 +1,7 @@
-CC=@CC@
+-include config.mak
+
 LIBWPS_DIR=libwps
 INC=-Ilibwps -I. -Ilwe
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CONFDIR=@sysconfdir@/@target@
 
 DISABLED_WARNINGS= \
  -Wno-unused-variable \
@@ -11,7 +9,7 @@ DISABLED_WARNINGS= \
  -Wno-unused-function \
  -Wno-pointer-sign
 
-CFLAGS=-DCONF_DIR='"$(CONFDIR)"' @CFLAGS@ $(DISABLED_WARNINGS)
+CFLAGS=-DCONF_DIR='"$(CONFDIR)"' $(CFLAGS_USER) $(DISABLED_WARNINGS)
 CFLAGS += $(INC)
 
 WPS_OBJS=wps/wps_attr_build.o wps/wps_attr_parse.o wps/wps_attr_process.o \
@@ -22,8 +20,6 @@ LWE_OBJS=lwe/iwlib.o
 
 LIB_OBJS=libwps/libwps.o $(WPS_OBJS) utils/libutils.a \
 	crypto/libcrypto.a tls/libtls.a $(LWE_OBJS)
-
-LDFLAGS=@LDFLAGS@
 
 WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
  builder.o crc.o pixie.o
@@ -78,7 +74,6 @@ clean:
 	(cd tls && make clean)
 	(cd crypto && make clean)
 	rm -f lwe/wireless.h
-	rm -f Makefile config.h
 
 cleanbin: 
 	rm -f @bindir@/reaver @bindir@/wash @bindir@/walsh

@@ -1,0 +1,8 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+CONFDIR=@sysconfdir@/@target@
+
+CC=@CC@
+CFLAGS_USER=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+
