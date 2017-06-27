@@ -62,8 +62,8 @@ $(WASH_OBJS) $(REAVER_OBJS) $(LWE_OBJS): lwe/wireless.h
 install: wash reaver
 	install -D -m 755 wash $(DESTDIR)$(exec_prefix)/bin/wash
 	install -D -m 755 reaver $(DESTDIR)$(exec_prefix)/bin/reaver
-	# create directory used to store *.wpc files;
-	# if not found defaults to "." i.e. current dir
+	@# create directory used to store *.wpc files;
+	@# if not found defaults to "." i.e. current dir
 	install -d $(DESTDIR)$(CONFDIR)
 
 clean:
