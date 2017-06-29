@@ -1,6 +1,6 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-CONFDIR=@sysconfdir@/@target@
+CONFDIR=@localstatedir@/lib/@target@
 
 CC=@CC@
 CFLAGS_USER=@CFLAGS@
