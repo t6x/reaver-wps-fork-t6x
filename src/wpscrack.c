@@ -174,6 +174,8 @@ int usage(char *prog_name)
         fprintf(stderr, "\t-E, --eap-terminate             Terminate each WPS session with an EAP FAIL packet\n");
         fprintf(stderr, "\t-n, --nack                      Target AP always sends a NACK [Auto]\n");
 	fprintf(stderr, "\t-w, --win7                      Mimic a Windows 7 registrar [False]\n");
+	fprintf(stderr, "\t-K, --pixie-dust                Run pixiedust attack\n");
+	fprintf(stderr, "\t-Z                              Run pixiedust attack\n");
 
         fprintf(stderr, "\nExample:\n\t%s -i mon0 -b 00:90:4C:C1:AC:21 -vv\n\n", prog_name);
 
