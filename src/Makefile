@@ -15,6 +15,7 @@ CFLAGS += -DCONFIG_IPV6
 
 UTILS_OBJS= \
         utils/base64.o \
+        utils/file.o \
         utils/common.o \
         utils/ip_addr.o \
         utils/radiotap.o \

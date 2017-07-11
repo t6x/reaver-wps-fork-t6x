@@ -32,8 +32,10 @@
  */
 
 #include "wpsmon.h"
+#include "utils/file.h"
 
 int show_all_aps = 0;
+char *script_exec = 0;
 
 static struct mac {
 	unsigned char mac[6];
@@ -91,7 +93,7 @@ int main(int argc, char *argv[])
 	int source = INTERFACE, ret_val = EXIT_FAILURE;
 	struct bpf_program bpf = { 0 };
 	char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
-	char *short_options = "i:c:n:o:b:5sfuDha";
+	char *short_options = "x:i:c:n:o:b:5sfuDha";
         struct option long_options[] = {
 		{ "bssid", required_argument, NULL, 'b' },
                 { "interface", required_argument, NULL, 'i' },
@@ -104,6 +106,7 @@ int main(int argc, char *argv[])
 		{ "scan", no_argument, NULL, 's' },
 		{ "survey", no_argument, NULL, 'u' },
 		{ "all", no_argument, NULL, 'a' },
+		{ "exec", required_argument, NULL, 'x' },
                 { "help", no_argument, NULL, 'h' },
                 { 0, 0, 0, 0 }
         };
@@ -144,6 +147,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'o':
 				out_file = strdup(optarg);
+				break;
+			case 'x':
+				script_exec = strdup(optarg);
 				break;
 			case 's':
 				mode = SCAN;
@@ -408,6 +414,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						cprintf(INFO, "%17s  %2d  %.2d  %d.%d  %3s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
 					else
 						cprintf(INFO, "%17s  %2d  %.2d            %s\n", bssid, channel, rssi, ssid);
+
 				}
 
 				if(probe_sent)
@@ -422,6 +429,17 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				if(!wps_parsed || fsub_type == __cpu_to_le16(IEEE80211_STYPE_PROBE_RESP))
 				{
 					mark_ap_complete(bssid);
+					if(script_exec) {
+						char *json_string = wps_data_to_json(bssid, ssid, channel, rssi, wps);
+						char *tempfile = gettempfilename();
+						writefile(tempfile, json_string);
+						char command[512];
+						snprintf(command, sizeof command, "%s %s", script_exec, tempfile);
+						system(command);
+						unlink(tempfile);
+						free(tempfile);
+						free(json_string);
+					}
 				}
 	
 			}
@@ -475,6 +493,7 @@ void usage(char *prog)
 	fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
 	fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
 	fprintf(stderr, "\t-a, --all                            Show all APs, even those without WPS\n");
+	fprintf(stderr, "\t-x, --exec=<script>                  launch script which gets AP info passed as json\n");
 	fprintf(stderr, "\t-h, --help                           Show help\n");
 	
 	fprintf(stderr, "\nExample:\n");
