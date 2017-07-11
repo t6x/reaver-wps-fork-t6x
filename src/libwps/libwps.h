@@ -51,6 +51,7 @@ struct libwps_data
 };
 
 int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *wps);
+char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi, struct libwps_data *wps);
 
 #ifdef LIBWPS_C
 
