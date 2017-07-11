@@ -125,7 +125,6 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 						ptr = wps->uuid;
 						break;
 					case SERIAL:
-						src = hex2str(el, el_len);
 						ptr = wps->serial;
 						break;
 					case SELECTED_REGISTRAR:
@@ -149,7 +148,6 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 						ptr = wps->rf_bands;
 						break;
 					case OS_VERSION:
-						src = hex2str(el, el_len);
 						ptr = wps->os_version;
 						break;
 					default:
