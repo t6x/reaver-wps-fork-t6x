@@ -11,6 +11,20 @@ DISABLED_WARNINGS= \
 
 CFLAGS=-DCONF_DIR='"$(CONFDIR)"' $(CFLAGS_USER) $(DISABLED_WARNINGS)
 CFLAGS += $(INC)
+CFLAGS += -DCONFIG_IPV6
+
+UTILS_OBJS= \
+        utils/base64.o \
+        utils/common.o \
+        utils/ip_addr.o \
+        utils/radiotap.o \
+        utils/trace.o \
+        utils/uuid.o \
+        utils/wpa_debug.o \
+        utils/wpabuf.o \
+	utils/os_unix.o \
+	utils/eloop.o
+
 
 WPS_OBJS=wps/wps_attr_build.o wps/wps_attr_parse.o wps/wps_attr_process.o \
 wps/wps.o wps/wps_common.o wps/wps_dev_attr.o wps/wps_enrollee.o \
@@ -18,7 +32,7 @@ wps/wps_registrar.o wps/wps_ufd.o
 
 LWE_OBJS=lwe/iwlib.o
 
-LIB_OBJS=libwps/libwps.o $(WPS_OBJS) utils/libutils.a \
+LIB_OBJS=libwps/libwps.o $(WPS_OBJS) $(UTILS_OBJS) \
 	crypto/libcrypto.a tls/libtls.a $(LWE_OBJS)
 
 WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
@@ -44,9 +58,6 @@ wash: $(WASH_OBJS) $(LIB_OBJS)
 
 reaver: $(REAVER_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) $(REAVER_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
-
-utils/libutils.a:
-	(cd utils && make)
 
 crypto/libcrypto.a: tls/libtls.a
 	(cd crypto && make)
