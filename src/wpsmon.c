@@ -315,9 +315,15 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 
 	if(!header_printed)
 	{
-		cprintf  (INFO, "BSSID              Ch  dBm  WPS  Lck  ESSID\n");
-		//cprintf(INFO, "00:11:22:33:44:55  12  -77  1.0  Yes  0123456789abcdef0123456789abcdef\n");
-		cprintf  (INFO, "--------------------------------------------------------------------------------\n");
+		if(!script_exec) {
+			cprintf  (INFO, "BSSID              Ch  dBm  WPS  Lck  ESSID\n");
+			//cprintf(INFO, "00:11:22:33:44:55  12  -77  1.0  Yes  0123456789abcdef0123456789abcdef\n");
+			cprintf  (INFO, "--------------------------------------------------------------------------------\n");
+		} else {
+			char command[512];
+			snprintf(command, sizeof command, "%s --header", script_exec);
+			system(command);
+		}
 		header_printed = 1;
 	}
 
