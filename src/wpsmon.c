@@ -434,7 +434,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				if(!wps_parsed || fsub_type == __cpu_to_le16(IEEE80211_STYPE_PROBE_RESP))
 				{
 					mark_ap_complete(bssid);
-					if(script_exec) {
+					if(script_exec && (show_all_aps || wps->version > 0)) {
 						char *json_string = wps_data_to_json(bssid, ssid, channel, rssi, wps);
 						char *tempfile = gettempfilename();
 						writefile(tempfile, json_string);
