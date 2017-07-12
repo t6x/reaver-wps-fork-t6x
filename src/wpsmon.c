@@ -397,7 +397,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					probe_sent = 1;
 				}
 		
-				if(!was_printed(bssid) && (wps->version > 0 || show_all_aps == 1))
+				if(!script_exec && (!was_printed(bssid) && (wps->version > 0 || show_all_aps == 1)))
 				{
 					if(wps->version > 0) switch(wps->locked)
 					{
