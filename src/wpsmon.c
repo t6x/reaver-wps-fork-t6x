@@ -414,7 +414,6 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						cprintf(INFO, "%17s  %2d  %.2d  %d.%d  %3s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, ssid);
 					else
 						cprintf(INFO, "%17s  %2d  %.2d            %s\n", bssid, channel, rssi, ssid);
-
 				}
 
 				if(probe_sent)
