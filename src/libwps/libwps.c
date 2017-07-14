@@ -15,10 +15,10 @@
 
 char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi,struct libwps_data *wps) {
 	size_t ol = 0, nl = 0, ns = 0;
-	char *json_str = 0, *old = strdup("{\n");
+	char *json_str = 0, *old = strdup("{");
 	char buf[1024];
 
-	nl = snprintf(buf, sizeof buf, "\"bssid\" : \"%s\",\n", bssid);
+	nl = snprintf(buf, sizeof buf, "\"bssid\" : \"%s\", ", bssid);
 	ol = strlen(old);
 	ns = ol + nl + 1;
 	json_str = malloc(ns);
@@ -26,7 +26,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	free(old);
 	old = json_str;
 
-	nl = snprintf(buf, sizeof buf, "\"essid\" : \"%s\",\n", ssid);
+	nl = snprintf(buf, sizeof buf, "\"essid\" : \"%s\", ", ssid);
 	ol = strlen(old);
 	ns = ol + nl + 1;
 	json_str = malloc(ns);
@@ -34,7 +34,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	free(old);
 	old = json_str;
 
-	nl = snprintf(buf, sizeof buf, "\"channel\" : %d,\n", channel);
+	nl = snprintf(buf, sizeof buf, "\"channel\" : %d, ", channel);
 	ol = strlen(old);
 	ns = ol + nl + 1;
 	json_str = malloc(ns);
@@ -42,7 +42,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	free(old);
 	old = json_str;
 
-	nl = snprintf(buf, sizeof buf, "\"rssi\" : %d,\n", rssi);
+	nl = snprintf(buf, sizeof buf, "\"rssi\" : %d, ", rssi);
 	ol = strlen(old);
 	ns = ol + nl + 1;
 	json_str = malloc(ns);
@@ -51,7 +51,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	old = json_str;
 
 	if(wps->version) {
-		nl = snprintf(buf, sizeof buf, "\"wps_version\" : %d,\n", wps->version);
+		nl = snprintf(buf, sizeof buf, "\"wps_version\" : %d, ", wps->version);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -60,7 +60,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(wps->state) {
-		nl = snprintf(buf, sizeof buf, "\"wps_state\" : %d,\n", wps->state);
+		nl = snprintf(buf, sizeof buf, "\"wps_state\" : %d, ", wps->state);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -69,7 +69,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(wps->locked) {
-		nl = snprintf(buf, sizeof buf, "\"wps_locked\" : %d,\n", wps->locked);
+		nl = snprintf(buf, sizeof buf, "\"wps_locked\" : %d, ", wps->locked);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -78,7 +78,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->manufacturer) {
-		nl = snprintf(buf, sizeof buf, "\"wps_manufacturer\" : \"%s\",\n", wps->manufacturer);
+		nl = snprintf(buf, sizeof buf, "\"wps_manufacturer\" : \"%s\", ", wps->manufacturer);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -87,7 +87,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->model_name) {
-		nl = snprintf(buf, sizeof buf, "\"wps_model_name\" : \"%s\",\n", wps->model_name);
+		nl = snprintf(buf, sizeof buf, "\"wps_model_name\" : \"%s\", ", wps->model_name);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -96,7 +96,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->model_number) {
-		nl = snprintf(buf, sizeof buf, "\"wps_model_number\" : \"%s\",\n", wps->model_number);
+		nl = snprintf(buf, sizeof buf, "\"wps_model_number\" : \"%s\", ", wps->model_number);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -105,7 +105,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->device_name) {
-		nl = snprintf(buf, sizeof buf, "\"wps_device_name\" : \"%s\",\n", wps->device_name);
+		nl = snprintf(buf, sizeof buf, "\"wps_device_name\" : \"%s\", ", wps->device_name);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -114,7 +114,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->ssid) {
-		nl = snprintf(buf, sizeof buf, "\"wps_ssid\" : \"%s\",\n", wps->ssid);
+		nl = snprintf(buf, sizeof buf, "\"wps_ssid\" : \"%s\", ", wps->ssid);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -123,7 +123,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->serial) {
-		nl = snprintf(buf, sizeof buf, "\"wps_serial\" : \"%s\",\n", wps->serial);
+		nl = snprintf(buf, sizeof buf, "\"wps_serial\" : \"%s\", ", wps->serial);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -132,7 +132,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->os_version) {
-		nl = snprintf(buf, sizeof buf, "\"wps_os_version\" : \"%s\",\n", wps->os_version);
+		nl = snprintf(buf, sizeof buf, "\"wps_os_version\" : \"%s\", ", wps->os_version);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -141,7 +141,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->uuid) {
-		nl = snprintf(buf, sizeof buf, "\"wps_uuid\" : \"%s\",\n", wps->uuid);
+		nl = snprintf(buf, sizeof buf, "\"wps_uuid\" : \"%s\", ", wps->uuid);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -150,7 +150,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->selected_registrar) {
-		nl = snprintf(buf, sizeof buf, "\"wps_selected_registrar\" : \"%s\",\n", wps->selected_registrar);
+		nl = snprintf(buf, sizeof buf, "\"wps_selected_registrar\" : \"%s\", ", wps->selected_registrar);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -159,7 +159,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->response_type) {
-		nl = snprintf(buf, sizeof buf, "\"wps_response_type\" : \"%s\",\n", wps->response_type);
+		nl = snprintf(buf, sizeof buf, "\"wps_response_type\" : \"%s\", ", wps->response_type);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -168,7 +168,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->primary_device_type) {
-		nl = snprintf(buf, sizeof buf, "\"wps_primary_device_type\" : \"%s\",\n", wps->primary_device_type);
+		nl = snprintf(buf, sizeof buf, "\"wps_primary_device_type\" : \"%s\", ", wps->primary_device_type);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -177,7 +177,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->config_methods) {
-		nl = snprintf(buf, sizeof buf, "\"wps_config_methods\" : \"%s\",\n", wps->config_methods);
+		nl = snprintf(buf, sizeof buf, "\"wps_config_methods\" : \"%s\", ", wps->config_methods);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -186,7 +186,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 	if(*wps->rf_bands) {
-		nl = snprintf(buf, sizeof buf, "\"wps_rf_bands\" : \"%s\",\n", wps->rf_bands);
+		nl = snprintf(buf, sizeof buf, "\"wps_rf_bands\" : \"%s\", ", wps->rf_bands);
 		ol = strlen(old);
 		ns = ol + nl + 1;
 		json_str = malloc(ns);
@@ -195,7 +195,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		old = json_str;
 	}
 
-	nl = snprintf(buf, sizeof buf, "\"dummy\":0\n}\n");
+	nl = snprintf(buf, sizeof buf, "\"dummy\": 0}");
 	ol = strlen(old);
 	ns = ol + nl + 1;
 	json_str = malloc(ns);
