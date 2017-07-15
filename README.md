@@ -2,7 +2,7 @@
 
 **Reaver** has been designed to be a robust and practical attack against **Wi-Fi Protected Setup (WPS)** registrar PINs in order to **recover WPA/WPA2 passphrases**. It has been tested against a wide variety of access points and WPS implementations.
 
-The **original** Reaver implements a **online brute force attack** against, as described in [http://sviehb.files.wordpress.com/2011/12/viehboeck_wps.pdf](http://sviehb.files.wordpress.com/2011/12/viehboeck_wps.pdf).
+The **original** Reaver implements a **online brute force attack** against, as described in [http://sviehb.files.wordpress.com/2011/12/viehboeck_wps.pdf](http://sviehb.files.wordpress.com/2011/12/viehboeck_wps.pdf).  
 **reaver-wps-fork-t6x** version **1.6.1** (and superior) is a **community forked version**, which has included **various bug fixes** and additional attack method (the **offline Pixie Dust** attack).
 
 **Depending on the target's Access Point (AP)**, to recover the plain text WPA/WPA2 passphrase the **average** amount of time for the transitional **online brute force** method is **between 4-10 hours**. In practice, it will generally take half this time to guess the correct WPS pin and recover the passphrase.
