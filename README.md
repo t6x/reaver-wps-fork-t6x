@@ -53,7 +53,7 @@ make
 
 - - -
 
-# About Reaver 1.6b Options 
+# About Reaver Options 
 
  Please notice that work is in progress and the situation will progress soon, stay tuned! ;)
 
