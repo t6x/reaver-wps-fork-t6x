@@ -147,14 +147,14 @@ Example:
 	wash -i mon0
 ```
 
-A detailed description of the options with  concrete syntax examples can de found in [Craig Heffner's wash readme](https://github.com/t6x/reaver-wps-fork-t6x/blob/master/docs/README.WASH).  
+A detailed description of the options with  concrete syntax examples can be found in [Craig Heffner's wash readme](https://github.com/t6x/reaver-wps-fork-t6x/blob/master/docs/README.WASH).  
 About the new options: 
 ## -a  //  --all  
 The option `-a` of Wash will list all access points, including those without WPS enabled.  
 ## -j  //  --json  
 The extended WPS information (serial, model...) from the AP probe answer will be printed in the terminal (in json format)  
 
-Notice that wash can be now used in pipe! For more informations about all this news features read the wiki article [Everything about the new options from wash](https://github.com/t6x/reaver-wps-fork-t6x/wiki/Everything-about-the-new-options-from-wash)  
+Notice that wash output can be piped into other commands. For more information see the wiki article [Everything about the new options from wash](https://github.com/t6x/reaver-wps-fork-t6x/wiki/Everything-about-the-new-options-from-wash)  
   
 # Acknowledgements
 
