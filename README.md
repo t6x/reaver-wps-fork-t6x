@@ -109,7 +109,7 @@ Advanced Options:
 	-Z                              Run pixiedust attack
 
 Example:
-	reaver -i mon0 -b 00:90:4C:C1:AC:21 -vv
+	reaver -i wlan0mon -b 00:90:4C:C1:AC:21 -vv
  ```  
  
 Options description and examples of use can be found in the [Readme from Craig Heffner](https://github.com/t6x/reaver-wps-fork-t6x/blob/master/docs/README.REAVER). Here comes a description of the new options introduced since then:  
@@ -144,7 +144,7 @@ Optional Arguments:
 	-h, --help                           Show help
 
 Example:
-	wash -i mon0
+	wash -i wlan0mon
 ```
 
 A detailed description of the options with  concrete syntax examples can be found in [Craig Heffner's wash readme](https://github.com/t6x/reaver-wps-fork-t6x/blob/master/docs/README.WASH).  
