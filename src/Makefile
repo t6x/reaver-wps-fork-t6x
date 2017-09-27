@@ -81,7 +81,6 @@ clean:
 	rm -f *~ *.o reaver wash
 	rm -rf *.cache config.status config.log
 	rm -f $(LIB_OBJS)
-	(cd utils && make clean)
 	(cd tls && make clean)
 	(cd crypto && make clean)
 	rm -f lwe/wireless.h
