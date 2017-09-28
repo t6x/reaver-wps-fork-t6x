@@ -33,10 +33,10 @@
 
 #include "builder.h"
 
-const void *build_radio_tap_header(size_t *len)
+void *build_radio_tap_header(size_t *len)
 {
 	struct radio_tap_header *rt_header = NULL;
-	const void *buf = NULL;
+	void *buf = NULL;
 
 	buf = malloc(sizeof(struct radio_tap_header));
 	if(buf)
@@ -51,10 +51,10 @@ const void *build_radio_tap_header(size_t *len)
 	return buf;
 }
 
-const void *build_dot11_frame_header(uint16_t fc, size_t *len)
+void *build_dot11_frame_header(uint16_t fc, size_t *len)
 {
 	struct dot11_frame_header *header = NULL;
-	const void *buf = NULL;
+	void *buf = NULL;
 	static uint16_t frag_seq;
 
 	buf = malloc(sizeof(struct dot11_frame_header));
@@ -78,10 +78,10 @@ const void *build_dot11_frame_header(uint16_t fc, size_t *len)
 	return buf;
 }
 
-const void *build_authentication_management_frame(size_t *len)
+void *build_authentication_management_frame(size_t *len)
 {
 	struct authentication_management_frame *frame = NULL;
-	const void *buf = NULL;
+	void *buf = NULL;
 
 	buf = malloc(sizeof(struct authentication_management_frame));
 	if(buf)
@@ -98,10 +98,10 @@ const void *build_authentication_management_frame(size_t *len)
 	return buf;
 }
 
-const void *build_association_management_frame(size_t *len)
+void *build_association_management_frame(size_t *len)
 {
 	struct association_request_management_frame *frame = NULL;
-	const void *buf = NULL;
+	void *buf = NULL;
 
 	buf = malloc(sizeof(struct association_request_management_frame));
 	if(buf)
@@ -117,10 +117,10 @@ const void *build_association_management_frame(size_t *len)
 	return buf;
 }
 
-const void *build_llc_header(size_t *len)
+void *build_llc_header(size_t *len)
 {
 	struct llc_header *header = NULL;
-	const void *buf = NULL;
+	void *buf = NULL;
 	
 	buf = malloc(sizeof(struct llc_header));
 	if(buf)
@@ -139,10 +139,10 @@ const void *build_llc_header(size_t *len)
 	return buf;
 }
 
-const void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
+void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 {
 	struct tagged_parameter ssid_tag = { 0 };
-	const void *rt_header = NULL, *dot11_header = NULL, *packet = NULL;
+	void *rt_header = NULL, *dot11_header = NULL, *packet = NULL;
 	size_t offset = 0, rt_len = 0, dot11_len = 0, ssid_tag_len = 0, packet_len = 0;
 
 	if(essid != NULL)
@@ -190,9 +190,9 @@ const void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *l
 }
 
 /* Wrapper function for Radio Tap / Dot11 / LLC */
-const void *build_snap_packet(size_t *len)
+void *build_snap_packet(size_t *len)
 {
-	const void *rt_header = NULL, *dot11_header = NULL, *llc_header = NULL, *packet = NULL;
+	void *rt_header = NULL, *dot11_header = NULL, *llc_header = NULL, *packet = NULL;
 	size_t rt_len = 0, dot11_len = 0, llc_len = 0, packet_len = 0;
 
 	rt_header = build_radio_tap_header(&rt_len);
@@ -222,10 +222,10 @@ const void *build_snap_packet(size_t *len)
 	return packet;
 }
 
-const void *build_dot1X_header(uint8_t type, uint16_t payload_len, size_t *len)
+void *build_dot1X_header(uint8_t type, uint16_t payload_len, size_t *len)
 {
 	struct dot1X_header *header = NULL;
-	const void *buf = NULL;
+	void *buf = NULL;
 
 	buf = malloc(sizeof(struct dot1X_header));
 	if(buf)
@@ -242,10 +242,10 @@ const void *build_dot1X_header(uint8_t type, uint16_t payload_len, size_t *len)
 	return buf;
 }
 
-const void *build_eap_header(uint8_t id, uint8_t code, uint8_t type, uint16_t payload_len, size_t *len)
+void *build_eap_header(uint8_t id, uint8_t code, uint8_t type, uint16_t payload_len, size_t *len)
 {
 	struct eap_header *header = NULL;
-	const void *buf = NULL;
+	void *buf = NULL;
 
 	buf = malloc(sizeof(struct eap_header));
 	if(buf)
@@ -265,9 +265,9 @@ const void *build_eap_header(uint8_t id, uint8_t code, uint8_t type, uint16_t pa
 	return buf;
 }
 
-const void *build_wfa_header(uint8_t op_code, size_t *len)
+void *build_wfa_header(uint8_t op_code, size_t *len)
 {
-	const void *buf = NULL;
+	void *buf = NULL;
 	struct wfa_expanded_header *header = NULL;
 
 	buf = malloc(sizeof(struct wfa_expanded_header));
@@ -286,9 +286,9 @@ const void *build_wfa_header(uint8_t op_code, size_t *len)
 }
 
 /* Wrapper for SNAP / Dot1X Start */
-const void *build_eapol_start_packet(size_t *len)
+void *build_eapol_start_packet(size_t *len)
 {
-	const void *snap_packet = NULL, *dot1x_header = NULL, *packet = NULL;
+	void *snap_packet = NULL, *dot1x_header = NULL, *packet = NULL;
         size_t snap_len = 0, dot1x_len = 0, packet_len = 0;
 
         /* Build a SNAP packet and a 802.1X START header */
@@ -318,9 +318,9 @@ const void *build_eapol_start_packet(size_t *len)
 }
 
 /* Wrapper for SNAP / Dot1X / EAP / WFA / Payload */
-const void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *len)
+void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *len)
 {
-	const void *buf = NULL, *snap_packet = NULL, *eap_header = NULL, *dot1x_header = NULL, *wfa_header = NULL;
+	void *buf = NULL, *snap_packet = NULL, *eap_header = NULL, *dot1x_header = NULL, *wfa_header = NULL;
 	size_t buf_len = 0, snap_len = 0, eap_len = 0, dot1x_len = 0, wfa_len = 0, offset = 0, total_payload_len = 0;
 	uint8_t eap_type = 0, eap_code = 0;
 	struct wps_data *wps = get_wps();
@@ -393,9 +393,9 @@ const void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *
 	return buf;
 }
 
-const void *build_eap_failure_packet(size_t *len)
+void *build_eap_failure_packet(size_t *len)
 {
-	const void *buf = NULL, *snap_packet = NULL, *eap_header = NULL, *dot1x_header = NULL;
+	void *buf = NULL, *snap_packet = NULL, *eap_header = NULL, *dot1x_header = NULL;
 	size_t buf_len = 0, snap_len = 0, eap_len = 0, dot1x_len = 0, offset = 0;
 
 	/* Build SNAP, EAP and 802.1x headers */
@@ -429,30 +429,21 @@ const void *build_eap_failure_packet(size_t *len)
 	return buf;
 }
 
-const void *build_tagged_parameter(uint8_t number, uint8_t size, size_t *len)
+void *build_tagged_parameter(uint8_t number, uint8_t size, size_t *len)
 {
-	struct tagged_parameter *param = NULL;
-        const void *buf = NULL;
-	size_t buf_len = 0;
-
-	buf_len = sizeof(struct tagged_parameter);
-	buf = malloc(buf_len);
-        if(buf)
+	struct tagged_parameter *param = malloc(sizeof(struct tagged_parameter));
+        if(param)
         {
-                *len = buf_len;
-                memset((void *) buf, 0, buf_len);
-                param = (struct tagged_parameter *) buf;
-
+                *len = sizeof(struct tagged_parameter);
                 param->number = number;
                 param->len = size;
 	}
-
-	return buf;
+	return param;
 }
 
-const void *build_ssid_tagged_parameter(size_t *len)
+void *build_ssid_tagged_parameter(size_t *len)
 {
-	const void *buf = NULL, *ssid_param = NULL;
+	void *buf = NULL, *ssid_param = NULL;
 	size_t ssid_len = 0, ssid_param_len = 0, buf_len = 0;
 
 	if(get_ssid())
@@ -481,9 +472,9 @@ const void *build_ssid_tagged_parameter(size_t *len)
 	return buf;
 }
 
-const void *build_wps_tagged_parameter(size_t *len)
+void *build_wps_tagged_parameter(size_t *len)
 {
-	const void *buf = NULL, *wps_param = NULL;
+	void *buf = NULL, *wps_param = NULL;
 	size_t buf_len = 0, wps_param_len = 0;
 
 	wps_param = build_tagged_parameter(WPS_TAG_NUMBER, WPS_TAG_SIZE, &wps_param_len);
@@ -507,9 +498,10 @@ const void *build_wps_tagged_parameter(size_t *len)
 	return buf;
 }
 
-const void *build_supported_rates_tagged_parameter(size_t *len)
+void *build_supported_rates_tagged_parameter(size_t *len)
 {
-	const void *buf = NULL, *supported_rates = NULL, *extended_rates = NULL;
+	#define ERATES_TAG_SIZE 4
+	char *buf = NULL, *supported_rates = NULL, *extended_rates = NULL;
 	unsigned char *srates = NULL;
 	int srates_tag_size = 0;
         size_t buf_len = 0, srates_len = 0, erates_len = 0, offset = 0;
@@ -525,19 +517,18 @@ const void *build_supported_rates_tagged_parameter(size_t *len)
                 if(buf)
                 {
                         *len = buf_len;
-                        memset((void *) buf, 0, buf_len);
 
-                        memcpy((void *) buf, supported_rates, srates_len);
+                        memcpy(buf, supported_rates, srates_len);
 			offset += srates_len;
-			memcpy((void *) ((char *) buf+offset), srates, srates_tag_size);
+			memcpy(buf+offset, srates, srates_tag_size);
 			offset += srates_tag_size;
-			memcpy((void *) ((char *) buf+offset), extended_rates, erates_len);
+			memcpy(buf+offset, extended_rates, erates_len);
 			offset += erates_len;
-                        memcpy((void *) ((char *) buf+offset), EXTENDED_RATES_TAG, ERATES_TAG_SIZE);
+                        memcpy(buf+offset, "\x30\x48\x60\x6C", ERATES_TAG_SIZE);
                 }
         }
 
-	if(supported_rates) free((void *) supported_rates);
-	if(extended_rates) free((void *) extended_rates);
+	if(supported_rates) free(supported_rates);
+	if(extended_rates) free(extended_rates);
 	return buf;
 }
