@@ -74,9 +74,9 @@ void crack()
 		 * We need to get some basic info from the AP, and also want to make sure the target AP
 		 * actually exists, so wait for a beacon packet 
 		 */
-		cprintf(INFO, "[+] Waiting for beacon from %s...", bssid);
-		read_ap_beacon();
-		cprintf(INFO, "OK\n");
+		cprintf(INFO, "[+] Waiting for beacon from %s\n", bssid);  
+		read_ap_beacon();  
+		cprintf(INFO, "[+] Received beacon from %s\n", bssid);
 	
 		/* I'm fairly certian there's a reason I put this in twice. Can't remember what it was now though... */	
 		if(get_max_pin_attempts() == -1)
