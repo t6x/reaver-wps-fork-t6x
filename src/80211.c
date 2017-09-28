@@ -564,6 +564,13 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 			free(ie);
 		}
 
+		ie = parse_ie_data(tag_data, tag_len, (uint8_t) ERATES_TAG_NUMBER, &ie_len, &ie_offset);
+		if(ie)
+		{
+			set_ap_ext_rates(ie, ie_len);
+			free(ie);
+		}
+
 		channel_data = parse_ie_data(tag_data, tag_len, (uint8_t) CHANNEL_TAG_NUMBER, &ie_len, &ie_offset);
 		if(channel_data)
 		{

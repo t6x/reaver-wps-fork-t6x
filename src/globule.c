@@ -535,7 +535,6 @@ void set_ap_rates(unsigned char *value, int len)
 	if(globule->ap_rates)
 	{
 		free(globule->ap_rates);
-		globule->ap_rates = NULL;
 		globule->ap_rates_len = 0;
 	}
 
@@ -551,6 +550,28 @@ unsigned char *get_ap_rates(int *len)
 {
 	*len = globule->ap_rates_len;
 	return globule->ap_rates;
+}
+
+void set_ap_ext_rates(unsigned char *value, int len)
+{
+	if(globule->ap_ext_rates)
+	{
+		free(globule->ap_ext_rates);
+		globule->ap_ext_rates_len = 0;
+	}
+
+	globule->ap_ext_rates = malloc(len);
+	if(globule->ap_ext_rates)
+	{
+		memcpy(globule->ap_ext_rates, value, len);
+		globule->ap_ext_rates_len = len;
+	}
+}
+
+unsigned char *get_ap_ext_rates(int *len)
+{
+	*len = globule->ap_ext_rates_len;
+	return globule->ap_ext_rates;
 }
 
 void set_exec_string(char *string)
