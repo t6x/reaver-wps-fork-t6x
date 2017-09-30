@@ -38,12 +38,9 @@
 #include "defs.h"
 #include "globule.h"
 
-#define SRATES_TAG_SIZE         8
 #define SRATES_TAG_NUMBER       0x01
 #define ERATES_TAG_NUMBER       0x32
 #define WPS_TAG_SIZE            14
-#define WPS_REGISTRAR_TAG       "\x00\x50\xF2\x04\x10\x4A\x00\x01\x10\x10\x3A\x00\x01\x02"
-#define SUPPORTED_RATES_TAG     "\x02\x04\x0B\x16\x0C\x12\x18\x24"
 #define WPS_REGISTRAR_TAG       "\x00\x50\xF2\x04\x10\x4A\x00\x01\x10\x10\x3A\x00\x01\x02"
 
 #define DEFAULT_DURATION        52
