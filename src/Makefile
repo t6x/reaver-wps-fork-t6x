@@ -50,8 +50,43 @@ TLS_OBJS= \
  tls/tlsv1_server_write.o \
  tls/x509v3.o
 
+CRYPTO_OBJS= \
+ crypto/aes-cbc.o \
+ crypto/aes-ctr.o \
+ crypto/aes-eax.o \
+ crypto/aes-encblock.o \
+ crypto/aes-internal.o \
+ crypto/aes-internal-dec.o \
+ crypto/aes-internal-enc.o \
+ crypto/aes-omac1.o \
+ crypto/aes-unwrap.o \
+ crypto/aes-wrap.o \
+ crypto/des-internal.o \
+ crypto/dh_group5.o \
+ crypto/dh_groups.o \
+ crypto/md4-internal.o \
+ crypto/md5.o \
+ crypto/md5-internal.o \
+ crypto/milenage.o \
+ crypto/ms_funcs.o \
+ crypto/rc4.o \
+ crypto/sha1.o \
+ crypto/sha1-internal.o \
+ crypto/sha1-pbkdf2.o \
+ crypto/sha1-tlsprf.o \
+ crypto/sha1-tprf.o \
+ crypto/sha256.o \
+ crypto/sha256-internal.o \
+ crypto/crypto_internal.o \
+ crypto/crypto_internal-cipher.o \
+ crypto/crypto_internal-modexp.o \
+ crypto/crypto_internal-rsa.o \
+ crypto/tls_internal.o \
+ crypto/fips_prf_internal.o
+
+
 LIB_OBJS=libwps/libwps.o $(WPS_OBJS) $(UTILS_OBJS) \
-	$(TLS_OBJS) crypto/libcrypto.a $(LWE_OBJS)
+	$(TLS_OBJS) $(CRYPTO_OBJS) $(LWE_OBJS)
 
 
 WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
@@ -72,15 +107,15 @@ all: wash reaver
 
 $(WPS_OBJS): CFLAGS+=-I. -Iutils
 $(TLS_OBJS): CFLAGS += -I. -Iutils -DCONFIG_INTERNAL_LIBTOMMATH -DCONFIG_CRYPTO_INTERNAL
+$(CRYPTO_OBJS): CFLAGS += -I. -Iutils -DCONFIG_TLS_INTERNAL_CLIENT \
+ -DCONFIG_TLS_INTERNAL_SERVER -fno-strict-aliasing
+
 
 wash: $(WASH_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) $(WASH_OBJS) $(LIB_OBJS) $(LDFLAGS) -o wash
 
 reaver: $(REAVER_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) $(REAVER_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
-
-crypto/libcrypto.a:
-	(cd crypto && make)
 
 lwe/wireless.h: $(WEXT_HEADER)
 	cp $(WEXT_HEADER) lwe/wireless.h
@@ -98,7 +133,6 @@ clean:
 	rm -f *~ *.o reaver wash
 	rm -rf *.cache config.status config.log
 	rm -f $(LIB_OBJS)
-	(cd crypto && make clean)
 	rm -f lwe/wireless.h
 
 cleanbin: 
