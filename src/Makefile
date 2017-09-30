@@ -32,8 +32,27 @@ wps/wps_registrar.o wps/wps_ufd.o
 
 LWE_OBJS=lwe/iwlib.o
 
+TLS_OBJS= \
+ tls/asn1.o \
+ tls/bignum.o \
+ tls/pkcs1.o \
+ tls/pkcs5.o \
+ tls/pkcs8.o \
+ tls/rsa.o \
+ tls/tlsv1_client.o \
+ tls/tlsv1_client_read.o \
+ tls/tlsv1_client_write.o \
+ tls/tlsv1_common.o \
+ tls/tlsv1_cred.o \
+ tls/tlsv1_record.o \
+ tls/tlsv1_server.o \
+ tls/tlsv1_server_read.o \
+ tls/tlsv1_server_write.o \
+ tls/x509v3.o
+
 LIB_OBJS=libwps/libwps.o $(WPS_OBJS) $(UTILS_OBJS) \
-	crypto/libcrypto.a tls/libtls.a $(LWE_OBJS)
+	$(TLS_OBJS) crypto/libcrypto.a $(LWE_OBJS)
+
 
 WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
  builder.o crc.o pixie.o wpsmon.o
@@ -52,6 +71,7 @@ WEXT_HEADER = lwe/wireless.$(WE_VERSION).h
 all: wash reaver
 
 $(WPS_OBJS): CFLAGS+=-I. -Iutils
+$(TLS_OBJS): CFLAGS += -I. -Iutils -DCONFIG_INTERNAL_LIBTOMMATH -DCONFIG_CRYPTO_INTERNAL
 
 wash: $(WASH_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) $(WASH_OBJS) $(LIB_OBJS) $(LDFLAGS) -o wash
@@ -59,11 +79,8 @@ wash: $(WASH_OBJS) $(LIB_OBJS)
 reaver: $(REAVER_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) $(REAVER_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
 
-crypto/libcrypto.a: tls/libtls.a
+crypto/libcrypto.a:
 	(cd crypto && make)
-
-tls/libtls.a:
-	(cd tls && make)
 
 lwe/wireless.h: $(WEXT_HEADER)
 	cp $(WEXT_HEADER) lwe/wireless.h
@@ -81,7 +98,6 @@ clean:
 	rm -f *~ *.o reaver wash
 	rm -rf *.cache config.status config.log
 	rm -f $(LIB_OBJS)
-	(cd tls && make clean)
 	(cd crypto && make clean)
 	rm -f lwe/wireless.h
 
