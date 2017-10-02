@@ -80,7 +80,7 @@
 #define SUBTYPE_AUTHENTICATION  0x0B
 #define SUBTYPE_ASSOCIATION     0x01
 
-const u_char *next_packet(struct pcap_pkthdr *header);
+u_char *next_packet(struct pcap_pkthdr *header);
 void read_ap_beacon();
 int8_t signal_strength(const u_char *packet, size_t len);
 int is_wps_locked();
@@ -95,6 +95,6 @@ unsigned char *parse_ie_data(const u_char *data, size_t len, uint8_t tag_number,
 int is_target(struct dot11_frame_header *frame_header);
 int check_fcs(const u_char *packet, size_t len);
 int has_rt_header(void);
-const u_char *radio_header(const u_char *packet, size_t len);
+u_char *radio_header(const u_char *packet, size_t len);
 
 #endif

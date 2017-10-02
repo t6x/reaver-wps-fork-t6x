@@ -35,12 +35,12 @@
 #include "send.h"
 
 /*Reads the next packet from pcap_next() and validates the FCS. */
-const u_char *next_packet(struct pcap_pkthdr *header)
+u_char *next_packet(struct pcap_pkthdr *header)
 {
-	const u_char *packet = NULL;
+	u_char *packet = NULL;
 
 	/* Loop until we get a valid packet, or until we run out of packets */
-	while((packet = pcap_next(get_handle(), header)) != NULL)
+	while((packet = (void*)pcap_next(get_handle(), header)) != NULL)
 	{
 		if(get_validate_fcs())
 		{
@@ -406,57 +406,51 @@ void associate()
 int associate_recv_loop()
 {
 	struct pcap_pkthdr header;
-        const u_char *packet = NULL;
-	struct radio_tap_header *rt_header = NULL;
-        struct dot11_frame_header *dot11_frame = NULL;
-        struct authentication_management_frame *auth_frame = NULL;
-        struct association_response_management_frame *assoc_frame = NULL;
-        int ret_val = 0, start_time = 0;
+	u_char *packet;
+	struct radio_tap_header *rt_header;
+	struct dot11_frame_header *dot11_frame;
+	struct authentication_management_frame *auth_frame;
+	struct association_response_management_frame *assoc_frame;
+	int ret_val = 0, start_time = 0;
 
-        start_time = time(NULL);
+	start_time = time(NULL);
 
-        while((time(NULL) - start_time) < ASSOCIATE_WAIT_TIME)
-        {
-                packet = next_packet(&header);
-                if(packet == NULL)
-                {
-                        break;
-                }
+	while((time(NULL) - start_time) < ASSOCIATE_WAIT_TIME)
+	{
+		if((packet = next_packet(&header)) == NULL) break;
 
-                if(header.len >= MIN_AUTH_SIZE)
-                {
-			rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-			size_t rt_header_len = __le16_to_cpu(rt_header->len);
-			dot11_frame = (struct dot11_frame_header *) (packet + rt_header_len);
+		if(header.len < MIN_AUTH_SIZE) continue;
 
-                        if((memcmp(dot11_frame->addr3, get_bssid(), MAC_ADDR_LEN) == 0) &&
-                           (memcmp(dot11_frame->addr1, get_mac(), MAC_ADDR_LEN) == 0))
-                        {
-                                if((dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
-				   __cpu_to_le16(IEEE80211_FTYPE_MGMT))
-				{
-                                	auth_frame = (struct authentication_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header_len);
-                                	assoc_frame = (struct association_response_management_frame *) (packet + sizeof(struct dot11_frame_header) + rt_header_len);
+		rt_header = (void*) radio_header(packet, header.len);
+		size_t rt_header_len = __le16_to_cpu(rt_header->len);
+		dot11_frame = (void*)(packet + rt_header_len);
 
-					/* Did we get an authentication packet with a successful status? */
-					if((dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) ==
-					   __cpu_to_le16(IEEE80211_STYPE_AUTH)
-					   && (auth_frame->status == __cpu_to_le16(AUTHENTICATION_SUCCESS)))
-                               		{
-                               	        	ret_val = AUTH_OK;
-                               	        	break;
-                               		}
-					/* Did we get an association packet with a successful status? */
-                               		else if((dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) ==
-						__cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP)
-						&& (assoc_frame->status == __cpu_to_le16(ASSOCIATION_SUCCESS)))
-					{
-						ret_val = ASSOCIATE_OK;
-						break;
-                               		}
-				}
-                        }
-                }
+		if((memcmp(dot11_frame->addr3, get_bssid(), MAC_ADDR_LEN) != 0) ||
+		   (memcmp(dot11_frame->addr1, get_mac(), MAC_ADDR_LEN) != 0))
+			continue;
+
+		int isMgmtFrame = (dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE)) == __cpu_to_le16(IEEE80211_FTYPE_MGMT);
+		if(!isMgmtFrame) continue;
+
+		void *ptr = (packet + sizeof(struct dot11_frame_header) + rt_header_len);
+		auth_frame = ptr;
+		assoc_frame = ptr;
+
+		int isAuthResp = (dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) == __cpu_to_le16(IEEE80211_STYPE_AUTH);
+		int isAssocResp = (dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) == __cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP);
+
+		if(!isAuthResp && !isAssocResp) continue;
+
+		/* Did we get an authentication packet with a successful status? */
+		if(isAuthResp && (auth_frame->status == __cpu_to_le16(AUTHENTICATION_SUCCESS))) {
+			ret_val = AUTH_OK;
+			break;
+		}
+		/* Did we get an association packet with a successful status? */
+		else if(isAssocResp && (assoc_frame->status == __cpu_to_le16(ASSOCIATION_SUCCESS))) {
+			ret_val = ASSOCIATE_OK;
+			break;
+		}
         }
 
         return ret_val;
@@ -690,15 +684,15 @@ int has_rt_header(void)
  * Returns a pointer to the radio tap header. If there is no radio tap header,
  * it returns a pointer to a dummy radio tap header.
  */
-const u_char *radio_header(const u_char *packet, size_t len)
+u_char *radio_header(const u_char *packet, size_t len)
 {
         if(has_rt_header())
         {
-                return packet;
+                return (void*)packet;
         }
         else
         {
-                return (u_char *) FAKE_RADIO_TAP_HEADER;
+                return FAKE_RADIO_TAP_HEADER;
         }
 
 }
