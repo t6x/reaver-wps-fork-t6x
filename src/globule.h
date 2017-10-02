@@ -100,6 +100,8 @@ struct globals
 
 	int channel;			/* Holds the current channel number */
 
+	int repeat_m6;			/* Repeat M6 upon receipt of out-of-order M5s */
+
 	int max_num_probes;		/* Maximum number of probe requests to send to an AP during survey mode */
 	
 	int validate_fcs;		/* If 1, validate each packet's FCS. If 0, process packets even with invalid FCS. */
@@ -248,4 +250,6 @@ void set_oo_send_nack(int value);
 int get_oo_send_nack(void);
 void set_vendor(int, const unsigned char*);
 unsigned char *get_vendor(void);
+void set_repeat_m6(int);
+int get_repeat_m6(void);
 #endif

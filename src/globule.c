@@ -611,3 +611,12 @@ unsigned char *get_vendor(void) {
 	return globule->vendor_oui+1;
 }
 
+void set_repeat_m6(int val) {
+	globule->repeat_m6 = val;
+}
+
+int get_repeat_m6(void) {
+	return globule->repeat_m6;
+}
+
+

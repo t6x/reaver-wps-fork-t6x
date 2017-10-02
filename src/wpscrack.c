@@ -154,6 +154,7 @@ int usage(char *prog_name)
 	fprintf(stderr, "\t-D, --daemonize                 Daemonize reaver\n");
         fprintf(stderr, "\t-f, --fixed                     Disable channel hopping\n");
         fprintf(stderr, "\t-5, --5ghz                      Use 5GHz 802.11 channels\n");
+        fprintf(stderr, "\t-6, --repeat-m6                 Send M6 again upon duplicated M5 reception\n");
         fprintf(stderr, "\t-v, --verbose                   Display non-critical warnings (-vv or -vvv for more)\n");
         fprintf(stderr, "\t-q, --quiet                     Only display critical messages\n");
         fprintf(stderr, "\t-h, --help                      Show help\n");

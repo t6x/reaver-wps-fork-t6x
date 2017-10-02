@@ -123,7 +123,11 @@ enum wps_result do_wps_exchange()
 				{
                                 	tx_type = SEND_M6;
 					m6_sent = 1;
+				} else if(m6_sent && get_repeat_m6()) {
+					tx_type = SEND_M6;
+					m6_sent = 1;
 				}
+				
 				else if(get_oo_send_nack())
 				{
 					tx_type = SEND_WSC_NACK;

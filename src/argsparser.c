@@ -42,7 +42,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "KZb:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN";
+	char *short_options = "KZb:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN6";
 	struct option long_options[] = {
 		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
@@ -69,6 +69,7 @@ int process_arguments(int argc, char **argv)
 		{ "fixed", no_argument, NULL, 'f' },
 		{ "daemonize", no_argument, NULL, 'D' },
 		{ "5ghz", no_argument, NULL, '5' },
+		{ "repeat-m6", no_argument, NULL, '6' },
 		{ "nack", no_argument, NULL, 'n' },
 		{ "quiet", no_argument, NULL, 'q' },
 		{ "verbose", no_argument, NULL, 'v' },
@@ -114,6 +115,9 @@ int process_arguments(int argc, char **argv)
                                 break;
                         case '5':
                                 set_wifi_band(AN_BAND);
+                                break;
+                        case '6':
+                                set_repeat_m6(1);
                                 break;
                         case 'd':
                                 set_delay(atoi(optarg));
