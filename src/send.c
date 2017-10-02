@@ -45,7 +45,7 @@ int send_eapol_start()
 	if(packet)
 	{
 		cprintf(VERBOSE, "[+] Sending EAPOL START request\n");
-		ret_val = send_packet(packet, packet_len);
+		ret_val = send_packet(packet, packet_len, 1);
 		free((void *) packet);
 	}
 
@@ -78,7 +78,7 @@ int send_identity_response()
 	if(packet)
 	{
 		cprintf(VERBOSE, "[+] Sending identity response\n");
-		ret_val = send_packet(packet, packet_len);
+		ret_val = send_packet(packet, packet_len, 1);
 		free((void *) packet);
 	}
 
@@ -113,7 +113,7 @@ int send_msg(int type)
                 packet = build_eap_packet(payload, payload_len, &packet_len);
 		if(packet)
 		{
-			if(send_packet(packet, packet_len))
+			if(send_packet(packet, packet_len, 1))
 			{
 				ret_val = 1;
 			} else {
@@ -139,7 +139,7 @@ void send_termination()
 	data = build_eap_failure_packet(&data_size);
 	if(data)
 	{
-		send_packet(data, data_size);
+		send_packet(data, data_size, 1);
 		free((void*) data);
 	}
 }
@@ -157,7 +157,7 @@ void send_wsc_nack()
  * All transmissions are handled here to ensure that the receive timer 
  * is always started immediately after a packet is transmitted.
  */
-int send_packet(const void *packet, size_t len)
+int send_packet(const void *packet, size_t len, int use_timer)
 {
 	int ret_val = 0;
 
@@ -166,7 +166,7 @@ int send_packet(const void *packet, size_t len)
 		ret_val = 1;
 	}
 		
-	start_timer();
+	if (use_timer) start_timer();
 
 	return ret_val;
 }

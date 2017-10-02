@@ -33,6 +33,7 @@
 
 #include "wpsmon.h"
 #include "utils/file.h"
+#include "send.h"
 
 int show_all_aps = 0;
 int json_mode = 0;
@@ -460,7 +461,7 @@ void send_probe_request(unsigned char *bssid, char *essid)
 	probe = build_wps_probe_request(bssid, essid, &probe_size);
 	if(probe)
 	{
-		pcap_inject(get_handle(), probe, probe_size);
+		send_packet(probe, probe_size, 0);
 		free((void *) probe);
 	}
 

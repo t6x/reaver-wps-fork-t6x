@@ -47,6 +47,6 @@ int send_identity_response();
 int send_msg(int type);
 void send_termination();
 void send_wsc_nack();
-int send_packet(const void *packet, size_t len);
+int send_packet(const void *packet, size_t len, int use_timer);
 
 #endif

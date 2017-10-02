@@ -90,7 +90,7 @@ LIB_OBJS=libwps/libwps.o $(WPS_OBJS) $(UTILS_OBJS) \
 
 
 WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
- builder.o crc.o pixie.o wpsmon.o
+ builder.o crc.o pixie.o send.o sigalrm.o wpsmon.o
 REAVER_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
  misc.o cracker.o session.o send.o pins.o 80211.o exchange.o builder.o \
  keys.o crc.o pixie.o wpscrack.o

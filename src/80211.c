@@ -32,6 +32,7 @@
  */
 
 #include "80211.h"
+#include "send.h"
 
 /*Reads the next packet from pcap_next() and validates the FCS. */
 const u_char *next_packet(struct pcap_pkthdr *header)
@@ -305,7 +306,7 @@ void deauthenticate()
 			memcpy((void *) ((char *) packet+radio_tap_len), dot11_frame, dot11_frame_len);
 			memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), DEAUTH_REASON_CODE, DEAUTH_REASON_CODE_SIZE);
 
-			pcap_inject(get_handle(), packet, packet_len);
+			send_packet(packet, packet_len, 0);
 
 			free((void *) packet);
 		}
@@ -339,7 +340,7 @@ void authenticate()
 			memcpy((void *) ((char *) packet+radio_tap_len), dot11_frame, dot11_frame_len);
 			memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), management_frame, management_frame_len);
 
-			pcap_inject(get_handle(), packet, packet_len);
+			send_packet(packet, packet_len, 0);
 
 			free((void *) packet);
 		}
@@ -385,7 +386,7 @@ void associate()
 			offset += rates_tag_len;
 			memcpy((void *) ((char *) packet+offset), wps_tag, wps_tag_len);
 
-                        pcap_inject(get_handle(), packet, packet_len);
+                        send_packet(packet, packet_len, 0);
 
                         free((void *) packet);
                 }
