@@ -268,7 +268,7 @@ int reassociate()
 			while((associate_recv_loop() != ASSOCIATE_OK) && (tries < MAX_AUTH_TRIES));
 		}
 
-		if(tries < MAX_AUTH_TRIES)
+		if(tries <= MAX_AUTH_TRIES)
 		{
 			retval = 1;
 		}
