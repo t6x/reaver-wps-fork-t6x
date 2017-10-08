@@ -8,10 +8,10 @@ struct pixie pixie = {0};
 void pixie_format(const unsigned char *in, unsigned len, char *outbuf) {
 	unsigned i;
 	char *out = outbuf;
-	for(i = 0; i < len; i++, out+=3) {
-		sprintf(out, "%02x:", in[i]);
+	for(i = 0; i < len; i++, out+=2) {
+		sprintf(out, "%02x", in[i]);
 	}
-	if(i) *(--out) = 0;
+	if(i) *out = 0;
 }
 
 void pixie_attack(void) {
