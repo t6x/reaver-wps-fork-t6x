@@ -433,7 +433,8 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					mark_ap_complete(bssid);
 					if(json_mode && (show_all_aps || wps->version > 0)) {
 						char *json_string = wps_data_to_json(bssid, ssid, channel, rssi, wps);
-						printf("%s\n", json_string);
+						fprintf(get_log_file(), "%s\n", json_string);
+						fflush(get_log_file());
 						free(json_string);
 					}
 				}
