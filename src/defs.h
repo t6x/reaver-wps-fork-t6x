@@ -127,7 +127,8 @@ enum debug_level
 	CRITICAL = 0,
 	INFO = 1,
 	WARNING = 2,
-	VERBOSE = 3
+	VERBOSE = 3,
+	DEBUG = 4
 };
 
 enum eap_codes

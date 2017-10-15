@@ -22,6 +22,8 @@
 
 enum { MSG_MSGDUMP, MSG_DEBUG, MSG_INFO, MSG_WARNING, MSG_ERROR };
 
+extern int wpa_debug_level;
+
 #ifdef CONFIG_NO_STDOUT_DEBUG
 
 #define wpa_debug_print_timestamp() do { } while (0)

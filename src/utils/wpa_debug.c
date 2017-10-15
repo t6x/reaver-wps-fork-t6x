@@ -16,6 +16,9 @@
 
 #include "common.h"
 
+#undef CONFIG_DEBUG_SYSLOG
+#undef CONFIG_DEBUG_FILE
+
 #ifdef CONFIG_DEBUG_SYSLOG
 #include <syslog.h>
 

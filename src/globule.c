@@ -297,6 +297,7 @@ int get_out_of_time()
 void set_debug(enum debug_level value)
 {
 	globule->debug = value;
+	if(value == DEBUG) wpa_debug_level = MSG_DEBUG;
 }
 enum debug_level get_debug()
 {
