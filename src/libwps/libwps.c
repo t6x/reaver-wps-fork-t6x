@@ -110,7 +110,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	}
 	if(*wps->device_name) {
 		tmp = sanitize_string(wps->device_name);
-		nl = snprintf(buf, sizeof buf, "\"wps_device_name\" : \"%s\", ", wps->device_name);
+		nl = snprintf(buf, sizeof buf, "\"wps_device_name\" : \"%s\", ", tmp);
 		free(tmp);
 		json_str = append_and_free(old, buf, 1);
 		old = json_str;
