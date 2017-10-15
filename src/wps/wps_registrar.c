@@ -2381,6 +2381,8 @@ static enum wps_process_res wps_process_m7(struct wps_data *wps,
 
 	wpa_printf(MSG_DEBUG, "WPS: Received M7");
 
+#if 0
+
 	if (wps->state != RECV_M7) {
 		wpa_printf(MSG_DEBUG, "WPS: Unexpected state (%d) for "
 			   "receiving M7", wps->state);
@@ -2401,6 +2403,8 @@ static enum wps_process_res wps_process_m7(struct wps_data *wps,
 		wps->state = SEND_WSC_NACK;
 		return WPS_CONTINUE;
 	}
+
+#endif
 
 	decrypted = wps_decrypt_encr_settings(wps, attr->encr_settings,
 					      attr->encr_settings_len);
