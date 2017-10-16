@@ -81,10 +81,10 @@
 #define EAP_IDENTITY 		0x01
 #define EAP_EXPANDED            0xFE
 
-#define M57_DEFAULT_TIMEOUT     200000          /* uSeconds */
+#define M57_DEFAULT_TIMEOUT     400000          /* uSeconds */
 #define M57_MAX_TIMEOUT         1000000         /* uSeconds */
 #define DEFAULT_DELAY           1               /* Seconds */
-#define DEFAULT_TIMEOUT         5               /* Seconds */
+#define DEFAULT_TIMEOUT         10               /* Seconds */
 #define DEFAULT_LOCK_DELAY      60              /* Seconds */
 #define SEC_TO_US               1000000         /* uSeconds in a Second */
 
