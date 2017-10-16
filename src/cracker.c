@@ -85,6 +85,7 @@ void crack()
 			return;
 		}
 
+		#if 0
 		/* This initial association is just to make sure we can successfully associate */
                 while(!reassociate())
                 {
@@ -98,7 +99,7 @@ void crack()
 				assoc_fail_count++;
 			}
                 }
-                cprintf(INFO, "[+] Associated with %s (ESSID: %s)\n", bssid, get_ssid());
+		#endif
 
 		/* Used to calculate pin attempt rates */
 		start_time = time(NULL);
@@ -182,7 +183,8 @@ void crack()
 					assoc_fail_count++;
 				}
                 	}
-			
+			cprintf(INFO, "[+] Associated with %s (ESSID: %s)\n", bssid, get_ssid());
+
 
 			/* 
 			 * Enter receive loop. This will block until a receive timeout occurs or a
