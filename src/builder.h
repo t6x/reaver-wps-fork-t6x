@@ -60,8 +60,6 @@
 #define UNNUMBERED_FRAME        0x03
 #define WFA_VENDOR_ID           "\x00\x37\x2A"
 
-#define WPS_PROBE_IE            "\xdd\x09\x00\x50\xf2\x04\x10\x4a\x00\x01\x10"
-#define WPS_PROBE_IE_SIZE       11
 
 void *build_radio_tap_header(size_t *len);
 void *build_dot11_frame_header(uint16_t fc, size_t *len);
