@@ -2419,7 +2419,7 @@ static enum wps_process_res wps_process_m7(struct wps_data *wps,
 		   "attribute");
 
 	/* @@@ One of these fails, but we don't really care. We just want the ap settings */
-	/*
+	#if 0
 	if (wps_parse_msg(decrypted, &eattr) < 0 ||
 	    wps_process_key_wrap_auth(wps, decrypted, eattr.key_wrap_auth) ||
 	    wps_process_e_snonce2(wps, eattr.e_snonce2) ||
@@ -2428,7 +2428,11 @@ static enum wps_process_res wps_process_m7(struct wps_data *wps,
 		wps->state = SEND_WSC_NACK;
 		return WPS_CONTINUE;
 	}
-	*/
+	#else
+	wpa_hexdump_key(MSG_DEBUG, "WPS: E-SNonce2", eattr.e_snonce2,
+			WPS_SECRET_NONCE_LEN);
+
+	#endif
 
 	if(wps_parse_msg(decrypted, &eattr) >= 0)
 	{
