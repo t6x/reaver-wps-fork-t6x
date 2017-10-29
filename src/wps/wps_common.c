@@ -83,6 +83,8 @@ int wps_derive_keys(struct wps_data *wps)
 		return -1;
 	}
 
+	wpa_hexdump_buf_key(MSG_DEBUG, "WPS: DH Private Key", wps->dh_privkey); 
+	wpa_hexdump_buf(MSG_DEBUG, "WPS: DH peer Public Key", pubkey);
 	dh_shared = dh5_derive_shared(wps->dh_ctx, pubkey, wps->dh_privkey);
 	dh5_free(wps->dh_ctx);
 	wps->dh_ctx = NULL;
