@@ -28,7 +28,7 @@ class Data():
 			"authkey = " + self.authkey + "\n" \
 			"e_nonce = " + self.e_nonce + "\n" \
 			"e_snonce1 = " + self.e_snonce1 + "\n" \
-			"e_snonce1 = " + self.e_snonce2 + "\n" \
+			"e_snonce2 = " + self.e_snonce2 + "\n" \
 			"wpa_psk = " + self.wpa_psk + "\n"
 
 def process_wpa_supplicant_line(data, line):
