@@ -59,6 +59,8 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 #define WPS_VENDOR_ID           "\x00\x50\xF2\x04"
 #define WPS_VENDOR_ID_SIZE      4
 #define VENDOR_ID_OFFSET        2
+#define WFA_EXTENSION_ID        "\x00\x37\x2A"
+#define WPS_VERSION2_ID         0
 
 #define RADIO_TAP_VERSION       0
 #define FAKE_RADIO_TAP_HEADER   "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -83,7 +85,8 @@ enum wps_el_number
         PRIMARY_DEVICE_TYPE = 0x1054,
         CONFIG_METHODS = 0x1008,
         RF_BANDS = 0x103C,
-        OS_VERSION = 0x102D
+        OS_VERSION = 0x102D,
+        VENDOR_EXTENSION = 0x1049
 };
 
 struct wps_element

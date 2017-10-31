@@ -246,7 +246,8 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 			PRIMARY_DEVICE_TYPE,
 			CONFIG_METHODS,
 			RF_BANDS,
-			OS_VERSION
+			OS_VERSION,
+			VENDOR_EXTENSION
 	};
 
 	/* Get the WPS IE data blob */
@@ -321,6 +322,22 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 						break;
 					case OS_VERSION:
 						ptr = wps->os_version;
+						break;
+					case VENDOR_EXTENSION:
+						if (memcmp(&el[0], WFA_EXTENSION_ID, 3) == 0)
+						{
+							unsigned char *pwfa = &el[3]; /* WFA subelement ID */
+							while(el_len > 0) /* Cycle through all WFA subelements */
+							{
+								if (*pwfa == WPS_VERSION2_ID)
+								{
+									wps->version = (uint8_t) pwfa[2];
+									break;
+								}
+								el_len -= pwfa[1] + 2;
+								pwfa += pwfa[1] + 2;
+							}
+						}
 						break;
 					default:
 						src = NULL;
