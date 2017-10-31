@@ -73,7 +73,7 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	old = json_str;
 
 	if(wps->version) {
-		nl = snprintf(buf, sizeof buf, "\"wps_version\" : %d, ", wps->version);
+		nl = snprintf(buf, sizeof buf, "\"wps_version\" : %d.%d, ", wps->version >> 4, wps->version & 0xf);
 		json_str = append_and_free(old, buf, 1);
 		old = json_str;
 	}
