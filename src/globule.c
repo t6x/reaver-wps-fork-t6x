@@ -601,3 +601,13 @@ int get_oo_send_nack(void)
 {
 	return globule->oo_send_nack;
 }
+
+void set_vendor(int is_set, const unsigned char* v) {
+	globule->vendor_oui[0] = is_set;
+	if(is_set) memcpy(globule->vendor_oui+1, v, 3);
+}
+unsigned char *get_vendor(void) {
+	if(!globule->vendor_oui[0]) return 0;
+	return globule->vendor_oui+1;
+}
+

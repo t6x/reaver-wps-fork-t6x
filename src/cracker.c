@@ -32,6 +32,7 @@
  */
 
 #include "cracker.h"
+#include "utils/vendor.h"
 
 /* Brute force all possible WPS pins for a given access point */
 void crack()
@@ -77,7 +78,9 @@ void crack()
 		cprintf(INFO, "[+] Waiting for beacon from %s\n", bssid);
 		read_ap_beacon();
 		cprintf(INFO, "[+] Received beacon from %s\n", bssid);
-	
+		char *vendor;
+		if((vendor = get_vendor_string(get_vendor())))
+			cprintf(INFO, "[+] Vendor: %s\n", vendor);
 		/* I'm fairly certian there's a reason I put this in twice. Can't remember what it was now though... */	
 		if(get_max_pin_attempts() == -1)
 		{

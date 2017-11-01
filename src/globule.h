@@ -114,6 +114,8 @@ struct globals
 
         unsigned char mac[MAC_ADDR_LEN];                /* Source MAC address */
 
+	unsigned char vendor_oui[1+3];	/* the first byte contains 1 if set, 0 if not, the next 3 bytes the actual vendor OUI */
+
 	unsigned char *ap_rates;	/* Supported rates IE data, as reported by the AP */
 
 	int ap_rates_len;		/* Length of the supported rates IE data */
@@ -244,5 +246,6 @@ void set_exec_string(char *string);
 char *get_exec_string(void);
 void set_oo_send_nack(int value);
 int get_oo_send_nack(void);
-
+void set_vendor(int, const unsigned char*);
+unsigned char *get_vendor(void);
 #endif

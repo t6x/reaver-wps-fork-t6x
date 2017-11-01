@@ -514,9 +514,16 @@ enum encryption_type supported_encryption(const u_char *packet, size_t len)
 	return enc;
 }
 
+static int get_next_ie(const u_char *data, size_t len, size_t *currpos) {
+	if(*currpos + 2 >= len) return 0;
+	*currpos = *currpos + 2 + data[*currpos + 1];
+	return 1;
+}
+
 /* Given the tagged parameter sets from a beacon packet, locate the AP's SSID and return its current channel number */
 int parse_beacon_tags(const u_char *packet, size_t len)
 {
+	set_vendor(0, "\0\0\0");
 	char *ssid = NULL;
 	const u_char *tag_data = NULL;
 	unsigned char *ie = NULL, *channel_data = NULL;
@@ -529,7 +536,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 
 	if(tag_offset < len)
 	{
-		tag_len = (len - tag_offset);
+		tag_len = (len - tag_offset); /* this actually denotes length of the entire tag data area */
 		tag_data = (const u_char *) (packet + tag_offset);
 
 		/* If no SSID was manually specified, parse and save the AP SSID */
@@ -575,6 +582,20 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 			}
 			free(channel_data);
 		}
+
+		size_t ie_iterator = 0;
+		do {
+			const u_char *tag = tag_data + ie_iterator;
+			// check for the length of the tag, and that its not microsoft
+			if(tag[0] == VENDOR_SPECIFIC_TAG &&
+			   tag[1] < 11 &&
+			   ie_iterator+2+3 < tag_len &&
+			   memcmp(tag+2, "\x00\x50\xf2", 3)) {
+				set_vendor(1, tag + 2);
+				break;
+			}
+
+		} while(get_next_ie(tag_data, tag_len, &ie_iterator));
 	}
 
 	return channel;

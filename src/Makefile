@@ -23,6 +23,7 @@ UTILS_OBJS= \
         utils/wpa_debug.o \
         utils/wpabuf.o \
 	utils/os_unix.o \
+	utils/vendor.o \
 	utils/eloop.o
 
 

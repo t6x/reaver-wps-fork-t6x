@@ -51,7 +51,7 @@ static char* sanitize_string(char *s) {
 	return new;
 }
 
-char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi,struct libwps_data *wps) {
+char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi, const unsigned char* vendor, struct libwps_data *wps) {
 	size_t ol = 0, nl = 0, ns = 0;
 	char *json_str = 0, *old = strdup("{"), *tmp;
 	char buf[1024];
@@ -71,6 +71,12 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	nl = snprintf(buf, sizeof buf, "\"rssi\" : %d, ", rssi);
 	json_str = append_and_free(old, buf, 1);
 	old = json_str;
+
+	if(vendor) {
+		nl = snprintf(buf, sizeof buf, "\"vendor_oui\" : \"%02X%02X%02X\", ", vendor[0], vendor[1], vendor[2]);
+		json_str = append_and_free(old, buf, 1);
+		old = json_str;
+	}
 
 	if(wps->version) {
 		nl = snprintf(buf, sizeof buf, "\"wps_version\" : %d, ", wps->version);
