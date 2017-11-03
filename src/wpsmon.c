@@ -321,7 +321,10 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
         		act.sa_handler = sigalrm_handler;
         		sigaction (SIGALRM, &act, 0);
 			ualarm(CHANNEL_INTERVAL, CHANNEL_INTERVAL);
-			change_channel(1);
+			int startchan = 1;
+			if(get_wifi_band() == AN_BAND)
+				startchan = 34;
+			change_channel(startchan);
 		}
 	}
 
