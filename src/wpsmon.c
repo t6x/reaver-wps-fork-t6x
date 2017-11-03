@@ -382,6 +382,11 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 		   (target != NULL && strcmp(bssid, target) == 0))
 		{
 			channel = parse_beacon_tags(packet, header->len);
+			if(channel == 0) {
+				// It seems 5 GHz APs do not set channel tags.
+				// FIXME: get channel by parsing radiotap header
+				channel = get_channel();
+			}
 			rssi = signal_strength(packet, header->len);
 			ssid = (char *) get_ssid();
 
