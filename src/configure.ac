@@ -1,4 +1,4 @@
-AC_INIT(reaver, 1.6.2)
+AC_INIT(reaver, 1.6.3)
 AC_CONFIG_FILES([config.mak])
 AC_PROG_CC
 AC_LANG(C)

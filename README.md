@@ -68,7 +68,7 @@ or
 
 # Reaver Usage
 
-```Reaver v1.6.2 WiFi Protected Setup Attack Tool
+```Reaver v1.6.3 WiFi Protected Setup Attack Tool
 Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
 
 Required Arguments:
@@ -124,7 +124,7 @@ See our wiki: [Introducing a new way to crack WPS: Option p with an Arbitrary St
 # Wash Usage  
 
 ```
-Wash v1.6.2 WiFi Protected Setup Scan Tool
+Wash v1.6.3 WiFi Protected Setup Scan Tool
 Copyright (c) 2011, Tactical Network Solutions, Craig Heffner
 
 Required Arguments:
