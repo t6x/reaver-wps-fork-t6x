@@ -331,8 +331,8 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 	if(!header_printed)
 	{
 		if(!json_mode) {
-			cprintf  (INFO, "BSSID              Ch  dBm  WPS  Lck  Vendor    ESSID\n");
-			//cprintf(INFO, "00:11:22:33:44:55  12  -77  1.0  Yes  Bloatcom  0123456789abcdef0123456789abcdef\n");
+			cprintf  (INFO, "BSSID               Ch  dBm  WPS  Lck  Vendor    ESSID\n");
+			//cprintf(INFO, "00:11:22:33:44:55  104  -77  1.0  Yes  Bloatcom  0123456789abcdef0123456789abcdef\n");
 			cprintf  (INFO, "--------------------------------------------------------------------------------\n");
 		}
 		header_printed = 1;
@@ -435,9 +435,9 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 					char* vendor = get_vendor_string(get_ap_vendor(bssid));
 					if(wps->version > 0)
-						cprintf(INFO, "%17s  %2d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", ssid);
+						cprintf(INFO, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", ssid);
 					else
-						cprintf(INFO, "%17s  %2d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", ssid);
+						cprintf(INFO, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", ssid);
 				}
 
 				if(probe_sent)
