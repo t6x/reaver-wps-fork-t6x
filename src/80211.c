@@ -247,16 +247,19 @@ int reassociate()
 		/* Deauth to void any previous association with the AP */
 		deauthenticate();
 
+		int auth_ok = 0, assoc_ok = 0;
 		/* Try MAX_AUTH_TRIES times to authenticate to the AP */
+
 		do
 		{
 			authenticate();
 			tries++;
+			auth_ok = associate_recv_loop() == AUTH_OK;
 		}
-		while((associate_recv_loop() != AUTH_OK) && (tries < MAX_AUTH_TRIES));
+		while(!auth_ok && (tries < MAX_AUTH_TRIES));
 
 		/* If authentication was successful, try MAX_AUTH_TRIES to associate with the AP */
-		if(tries < MAX_AUTH_TRIES)
+		if(auth_ok)
 		{
 			tries = 0;
 
@@ -264,18 +267,12 @@ int reassociate()
 			{
 				associate();
 				tries++;
+				assoc_ok = associate_recv_loop() == ASSOCIATE_OK;
 			}
-			while((associate_recv_loop() != ASSOCIATE_OK) && (tries < MAX_AUTH_TRIES));
+			while(!assoc_ok && (tries < MAX_AUTH_TRIES));
 		}
 
-		if(tries <= MAX_AUTH_TRIES)
-		{
-			retval = 1;
-		}
-		else
-		{
-			retval = 0;
-		}
+		retval = assoc_ok;
 	}
 	else
 	{
