@@ -88,7 +88,6 @@ int reassociate();
 void deauthenticate();
 void authenticate();
 void associate();
-int associate_recv_loop();
 enum encryption_type supported_encryption(const u_char *packet, size_t len);
 int parse_beacon_tags(const u_char *data, size_t len);
 unsigned char *parse_ie_data(const u_char *data, size_t len, uint8_t tag_number, size_t *ie_len, size_t *ie_offset);

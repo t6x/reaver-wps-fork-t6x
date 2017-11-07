@@ -234,6 +234,9 @@ int is_wps_locked()
 	return locked;
 }
 
+static int associate_recv_loop(int want_assoc);
+
+
 /* Deauths and re-associates a MAC address with the AP. Returns 0 on failure, 1 for success. */
 int reassociate()
 {
@@ -254,7 +257,7 @@ int reassociate()
 		{
 			authenticate();
 			tries++;
-			auth_ok = associate_recv_loop() == AUTH_OK;
+			auth_ok = associate_recv_loop(0) == AUTH_OK;
 		}
 		while(!auth_ok && (tries < MAX_AUTH_TRIES));
 
@@ -267,7 +270,7 @@ int reassociate()
 			{
 				associate();
 				tries++;
-				assoc_ok = associate_recv_loop() == ASSOCIATE_OK;
+				assoc_ok = associate_recv_loop(1) == ASSOCIATE_OK;
 			}
 			while(!assoc_ok && (tries < MAX_AUTH_TRIES));
 		}
@@ -400,7 +403,7 @@ void associate()
 }
 
 /* Waits for authentication and association responses from the target AP */
-int associate_recv_loop()
+static int associate_recv_loop(int want_assoc)
 {
 	struct pcap_pkthdr header;
 	u_char *packet;
@@ -437,6 +440,8 @@ int associate_recv_loop()
 		int isAssocResp = (dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) == __cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP);
 
 		if(!isAuthResp && !isAssocResp) continue;
+
+		if(isAuthResp && want_assoc) continue;
 
 		/* Did we get an authentication packet with a successful status? */
 		if(isAuthResp && (auth_frame->status == __cpu_to_le16(AUTHENTICATION_SUCCESS))) {
