@@ -1,3 +1,4 @@
+#include <sys/types.h>
 #include "pixie.h"
 #include "globule.h"
 #include <stdio.h>

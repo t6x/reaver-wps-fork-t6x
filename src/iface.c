@@ -33,6 +33,28 @@
 
 #include "iface.h"
 
+#ifdef __FreeBSD__
+#include <ifaddrs.h>
+#include <net/if_dl.h>
+int read_iface_mac() {
+	struct ifaddrs *ifa, *ifa0;
+	struct sockaddr_dl* dl;
+	int ret_val = 0;
+	unsigned char mac_addr[6];
+	getifaddrs( &ifa0 );
+	for( ifa = ifa0; ifa; ifa=ifa->ifa_next ) {
+		dl = (struct sockaddr_dl*)ifa->ifa_addr;
+		if( strncmp(get_iface(), dl->sdl_data, dl->sdl_nlen) == 0 ) {
+			set_mac(LLADDR(dl));
+			ret_val = 1;
+			break;
+		}
+	}
+	freeifaddrs(ifa);
+	return ret_val;
+}
+
+#else
 /* Populates globule->mac with the MAC address of the interface globule->iface */
 int read_iface_mac()
 {
@@ -68,6 +90,7 @@ int read_iface_mac()
 
 	return ret_val;
 }
+#endif
 
 /* 
  * Goes to the next 802.11 channel.

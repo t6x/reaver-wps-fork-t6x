@@ -153,7 +153,11 @@ int
 iw_sockets_open(void)
 {
   static const int families[] = {
-    AF_INET, AF_IPX, AF_AX25, AF_APPLETALK
+    AF_INET, AF_IPX, 
+#ifdef AF_AX25
+    AF_AX25,
+#endif
+    AF_APPLETALK
   };
   unsigned int	i;
   int		sock;
@@ -755,7 +759,7 @@ iw_set_basic_config(int			skfd,
    */
   if(info->has_mode)
     {
-      strncpy(wrq.ifr_name, ifname, IFNAMSIZ);
+      strncpy(wrq.ifr_ifrn.ifrn_name, ifname, IFNAMSIZ);
       wrq.u.mode = info->mode;
 
       if(iw_get_ext(skfd, ifname, SIOCSIWMODE, &wrq) < 0)
@@ -1272,7 +1276,7 @@ iw_get_stats(int		skfd,
       wrq.u.data.pointer = (caddr_t) stats;
       wrq.u.data.length = sizeof(struct iw_statistics);
       wrq.u.data.flags = 1;		/* Clear updated flag */
-      strncpy(wrq.ifr_name, ifname, IFNAMSIZ);
+      strncpy(wrq.ifr_ifrn.ifrn_name, ifname, IFNAMSIZ);
       if(iw_get_ext(skfd, ifname, SIOCGIWSTATS, &wrq) < 0)
 	return(-1);
 
@@ -1925,6 +1929,7 @@ iw_print_timeval(char *				buffer,
  * manage address display and input...
  */
 
+#if 0
 /*------------------------------------------------------------------*/
 /*
  * Check if interface support the right MAC address type...
@@ -1957,7 +1962,7 @@ iw_check_mac_addr_type(int		skfd,
 
   return(0);
 }
-
+#endif
 
 /*------------------------------------------------------------------*/
 /*
@@ -2060,6 +2065,7 @@ iw_mac_ntop(const unsigned char *	mac,
   return(buf);
 }
 
+#if 0
 /*------------------------------------------------------------------*/
 /*
  * Display an Ethernet address in readable format.
@@ -2101,6 +2107,7 @@ iw_sawap_ntop(const struct sockaddr *	sap,
 	iw_ether_ntop(ether_wap, buf);
   return(buf);
 }
+#endif
 
 /*------------------------------------------------------------------*/
 /*
@@ -2220,6 +2227,7 @@ iw_in_inet(char *name, struct sockaddr *sap)
   return(0);
 }
 
+#if 0
 /*------------------------------------------------------------------*/
 /*
  * Input an address and convert to binary.
@@ -2306,6 +2314,7 @@ iw_in_addr(int		skfd,
 
   return(0);
 }
+#endif
 
 /************************* MISC SUBROUTINES **************************/
 
@@ -3019,6 +3028,7 @@ iw_process_scanning_token(struct iw_event *		event,
   return(wscan);
 }
 
+#if 0
 /*------------------------------------------------------------------*/
 /*
  * Initiate the scan procedure, and process results.
@@ -3212,3 +3222,5 @@ iw_scan(int			skfd,
   /* End - return -1 or 0 */
   return(delay);
 }
+#endif
+

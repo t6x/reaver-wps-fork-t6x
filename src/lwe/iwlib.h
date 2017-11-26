@@ -21,6 +21,7 @@
 #define _GNU_SOURCE
 #undef _BSD_SOURCE
 #define _BSD_SOURCE
+#include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <stdio.h>
@@ -55,6 +56,10 @@
 
 /* Private copy of Wireless extensions (in this directoty) */
 #include "wireless.h"
+
+#ifndef ETH_ALEN
+#define ETH_ALEN 6
+#endif
 
 /* Make gcc understant that when we say inline, we mean it.
  * I really hate when the compiler is trying to be more clever than me,
