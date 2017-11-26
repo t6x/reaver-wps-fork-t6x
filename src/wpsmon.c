@@ -366,7 +366,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
         }
 
 	rt_header = (struct radio_tap_header *) radio_header(packet, header->len);
-	size_t rt_header_len = __le16_to_cpu(rt_header->len);
+	size_t rt_header_len = end_le16toh(rt_header->len);
 	frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
 
 	/* If a specific BSSID was specified, only parse packets from that BSSID */
@@ -400,10 +400,10 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				channel_changed = 1;
 			}
 
-			unsigned fsub_type = frame_header->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE);
+			unsigned fsub_type = frame_header->fc & end_htole16(IEEE80211_FCTL_STYPE);
 
-			int is_beacon = fsub_type == __cpu_to_le16(IEEE80211_STYPE_BEACON);
-			int is_probe_resp = fsub_type == __cpu_to_le16(IEEE80211_STYPE_PROBE_RESP);
+			int is_beacon = fsub_type == end_htole16(IEEE80211_STYPE_BEACON);
+			int is_probe_resp = fsub_type == end_htole16(IEEE80211_STYPE_PROBE_RESP);
 
 			if(is_probe_resp || is_beacon) {
 				wps_parsed = parse_wps_parameters(packet, header->len, wps);

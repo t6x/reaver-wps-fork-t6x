@@ -41,7 +41,7 @@
 #include <string.h>
 #include <time.h>
 #include <pcap.h>
-#include <asm/byteorder.h>
+#include "utils/endianness.h"
 
 #include "wps.h"
 
@@ -351,50 +351,57 @@ enum wfa_elements
 #define IEEE80211_STYPE_QOS_CFPOLL		0x00E0
 #define IEEE80211_STYPE_QOS_CFACKPOLL		0x00F0
 
+/* these types denote that the values are stored in a specific byte order */
+typedef uint16_t le16;
+typedef uint32_t le32;
+
+typedef uint16_t be16;
+typedef uint32_t be32;
+
 #pragma pack(1)
 struct radio_tap_header
 {
-	uint8_t revision;	
+	uint8_t revision;
 	uint8_t pad;
-	__le16 len;
-	__le32 flags;
+	le16 len;
+	le32 flags;
 };
 
 struct dot11_frame_header
 {
-	__le16 fc;
-	__le16 duration;
+	le16 fc;
+	le16 duration;
 	unsigned char addr1[MAC_ADDR_LEN];
 	unsigned char addr2[MAC_ADDR_LEN];
 	unsigned char addr3[MAC_ADDR_LEN];
-	__le16 frag_seq;
+	le16 frag_seq;
 };
 
 struct authentication_management_frame
 {
-	__le16 algorithm;
-	__le16 sequence;
-	__le16 status;
+	le16 algorithm;
+	le16 sequence;
+	le16 status;
 };
 
 struct association_request_management_frame
 {
-	__le16 capability;
-	__le16 listen_interval;
+	le16 capability;
+	le16 listen_interval;
 };
 
 struct association_response_management_frame
 {
-	__le16 capability;
-	__le16 status;
-	__le16 id;
+	le16 capability;
+	le16 status;
+	le16 id;
 };
 
 struct beacon_management_frame
 {
 	unsigned char timestamp[TIMESTAMP_LEN];
-	__le16 beacon_interval;
-	__le16 capability;
+	le16 beacon_interval;
+	le16 capability;
 };
 
 struct llc_header
@@ -403,7 +410,7 @@ struct llc_header
 	uint8_t ssap;
 	uint8_t control_field;
 	unsigned char org_code[3];
-	__be16 type;
+	be16 type;
 };
 
 struct dot1X_header
@@ -424,7 +431,7 @@ struct eap_header
 struct wfa_expanded_header
 {
 	unsigned char id[3];
-	__be32 type;
+	be32 type;
 	uint8_t opcode;
 	uint8_t flags;
 };

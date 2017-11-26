@@ -91,16 +91,16 @@ void read_ap_beacon()
                 if(header.len >= MIN_BEACON_SIZE)
                 {
                         rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-			size_t rt_header_len = __le16_to_cpu(rt_header->len);
+			size_t rt_header_len = end_le16toh(rt_header->len);
 			frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
 			
 			if(is_target(frame_header))
 			{
-                                if((frame_header->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
-				   __cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
+                                if((frame_header->fc & end_htole16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
+				   end_htole16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
                                 {
                                        	beacon = (struct beacon_management_frame *) (packet + rt_header_len + sizeof(struct dot11_frame_header));
-                                       	set_ap_capability(__le16_to_cpu(beacon->capability));
+                                       	set_ap_capability(end_le16toh(beacon->capability));
 
 					/* Obtain the SSID and channel number from the beacon packet */
 					tag_offset = rt_header_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
@@ -139,10 +139,10 @@ int8_t signal_strength(const u_char *packet, size_t len)
 	{
 		header = (struct radio_tap_header *) packet;
 
-		flags = flags2 = __le32_to_cpu(header->flags);
+		flags = flags2 = end_le32toh(header->flags);
 		while ((flags2 & (1u << 31)) && offset <= len - 4)
 		{
-			flags2 = __le32_to_cpu(*(uint32_t *)(packet + offset));
+			flags2 = end_le32toh(*(uint32_t *)(packet + offset));
 			offset += sizeof(flags2);
 		}
 
@@ -209,13 +209,13 @@ int is_wps_locked()
 		if(header.len >= MIN_BEACON_SIZE)
 		{
 			rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-			size_t rt_header_len = __le16_to_cpu(rt_header->len);
+			size_t rt_header_len = end_le16toh(rt_header->len);
 			frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
 
 			if(memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN) == 0)
 			{
-                                if((frame_header->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
-				   __cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
+                                if((frame_header->fc & end_htole16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
+				   end_htole16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
 				{
 					if(parse_wps_parameters(packet, header.len, &wps))
 					{
@@ -422,34 +422,34 @@ static int associate_recv_loop(int want_assoc)
 		if(header.len < MIN_AUTH_SIZE) continue;
 
 		rt_header = (void*) radio_header(packet, header.len);
-		size_t rt_header_len = __le16_to_cpu(rt_header->len);
+		size_t rt_header_len = end_le16toh(rt_header->len);
 		dot11_frame = (void*)(packet + rt_header_len);
 
 		if((memcmp(dot11_frame->addr3, get_bssid(), MAC_ADDR_LEN) != 0) ||
 		   (memcmp(dot11_frame->addr1, get_mac(), MAC_ADDR_LEN) != 0))
 			continue;
 
-		int isMgmtFrame = (dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_FTYPE)) == __cpu_to_le16(IEEE80211_FTYPE_MGMT);
+		int isMgmtFrame = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_FTYPE)) == end_htole16(IEEE80211_FTYPE_MGMT);
 		if(!isMgmtFrame) continue;
 
 		void *ptr = (packet + sizeof(struct dot11_frame_header) + rt_header_len);
 		auth_frame = ptr;
 		assoc_frame = ptr;
 
-		int isAuthResp = (dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) == __cpu_to_le16(IEEE80211_STYPE_AUTH);
-		int isAssocResp = (dot11_frame->fc & __cpu_to_le16(IEEE80211_FCTL_STYPE)) == __cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP);
+		int isAuthResp = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_STYPE)) == end_htole16(IEEE80211_STYPE_AUTH);
+		int isAssocResp = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_STYPE)) == end_htole16(IEEE80211_STYPE_ASSOC_RESP);
 
 		if(!isAuthResp && !isAssocResp) continue;
 
 		if(isAuthResp && want_assoc) continue;
 
 		/* Did we get an authentication packet with a successful status? */
-		if(isAuthResp && (auth_frame->status == __cpu_to_le16(AUTHENTICATION_SUCCESS))) {
+		if(isAuthResp && (auth_frame->status == end_htole16(AUTHENTICATION_SUCCESS))) {
 			ret_val = AUTH_OK;
 			break;
 		}
 		/* Did we get an association packet with a successful status? */
-		else if(isAssocResp && (assoc_frame->status == __cpu_to_le16(ASSOCIATION_SUCCESS))) {
+		else if(isAssocResp && (assoc_frame->status == end_htole16(ASSOCIATION_SUCCESS))) {
 			ret_val = ASSOCIATE_OK;
 			break;
 		}
@@ -472,14 +472,14 @@ enum encryption_type supported_encryption(const u_char *packet, size_t len)
 	if(len > MIN_BEACON_SIZE)
 	{
 		rt_header = (struct radio_tap_header *) radio_header(packet, len);
-		size_t rt_header_len = __le16_to_cpu(rt_header->len);
+		size_t rt_header_len = end_le16toh(rt_header->len);
 		beacon = (struct beacon_management_frame *) (packet + rt_header_len + sizeof(struct dot11_frame_header));
 		offset = tag_offset = rt_header_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
 		
 		tag_len = len - tag_offset;
 		tag_data = (const u_char *) (packet + tag_offset);
 
-		if((__le16_to_cpu(beacon->capability) & CAPABILITY_WEP) == CAPABILITY_WEP)
+		if((end_le16toh(beacon->capability) & CAPABILITY_WEP) == CAPABILITY_WEP)
 		{
 			enc = WEP;
 
@@ -534,7 +534,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 	struct radio_tap_header *rt_header = NULL;
 
 	rt_header = (struct radio_tap_header *) radio_header(packet, len);
-	tag_offset = __le16_to_cpu(rt_header->len) + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
+	tag_offset = end_le16toh(rt_header->len) + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
 
 	if(tag_offset < len)
 	{
@@ -649,13 +649,13 @@ int check_fcs(const u_char *packet, size_t len)
 	if(len > 4)
 	{
 		/* Get the packet's reported FCS (last 4 bytes of the packet) */
-		fcs = __le32_to_cpu(*(uint32_t*)(packet + (len-4)));
+		fcs = end_le32toh(*(uint32_t*)(packet + (len-4)));
 
 		/* FCS is not calculated over the radio tap header */
 		if(has_rt_header())
 		{
 			rt_header = (struct radio_tap_header *) packet;
-			offset += __le16_to_cpu(rt_header->len);
+			offset += end_le16toh(rt_header->len);
 		}
 
 		if(len > offset)
