@@ -521,7 +521,7 @@ iw_get_ext(int			skfd,		/* Socket to the kernel */
 	   struct iwreq *	pwrq)		/* Fixed part of the request */
 {
   /* Set device name */
-  strncpy(pwrq->ifr_name, ifname, IFNAMSIZ);
+  strncpy(pwrq->ifr_ifrn.ifrn_name, ifname, IFNAMSIZ);
   /* Do the request */
   return(ioctl(skfd, request, pwrq));
 }
