@@ -361,3 +361,21 @@ void * __hide_aliasing_typecast(void *foo)
 {
 	return foo;
 }
+
+char* sanitize_string(const char *s) {
+	if(!s) return strdup("(null)");
+	size_t i,j, l = strlen(s), ls=l;
+	for(i=0;i<ls;i++) if(s[i] < ' ' || s[i] > 127) l += 4;
+	char *new = malloc(l+1);
+	if(!new) return 0;
+	for(i=0,j=0;i<ls;i++) {
+		if(s[i] < ' ' || s[i] > 127) {
+			sprintf(new + j, "\\\\x%02x", s[i] & 0xff);
+			j  += 4;
+		} else new[j] = s[i];
+		j++;
+	}
+	new[j] = 0;
+	return new;
+}
+

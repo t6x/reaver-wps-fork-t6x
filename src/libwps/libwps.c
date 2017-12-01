@@ -12,6 +12,7 @@
 #define LIBWPS_C
 
 #include "libwps.h"
+#include "../utils/common.h"
 #include <assert.h>
 
 static char* append(char* s1, char *s2) {
@@ -35,22 +36,6 @@ static char* append_and_free(char* s1, char *s2, int who) {
 	return new;
 }
 
-static char* sanitize_string(char *s) {
-	size_t i,j, l = strlen(s), ls=l;
-	for(i=0;i<ls;i++) if(s[i] < ' ' || s[i] > 127) l += 4;
-	char *new = malloc(l+1);
-	if(!new) return 0;
-	for(i=0,j=0;i<ls;i++) {
-		if(s[i] < ' ' || s[i] > 127) {
-			sprintf(new + j, "\\\\x%02x", s[i] & 0xff);
-			j  += 4;
-		} else new[j] = s[i];
-		j++;
-	}
-	new[j] = 0;
-	return new;
-}
-
 char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi, const unsigned char* vendor, struct libwps_data *wps) {
 	size_t ol = 0, nl = 0, ns = 0;
 	char *json_str = 0, *old = strdup("{"), *tmp;
@@ -60,7 +45,9 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	json_str = append_and_free(old, buf, 1);
 	old = json_str;
 
-	nl = snprintf(buf, sizeof buf, "\"essid\" : \"%s\", ", ssid);
+	tmp = sanitize_string(ssid);
+	nl = snprintf(buf, sizeof buf, "\"essid\" : \"%s\", ", tmp);
+	free(tmp);
 	json_str = append_and_free(old, buf, 1);
 	old = json_str;
 

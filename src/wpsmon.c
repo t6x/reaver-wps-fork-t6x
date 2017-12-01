@@ -434,10 +434,12 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					} else lock_display = NO;
 
 					char* vendor = get_vendor_string(get_ap_vendor(bssid));
+					char* sane_ssid = sanitize_string(ssid);
 					if(wps->version > 0)
-						cprintf(INFO, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", ssid);
+						cprintf(INFO, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
 					else
-						cprintf(INFO, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", ssid);
+						cprintf(INFO, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", sane_ssid);
+					free(sane_ssid);
 				}
 
 				if(probe_sent)
