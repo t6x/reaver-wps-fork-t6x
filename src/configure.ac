@@ -16,7 +16,7 @@ AC_HELP_STRING([--enable-savetocurrent],
   [saves the current session file to the directory reaver was started from])
 , [ CFLAGS="$CFLAGS -DSAVETOCURRENT" ])
 
-DESIRED_FLAGS="-Wno-unused-but-set-variable"
+DESIRED_FLAGS="-Werror-unknown-warning-option -Wno-unused-but-set-variable"
 for flag in $DESIRED_FLAGS; do
   AS_COMPILER_FLAG([$flag], [CFLAGS="$CFLAGS $flag"])
 done

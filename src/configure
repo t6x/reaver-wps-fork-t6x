@@ -3301,7 +3301,7 @@ if test "${enable_savetocurrent+set}" = set; then :
 fi
 
 
-DESIRED_FLAGS="-Wno-unused-but-set-variable"
+DESIRED_FLAGS="-Werror-unknown-warning-option -Wno-unused-but-set-variable"
 for flag in $DESIRED_FLAGS; do
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking to see if compiler understands $flag" >&5
