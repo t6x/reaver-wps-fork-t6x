@@ -13,6 +13,7 @@
 
 #include "libwps.h"
 #include "../utils/common.h"
+#include "../cprintf.h"
 #include <assert.h>
 
 static char* append(char* s1, char *s2) {
@@ -206,6 +207,10 @@ int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *w
 			rt_header = (struct radio_tap_header *) libwps_radio_header(packet, len);
 
 			offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct management_frame);
+			if(offset > len) {
+				cprintf(CRITICAL, "corrupt data received, terminating!\n");
+				exit(1);
+			}
 			data = (packet + offset);
 			data_len = (len - offset);
 
