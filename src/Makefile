@@ -8,7 +8,6 @@ INC=-Ilibwps -I. -Ilwe
 
 DISABLED_WARNINGS= \
  -Wno-unused-variable \
- -Wno-unused-but-set-variable \
  -Wno-unused-function \
  -Wno-pointer-sign
 

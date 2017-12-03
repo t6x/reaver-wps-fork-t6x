@@ -1,4 +1,5 @@
 AC_INIT(reaver, 1.6.3)
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([config.mak])
 AC_PROG_CC
 AC_LANG(C)
@@ -14,6 +15,11 @@ AC_ARG_ENABLE(savetocurrent,
 AC_HELP_STRING([--enable-savetocurrent],
   [saves the current session file to the directory reaver was started from])
 , [ CFLAGS="$CFLAGS -DSAVETOCURRENT" ])
+
+DESIRED_FLAGS="-Wno-unused-but-set-variable"
+for flag in $DESIRED_FLAGS; do
+  AS_COMPILER_FLAG([$flag], [CFLAGS="$CFLAGS $flag"])
+done
 
 cp confdefs.h config.h
 
