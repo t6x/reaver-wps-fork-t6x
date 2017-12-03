@@ -124,6 +124,17 @@ pcap_t *capture_init(char *capture_source)
 	handle = pcap_open_offline(capture_source, errbuf);
 	if(handle) return handle;
 
+#ifdef __APPLE__
+	// must disassociate from any current AP.  This is the only way.
+	pid_t pid = fork();
+	if (!pid) {
+		char* argv[] = {"/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", "-z", NULL};
+		execve("/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", argv, NULL);
+	}
+	int status;
+	waitpid(pid,&status,0);
+#endif
+
 	handle = pcap_create(capture_source, errbuf);
 	if (handle) {
 		pcap_set_snaplen(handle, 65536);
