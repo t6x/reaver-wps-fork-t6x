@@ -204,6 +204,7 @@ void init_default_settings(void)
         set_timeout_is_nack(1);
 	set_oo_send_nack(1);
         set_wifi_band(BG_BAND);
+	set_validate_fcs(1);
 	pixie.do_pixie = 0;
 	set_pin_string_mode(0);
 }

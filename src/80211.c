@@ -33,6 +33,7 @@
 
 #include "80211.h"
 #include "send.h"
+#include "utils/radiotap.h"
 
 /*Reads the next packet from pcap_next() and validates the FCS. */
 u_char *next_packet(struct pcap_pkthdr *header)
@@ -48,21 +49,10 @@ u_char *next_packet(struct pcap_pkthdr *header)
 
 		memcpy(header, pkt_header, sizeof(*header));
 
-		if(get_validate_fcs())
-		{
-			if(check_fcs(packet, header->len))
-			{
-				break;
-			}
-			else
-			{
-				cprintf(INFO, "[!] Found packet with bad FCS, skipping...\n");
-			}
-		}
-		else
-		{
-			break;
-		}
+		if(get_validate_fcs() && !check_fcs(packet, header->len))
+			continue;
+
+		break;
 	}
 
 	return (void*)packet;
@@ -610,21 +600,40 @@ unsigned char *parse_ie_data(const u_char *data, size_t len, uint8_t tag_number,
 /* Validates a packet's reported FCS value */
 int check_fcs(const u_char *packet, size_t len)
 {
-	int offset = 0, match = 0;
+	uint32_t offset = 0, match = 0;
 	uint32_t fcs = 0, fcs_calc = 0;
 	struct radio_tap_header *rt_header = NULL;
-	
+
 	if(len > 4)
 	{
+
+		/* FCS is not calculated over the radio tap header */
+		if(has_rt_header() && len >= sizeof(*rt_header))
+		{
+			uint32_t presentflags, flags;
+			if(!rt_get_presentflags(packet, len, &presentflags, &offset))
+				goto skip;
+			if(!(presentflags & (1U << IEEE80211_RADIOTAP_FLAGS)))
+				goto skip;
+			offset = rt_get_flag_offset(presentflags, IEEE80211_RADIOTAP_FLAGS, offset);
+			if(offset < len) {
+				memcpy(&flags, packet + offset, 4);
+				flags = end_le32toh(flags);
+				if(flags & IEEE80211_RADIOTAP_F_BADFCS)
+					return 0;
+				if(!(flags & IEEE80211_RADIOTAP_F_FCS))
+					return 1;
+			}
+
+			skip:
+			rt_header = (struct radio_tap_header *) packet;
+			offset = end_le16toh(rt_header->len);
+
+		}
+
 		/* Get the packet's reported FCS (last 4 bytes of the packet) */
 		fcs = end_le32toh(*(uint32_t*)(packet + (len-4)));
 
-		/* FCS is not calculated over the radio tap header */
-		if(has_rt_header())
-		{
-			rt_header = (struct radio_tap_header *) packet;
-			offset += end_le16toh(rt_header->len);
-		}
 
 		if(len > offset)
 		{
@@ -639,7 +648,7 @@ int check_fcs(const u_char *packet, size_t len)
 	}
 
 	return match;
-	
+
 }
 
 /* Checks a given BSSID to see if it's on our target list */

@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 	set_auto_channel_select(0);
 	set_wifi_band(BG_BAND);
 	set_debug(INFO);
-	set_validate_fcs(0);
+	set_validate_fcs(1);
 	set_log_file(stdout);
 	set_max_num_probes(DEFAULT_MAX_NUM_PROBES);
 
