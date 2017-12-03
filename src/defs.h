@@ -44,6 +44,7 @@
 #include "utils/endianness.h"
 
 #include "wps.h"
+#include "cprintf.h"
 
 #define NULL_MAC		"\x00\x00\x00\x00\x00\x00"
 #define DEFAULT_MAX_NUM_PROBES	15
@@ -108,15 +109,6 @@ enum key_state
 	KEY1_WIP = 0,
 	KEY2_WIP = 1,
 	KEY_DONE = 2
-};
-
-enum debug_level
-{
-	CRITICAL = 0,
-	INFO = 1,
-	WARNING = 2,
-	VERBOSE = 3,
-	DEBUG = 4
 };
 
 enum eap_codes
