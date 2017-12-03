@@ -384,7 +384,7 @@ print_iface_version_info(int	skfd,
   struct iw_range *	range;
 
   /* Avoid "Unused parameter" warning */
-  args = args; count = count;
+  (void) args; (void) count;
 
   /* If no wireless name : no wireless extensions.
    * This enable us to treat the SIOCGIWRANGE failure below properly. */
@@ -1555,7 +1555,7 @@ static int
 iw_pass_key(const char *	input,
 	    unsigned char *	key)
 {
-  input = input; key = key;
+  (void) input; (void) key;
   fprintf(stderr, "Error: Passphrase not implemented\n");
   return(-1);
 }
