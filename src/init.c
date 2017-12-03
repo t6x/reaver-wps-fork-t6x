@@ -118,13 +118,29 @@ end:
 /* Initializes pcap capture settings and returns a pcap handle on success, NULL on error */
 pcap_t *capture_init(char *capture_source)
 {
-	pcap_t *handle = NULL;
+	pcap_t *handle;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
-	
-	handle = pcap_open_live(capture_source, 65536, 1, 0, errbuf);
-	if(!handle)
-	{
-		handle = pcap_open_offline(capture_source, errbuf);
+
+	handle = pcap_open_offline(capture_source, errbuf);
+	if(handle) return handle;
+
+	handle = pcap_create(capture_source, errbuf);
+	if (handle) {
+		pcap_set_snaplen(handle, 65536);
+		pcap_set_timeout(handle, 50);
+		pcap_set_rfmon(handle, 1);
+		pcap_set_promisc(handle, 1);
+		int status = pcap_activate(handle);
+		if (status) {
+			cprintf(CRITICAL, "pcap_activate status %d\n", status);
+			pcap_close(handle);
+			handle = 0;
+		}
+	}
+
+	if(!handle) {
+		cprintf(CRITICAL, "couldn't get pcap handle, exiting\n");
+		exit(1);
 	}
 
 	return handle;

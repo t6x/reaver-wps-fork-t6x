@@ -37,11 +37,17 @@
 /*Reads the next packet from pcap_next() and validates the FCS. */
 u_char *next_packet(struct pcap_pkthdr *header)
 {
-	u_char *packet = NULL;
+	const u_char *packet = NULL;
+	struct pcap_pkthdr *pkt_header;
+	int status;
 
 	/* Loop until we get a valid packet, or until we run out of packets */
-	while((packet = (void*)pcap_next(get_handle(), header)) != NULL)
+	while((status = pcap_next_ex(get_handle(), &pkt_header, &packet)) == 1 || !status)
 	{
+		if(!status) continue; /* timeout */
+
+		memcpy(header, pkt_header, sizeof(*header));
+
 		if(get_validate_fcs())
 		{
 			if(check_fcs(packet, header->len))
@@ -59,7 +65,7 @@ u_char *next_packet(struct pcap_pkthdr *header)
 		}
 	}
 
-	return packet;
+	return (void*)packet;
 }
 
 /* 
