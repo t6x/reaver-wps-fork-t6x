@@ -88,18 +88,6 @@
 #define DEFAULT_LOCK_DELAY      60              /* Seconds */
 #define SEC_TO_US               1000000         /* uSeconds in a Second */
 
-#define TSFT_SIZE 		8
-#define FLAGS_SIZE 		1
-#define RATE_SIZE 		1
-#define CHANNEL_SIZE 		4
-#define FHSS_SIZE 		2
-
-#define TSFT_ALIGNMENT		8
-#define CHANNEL_ALIGNMENT	2
-
-#define RADIOTAP_ALIGN(offset, a) \
-	offset = (offset + (a) - 1) & ~((a) - 1)
-
 #define WPS_DEVICE_NAME		"Glau"
 #define WPS_MANUFACTURER	"Microsoft"
 #define WPS_MODEL_NAME		"Windows"
@@ -188,16 +176,6 @@ enum wps_type
         M8 = 0x0C,
         DONE = 0x0F,
         NACK = 0x0E
-};
-
-enum rt_header_flags
-{
-	TSFT_FLAG = 0x01,
-	FLAGS_FLAG = 0x02,
-	RATE_FLAG = 0x04,
-	CHANNEL_FLAG = 0x08,
-	FHSS_FLAG = 0x10,
-	SSI_FLAG = 0x20,
 };
 
 enum wfa_elements

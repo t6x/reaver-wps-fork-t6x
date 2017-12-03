@@ -133,62 +133,24 @@ void read_ap_beacon()
         }
 }
 
+#include "radiotap_flags.h"
+
 /* Extracts the signal strength field (if any) from the packet's radio tap header */
 int8_t signal_strength(const u_char *packet, size_t len)
 {
-	int8_t ssi = 0;
-	int offset = sizeof(struct radio_tap_header);
-	struct radio_tap_header *header = NULL;
-	uint32_t flags, flags2;
-
-	if(has_rt_header() && (len > (sizeof(struct radio_tap_header) + TSFT_SIZE + FLAGS_SIZE + RATE_SIZE + CHANNEL_SIZE + FHSS_FLAG)))
+	if(has_rt_header() && (len > (sizeof(struct radio_tap_header))))
 	{
-		header = (struct radio_tap_header *) packet;
-
-		flags = flags2 = end_le32toh(header->flags);
-		while ((flags2 & (1u << 31)) && offset <= len - 4)
-		{
-			flags2 = end_le32toh(*(uint32_t *)(packet + offset));
-			offset += sizeof(flags2);
-		}
-
-		if((flags & SSI_FLAG) == SSI_FLAG)
-		{
-			if((flags & TSFT_FLAG) == TSFT_FLAG)
-			{
-				RADIOTAP_ALIGN(offset, TSFT_ALIGNMENT);
-				offset += TSFT_SIZE;
-			}
-
-			if((flags & FLAGS_FLAG) == FLAGS_FLAG)
-			{
-				offset += FLAGS_SIZE;
-			}
-	
-			if((flags & RATE_FLAG) == RATE_FLAG)
-			{
-				offset += RATE_SIZE;
-			}
-
-			if((flags & CHANNEL_FLAG) == CHANNEL_FLAG)
-			{
-				RADIOTAP_ALIGN(offset, CHANNEL_ALIGNMENT);
-				offset += CHANNEL_SIZE;
-			}
-
-			if((flags & FHSS_FLAG) == FHSS_FLAG)
-			{
-				offset += FHSS_SIZE;
-			}
-
-			if(offset < len)
-			{
-				ssi = (int8_t) packet[offset];
-			}
-		}
+		uint32_t offset, presentflags;
+		if(!rt_get_presentflags(packet, len, &presentflags, &offset))
+			return 0;
+		if(!(presentflags & (1U << IEEE80211_RADIOTAP_DBM_ANTSIGNAL)))
+			return 0;
+		offset = rt_get_flag_offset(presentflags, IEEE80211_RADIOTAP_DBM_ANTSIGNAL, offset);
+		if (offset < len)
+			return (int8_t) packet[offset];
 	}
 
-	return ssi;
+	return 0;
 }
 
 /* 
