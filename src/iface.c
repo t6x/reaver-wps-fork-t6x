@@ -136,6 +136,24 @@ int next_channel()
 }
 
 /* Sets the 802.11 channel for the selected interface */
+#ifdef __APPLE__
+int change_channel(int channel)
+{
+	cprintf(VERBOSE, "[+] Switching %s to channel %d\n", get_iface(), channel);
+	// Unfortunately, there is no API to change the channel
+	pid_t pid = fork();
+	if (!pid) {
+		char chan_arg[32];
+		sprintf(chan_arg, "-c%d", channel);
+		char* argv[] = {"/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", chan_arg, NULL};
+		execve("/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", argv, NULL);
+	}
+	int status;
+	waitpid(pid,&status,0);
+	set_channel(channel);
+	return 0;
+}
+#else
 int change_channel(int channel)
 {
         int skfd = 0, ret_val = 0;
@@ -170,3 +188,4 @@ int change_channel(int channel)
 
         return ret_val;
 }
+#endif
