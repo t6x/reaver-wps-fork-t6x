@@ -33,7 +33,7 @@
 
 #include "iface.h"
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__APPLE__)
 #include <ifaddrs.h>
 #include <net/if_dl.h>
 int read_iface_mac() {
