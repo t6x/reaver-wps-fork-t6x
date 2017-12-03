@@ -37,23 +37,24 @@
 #include <ifaddrs.h>
 #include <net/if_dl.h>
 int read_iface_mac() {
-	struct ifaddrs *ifa, *ifa0;
-	struct sockaddr_dl* dl;
-	int ret_val = 0;
-	unsigned char mac_addr[6];
-	getifaddrs( &ifa0 );
-	for( ifa = ifa0; ifa; ifa=ifa->ifa_next ) {
-		dl = (struct sockaddr_dl*)ifa->ifa_addr;
-		if( strncmp(get_iface(), dl->sdl_data, dl->sdl_nlen) == 0 ) {
-			set_mac(LLADDR(dl));
-			ret_val = 1;
-			break;
+	struct ifaddrs* iflist;
+	int found = 0;
+	if (getifaddrs(&iflist) == 0) {
+		struct ifaddrs* cur;
+		for (cur = iflist; cur; cur = cur->ifa_next) {
+			if ((cur->ifa_addr->sa_family == AF_LINK) &&
+				(strcmp(cur->ifa_name, get_iface()) == 0) &&
+				cur->ifa_addr) {
+				struct sockaddr_dl* sdl = (struct sockaddr_dl*)cur->ifa_addr;
+				set_mac(LLADDR(sdl));
+				found = 1;
+				break;
+			}
 		}
+		freeifaddrs(iflist);
 	}
-	freeifaddrs(ifa);
-	return ret_val;
+	return found;
 }
-
 #else
 /* Populates globule->mac with the MAC address of the interface globule->iface */
 int read_iface_mac()
