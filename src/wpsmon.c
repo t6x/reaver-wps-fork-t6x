@@ -268,6 +268,7 @@ int main(int argc, char *argv[])
 		if(pcap_compile(get_handle(), &bpf, PACKET_FILTER, 0, 0) != 0)
 		{
 			cprintf(CRITICAL, "[X] ERROR: Failed to compile packet filter\n");
+			cprintf(CRITICAL, "[X] PCAP: %s\n", pcap_geterr(get_handle()));
 			goto end;
 		}
 		

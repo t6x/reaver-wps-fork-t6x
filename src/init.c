@@ -120,6 +120,7 @@ pcap_t *capture_init(char *capture_source)
 {
 	pcap_t *handle;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
+	int status;
 
 	handle = pcap_open_offline(capture_source, errbuf);
 	if(handle) return handle;
@@ -131,7 +132,6 @@ pcap_t *capture_init(char *capture_source)
 		char* argv[] = {"/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", "-z", NULL};
 		execve("/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", argv, NULL);
 	}
-	int status;
 	waitpid(pid,&status,0);
 #endif
 
@@ -141,12 +141,19 @@ pcap_t *capture_init(char *capture_source)
 		pcap_set_timeout(handle, 50);
 		pcap_set_rfmon(handle, 1);
 		pcap_set_promisc(handle, 1);
-		int status = pcap_activate(handle);
-		if (status) {
-			cprintf(CRITICAL, "pcap_activate status %d\n", status);
-			pcap_close(handle);
-			handle = 0;
+		if(!(status = pcap_activate(handle)))
+			return handle;
+		if(status == PCAP_ERROR_RFMON_NOTSUP) {
+			pcap_set_rfmon(handle, 0);
+			status = pcap_activate(handle);
+			if(!status) return handle;
 		}
+		cprintf(CRITICAL, "[X] ERROR: pcap_activate status %d\n", status);
+		if(status == PCAP_ERROR_NO_SUCH_DEVICE)
+			cprintf(CRITICAL, "[X] PCAP: no such device\n");
+		/* TODO : print nice error message for other codes */
+		pcap_close(handle);
+		handle = 0;
 	}
 
 	if(!handle) {
