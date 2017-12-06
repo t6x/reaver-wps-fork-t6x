@@ -47,6 +47,10 @@ int send_identity_response();
 int send_msg(int type);
 void send_termination();
 void send_wsc_nack();
-int send_packet(const void *packet, size_t len, int use_timer);
+
+#define send_packet(a, b, c) send_packet_internal(__FUNCTION__, __FILE__,  __LINE__, a, b, c)
+
+int send_packet_internal(const char* callerfunc, const char* file, int callerline, 
+const void *packet, size_t len, int use_timer);
 
 #endif
