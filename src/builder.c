@@ -32,6 +32,7 @@
  */
 
 #include "builder.h"
+#include <assert.h>
 
 void *build_radio_tap_header(size_t *len)
 {
@@ -525,11 +526,17 @@ void *build_wps_tagged_parameter(size_t *len)
 void *build_supported_rates_tagged_parameter(size_t *len)
 {
 	char *buf = NULL, *supported_rates = NULL, *extended_rates = NULL;
-	unsigned char *srates = NULL, *erates = NULL;
-	int srates_tag_size = 0, erates_tag_size = 0;
+	unsigned char *erates = NULL;
+	int srates_tag_size = 0, erates_tag_size = 0, i, dummy;
         size_t buf_len = 0, srates_len = 0, erates_len = 0, offset = 0;
+	unsigned char srates[128];
 
-	srates = get_ap_rates(&srates_tag_size);
+	(void) get_ap_rates(&srates_tag_size);
+	assert(srates_tag_size < sizeof srates);
+	memcpy(srates, get_ap_rates(&dummy), srates_tag_size);
+	for(i=0;i<srates_tag_size;i++)
+		srates[i] = srates[i] & 0x7f; // remove (B) bit
+
 	erates = get_ap_ext_rates(&erates_tag_size);
         supported_rates = build_tagged_parameter(SRATES_TAG_NUMBER, srates_tag_size, &srates_len);
 	extended_rates = build_tagged_parameter(ERATES_TAG_NUMBER, erates_tag_size, &erates_len);
