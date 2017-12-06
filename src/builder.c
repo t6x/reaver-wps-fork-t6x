@@ -52,7 +52,7 @@ void *build_radio_tap_header(size_t *len)
 	return buf;
 }
 
-void *build_dot11_frame_header(uint16_t fc, size_t *len)
+void *build_dot11_frame_header_m(uint16_t fc, size_t *len, unsigned char dstmac[6])
 {
 	struct dot11_frame_header *header = NULL;
 	void *buf = NULL;
@@ -71,12 +71,20 @@ void *build_dot11_frame_header(uint16_t fc, size_t *len)
 		header->fc = end_htole16(fc);
 		header->frag_seq = end_htole16(frag_seq);
 
-		memcpy((void *) header->addr1, get_bssid(), MAC_ADDR_LEN);
+		memcpy((void *) header->addr1, dstmac, MAC_ADDR_LEN);
 		memcpy((void *) header->addr2, get_mac(), MAC_ADDR_LEN);
-		memcpy((void *) header->addr3, get_bssid(), MAC_ADDR_LEN);
+		memcpy((void *) header->addr3, dstmac, MAC_ADDR_LEN);
 	}
 
 	return buf;
+}
+
+void *build_dot11_frame_header(uint16_t fc, size_t *len) {
+	return build_dot11_frame_header_m(fc, len, get_bssid());
+}
+
+void *build_dot11_frame_header_broadcast(uint16_t fc, size_t *len) {
+	return build_dot11_frame_header_m(fc, len, "\xff\xff\xff\xff\xff\xff");
 }
 
 void *build_authentication_management_frame(size_t *len)
@@ -153,8 +161,9 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 	struct tagged_parameter ssid_tag = { 0 };
 	void *rt_header = NULL, *dot11_header = NULL, *packet = NULL;
 	size_t offset = 0, rt_len = 0, dot11_len = 0, ssid_tag_len = 0, packet_len = 0;
+	int broadcast = !memcmp(bssid, "\xff\xff\xff\xff\xff\xff", 6);
 
-	if(essid != NULL)
+	if(!broadcast && essid != NULL)
 	{
 		ssid_tag.len = (uint8_t) strlen(essid);
 	}
@@ -167,8 +176,8 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 	ssid_tag_len = ssid_tag.len + sizeof(struct tagged_parameter);
 
 	rt_header = build_radio_tap_header(&rt_len);
-	dot11_header = build_dot11_frame_header(FC_PROBE_REQUEST, &dot11_len);
-	
+	dot11_header = build_dot11_frame_header_m(FC_PROBE_REQUEST, &dot11_len, bssid);
+
 	if(rt_header && dot11_header)
 	{
 		packet_len = rt_len + dot11_len + ssid_tag_len;
