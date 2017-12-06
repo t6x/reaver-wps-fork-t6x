@@ -118,6 +118,10 @@ struct globals
 
 	unsigned char vendor_oui[1+3];	/* the first byte contains 1 if set, 0 if not, the next 3 bytes the actual vendor OUI */
 
+	unsigned char *htcaps;		/* Wireless N HT capabilities of the AP */
+
+	int htcaps_len;			/* lenght of the Wireless N HT capabilities of the AP */
+
 	unsigned char *ap_rates;	/* Supported rates IE data, as reported by the AP */
 
 	int ap_rates_len;		/* Length of the supported rates IE data */
@@ -244,6 +248,8 @@ void set_ap_rates(unsigned char *value, int len);
 unsigned char *get_ap_rates(int *len);
 void set_ap_ext_rates(unsigned char *value, int len);
 unsigned char *get_ap_ext_rates(int *len);
+void set_ap_htcaps(unsigned char *value, int len);
+unsigned char *get_ap_htcaps(int *len);
 void set_exec_string(char *string);
 char *get_exec_string(void);
 void set_oo_send_nack(int value);

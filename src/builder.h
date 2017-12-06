@@ -76,6 +76,7 @@ void *build_eap_failure_packet(size_t *len);
 void *build_tagged_parameter(uint8_t number, uint8_t size, size_t *len);
 void *build_ssid_tagged_parameter(size_t *len);
 void *build_wps_tagged_parameter(size_t *len);
+void *build_htcaps_parameter(size_t *len);
 void *build_supported_rates_tagged_parameter(size_t *len);
 
 #endif

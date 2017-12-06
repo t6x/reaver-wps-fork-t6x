@@ -314,17 +314,18 @@ void authenticate()
 /* Associate with the AP */
 void associate()
 {
-	void *radio_tap = NULL, *dot11_frame = NULL, *management_frame = NULL, *ssid_tag = NULL, *wps_tag = NULL, *rates_tag = NULL;
+	void *radio_tap = NULL, *dot11_frame = NULL, *management_frame = NULL, *ssid_tag = NULL, *wps_tag = NULL, *rates_tag = NULL, *ht_tag = NULL;
 	unsigned char *packet = NULL;
-        size_t radio_tap_len = 0, dot11_frame_len = 0, management_frame_len = 0, ssid_tag_len = 0, wps_tag_len = 0, rates_tag_len = 0, packet_len = 0, offset = 0;
+        size_t radio_tap_len = 0, dot11_frame_len = 0, management_frame_len = 0, ssid_tag_len = 0, wps_tag_len = 0, rates_tag_len = 0, ht_tag_len = 0, packet_len = 0, offset = 0;
 
         radio_tap = build_radio_tap_header(&radio_tap_len);
         dot11_frame = build_dot11_frame_header(FC_ASSOCIATE, &dot11_frame_len);
         management_frame = build_association_management_frame(&management_frame_len);
 	ssid_tag = build_ssid_tagged_parameter(&ssid_tag_len);
 	rates_tag = build_supported_rates_tagged_parameter(&rates_tag_len);
+	ht_tag = build_htcaps_parameter(&ht_tag_len);
 	wps_tag = build_wps_tagged_parameter(&wps_tag_len);
-        packet_len = radio_tap_len + dot11_frame_len + management_frame_len + ssid_tag_len + wps_tag_len + rates_tag_len;
+        packet_len = radio_tap_len + dot11_frame_len + management_frame_len + ssid_tag_len + wps_tag_len + rates_tag_len + ht_tag_len;
 
 	if(radio_tap && dot11_frame && management_frame && ssid_tag && wps_tag && rates_tag)
         {
@@ -343,6 +344,12 @@ void associate()
 			offset += ssid_tag_len;
 			memcpy(packet+offset, rates_tag, rates_tag_len);
 			offset += rates_tag_len;
+
+			if(ht_tag) {
+				memcpy(packet+offset, ht_tag, ht_tag_len);
+				offset += ht_tag_len;
+			}
+
 			memcpy(packet+offset, wps_tag, wps_tag_len);
 
                         send_packet(packet, packet_len, 0);
@@ -357,6 +364,7 @@ void associate()
 	if(ssid_tag) free(ssid_tag);
 	if(wps_tag) free(wps_tag);
 	if(rates_tag) free(rates_tag);
+	if(ht_tag) free(ht_tag);
 
 	return;
 }
@@ -518,6 +526,13 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 
 				free(ie);
 			}
+		}
+
+		ie = parse_ie_data(tag_data, tag_len, HT_CAPS_TAG_NUMBER, &ie_len, &ie_offset);
+		if(ie)
+		{
+			set_ap_htcaps(ie, ie_len);
+			free(ie);
 		}
 
 		ie = parse_ie_data(tag_data, tag_len, (uint8_t) RATES_TAG_NUMBER, &ie_len, &ie_offset);

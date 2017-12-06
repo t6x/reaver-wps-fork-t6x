@@ -58,6 +58,7 @@
 #define WPS_TAG_NUMBER		0xDD
 #define VENDOR_SPECIFIC_TAG	0xDD
 #define RSN_TAG_NUMBER		0x30
+#define HT_CAPS_TAG_NUMBER	0x2d
 
 #define CAPABILITY_WEP		0x10
 

@@ -531,6 +531,20 @@ struct wps_data *get_wps()
 	return globule->wps;
 }
 
+void set_ap_htcaps(unsigned char *value, int len)
+{
+	free(globule->htcaps);
+	globule->htcaps = malloc(len);
+	globule->htcaps_len = len;
+	memcpy(globule->htcaps, value, len);
+}
+
+unsigned char *get_ap_htcaps(int *len)
+{
+	*len = globule->htcaps_len;
+	return globule->htcaps;
+}
+
 void set_ap_rates(unsigned char *value, int len)
 {
 	if(globule->ap_rates)

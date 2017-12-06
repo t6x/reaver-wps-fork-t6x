@@ -572,3 +572,19 @@ void *build_supported_rates_tagged_parameter(size_t *len)
 	if(extended_rates) free(extended_rates);
 	return buf;
 }
+
+void *build_htcaps_parameter(size_t *len)
+{
+	*len = 0;
+	unsigned char* htcaps;
+	int htlen; size_t taglen;
+	if((htcaps = get_ap_htcaps(&htlen)) == NULL)
+		return NULL;
+	void *tag_htcaps = build_tagged_parameter(HT_CAPS_TAG_NUMBER, htlen, &taglen);
+	*len = taglen + htlen;
+	void* buf = malloc(*len);
+	memcpy(buf, tag_htcaps, taglen);
+	memcpy(buf + taglen, htcaps, htlen);
+	free(tag_htcaps);
+	return buf;
+}
