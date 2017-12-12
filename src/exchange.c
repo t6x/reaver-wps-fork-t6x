@@ -348,74 +348,74 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 	);
 
 	/* All packets in our exchanges will be EAP packets */
-	if(dot1x->type == DOT1X_EAP_PACKET && (header->len >= EAP_PACKET_SIZE))
+	if(!(dot1x->type == DOT1X_EAP_PACKET && (header->len >= EAP_PACKET_SIZE)))
+		return UNKNOWN;
+
+	eap = (struct eap_header *) (packet +
+					rt_header_len +
+					sizeof(struct dot11_frame_header) +
+					sizeof(struct llc_header) +
+					sizeof(struct dot1X_header)
+	);
+
+	/* EAP session termination. Break and move on. */
+	if(eap->code == EAP_FAILURE)
 	{
-		eap = (struct eap_header *) (packet +
-						rt_header_len +
-						sizeof(struct dot11_frame_header) +
-						sizeof(struct llc_header) +
-						sizeof(struct dot1X_header)
-		);
+		type = TERMINATE;
+	}
+	/* If we've received an EAP request and then this should be a WPS message */
+	else if(eap->code == EAP_REQUEST)
+	{
+		/* The EAP header builder needs this ID value */
+		set_eap_id(eap->id);
 
-		/* EAP session termination. Break and move on. */
-		if(eap->code == EAP_FAILURE)
+		/* Stop the receive timer that was started by the last send_packet() */
+		stop_timer();
+
+		/* Check to see if we received an EAP identity request */
+		if(eap->type == EAP_IDENTITY)
 		{
-			type = TERMINATE;
+			/* We've initiated an EAP session, so reset the counter */
+			set_eapol_start_count(0);
+
+			type = IDENTITY_REQUEST;
 		}
-		/* If we've received an EAP request and then this should be a WPS message */
-		else if(eap->code == EAP_REQUEST)
+		/* An expanded EAP type indicates a probable WPS message */
+		else if((eap->type == EAP_EXPANDED) && (header->len > WFA_PACKET_SIZE))
 		{
-			/* The EAP header builder needs this ID value */
-			set_eap_id(eap->id);
+			wfa = (struct wfa_expanded_header *) (packet +
+							rt_header_len +
+							sizeof(struct dot11_frame_header) +
+							sizeof(struct llc_header) +
+							sizeof(struct dot1X_header) +
+							sizeof(struct eap_header)
+			);
 
-			/* Stop the receive timer that was started by the last send_packet() */
-			stop_timer();
-
-			/* Check to see if we received an EAP identity request */
-			if(eap->type == EAP_IDENTITY)
+			/* Verify that this is a WPS message */
+			if(wfa->type == end_htobe32(SIMPLE_CONFIG))
 			{
-				/* We've initiated an EAP session, so reset the counter */
-				set_eapol_start_count(0);
+				wps_msg_len = 	(size_t) ntohs(eap->len) -
+						sizeof(struct eap_header) -
+						sizeof(struct wfa_expanded_header);
 
-				type = IDENTITY_REQUEST;
-			}
-			/* An expanded EAP type indicates a probable WPS message */
-			else if((eap->type == EAP_EXPANDED) && (header->len > WFA_PACKET_SIZE))
-			{
-				wfa = (struct wfa_expanded_header *) (packet +
-								rt_header_len +
-								sizeof(struct dot11_frame_header) +
-								sizeof(struct llc_header) +
-								sizeof(struct dot1X_header) +
-								sizeof(struct eap_header)
+				wps_msg = (const void *) (packet +
+							rt_header_len +
+							sizeof(struct dot11_frame_header) +
+							sizeof(struct llc_header) +
+							sizeof(struct dot1X_header) +
+							sizeof(struct eap_header) +
+							sizeof(struct wfa_expanded_header)
 				);
 
-				/* Verify that this is a WPS message */
-				if(wfa->type == end_htobe32(SIMPLE_CONFIG))
-				{
-					wps_msg_len = 	(size_t) ntohs(eap->len) -
-							sizeof(struct eap_header) -
-							sizeof(struct wfa_expanded_header);
+				/* Save the current WPS state. This way if we get a NACK message, we can 
+				 * determine what state we were in when the NACK arrived.
+				 */
+				wps = get_wps();
+				set_last_wps_state(wps->state);
+				set_opcode(wfa->opcode);
 
-					wps_msg = (const void *) (packet +
-								rt_header_len +
-								sizeof(struct dot11_frame_header) +
-								sizeof(struct llc_header) +
-								sizeof(struct dot1X_header) +
-								sizeof(struct eap_header) +
-								sizeof(struct wfa_expanded_header)
-					);
-
-					/* Save the current WPS state. This way if we get a NACK message, we can 
-					 * determine what state we were in when the NACK arrived.
-					 */
-					wps = get_wps();
-					set_last_wps_state(wps->state);
-					set_opcode(wfa->opcode);
-
-					/* Process the WPS message and send a response */
-					type = process_wps_message(wps_msg, wps_msg_len);
-				}
+				/* Process the WPS message and send a response */
+				type = process_wps_message(wps_msg, wps_msg_len);
 			}
 		}
 	}
