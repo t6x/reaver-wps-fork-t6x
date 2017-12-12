@@ -283,11 +283,12 @@ enum wps_result do_wps_exchange()
 
 static int is_data_packet(struct dot11_frame_header *frame_header)
 {
-	return (
-                ((frame_header->fc &
-                        end_htole16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
-                        end_htole16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA))
-		);
+	int fctype = frame_header->fc & end_htole16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE);
+	if (fctype == end_htole16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA))
+		return 1;
+	if (fctype == end_htole16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_QOS_DATA))
+		return 2;
+	return 0;
 }
 
 static int is_packet_for_us(struct dot11_frame_header *frame_header)
@@ -325,47 +326,45 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 
 	/* Cast the radio tap and 802.11 frame headers and parse out the Frame Control field */
 	rt_header = (struct radio_tap_header *) packet;
-	size_t rt_header_len = end_le16toh(rt_header->len);
-	frame_header = (struct dot11_frame_header *) (packet+rt_header_len);
+	size_t offset = end_le16toh(rt_header->len);
+	frame_header = (struct dot11_frame_header *) (packet+offset);
+	offset += sizeof(struct dot11_frame_header);
 
 	/* Does the BSSID/source address match our target BSSID? */
 	if(memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN) != 0)
-		return UNKNOWN;
-
-	/* Is this a data packet ? */
-	if(!is_data_packet(frame_header))
 		return UNKNOWN;
 
 	/* Is this a packet sent to our MAC address? */
 	if(!is_packet_for_us(frame_header))
 		return UNKNOWN;
 
+	int data_pkt_type;
 
-	llc = (struct llc_header *) (packet +
-					rt_header_len +
-					sizeof(struct dot11_frame_header)
-	);
+	/* Is this a data packet ? */
+	if(!(data_pkt_type = is_data_packet(frame_header)))
+		return UNKNOWN;
+
+	if(data_pkt_type == 2) /* QOS */
+		offset += 2;
+
+	llc = (struct llc_header *) (packet + offset);
+	offset += sizeof(struct llc_header);
 
 	/* All packets in our exchanges will be 802.1x */
 	if(llc->type != end_htobe16(DOT1X_AUTHENTICATION))
 		return UNKNOWN;
 
-	dot1x = (struct dot1X_header *) (packet +
-					rt_header_len +
-					sizeof(struct dot11_frame_header) +
-					sizeof(struct llc_header)
-	);
+
+	dot1x = (struct dot1X_header *) (packet + offset);
+	offset += sizeof(struct dot1X_header);
 
 	/* All packets in our exchanges will be EAP packets */
 	if(!(dot1x->type == DOT1X_EAP_PACKET && (header->len >= EAP_PACKET_SIZE)))
 		return UNKNOWN;
 
-	eap = (struct eap_header *) (packet +
-					rt_header_len +
-					sizeof(struct dot11_frame_header) +
-					sizeof(struct llc_header) +
-					sizeof(struct dot1X_header)
-	);
+
+	eap = (struct eap_header *) (packet + offset);
+	offset += sizeof(struct eap_header);
 
 	/* EAP session termination. Break and move on. */
 	if(eap->code == EAP_FAILURE)
@@ -394,13 +393,8 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 	if(!((eap->type == EAP_EXPANDED) && (header->len > WFA_PACKET_SIZE)))
 		return UNKNOWN;
 
-	wfa = (struct wfa_expanded_header *) (packet +
-					rt_header_len +
-					sizeof(struct dot11_frame_header) +
-					sizeof(struct llc_header) +
-					sizeof(struct dot1X_header) +
-					sizeof(struct eap_header)
-	);
+	wfa = (struct wfa_expanded_header *) (packet + offset);
+	offset += sizeof(struct wfa_expanded_header);
 
 	/* Verify that this is a WPS message */
 	if(wfa->type != end_htobe32(SIMPLE_CONFIG))
@@ -410,14 +404,7 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 			sizeof(struct eap_header) -
 			sizeof(struct wfa_expanded_header);
 
-	wps_msg = (const void *) (packet +
-				rt_header_len +
-				sizeof(struct dot11_frame_header) +
-				sizeof(struct llc_header) +
-				sizeof(struct dot1X_header) +
-				sizeof(struct eap_header) +
-				sizeof(struct wfa_expanded_header)
-	);
+	wps_msg = (const void *) (packet + offset);
 
 	/* Save the current WPS state. This way if we get a NACK message, we can 
 	 * determine what state we were in when the NACK arrived.
