@@ -281,12 +281,18 @@ enum wps_result do_wps_exchange()
 	return ret_val;
 }
 
+static int is_data_packet(struct dot11_frame_header *frame_header)
+{
+	return (
+                ((frame_header->fc &
+                        end_htole16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
+                        end_htole16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA))
+		);
+}
+
 static int is_packet_for_us(struct dot11_frame_header *frame_header)
 {
 	return (
-		((frame_header->fc &
-			end_htole16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
-			end_htole16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA)) &&
 		(memcmp(frame_header->addr1, get_mac(), MAC_ADDR_LEN) == 0)
 		);
 }
@@ -326,7 +332,11 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 	if(memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN) != 0)
 		return UNKNOWN;
 
-	/* Is this a data packet sent to our MAC address? */
+	/* Is this a data packet ? */
+	if(!is_data_packet(frame_header))
+		return UNKNOWN;
+
+	/* Is this a packet sent to our MAC address? */
 	if(!is_packet_for_us(frame_header))
 		return UNKNOWN;
 
