@@ -51,17 +51,17 @@ enum wps_result do_wps_exchange()
 	/* Initiate an EAP session */
 	send_eapol_start();
 
-	/* 
+	/*
 	 * Loop until:
 	 *
-	 * 	o The pin has been cracked
-	 * 	o An EAP_FAIL packet is received
-	 * 	o We receive a NACK message
+	 *	o The pin has been cracked
+	 *	o An EAP_FAIL packet is received
+	 *	o We receive a NACK message
 	 *	o We hit an unrecoverable receive timeout
 	 */
-	while((get_key_status() != KEY_DONE) && 
+	while((get_key_status() != KEY_DONE) &&
 	      !terminated &&
-	      !got_nack && 
+	      !got_nack &&
               !premature_timeout)
 	{
 		tx_type = 0;
@@ -73,13 +73,11 @@ enum wps_result do_wps_exchange()
 
 		packet = next_packet(&header);
 		if(packet == NULL)
-		{	
 			break;
-		}
 
 		packet_type = process_packet(packet, &header);
 		memset((void *) packet, 0, header.len);
-	
+		if(packet_type != UNKNOWN)
 		switch(packet_type)
 		{
 			case IDENTITY_REQUEST:
@@ -121,13 +119,13 @@ enum wps_result do_wps_exchange()
 				}
 				if(m4_sent && !m6_sent)
 				{
-                                	tx_type = SEND_M6;
+					tx_type = SEND_M6;
 					m6_sent = 1;
 				} else if(m6_sent && get_repeat_m6()) {
 					tx_type = SEND_M6;
 					m6_sent = 1;
 				}
-				
+
 				else if(get_oo_send_nack())
 				{
 					tx_type = SEND_WSC_NACK;
@@ -138,7 +136,7 @@ enum wps_result do_wps_exchange()
 				cprintf(VERBOSE, "[+] Received M7 message\n");
 				/* Fall through */
 			case DONE:
-				if(get_key_status() == KEY2_WIP) 
+				if(get_key_status() == KEY2_WIP)
 				{
 					set_key_status(KEY_DONE);
 				}
@@ -152,11 +150,8 @@ enum wps_result do_wps_exchange()
 				terminated = 1;
 				break;
 			default:
-				if(packet_type != 0)
-				{
-					cprintf(VERBOSE, "[!] WARNING: Unexpected packet received (0x%.02X), terminating transaction\n", packet_type);
-					terminated = 1;
-				}
+				cprintf(VERBOSE, "[!] WARNING: Unexpected packet received (0x%.02X), terminating transaction\n", packet_type);
+				terminated = 1;
 				break;
 		}
 
@@ -168,7 +163,7 @@ enum wps_result do_wps_exchange()
 		{
 			send_msg(tx_type);
 		}
-		/* 
+		/*
 		 * If get_oo_send_nack is 0, then when out of order packets come, we don't
 		 * NACK them. However, this also means that we wait infinitely for the expected
 		 * packet, since the timer is started by send_msg. Manually start the timer to
@@ -201,7 +196,7 @@ enum wps_result do_wps_exchange()
 				premature_timeout = 1;
 			}
 		}
-	} 
+	}
 
 	/*
 	 * There are four states that can signify a pin failure:
@@ -222,7 +217,7 @@ enum wps_result do_wps_exchange()
 		{
 			/* The AP is properly sending WSC_NACKs, so don't treat future timeouts as pin failures. */
 			set_timeout_is_nack(0);
-			
+
 			ret_val = KEY_REJECTED;
 		}
 		else
@@ -232,7 +227,7 @@ enum wps_result do_wps_exchange()
 	}
 	else if(premature_timeout)
 	{
-		/* 
+		/*
 		 * Some WPS implementations simply drop the connection on the floor instead of sending a NACK.
 		 * We need to be able to handle this, but at the same time using a timeout on the M5/M7 messages
 		 * can result in false negatives. Thus, treating M5/M7 receive timeouts as NACKs can be disabled.
@@ -262,22 +257,22 @@ enum wps_result do_wps_exchange()
 		ret_val = UNKNOWN_ERROR;
 	}
 
-	/* 
+	/*
 	 * Always completely terminate the WPS session, else some WPS state machines may
 	 * get stuck in their current state and won't accept new WPS registrar requests
 	 * until rebooted.
- 	 *
+	 *
 	 * Stop the receive timer that is started by the termination transmission.
 	 */
 	send_wsc_nack();
 	stop_timer();
-	
+
 	if(get_eap_terminate() || ret_val == EAP_FAIL)
 	{
 		send_termination();
 		stop_timer();
 	}
-	
+
 	return ret_val;
 }
 
