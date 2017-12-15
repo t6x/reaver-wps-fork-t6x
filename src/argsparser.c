@@ -42,7 +42,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "KZb:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN6";
+	char *short_options = "KZb:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN6J";
 	struct option long_options[] = {
 		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
@@ -75,6 +75,7 @@ int process_arguments(int argc, char **argv)
 		{ "verbose", no_argument, NULL, 'v' },
 		{ "win7", no_argument, NULL, 'w' },
 		{ "help", no_argument, NULL, 'h' },
+		{ "timeout-is-nack", no_argument, NULL, 'J' },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -162,7 +163,10 @@ int process_arguments(int argc, char **argv)
 				set_dh_small(1);
 				break;
                         case 'n':
-                                set_timeout_is_nack(0);
+				cprintf(INFO, "[+] ignoring obsolete -n switch\n");
+				break;
+			case 'J':
+                                set_timeout_is_nack(1);
                                 break;
                         case 'f':
                                 set_fixed_channel(1);
@@ -201,7 +205,7 @@ void init_default_settings(void)
         set_lock_delay(DEFAULT_LOCK_DELAY);
         set_debug(INFO);
         set_auto_channel_select(1);
-        set_timeout_is_nack(1);
+        set_timeout_is_nack(0);
 	set_oo_send_nack(1);
         set_wifi_band(BG_BAND);
 	set_validate_fcs(1);
