@@ -42,7 +42,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "KZb:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:A5ELfnqvDShwN6J";
+	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:KZA5ELfnqvDShwN6J";
 	struct option long_options[] = {
 		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
