@@ -33,6 +33,8 @@
 
 #include "globule.h"
 
+struct globals *globule;
+
 int globule_init()
 {
 	int ret = 0;

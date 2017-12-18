@@ -150,7 +150,9 @@ struct globals
 					 * wpa_supplicant's wps_data structure, needed for almost all wpa_supplicant
                                          * function calls.
                                          */
-} *globule;
+};
+
+extern struct globals *globule;
 
 int globule_init();
 void globule_deinit();
