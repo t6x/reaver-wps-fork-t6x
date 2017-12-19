@@ -35,6 +35,13 @@
 #include "send.h"
 #include "utils/radiotap.h"
 
+/* define NO_REPLAY_HTCAPS to 1 if you want to disable sending
+   ht caps in association request for testing */
+#ifndef NO_REPLAY_HTCAPS
+#define NO_REPLAY_HTCAPS 0
+#endif
+
+
 /*Reads the next packet from pcap_next() and validates the FCS. */
 u_char *next_packet(struct pcap_pkthdr *header)
 {
@@ -323,7 +330,12 @@ void associate()
         management_frame = build_association_management_frame(&management_frame_len);
 	ssid_tag = build_ssid_tagged_parameter(&ssid_tag_len);
 	rates_tag = build_supported_rates_tagged_parameter(&rates_tag_len);
-	ht_tag = build_htcaps_parameter(&ht_tag_len);
+	if(!NO_REPLAY_HTCAPS) {
+		ht_tag = build_htcaps_parameter(&ht_tag_len);
+	} else {
+		ht_tag = 0;
+		ht_tag_len = 0;
+	}
 	wps_tag = build_wps_tagged_parameter(&wps_tag_len);
         packet_len = radio_tap_len + dot11_frame_len + management_frame_len + ssid_tag_len + wps_tag_len + rates_tag_len + ht_tag_len;
 
