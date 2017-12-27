@@ -44,6 +44,8 @@ int globule_init()
 	{
 		memset(globule, 0, sizeof(struct globals));
 		ret = 1;
+		globule->resend_timeout_usec = 200000;
+
 	}
 
 	return ret;

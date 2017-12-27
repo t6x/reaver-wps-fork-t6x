@@ -32,6 +32,7 @@
  */
 
 #include "sigalrm.h"
+#include "send.h"
 
 /* Initializes SIGALRM handler */
 void sigalrm_init()
@@ -44,39 +45,46 @@ void sigalrm_init()
         sigaction (SIGALRM, &act, 0);
 }
 
+static void rewind_timer() {
+	struct itimerval timer = {0};
+
+	timer.it_value.tv_usec = globule->resend_timeout_usec;
+
+	set_out_of_time(0);
+
+	setitimer(ITIMER_REAL, &timer, 0);
+}
+
+static unsigned timeout_ticks;
+static unsigned long long timeout_usec;
+
 /* Starts receive timer. Called from send_packet() after a packet is trasmitted */
 void start_timer()
 {
-        struct itimerval timer;
 	struct wps_data *wps = get_wps();
+	timeout_ticks = 0;
 
-        memset(&timer, 0, sizeof(struct itimerval));
-
-        /* 
+        /*
 	 * The M5 and M7 messages have very fast turn around times -
-         * typically a few hundreths of a second. We don't want to wait
-         * around forever to see if we get them or not, so use a short
-         * timeout value when waiting for those messages.
+	 * typically a few hundreths of a second. We don't want to wait
+	 * around forever to see if we get them or not, so use a short
+	 * timeout value when waiting for those messages.
 	 * Ignore this timeout if we know the AP responds with NACKs when
 	 * the wrong pin is supplied instead of not responding at all.
          */
         if(get_timeout_is_nack() &&
 	  (wps->state == RECV_M5 || wps->state == RECV_M7))
 	{
-                timer.it_value.tv_usec = get_m57_timeout();
-        }
-        else
-        {
-                /* 
-		 * Other messages may take up to 2 seconds to respond - 
-                 * wait a little longer for them.
-                 */
-                timer.it_value.tv_sec = get_rx_timeout();
+		timeout_usec = get_m57_timeout();
+        } else {
+                /*
+		 * Other messages may take up to 2 seconds to respond -
+		 * wait a little longer for them.
+		*/
+                timeout_usec = get_rx_timeout() * 1000000LL;
         }
 
-	set_out_of_time(0);
-
-        setitimer(ITIMER_REAL, &timer, 0);
+	rewind_timer();
 }
 
 /* Timer is stopped by process_packet() when any valid EAP packet is received */
@@ -94,7 +102,14 @@ void stop_timer()
 /* Handles SIGALRM interrupts */
 void alarm_handler(int x)
 {
-	set_out_of_time(1);
-	cprintf(VERBOSE, "[!] WARNING: Receive timeout occurred\n");
+	timeout_ticks++;
+
+	if(timeout_ticks * globule->resend_timeout_usec > timeout_usec) {
+		set_out_of_time(1);
+		cprintf(VERBOSE, "[!] WARNING: Receive timeout occurred\n");
+	} else {
+		resend_last_packet();
+		rewind_timer();
+	}
 }
 

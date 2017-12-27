@@ -88,6 +88,8 @@ struct globals
 
         int out_of_time;                /* Set to 1 when sigalrm sounds */
 
+	unsigned long long resend_timeout_usec;   /* how many microsecs to wait before resending last packet */
+
         enum debug_level debug;         /* Current debug level: INFO | CRITICAL | WARNING | VERBOSE */
 
         int eapol_start_count;          /* Tracks how many times in a row we've attempted to start and EAP session */

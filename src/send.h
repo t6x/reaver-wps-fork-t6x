@@ -50,6 +50,7 @@ void send_wsc_nack();
 
 #define send_packet(a, b, c) send_packet_internal(__FUNCTION__, __FILE__,  __LINE__, a, b, c)
 
+int resend_last_packet(void);
 int send_packet_internal(const char* callerfunc, const char* file, int callerline, 
 const void *packet, size_t len, int use_timer);
 
