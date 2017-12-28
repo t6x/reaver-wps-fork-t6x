@@ -361,6 +361,7 @@ static void authenticate(void)
 	memcpy(packet + offset, &management_frame, management_frame_len);
 
 	send_packet(packet, packet_len, 1);
+	cprintf(VERBOSE, "[+] Sending authentication request\n");
 }
 
 /* Associate with the AP */
@@ -413,6 +414,8 @@ static void associate(void)
 	memcpy(packet+offset, wps_tag, wps_tag_len);
 
 	send_packet(packet, packet_len, 1);
+	cprintf(VERBOSE, "[+] Sending association request\n");
+
 }
 
 
