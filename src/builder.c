@@ -85,23 +85,12 @@ void *build_authentication_management_frame(size_t *len)
 	return buf;
 }
 
-void *build_association_management_frame(size_t *len)
+size_t build_association_management_frame(struct association_request_management_frame *f)
 {
-	struct association_request_management_frame *frame = NULL;
-	void *buf = NULL;
+	f->capability = end_htole16(get_ap_capability());
+	f->listen_interval = end_htole16(LISTEN_INTERVAL);
 
-	buf = malloc(sizeof(struct association_request_management_frame));
-	if(buf)
-	{
-		*len = sizeof(struct association_request_management_frame);
-		memset((void *) buf, 0, *len);
-		frame = (struct association_request_management_frame *) buf;
-
-		frame->capability = end_htole16(get_ap_capability());
-		frame->listen_interval = end_htole16(LISTEN_INTERVAL);
-	}
-
-	return buf;
+	return sizeof *f;
 }
 
 static size_t build_llc_header(struct llc_header *h)
