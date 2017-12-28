@@ -306,8 +306,7 @@ int reassociate(void)
 /* Deauthenticate ourselves from the AP */
 static void deauthenticate(void)
 {
-	const void *packet = NULL;
-	size_t radio_tap_len = 0, dot11_frame_len = 0, packet_len = 0;
+	size_t radio_tap_len, dot11_frame_len, packet_len, offset = 0;
 	struct radio_tap_header radio_tap;
 	struct dot11_frame_header dot11_frame;
 
@@ -315,21 +314,16 @@ static void deauthenticate(void)
         dot11_frame_len = build_dot11_frame_header(&dot11_frame, FC_DEAUTHENTICATE);
 	packet_len = radio_tap_len + dot11_frame_len + DEAUTH_REASON_CODE_SIZE;
 
-	packet = malloc(packet_len);
-	if(packet)
-	{
-		memset((void *) packet, 0, packet_len);
+	unsigned char packet[sizeof radio_tap + sizeof dot11_frame + DEAUTH_REASON_CODE_SIZE];
+	assert(sizeof packet == packet_len);
 
-		memcpy((void *) packet, &radio_tap, radio_tap_len);
-		memcpy((void *) ((char *) packet+radio_tap_len), &dot11_frame, dot11_frame_len);
-		memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), DEAUTH_REASON_CODE, DEAUTH_REASON_CODE_SIZE);
+	memcpy(packet, &radio_tap, radio_tap_len);
+	offset += radio_tap_len;
+	memcpy(packet + offset, &dot11_frame, dot11_frame_len);
+	offset += dot11_frame_len;
+	memcpy(packet + offset, DEAUTH_REASON_CODE, DEAUTH_REASON_CODE_SIZE);
 
-		send_packet(packet, packet_len, 1);
-
-		free((void *) packet);
-	}
-
-	return;
+	send_packet(packet, packet_len, 1);
 }
 
 /* Authenticate ourselves with the AP */
