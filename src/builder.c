@@ -424,26 +424,19 @@ size_t build_ssid_tagged_parameter(unsigned char buf[IW_ESSID_MAX_SIZE+2], char 
 	return 2 + ssid_len;
 }
 
-void *build_wps_tagged_parameter(size_t *len)
+size_t build_wps_tagged_parameter(unsigned char buf[2+WPS_TAG_SIZE])
 {
-	void *buf = NULL;
-	size_t buf_len = 0, wps_param_len = 0;
+	size_t wps_param_len;
 	struct tagged_parameter wps_param;
 
 	wps_param_len = build_tagged_parameter(&wps_param, WPS_TAG_NUMBER, WPS_TAG_SIZE);
+	assert(wps_param_len == 2);
+	assert(2 == sizeof (struct tagged_parameter));
 
-	buf_len = wps_param_len + WPS_TAG_SIZE;
-	buf = malloc(buf_len);
-	if(buf)
-	{
-		*len = buf_len;
-		memset((void *) buf, 0, buf_len);
+	memcpy(buf, &wps_param, sizeof wps_param);
+	memcpy(buf+2, WPS_REGISTRAR_TAG, WPS_TAG_SIZE);
 
-		memcpy((void *) buf, &wps_param, wps_param_len);
-		memcpy((void *) ((char *) buf+wps_param_len), WPS_REGISTRAR_TAG, WPS_TAG_SIZE);
-	}
-
-	return buf;
+	return 2+WPS_TAG_SIZE;
 }
 
 size_t build_supported_rates_tagged_parameter(unsigned char *buf, size_t buflen)

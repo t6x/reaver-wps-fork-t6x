@@ -72,6 +72,7 @@ size_t build_authentication_management_frame(struct authentication_management_fr
 
 size_t build_ssid_tagged_parameter(unsigned char buf[IW_ESSID_MAX_SIZE+2], char *essid);
 size_t build_supported_rates_tagged_parameter(unsigned char *buf, size_t buflen);
+size_t build_wps_tagged_parameter(unsigned char buf[2+WPS_TAG_SIZE]);
 
 void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len);
 void *build_snap_packet(size_t *len);
@@ -80,7 +81,6 @@ void *build_eap_header(uint8_t id, uint8_t code, uint8_t type, uint16_t payload_
 void *build_eapol_start_packet(size_t *len);
 void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *len);
 void *build_eap_failure_packet(size_t *len);
-void *build_wps_tagged_parameter(size_t *len);
 void *build_htcaps_parameter(size_t *len);
 
 #endif
