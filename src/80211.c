@@ -305,32 +305,28 @@ int reassociate(void)
 /* Deauthenticate ourselves from the AP */
 static void deauthenticate(void)
 {
-	const void *dot11_frame = NULL, *packet = NULL;
+	const void *packet = NULL;
 	size_t radio_tap_len = 0, dot11_frame_len = 0, packet_len = 0;
 	struct radio_tap_header radio_tap;
+	struct dot11_frame_header dot11_frame;
 
 	radio_tap_len = build_radio_tap_header(&radio_tap);
-        dot11_frame = build_dot11_frame_header(FC_DEAUTHENTICATE, &dot11_frame_len);
+        dot11_frame_len = build_dot11_frame_header(&dot11_frame, FC_DEAUTHENTICATE);
 	packet_len = radio_tap_len + dot11_frame_len + DEAUTH_REASON_CODE_SIZE;
 
-	if(dot11_frame)
+	packet = malloc(packet_len);
+	if(packet)
 	{
-		packet = malloc(packet_len);
-		if(packet)
-		{
-			memset((void *) packet, 0, packet_len);
+		memset((void *) packet, 0, packet_len);
 
-			memcpy((void *) packet, &radio_tap, radio_tap_len);
-			memcpy((void *) ((char *) packet+radio_tap_len), dot11_frame, dot11_frame_len);
-			memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), DEAUTH_REASON_CODE, DEAUTH_REASON_CODE_SIZE);
+		memcpy((void *) packet, &radio_tap, radio_tap_len);
+		memcpy((void *) ((char *) packet+radio_tap_len), &dot11_frame, dot11_frame_len);
+		memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), DEAUTH_REASON_CODE, DEAUTH_REASON_CODE_SIZE);
 
-			send_packet(packet, packet_len, 1);
+		send_packet(packet, packet_len, 1);
 
-			free((void *) packet);
-		}
+		free((void *) packet);
 	}
-
-	if(dot11_frame) free((void *) dot11_frame);
 
 	return;
 }
@@ -338,16 +334,17 @@ static void deauthenticate(void)
 /* Authenticate ourselves with the AP */
 static void authenticate(void)
 {
-	const void *dot11_frame = NULL, *management_frame = NULL, *packet = NULL;
+	const void *management_frame = NULL, *packet = NULL;
 	size_t radio_tap_len = 0, dot11_frame_len = 0, management_frame_len = 0, packet_len = 0;
 	struct radio_tap_header radio_tap;
+	struct dot11_frame_header dot11_frame;
 
 	radio_tap_len = build_radio_tap_header(&radio_tap);
-	dot11_frame = build_dot11_frame_header(FC_AUTHENTICATE, &dot11_frame_len);
+	dot11_frame_len = build_dot11_frame_header(&dot11_frame, FC_AUTHENTICATE);
 	management_frame = build_authentication_management_frame(&management_frame_len);
 	packet_len = radio_tap_len + dot11_frame_len + management_frame_len;
 
-	if(dot11_frame && management_frame)
+	if(management_frame)
 	{
 		packet = malloc(packet_len);
 		if(packet)
@@ -355,7 +352,7 @@ static void authenticate(void)
 			memset((void *) packet, 0, packet_len);
 
 			memcpy((void *) packet, &radio_tap, radio_tap_len);
-			memcpy((void *) ((char *) packet+radio_tap_len), dot11_frame, dot11_frame_len);
+			memcpy((void *) ((char *) packet+radio_tap_len), &dot11_frame, dot11_frame_len);
 			memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), management_frame, management_frame_len);
 
 			send_packet(packet, packet_len, 1);
@@ -364,7 +361,6 @@ static void authenticate(void)
 		}
 	}
 
-	if(dot11_frame) free((void *) dot11_frame);
 	if(management_frame) free((void *) management_frame);
 
 	return;
@@ -373,13 +369,14 @@ static void authenticate(void)
 /* Associate with the AP */
 static void associate(void)
 {
-	void *dot11_frame = NULL, *management_frame = NULL, *ssid_tag = NULL, *wps_tag = NULL, *rates_tag = NULL, *ht_tag = NULL;
+	void *management_frame = NULL, *ssid_tag = NULL, *wps_tag = NULL, *rates_tag = NULL, *ht_tag = NULL;
 	unsigned char *packet = NULL;
         size_t radio_tap_len = 0, dot11_frame_len = 0, management_frame_len = 0, ssid_tag_len = 0, wps_tag_len = 0, rates_tag_len = 0, ht_tag_len = 0, packet_len = 0, offset = 0;
 	struct radio_tap_header radio_tap;
+	struct dot11_frame_header dot11_frame;
 
         radio_tap_len = build_radio_tap_header(&radio_tap);
-        dot11_frame = build_dot11_frame_header(FC_ASSOCIATE, &dot11_frame_len);
+        dot11_frame_len = build_dot11_frame_header(&dot11_frame, FC_ASSOCIATE);
         management_frame = build_association_management_frame(&management_frame_len);
 	ssid_tag = build_ssid_tagged_parameter(&ssid_tag_len);
 	rates_tag = build_supported_rates_tagged_parameter(&rates_tag_len);
@@ -392,7 +389,7 @@ static void associate(void)
 	wps_tag = build_wps_tagged_parameter(&wps_tag_len);
         packet_len = radio_tap_len + dot11_frame_len + management_frame_len + ssid_tag_len + wps_tag_len + rates_tag_len + ht_tag_len;
 
-	if(dot11_frame && management_frame && ssid_tag && wps_tag && rates_tag)
+	if(management_frame && ssid_tag && wps_tag && rates_tag)
         {
                 packet = malloc(packet_len);
                 if(packet)
@@ -401,7 +398,7 @@ static void associate(void)
 
                         memcpy(packet, &radio_tap, radio_tap_len);
 			offset += radio_tap_len;
-                        memcpy(packet+offset, dot11_frame, dot11_frame_len);
+                        memcpy(packet+offset, &dot11_frame, dot11_frame_len);
 			offset += dot11_frame_len;
                         memcpy(packet+offset, management_frame, management_frame_len);
 			offset += management_frame_len;
@@ -423,7 +420,6 @@ static void associate(void)
                 }
         }
 
-        if(dot11_frame) free(dot11_frame);
         if(management_frame) free(management_frame);
 	if(ssid_tag) free(ssid_tag);
 	if(wps_tag) free(wps_tag);

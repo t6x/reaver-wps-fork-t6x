@@ -62,7 +62,8 @@
 
 
 size_t build_radio_tap_header(struct radio_tap_header *rt_header);
-void *build_dot11_frame_header(uint16_t fc, size_t *len);
+size_t build_dot11_frame_header(struct dot11_frame_header *fh, uint16_t fc);
+
 void *build_authentication_management_frame(size_t *len);
 void *build_association_management_frame(size_t *len);
 void *build_llc_header(size_t *len);

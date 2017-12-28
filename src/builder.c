@@ -40,39 +40,29 @@ size_t build_radio_tap_header(struct radio_tap_header *rt_header)
 	return sizeof(*rt_header);
 }
 
-void *build_dot11_frame_header_m(uint16_t fc, size_t *len, unsigned char dstmac[6])
+size_t build_dot11_frame_header_m(struct dot11_frame_header *fh, uint16_t fc, unsigned char dstmac[6])
 {
-	struct dot11_frame_header *header = NULL;
-	void *buf = NULL;
 	static uint16_t frag_seq;
 
-	buf = malloc(sizeof(struct dot11_frame_header));
-	if(buf)
-	{
-		*len = sizeof(struct dot11_frame_header);
-		memset((void *) buf, 0, sizeof(struct dot11_frame_header));
-		header = (struct dot11_frame_header *) buf;
-	
-		frag_seq += SEQ_MASK;
+	frag_seq += SEQ_MASK;
 
-		header->duration = end_htole16(DEFAULT_DURATION);
-		header->fc = end_htole16(fc);
-		header->frag_seq = end_htole16(frag_seq);
+	fh->duration = end_htole16(DEFAULT_DURATION);
+	fh->fc = end_htole16(fc);
+	fh->frag_seq = end_htole16(frag_seq);
 
-		memcpy((void *) header->addr1, dstmac, MAC_ADDR_LEN);
-		memcpy((void *) header->addr2, get_mac(), MAC_ADDR_LEN);
-		memcpy((void *) header->addr3, dstmac, MAC_ADDR_LEN);
-	}
+	memcpy(fh->addr1, dstmac, MAC_ADDR_LEN);
+	memcpy(fh->addr2, get_mac(), MAC_ADDR_LEN);
+	memcpy(fh->addr3, dstmac, MAC_ADDR_LEN);
 
-	return buf;
+	return sizeof *fh;
 }
 
-void *build_dot11_frame_header(uint16_t fc, size_t *len) {
-	return build_dot11_frame_header_m(fc, len, get_bssid());
+size_t build_dot11_frame_header(struct dot11_frame_header *fh, uint16_t fc) {
+	return build_dot11_frame_header_m(fh, fc, get_bssid());
 }
 
-void *build_dot11_frame_header_broadcast(uint16_t fc, size_t *len) {
-	return build_dot11_frame_header_m(fc, len, "\xff\xff\xff\xff\xff\xff");
+size_t build_dot11_frame_header_broadcast(struct dot11_frame_header *fh, uint16_t fc) {
+	return build_dot11_frame_header_m(fh, fc, "\xff\xff\xff\xff\xff\xff");
 }
 
 void *build_authentication_management_frame(size_t *len)
@@ -147,7 +137,7 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 	// ESSIDs, after finding out their real ESSID by watching other client's probes.
 
 	struct tagged_parameter ssid_tag = { 0 };
-	void *dot11_header = NULL, *packet = NULL;
+	void *packet = NULL;
 	size_t offset = 0, rt_len = 0, dot11_len = 0, ssid_tag_len = 0, packet_len = 0;
 	int broadcast = !memcmp(bssid, "\xff\xff\xff\xff\xff\xff", 6);
 
@@ -165,48 +155,44 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 
 	struct radio_tap_header rt_header;
 	rt_len = build_radio_tap_header(&rt_header);
-	dot11_header = build_dot11_frame_header_m(FC_PROBE_REQUEST, &dot11_len, bssid);
+	struct dot11_frame_header dot11_header;
+	dot11_len = build_dot11_frame_header_m(&dot11_header, FC_PROBE_REQUEST, bssid);
 
-	if(dot11_header)
+	packet_len = rt_len + dot11_len + ssid_tag_len;
+
+	#define TAG_SUPPORTED_RATES "\x01\x08\x02\x04\x0b\x16\x0c\x12\x18\x24"
+	#define TAG_EXT_RATES "\x32\x04\x30\x48\x60\x6c"
+	// it seems some OS don't send this tag, so leave it away
+	//#define TAG_DS_PARAM "\x03\x01\x07"
+	#define TAG_HT_CAPS "\x2d\x1a\x72\x01\x13\xff\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+
+	// maybe we should leave this away too, it is usually not sent, but the
+	// AP responds with WPS info anyway
+	#define WPS_PROBE_IE      "\xdd\x09\x00\x50\xf2\x04\x10\x4a\x00\x01\x10"
+
+	#define ALL_TAGS TAG_SUPPORTED_RATES TAG_EXT_RATES TAG_HT_CAPS WPS_PROBE_IE
+
+	packet_len += sizeof(ALL_TAGS) -1;
+
+	packet = malloc(packet_len);
+
+	if(packet)
 	{
-		packet_len = rt_len + dot11_len + ssid_tag_len;
+		memset((void *) packet, 0, packet_len);
+		memcpy((void *) packet, &rt_header, rt_len);
+		offset += rt_len;
+		memcpy((void *) ((char *) packet+offset), &dot11_header, dot11_len);
+		offset += dot11_len;
+		memcpy((void *) ((char *) packet+offset), (void *) &ssid_tag, sizeof(ssid_tag));
+		offset += sizeof(ssid_tag);
+		memcpy((void *) ((char *) packet+offset), essid, ssid_tag.len);
+		offset += ssid_tag.len;
 
-		#define TAG_SUPPORTED_RATES "\x01\x08\x02\x04\x0b\x16\x0c\x12\x18\x24"
-		#define TAG_EXT_RATES "\x32\x04\x30\x48\x60\x6c"
-		// it seems some OS don't send this tag, so leave it away
-		//#define TAG_DS_PARAM "\x03\x01\x07"
-		#define TAG_HT_CAPS "\x2d\x1a\x72\x01\x13\xff\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+		memcpy(packet+offset, ALL_TAGS, sizeof(ALL_TAGS) -1);
+		offset += sizeof(ALL_TAGS) -1;
 
-		// maybe we should leave this away too, it is usually not sent, but the
-		// AP responds with WPS info anyway
-		#define WPS_PROBE_IE      "\xdd\x09\x00\x50\xf2\x04\x10\x4a\x00\x01\x10"
-
-		#define ALL_TAGS TAG_SUPPORTED_RATES TAG_EXT_RATES TAG_HT_CAPS WPS_PROBE_IE
-
-		packet_len += sizeof(ALL_TAGS) -1;
-
-		packet = malloc(packet_len);
-
-		if(packet)
-		{
-			memset((void *) packet, 0, packet_len);
-			memcpy((void *) packet, &rt_header, rt_len);
-			offset += rt_len;
-			memcpy((void *) ((char *) packet+offset), dot11_header, dot11_len);
-			offset += dot11_len;
-			memcpy((void *) ((char *) packet+offset), (void *) &ssid_tag, sizeof(ssid_tag));
-			offset += sizeof(ssid_tag);
-			memcpy((void *) ((char *) packet+offset), essid, ssid_tag.len);
-			offset += ssid_tag.len;
-
-			memcpy(packet+offset, ALL_TAGS, sizeof(ALL_TAGS) -1);
-			offset += sizeof(ALL_TAGS) -1;
-
-			*len = packet_len;
-		}
+		*len = packet_len;
 	}
-
-	if(dot11_header) free((void *) dot11_header);
 
 	return packet;
 }
@@ -214,15 +200,16 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 /* Wrapper function for Radio Tap / Dot11 / LLC */
 void *build_snap_packet(size_t *len)
 {
-	void *dot11_header = NULL, *llc_header = NULL, *packet = NULL;
+	void *llc_header = NULL, *packet = NULL;
 	size_t rt_len = 0, dot11_len = 0, llc_len = 0, packet_len = 0;
 	struct radio_tap_header rt_header;
+	struct dot11_frame_header dot11_header;
 
 	rt_len = build_radio_tap_header(&rt_header);
-        dot11_header = build_dot11_frame_header(FC_STANDARD, &dot11_len);
+        dot11_len = build_dot11_frame_header(&dot11_header, FC_STANDARD);
         llc_header = build_llc_header(&llc_len);
 
-	if(dot11_header && llc_header)
+	if(llc_header)
 	{
 		packet_len = rt_len + dot11_len + llc_len;
 		packet = malloc(packet_len);
@@ -231,13 +218,12 @@ void *build_snap_packet(size_t *len)
 		{
 			memset((void *) packet, 0, packet_len);
 			memcpy((void *) packet, &rt_header, rt_len);
-			memcpy((void *) ((char *) packet+rt_len), dot11_header, dot11_len);
+			memcpy((void *) ((char *) packet+rt_len), &dot11_header, dot11_len);
 			memcpy((void *) ((char *) packet+rt_len+dot11_len), llc_header, llc_len);
 
 			*len = packet_len;
 		}
 
-		free((void *) dot11_header);
 		free((void *) llc_header);
 	}
 
