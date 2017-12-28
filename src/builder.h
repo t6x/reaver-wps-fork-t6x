@@ -61,10 +61,16 @@
 #define WFA_VENDOR_ID           "\x00\x37\x2A"
 
 
+#ifndef IW_ESSID_MAX_SIZE
+#define IW_ESSID_MAX_SIZE 32
+#endif
+
 size_t build_radio_tap_header(struct radio_tap_header *rt_header);
 size_t build_dot11_frame_header(struct dot11_frame_header *fh, uint16_t fc);
 size_t build_association_management_frame(struct association_request_management_frame *f);
 size_t build_authentication_management_frame(struct authentication_management_frame *f);
+
+size_t build_ssid_tagged_parameter(unsigned char buf[IW_ESSID_MAX_SIZE+2], char *essid);
 
 void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len);
 void *build_snap_packet(size_t *len);
@@ -73,7 +79,6 @@ void *build_eap_header(uint8_t id, uint8_t code, uint8_t type, uint16_t payload_
 void *build_eapol_start_packet(size_t *len);
 void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *len);
 void *build_eap_failure_packet(size_t *len);
-void *build_ssid_tagged_parameter(size_t *len);
 void *build_wps_tagged_parameter(size_t *len);
 void *build_htcaps_parameter(size_t *len);
 void *build_supported_rates_tagged_parameter(size_t *len);

@@ -410,31 +410,18 @@ static size_t build_tagged_parameter(struct tagged_parameter *tag, uint8_t numbe
 	return sizeof *tag;
 }
 
-void *build_ssid_tagged_parameter(size_t *len)
+size_t build_ssid_tagged_parameter(unsigned char buf[IW_ESSID_MAX_SIZE+2], char *essid)
 {
-	void *buf = NULL;
-	size_t ssid_len = 0, ssid_param_len = 0, buf_len = 0;
 	struct tagged_parameter ssid_param;
-
-	if(get_ssid())
-	{
-		ssid_len = strlen(get_ssid());
-	}
+	size_t ssid_len = strlen(essid), ssid_param_len;
 
 	ssid_param_len = build_tagged_parameter(&ssid_param, SSID_TAG_NUMBER, ssid_len);
+	assert(ssid_param_len == 2);
+	assert(2 == sizeof (struct tagged_parameter));
+	memcpy(buf, &ssid_param, sizeof ssid_param);
+	memcpy(buf+2, essid, ssid_len);
 
-	buf_len = ssid_param_len + ssid_len;
-	buf = malloc(buf_len);
-	if(buf)
-	{
-		*len = buf_len;
-		memset((void *) buf, 0, buf_len);
-
-		memcpy((void *) buf, &ssid_param, ssid_param_len);
-		memcpy((void *) ((char *) buf+ssid_param_len), get_ssid(), ssid_len);
-	}
-
-	return buf;
+	return 2 + ssid_len;
 }
 
 void *build_wps_tagged_parameter(size_t *len)
