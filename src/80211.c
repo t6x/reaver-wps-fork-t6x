@@ -199,55 +199,101 @@ int is_wps_locked()
 	return locked;
 }
 
-static int associate_recv_loop(int want_assoc);
+
+/* Waits for authentication and association responses from the target AP */
+static int process_authenticate_associate_resp(int want_assoc)
+{
+	struct pcap_pkthdr header;
+	u_char *packet;
+	struct radio_tap_header *rt_header;
+	struct dot11_frame_header *dot11_frame;
+	struct authentication_management_frame *auth_frame;
+	struct association_response_management_frame *assoc_frame;
+	int ret_val = 0;
+
+	start_timer();
+
+	while(!get_out_of_time())
+	{
+		if((packet = next_packet(&header)) == NULL) break;
+
+		if(header.len < MIN_AUTH_SIZE) continue;
+
+		rt_header = (void*) radio_header(packet, header.len);
+		size_t rt_header_len = end_le16toh(rt_header->len);
+		dot11_frame = (void*)(packet + rt_header_len);
+
+		if((memcmp(dot11_frame->addr3, get_bssid(), MAC_ADDR_LEN) != 0) ||
+		   (memcmp(dot11_frame->addr1, get_mac(), MAC_ADDR_LEN) != 0))
+			continue;
+
+		int isMgmtFrame = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_FTYPE)) == end_htole16(IEEE80211_FTYPE_MGMT);
+		if(!isMgmtFrame) continue;
+
+		void *ptr = (packet + sizeof(struct dot11_frame_header) + rt_header_len);
+		auth_frame = ptr;
+		assoc_frame = ptr;
+
+		int isAuthResp = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_STYPE)) == end_htole16(IEEE80211_STYPE_AUTH);
+		int isAssocResp = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_STYPE)) == end_htole16(IEEE80211_STYPE_ASSOC_RESP);
+
+		if(!isAuthResp && !isAssocResp) continue;
+
+		if(isAuthResp && want_assoc) continue;
+
+		/* Did we get an authentication packet with a successful status? */
+		if(isAuthResp && (auth_frame->status == end_htole16(AUTHENTICATION_SUCCESS))) {
+			ret_val = AUTH_OK;
+			break;
+		}
+		/* Did we get an association packet with a successful status? */
+		else if(isAssocResp && (assoc_frame->status == end_htole16(ASSOCIATION_SUCCESS))) {
+			ret_val = ASSOCIATE_OK;
+			break;
+		}
+        }
+
+        return ret_val;
+}
+
 
 
 /* Deauths and re-associates a MAC address with the AP. Returns 0 on failure, 1 for success. */
 int reassociate()
 {
-	int tries = 0, retval = 0;
+	if (get_external_association()) return 1;
 
-	/* Make sure we can still see beacons (also, read_ap_beaon will ensure we're on the right channel) */
-	read_ap_beacon();
+	int state = 0, ret;
 
-	if(!get_external_association())
-	{
-		/* Deauth to void any previous association with the AP */
-		deauthenticate();
-
-		int auth_ok = 0, assoc_ok = 0;
-		/* Try MAX_AUTH_TRIES times to authenticate to the AP */
-
-		do
-		{
-			authenticate();
-			tries++;
-			auth_ok = associate_recv_loop(0) == AUTH_OK;
-		}
-		while(!auth_ok && (tries < MAX_AUTH_TRIES));
-
-		/* If authentication was successful, try MAX_AUTH_TRIES to associate with the AP */
-		if(auth_ok)
-		{
-			tries = 0;
-
-			do
-			{
+	while(1) {
+		switch(state) {
+			case 0:
+				deauthenticate();
+				state++;
+				break;
+			case 1:
+				authenticate();
+				state++;
+				break;
+			case 2:
+				ret = process_authenticate_associate_resp(0);
+				if(ret) state++;
+				else return 0;
+				break;
+			case 3:
 				associate();
-				tries++;
-				assoc_ok = associate_recv_loop(1) == ASSOCIATE_OK;
-			}
-			while(!assoc_ok && (tries < MAX_AUTH_TRIES));
+				state++;
+				break;
+			case 4:
+				ret = process_authenticate_associate_resp(0);
+				if(ret) state++;
+				else return 0;
+				break;
+			case 5:
+				return 1;
+
 		}
-
-		retval = assoc_ok;
 	}
-	else
-	{
-		retval = 1;
-	}
-
-	return retval;
 }
 
 /* Deauthenticate ourselves from the AP */
@@ -271,7 +317,7 @@ void deauthenticate()
 			memcpy((void *) ((char *) packet+radio_tap_len), dot11_frame, dot11_frame_len);
 			memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), DEAUTH_REASON_CODE, DEAUTH_REASON_CODE_SIZE);
 
-			send_packet(packet, packet_len, 0);
+			send_packet(packet, packet_len, 1);
 
 			free((void *) packet);
 		}
@@ -305,7 +351,7 @@ void authenticate()
 			memcpy((void *) ((char *) packet+radio_tap_len), dot11_frame, dot11_frame_len);
 			memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), management_frame, management_frame_len);
 
-			send_packet(packet, packet_len, 0);
+			send_packet(packet, packet_len, 1);
 
 			free((void *) packet);
 		}
@@ -364,7 +410,7 @@ void associate()
 
 			memcpy(packet+offset, wps_tag, wps_tag_len);
 
-                        send_packet(packet, packet_len, 0);
+                        send_packet(packet, packet_len, 1);
 
                         free(packet);
                 }
@@ -381,61 +427,6 @@ void associate()
 	return;
 }
 
-/* Waits for authentication and association responses from the target AP */
-static int associate_recv_loop(int want_assoc)
-{
-	struct pcap_pkthdr header;
-	u_char *packet;
-	struct radio_tap_header *rt_header;
-	struct dot11_frame_header *dot11_frame;
-	struct authentication_management_frame *auth_frame;
-	struct association_response_management_frame *assoc_frame;
-	int ret_val = 0, start_time = 0;
-
-	start_time = time(NULL);
-
-	while((time(NULL) - start_time) < ASSOCIATE_WAIT_TIME)
-	{
-		if((packet = next_packet(&header)) == NULL) break;
-
-		if(header.len < MIN_AUTH_SIZE) continue;
-
-		rt_header = (void*) radio_header(packet, header.len);
-		size_t rt_header_len = end_le16toh(rt_header->len);
-		dot11_frame = (void*)(packet + rt_header_len);
-
-		if((memcmp(dot11_frame->addr3, get_bssid(), MAC_ADDR_LEN) != 0) ||
-		   (memcmp(dot11_frame->addr1, get_mac(), MAC_ADDR_LEN) != 0))
-			continue;
-
-		int isMgmtFrame = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_FTYPE)) == end_htole16(IEEE80211_FTYPE_MGMT);
-		if(!isMgmtFrame) continue;
-
-		void *ptr = (packet + sizeof(struct dot11_frame_header) + rt_header_len);
-		auth_frame = ptr;
-		assoc_frame = ptr;
-
-		int isAuthResp = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_STYPE)) == end_htole16(IEEE80211_STYPE_AUTH);
-		int isAssocResp = (dot11_frame->fc & end_htole16(IEEE80211_FCTL_STYPE)) == end_htole16(IEEE80211_STYPE_ASSOC_RESP);
-
-		if(!isAuthResp && !isAssocResp) continue;
-
-		if(isAuthResp && want_assoc) continue;
-
-		/* Did we get an authentication packet with a successful status? */
-		if(isAuthResp && (auth_frame->status == end_htole16(AUTHENTICATION_SUCCESS))) {
-			ret_val = AUTH_OK;
-			break;
-		}
-		/* Did we get an association packet with a successful status? */
-		else if(isAssocResp && (assoc_frame->status == end_htole16(ASSOCIATION_SUCCESS))) {
-			ret_val = ASSOCIATE_OK;
-			break;
-		}
-        }
-
-        return ret_val;
-}
 
 /* Given a beacon / probe response packet, returns the reported encryption type (WPA, WEP, NONE)
    THIS IS BROKE!!! DO NOT USE!!!

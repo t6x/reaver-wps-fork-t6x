@@ -73,8 +73,6 @@
 #define RADIO_TAP_VERSION	0x00
 #define FAKE_RADIO_TAP_HEADER	"\x00\x00\x00\x00\x00\x00\x00\x00"
 
-#define MAX_AUTH_TRIES          5
-
 #define MIN_AUTH_SIZE           (sizeof(struct radio_tap_header) + sizeof(struct dot11_frame_header) + sizeof(struct authentication_management_frame))
 
 #define SUBTYPE_AUTHENTICATION  0x0B
