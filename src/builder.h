@@ -66,7 +66,6 @@ size_t build_dot11_frame_header(struct dot11_frame_header *fh, uint16_t fc);
 
 void *build_authentication_management_frame(size_t *len);
 void *build_association_management_frame(size_t *len);
-void *build_llc_header(size_t *len);
 void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len);
 void *build_snap_packet(size_t *len);
 void *build_dot1X_header(uint8_t type, uint16_t payload_len, size_t *len);

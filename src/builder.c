@@ -104,26 +104,17 @@ void *build_association_management_frame(size_t *len)
 	return buf;
 }
 
-void *build_llc_header(size_t *len)
+static size_t build_llc_header(struct llc_header *h)
 {
-	struct llc_header *header = NULL;
-	void *buf = NULL;
-	
-	buf = malloc(sizeof(struct llc_header));
-	if(buf)
-	{
-		*len = sizeof(struct llc_header);
-		memset((void *) buf, 0, sizeof(struct llc_header));
-		header = (struct llc_header *) buf;
+	h->dsap = LLC_SNAP;
+	h->ssap = LLC_SNAP;
+	h->control_field = UNNUMBERED_FRAME;
+	h->org_code[0] = 0;
+	h->org_code[1] = 0;
+	h->org_code[2] = 0;
+	h->type = end_htobe16(DOT1X_AUTHENTICATION);
 
-		header->dsap = LLC_SNAP;
-		header->ssap = LLC_SNAP;
-		header->control_field = UNNUMBERED_FRAME;
-		header->type = end_htobe16(DOT1X_AUTHENTICATION);
-
-	}
-
-	return buf;
+	return sizeof *h;
 }
 
 void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
@@ -200,31 +191,27 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 /* Wrapper function for Radio Tap / Dot11 / LLC */
 void *build_snap_packet(size_t *len)
 {
-	void *llc_header = NULL, *packet = NULL;
+	void *packet = NULL;
 	size_t rt_len = 0, dot11_len = 0, llc_len = 0, packet_len = 0;
 	struct radio_tap_header rt_header;
 	struct dot11_frame_header dot11_header;
+	struct llc_header llc_header;
 
 	rt_len = build_radio_tap_header(&rt_header);
         dot11_len = build_dot11_frame_header(&dot11_header, FC_STANDARD);
-        llc_header = build_llc_header(&llc_len);
+        llc_len = build_llc_header(&llc_header);
 
-	if(llc_header)
+	packet_len = rt_len + dot11_len + llc_len;
+	packet = malloc(packet_len);
+
+	if(packet)
 	{
-		packet_len = rt_len + dot11_len + llc_len;
-		packet = malloc(packet_len);
+		memset((void *) packet, 0, packet_len);
+		memcpy((void *) packet, &rt_header, rt_len);
+		memcpy((void *) ((char *) packet+rt_len), &dot11_header, dot11_len);
+		memcpy((void *) ((char *) packet+rt_len+dot11_len), &llc_header, llc_len);
 
-		if(packet)
-		{
-			memset((void *) packet, 0, packet_len);
-			memcpy((void *) packet, &rt_header, rt_len);
-			memcpy((void *) ((char *) packet+rt_len), &dot11_header, dot11_len);
-			memcpy((void *) ((char *) packet+rt_len+dot11_len), llc_header, llc_len);
-
-			*len = packet_len;
-		}
-
-		free((void *) llc_header);
+		*len = packet_len;
 	}
 
 	return packet;
