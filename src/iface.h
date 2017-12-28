@@ -34,15 +34,6 @@
 #ifndef IFACE_H
 #define IFACE_H
 
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include "lwe/iwlib.h"
-
-#include "defs.h"
-#include "globule.h"
-#include "misc.h"
-
 #define BG_BAND			0
 #define AN_BAND			1
 

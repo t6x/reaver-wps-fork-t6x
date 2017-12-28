@@ -34,14 +34,9 @@
 #ifndef DOT11_H
 #define DOT11_H
 
+#include <stdint.h>
+#include <stddef.h>
 #include "defs.h"
-#include "globule.h"
-#include <libwps.h>
-#include "argsparser.h"
-#include "builder.h"
-#include "iface.h"
-#include "crc.h"
-#include "wps.h"
 
 #define AUTH_OK                 1
 #define ASSOCIATE_OK            2
@@ -78,20 +73,17 @@
 #define SUBTYPE_AUTHENTICATION  0x0B
 #define SUBTYPE_ASSOCIATION     0x01
 
-u_char *next_packet(struct pcap_pkthdr *header);
+unsigned char *next_packet(struct pcap_pkthdr *header);
 void read_ap_beacon();
-int8_t signal_strength(const u_char *packet, size_t len);
+int8_t signal_strength(const unsigned char *packet, size_t len);
 int is_wps_locked();
-int reassociate();
-void deauthenticate();
-void authenticate();
-void associate();
-enum encryption_type supported_encryption(const u_char *packet, size_t len);
-int parse_beacon_tags(const u_char *data, size_t len);
-unsigned char *parse_ie_data(const u_char *data, size_t len, uint8_t tag_number, size_t *ie_len, size_t *ie_offset);
+int reassociate(void);
+enum encryption_type supported_encryption(const unsigned char *packet, size_t len);
+int parse_beacon_tags(const unsigned char *data, size_t len);
+unsigned char *parse_ie_data(const unsigned char *data, size_t len, uint8_t tag_number, size_t *ie_len, size_t *ie_offset);
 int is_target(struct dot11_frame_header *frame_header);
-int check_fcs(const u_char *packet, size_t len);
+int check_fcs(const unsigned char *packet, size_t len);
 int has_rt_header(void);
-u_char *radio_header(const u_char *packet, size_t len);
+unsigned char *radio_header(const unsigned char *packet, size_t len);
 
 #endif

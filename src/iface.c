@@ -32,6 +32,12 @@
  */
 
 #include "iface.h"
+#include "lwe/iwlib.h"
+#include "globule.h"
+#include <net/if.h>
+#include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <stdlib.h>
 
 #if defined(__FreeBSD__) || defined(__APPLE__)
 #include <ifaddrs.h>

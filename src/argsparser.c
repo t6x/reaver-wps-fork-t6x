@@ -31,8 +31,16 @@
  *  files in the program, then also delete it here.
  */
 
+#include <stdio.h>
+#include <getopt.h>
+#include <ctype.h>
+#include "globule.h"
+#include "defs.h"
+#include "iface.h"
+#include "config.h"
 #include "argsparser.h"
 #include "pixie.h"
+#include "misc.h"
 
 /* Processes Reaver command line options */
 int process_arguments(int argc, char **argv)

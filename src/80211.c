@@ -31,9 +31,12 @@
  *  files in the program, then also delete it here.
  */
 
+#include "iface.h"
 #include "80211.h"
 #include "send.h"
 #include "utils/radiotap.h"
+#include "crc.h"
+#include <libwps.h>
 
 /* define NO_REPLAY_HTCAPS to 1 if you want to disable sending
    ht caps in association request for testing */
@@ -41,11 +44,14 @@
 #define NO_REPLAY_HTCAPS 0
 #endif
 
+static void deauthenticate(void);
+static void authenticate(void);
+static void associate(void);
 
 /*Reads the next packet from pcap_next() and validates the FCS. */
-u_char *next_packet(struct pcap_pkthdr *header)
+unsigned char *next_packet(struct pcap_pkthdr *header)
 {
-	const u_char *packet = NULL;
+	const unsigned char *packet = NULL;
 	struct pcap_pkthdr *pkt_header;
 	int status;
 
@@ -72,7 +78,7 @@ u_char *next_packet(struct pcap_pkthdr *header)
 void read_ap_beacon()
 {
         struct pcap_pkthdr header;
-        const u_char *packet = NULL;
+        const unsigned char *packet = NULL;
         struct radio_tap_header *rt_header = NULL;
         struct dot11_frame_header *frame_header = NULL;
         struct beacon_management_frame *beacon = NULL;
@@ -133,7 +139,7 @@ void read_ap_beacon()
 #include "radiotap_flags.h"
 
 /* Extracts the signal strength field (if any) from the packet's radio tap header */
-int8_t signal_strength(const u_char *packet, size_t len)
+int8_t signal_strength(const unsigned char *packet, size_t len)
 {
 	if(has_rt_header() && (len > (sizeof(struct radio_tap_header))))
 	{
@@ -159,7 +165,7 @@ int is_wps_locked()
 	int locked = 0;
 	struct libwps_data wps = { 0 };
 	struct pcap_pkthdr header;
-        const u_char *packet = NULL;
+        const unsigned char *packet = NULL;
         struct radio_tap_header *rt_header = NULL;
         struct dot11_frame_header *frame_header = NULL;
 
@@ -204,7 +210,7 @@ int is_wps_locked()
 static int process_authenticate_associate_resp(int want_assoc)
 {
 	struct pcap_pkthdr header;
-	u_char *packet;
+	unsigned char *packet;
 	struct radio_tap_header *rt_header;
 	struct dot11_frame_header *dot11_frame;
 	struct authentication_management_frame *auth_frame;
@@ -259,7 +265,7 @@ static int process_authenticate_associate_resp(int want_assoc)
 
 
 /* Deauths and re-associates a MAC address with the AP. Returns 0 on failure, 1 for success. */
-int reassociate()
+int reassociate(void)
 {
 	if (get_external_association()) return 1;
 
@@ -297,7 +303,7 @@ int reassociate()
 }
 
 /* Deauthenticate ourselves from the AP */
-void deauthenticate()
+static void deauthenticate(void)
 {
 	const void *radio_tap = NULL, *dot11_frame = NULL, *packet = NULL;
 	size_t radio_tap_len = 0, dot11_frame_len = 0, packet_len = 0;
@@ -330,7 +336,7 @@ void deauthenticate()
 }
 
 /* Authenticate ourselves with the AP */
-void authenticate()
+static void authenticate(void)
 {
 	const void *radio_tap = NULL, *dot11_frame = NULL, *management_frame = NULL, *packet = NULL;
 	size_t radio_tap_len = 0, dot11_frame_len = 0, management_frame_len = 0, packet_len = 0;
@@ -365,7 +371,7 @@ void authenticate()
 }
 
 /* Associate with the AP */
-void associate()
+static void associate(void)
 {
 	void *radio_tap = NULL, *dot11_frame = NULL, *management_frame = NULL, *ssid_tag = NULL, *wps_tag = NULL, *rates_tag = NULL, *ht_tag = NULL;
 	unsigned char *packet = NULL;
@@ -431,10 +437,10 @@ void associate()
 /* Given a beacon / probe response packet, returns the reported encryption type (WPA, WEP, NONE)
    THIS IS BROKE!!! DO NOT USE!!!
 */
-enum encryption_type supported_encryption(const u_char *packet, size_t len)
+enum encryption_type supported_encryption(const unsigned char *packet, size_t len)
 {
 	enum encryption_type enc = NONE;
-	const u_char *tag_data = NULL;
+	const unsigned char *tag_data = NULL;
 	struct radio_tap_header *rt_header = NULL;
 	size_t vlen = 0, voff = 0, tag_offset = 0, tag_len = 0, offset = 0;
 	struct beacon_management_frame *beacon = NULL;
@@ -447,7 +453,7 @@ enum encryption_type supported_encryption(const u_char *packet, size_t len)
 		offset = tag_offset = rt_header_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
 		
 		tag_len = len - tag_offset;
-		tag_data = (const u_char *) (packet + tag_offset);
+		tag_data = (const unsigned char *) (packet + tag_offset);
 
 		if((end_le16toh(beacon->capability) & CAPABILITY_WEP) == CAPABILITY_WEP)
 		{
@@ -464,7 +470,7 @@ enum encryption_type supported_encryption(const u_char *packet, size_t len)
 				while(offset < len)
 				{
 					tag_len = len - offset;
-					tag_data = (const u_char *) (packet + offset);
+					tag_data = (const unsigned char *) (packet + offset);
 
 					tag_data = parse_ie_data(tag_data, tag_len, (uint8_t) VENDOR_SPECIFIC_TAG, &vlen, &voff);
 					if(vlen > WPA_IE_ID_LEN)
@@ -486,18 +492,18 @@ enum encryption_type supported_encryption(const u_char *packet, size_t len)
 	return enc;
 }
 
-static int get_next_ie(const u_char *data, size_t len, size_t *currpos) {
+static int get_next_ie(const unsigned char *data, size_t len, size_t *currpos) {
 	if(*currpos + 2 >= len) return 0;
 	*currpos = *currpos + 2 + data[*currpos + 1];
 	return 1;
 }
 
 /* Given the tagged parameter sets from a beacon packet, locate the AP's SSID and return its current channel number */
-int parse_beacon_tags(const u_char *packet, size_t len)
+int parse_beacon_tags(const unsigned char *packet, size_t len)
 {
 	set_vendor(0, "\0\0\0");
 	char *ssid = NULL;
-	const u_char *tag_data = NULL;
+	const unsigned char *tag_data = NULL;
 	unsigned char *ie = NULL, *channel_data = NULL;
 	size_t ie_len = 0, ie_offset = 0, tag_len = 0, tag_offset = 0;
 	int channel = 0;
@@ -509,7 +515,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 	if(tag_offset < len)
 	{
 		tag_len = (len - tag_offset); /* this actually denotes length of the entire tag data area */
-		tag_data = (const u_char *) (packet + tag_offset);
+		tag_data = (const unsigned char *) (packet + tag_offset);
 
 		/* If no SSID was manually specified, parse and save the AP SSID */
 		if(get_ssid() == NULL)
@@ -564,7 +570,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 
 		size_t ie_iterator = 0;
 		do {
-			const u_char *tag = tag_data + ie_iterator;
+			const unsigned char *tag = tag_data + ie_iterator;
 			// check for the length of the tag, and that its not microsoft
 			if(tag[0] == VENDOR_SPECIFIC_TAG &&
 			   ie_iterator+2+3 < tag_len &&
@@ -581,7 +587,7 @@ int parse_beacon_tags(const u_char *packet, size_t len)
 }
 
 /* Gets the data for a given IE inside a tagged parameter list */
-unsigned char *parse_ie_data(const u_char *data, size_t len, uint8_t tag_number, size_t *ie_len, size_t *ie_offset)
+unsigned char *parse_ie_data(const unsigned char *data, size_t len, uint8_t tag_number, size_t *ie_len, size_t *ie_offset)
 {
 	unsigned char *tag_data = NULL;
         int offset = 0, tag_size = 0;
@@ -617,7 +623,7 @@ unsigned char *parse_ie_data(const u_char *data, size_t len, uint8_t tag_number,
 }
 
 /* Validates a packet's reported FCS value */
-int check_fcs(const u_char *packet, size_t len)
+int check_fcs(const unsigned char *packet, size_t len)
 {
 	uint32_t offset = 0, match = 0;
 	uint32_t fcs = 0, fcs_calc = 0;
@@ -703,7 +709,7 @@ int has_rt_header(void)
  * Returns a pointer to the radio tap header. If there is no radio tap header,
  * it returns a pointer to a dummy radio tap header.
  */
-u_char *radio_header(const u_char *packet, size_t len)
+unsigned char *radio_header(const unsigned char *packet, size_t len)
 {
         if(has_rt_header())
         {
