@@ -473,20 +473,18 @@ size_t build_supported_rates_tagged_parameter(unsigned char *buf, size_t buflen)
 	return len;
 }
 
-void *build_htcaps_parameter(size_t *len)
+size_t build_htcaps_parameter(unsigned char *buf, size_t buflen)
 {
-	*len = 0;
 	unsigned char* htcaps;
 	int htlen; size_t taglen;
 	if((htcaps = get_ap_htcaps(&htlen)) == NULL)
-		return NULL;
+		return 0;
 	struct tagged_parameter tag_htcaps;
 	taglen = build_tagged_parameter(&tag_htcaps, HT_CAPS_TAG_NUMBER, htlen);
-	*len = taglen + htlen;
-	void* buf = malloc(*len);
-	if(buf) {
-		memcpy(buf, &tag_htcaps, taglen);
-		memcpy(buf + taglen, htcaps, htlen);
-	}
-	return buf;
+	if(taglen + htlen >= buflen)
+		return 0; /* having HT caps is usually not critical, so better return nothing */
+
+	memcpy(buf, &tag_htcaps, taglen);
+	memcpy(buf + taglen, htcaps, htlen);
+	return taglen + htlen;
 }

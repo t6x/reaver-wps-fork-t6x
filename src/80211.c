@@ -366,7 +366,6 @@ static void authenticate(void)
 /* Associate with the AP */
 static void associate(void)
 {
-	void *ht_tag = NULL;
 	unsigned char *packet = NULL;
         size_t radio_tap_len, dot11_frame_len, management_frame_len, ssid_tag_len,
 		wps_tag_len, rates_tag_len, ht_tag_len, packet_len, offset = 0;
@@ -378,6 +377,7 @@ static void associate(void)
 	unsigned char ssid_tag[sizeof (struct tagged_parameter) + IW_ESSID_MAX_SIZE];
 	unsigned char rates_tag[128];
 	unsigned char wps_tag[sizeof (struct tagged_parameter) + WPS_TAG_SIZE];
+	unsigned char ht_tag[128];
 
         radio_tap_len = build_radio_tap_header(&radio_tap);
         dot11_frame_len = build_dot11_frame_header(&dot11_frame, FC_ASSOCIATE);
@@ -387,9 +387,8 @@ static void associate(void)
 	wps_tag_len = build_wps_tagged_parameter(wps_tag);
 
 	if(!NO_REPLAY_HTCAPS) {
-		ht_tag = build_htcaps_parameter(&ht_tag_len);
+		ht_tag_len = build_htcaps_parameter(ht_tag, sizeof ht_tag);
 	} else {
-		ht_tag = 0;
 		ht_tag_len = 0;
 	}
         packet_len = radio_tap_len + dot11_frame_len + management_frame_len + ssid_tag_len + wps_tag_len + rates_tag_len + ht_tag_len;
@@ -407,10 +406,8 @@ static void associate(void)
 		memcpy(packet+offset, rates_tag, rates_tag_len);
 		offset += rates_tag_len;
 
-		if(ht_tag) {
-			memcpy(packet+offset, ht_tag, ht_tag_len);
-			offset += ht_tag_len;
-		}
+		memcpy(packet+offset, ht_tag, ht_tag_len);
+		offset += ht_tag_len;
 
 		memcpy(packet+offset, wps_tag, wps_tag_len);
 
@@ -418,10 +415,6 @@ static void associate(void)
 
 		free(packet);
 	}
-
-	if(ht_tag) free(ht_tag);
-
-	return;
 }
 
 
