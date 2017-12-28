@@ -34,22 +34,10 @@
 #include "builder.h"
 #include <assert.h>
 
-void *build_radio_tap_header(size_t *len)
+size_t build_radio_tap_header(struct radio_tap_header *rt_header)
 {
-	struct radio_tap_header *rt_header = NULL;
-	void *buf = NULL;
-
-	buf = malloc(sizeof(struct radio_tap_header));
-	if(buf)
-	{
-		memset((void *) buf, 0, sizeof(struct radio_tap_header));
-		rt_header = (struct radio_tap_header *) buf;
-
-		*len = sizeof(struct radio_tap_header);
-		rt_header->len = end_htole16(*len);
-	}
-	
-	return buf;
+	memcpy(rt_header, "\0\0" "\x08\0" "\0\0\0\0", 8);
+	return sizeof(*rt_header);
 }
 
 void *build_dot11_frame_header_m(uint16_t fc, size_t *len, unsigned char dstmac[6])
@@ -159,7 +147,7 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 	// ESSIDs, after finding out their real ESSID by watching other client's probes.
 
 	struct tagged_parameter ssid_tag = { 0 };
-	void *rt_header = NULL, *dot11_header = NULL, *packet = NULL;
+	void *dot11_header = NULL, *packet = NULL;
 	size_t offset = 0, rt_len = 0, dot11_len = 0, ssid_tag_len = 0, packet_len = 0;
 	int broadcast = !memcmp(bssid, "\xff\xff\xff\xff\xff\xff", 6);
 
@@ -175,10 +163,11 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 	ssid_tag.number = SSID_TAG_NUMBER;
 	ssid_tag_len = ssid_tag.len + sizeof(struct tagged_parameter);
 
-	rt_header = build_radio_tap_header(&rt_len);
+	struct radio_tap_header rt_header;
+	rt_len = build_radio_tap_header(&rt_header);
 	dot11_header = build_dot11_frame_header_m(FC_PROBE_REQUEST, &dot11_len, bssid);
 
-	if(rt_header && dot11_header)
+	if(dot11_header)
 	{
 		packet_len = rt_len + dot11_len + ssid_tag_len;
 
@@ -201,7 +190,7 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 		if(packet)
 		{
 			memset((void *) packet, 0, packet_len);
-			memcpy((void *) packet, rt_header, rt_len);
+			memcpy((void *) packet, &rt_header, rt_len);
 			offset += rt_len;
 			memcpy((void *) ((char *) packet+offset), dot11_header, dot11_len);
 			offset += dot11_len;
@@ -216,8 +205,7 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 			*len = packet_len;
 		}
 	}
-	
-	if(rt_header) free((void *) rt_header);
+
 	if(dot11_header) free((void *) dot11_header);
 
 	return packet;
@@ -226,14 +214,15 @@ void *build_wps_probe_request(unsigned char *bssid, char *essid, size_t *len)
 /* Wrapper function for Radio Tap / Dot11 / LLC */
 void *build_snap_packet(size_t *len)
 {
-	void *rt_header = NULL, *dot11_header = NULL, *llc_header = NULL, *packet = NULL;
+	void *dot11_header = NULL, *llc_header = NULL, *packet = NULL;
 	size_t rt_len = 0, dot11_len = 0, llc_len = 0, packet_len = 0;
+	struct radio_tap_header rt_header;
 
-	rt_header = build_radio_tap_header(&rt_len);
+	rt_len = build_radio_tap_header(&rt_header);
         dot11_header = build_dot11_frame_header(FC_STANDARD, &dot11_len);
         llc_header = build_llc_header(&llc_len);
 
-	if(rt_header && dot11_header && llc_header)
+	if(dot11_header && llc_header)
 	{
 		packet_len = rt_len + dot11_len + llc_len;
 		packet = malloc(packet_len);
@@ -241,14 +230,13 @@ void *build_snap_packet(size_t *len)
 		if(packet)
 		{
 			memset((void *) packet, 0, packet_len);
-			memcpy((void *) packet, rt_header, rt_len);
+			memcpy((void *) packet, &rt_header, rt_len);
 			memcpy((void *) ((char *) packet+rt_len), dot11_header, dot11_len);
 			memcpy((void *) ((char *) packet+rt_len+dot11_len), llc_header, llc_len);
 
 			*len = packet_len;
 		}
-	
-		free((void *) rt_header);
+
 		free((void *) dot11_header);
 		free((void *) llc_header);
 	}
