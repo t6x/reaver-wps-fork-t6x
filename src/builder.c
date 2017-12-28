@@ -446,40 +446,38 @@ void *build_wps_tagged_parameter(size_t *len)
 	return buf;
 }
 
-void *build_supported_rates_tagged_parameter(size_t *len)
+size_t build_supported_rates_tagged_parameter(unsigned char *buf, size_t buflen)
 {
-	char *buf = NULL;
-	unsigned char *erates = NULL;
-	int srates_tag_size = 0, erates_tag_size = 0, i, dummy;
-        size_t buf_len = 0, srates_len = 0, erates_len = 0, offset = 0;
-	unsigned char srates[128];
+	unsigned char *erates, *srates;
+	int srates_tag_size, erates_tag_size;
+        size_t i, len, srates_len, erates_len, offset = 0;
+
 	struct tagged_parameter supported_rates, extended_rates;
 
-	(void) get_ap_rates(&srates_tag_size);
-	assert(srates_tag_size < sizeof srates);
-	memcpy(srates, get_ap_rates(&dummy), srates_tag_size);
-	for(i=0;i<srates_tag_size;i++)
-		srates[i] = srates[i] & 0x7f; // remove (B) bit
+	srates = get_ap_rates(&srates_tag_size);
+	assert(sizeof(struct tagged_parameter) + srates_tag_size < buflen);
+
+        srates_len = build_tagged_parameter(&supported_rates, SRATES_TAG_NUMBER, srates_tag_size);
+	memcpy(buf, &supported_rates, srates_len);
+	offset += srates_len;
+
+	memcpy(buf+offset, srates, srates_tag_size);
+	for(i=offset; i<offset+srates_tag_size; i++)
+		buf[i] = buf[i] & 0x7f; // remove (B) bit
+
+	offset += srates_tag_size;
 
 	erates = get_ap_ext_rates(&erates_tag_size);
-        srates_len = build_tagged_parameter(&supported_rates, SRATES_TAG_NUMBER, srates_tag_size);
 	erates_len = build_tagged_parameter(&extended_rates, ERATES_TAG_NUMBER, erates_tag_size);
 
-	buf_len = srates_len + erates_len + srates_tag_size + erates_tag_size;
-	buf = malloc(buf_len);
-	if(buf) {
-		*len = buf_len;
+	len = srates_len + erates_len + srates_tag_size + erates_tag_size;
+	assert(len < buflen);
 
-		memcpy(buf, &supported_rates, srates_len);
-		offset += srates_len;
-		memcpy(buf+offset, srates, srates_tag_size);
-		offset += srates_tag_size;
-		memcpy(buf+offset, &extended_rates, erates_len);
-		offset += erates_len;
-		memcpy(buf+offset, erates, erates_tag_size);
-        }
+	memcpy(buf+offset, &extended_rates, erates_len);
+	offset += erates_len;
+	memcpy(buf+offset, erates, erates_tag_size);
 
-	return buf;
+	return len;
 }
 
 void *build_htcaps_parameter(size_t *len)

@@ -366,7 +366,7 @@ static void authenticate(void)
 /* Associate with the AP */
 static void associate(void)
 {
-	void *wps_tag = NULL, *rates_tag = NULL, *ht_tag = NULL;
+	void *wps_tag = NULL, *ht_tag = NULL;
 	unsigned char *packet = NULL;
         size_t radio_tap_len = 0, dot11_frame_len = 0, management_frame_len = 0, ssid_tag_len = 0, wps_tag_len = 0, rates_tag_len = 0, ht_tag_len = 0, packet_len = 0, offset = 0;
 	struct radio_tap_header radio_tap;
@@ -375,12 +375,13 @@ static void associate(void)
 	char *essid = get_ssid();
 	if(!essid) essid = "";
 	unsigned char ssid_tag[sizeof (struct tagged_parameter) + IW_ESSID_MAX_SIZE];
+	unsigned char rates_tag[128];
 
         radio_tap_len = build_radio_tap_header(&radio_tap);
         dot11_frame_len = build_dot11_frame_header(&dot11_frame, FC_ASSOCIATE);
         management_frame_len = build_association_management_frame(&management_frame);
 	ssid_tag_len = build_ssid_tagged_parameter(ssid_tag, essid);
-	rates_tag = build_supported_rates_tagged_parameter(&rates_tag_len);
+	rates_tag_len = build_supported_rates_tagged_parameter(rates_tag, sizeof rates_tag);
 	if(!NO_REPLAY_HTCAPS) {
 		ht_tag = build_htcaps_parameter(&ht_tag_len);
 	} else {
@@ -390,7 +391,7 @@ static void associate(void)
 	wps_tag = build_wps_tagged_parameter(&wps_tag_len);
         packet_len = radio_tap_len + dot11_frame_len + management_frame_len + ssid_tag_len + wps_tag_len + rates_tag_len + ht_tag_len;
 
-	if(wps_tag && rates_tag)
+	if(wps_tag)
         {
                 packet = malloc(packet_len);
                 if(packet)
@@ -422,7 +423,6 @@ static void associate(void)
         }
 
 	if(wps_tag) free(wps_tag);
-	if(rates_tag) free(rates_tag);
 	if(ht_tag) free(ht_tag);
 
 	return;
