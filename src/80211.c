@@ -366,7 +366,6 @@ static void authenticate(void)
 /* Associate with the AP */
 static void associate(void)
 {
-	unsigned char *packet = NULL;
         size_t radio_tap_len, dot11_frame_len, management_frame_len, ssid_tag_len,
 		wps_tag_len, rates_tag_len, ht_tag_len, packet_len, offset = 0;
 	struct radio_tap_header radio_tap;
@@ -378,6 +377,7 @@ static void associate(void)
 	unsigned char rates_tag[128];
 	unsigned char wps_tag[sizeof (struct tagged_parameter) + WPS_TAG_SIZE];
 	unsigned char ht_tag[128];
+
 
         radio_tap_len = build_radio_tap_header(&radio_tap);
         dot11_frame_len = build_dot11_frame_header(&dot11_frame, FC_ASSOCIATE);
@@ -393,28 +393,26 @@ static void associate(void)
 	}
         packet_len = radio_tap_len + dot11_frame_len + management_frame_len + ssid_tag_len + wps_tag_len + rates_tag_len + ht_tag_len;
 
-	packet = malloc(packet_len);
-	if(packet) {
-		memcpy(packet, &radio_tap, radio_tap_len);
-		offset += radio_tap_len;
-		memcpy(packet+offset, &dot11_frame, dot11_frame_len);
-		offset += dot11_frame_len;
-		memcpy(packet+offset, &management_frame, management_frame_len);
-		offset += management_frame_len;
-		memcpy(packet+offset, ssid_tag, ssid_tag_len);
-		offset += ssid_tag_len;
-		memcpy(packet+offset, rates_tag, rates_tag_len);
-		offset += rates_tag_len;
+	unsigned char packet[512];
+	assert(packet_len < sizeof packet);
 
-		memcpy(packet+offset, ht_tag, ht_tag_len);
-		offset += ht_tag_len;
+	memcpy(packet, &radio_tap, radio_tap_len);
+	offset += radio_tap_len;
+	memcpy(packet+offset, &dot11_frame, dot11_frame_len);
+	offset += dot11_frame_len;
+	memcpy(packet+offset, &management_frame, management_frame_len);
+	offset += management_frame_len;
+	memcpy(packet+offset, ssid_tag, ssid_tag_len);
+	offset += ssid_tag_len;
+	memcpy(packet+offset, rates_tag, rates_tag_len);
+	offset += rates_tag_len;
 
-		memcpy(packet+offset, wps_tag, wps_tag_len);
+	memcpy(packet+offset, ht_tag, ht_tag_len);
+	offset += ht_tag_len;
 
-		send_packet(packet, packet_len, 1);
+	memcpy(packet+offset, wps_tag, wps_tag_len);
 
-		free(packet);
-	}
+	send_packet(packet, packet_len, 1);
 }
 
 
