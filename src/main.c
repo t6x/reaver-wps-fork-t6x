@@ -9,6 +9,7 @@ extern int wash_main(int argc, char **argv);
 int main(int argc, char** argv) {
 	char *e = strrchr(argv[0], '/');
 	if(!e) e = argv[0];
+	else e++;
 	int command = C_REAVER;
 	if(!strcmp(e, "reaver")) command = C_REAVER;
 	else
