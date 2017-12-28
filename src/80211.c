@@ -334,34 +334,31 @@ static void deauthenticate(void)
 /* Authenticate ourselves with the AP */
 static void authenticate(void)
 {
-	const void *management_frame = NULL, *packet = NULL;
+	const void *packet = NULL;
 	size_t radio_tap_len = 0, dot11_frame_len = 0, management_frame_len = 0, packet_len = 0;
 	struct radio_tap_header radio_tap;
 	struct dot11_frame_header dot11_frame;
+	struct authentication_management_frame management_frame;
 
 	radio_tap_len = build_radio_tap_header(&radio_tap);
 	dot11_frame_len = build_dot11_frame_header(&dot11_frame, FC_AUTHENTICATE);
-	management_frame = build_authentication_management_frame(&management_frame_len);
+	management_frame_len = build_authentication_management_frame(&management_frame);
+
 	packet_len = radio_tap_len + dot11_frame_len + management_frame_len;
 
-	if(management_frame)
+	packet = malloc(packet_len);
+	if(packet)
 	{
-		packet = malloc(packet_len);
-		if(packet)
-		{
-			memset((void *) packet, 0, packet_len);
+		memset((void *) packet, 0, packet_len);
 
-			memcpy((void *) packet, &radio_tap, radio_tap_len);
-			memcpy((void *) ((char *) packet+radio_tap_len), &dot11_frame, dot11_frame_len);
-			memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), management_frame, management_frame_len);
+		memcpy((void *) packet, &radio_tap, radio_tap_len);
+		memcpy((void *) ((char *) packet+radio_tap_len), &dot11_frame, dot11_frame_len);
+		memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), &management_frame, management_frame_len);
 
-			send_packet(packet, packet_len, 1);
+		send_packet(packet, packet_len, 1);
 
-			free((void *) packet);
-		}
+		free((void *) packet);
 	}
-
-	if(management_frame) free((void *) management_frame);
 
 	return;
 }

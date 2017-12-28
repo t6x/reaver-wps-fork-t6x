@@ -65,24 +65,13 @@ size_t build_dot11_frame_header_broadcast(struct dot11_frame_header *fh, uint16_
 	return build_dot11_frame_header_m(fh, fc, "\xff\xff\xff\xff\xff\xff");
 }
 
-void *build_authentication_management_frame(size_t *len)
+size_t build_authentication_management_frame(struct authentication_management_frame *f)
 {
-	struct authentication_management_frame *frame = NULL;
-	void *buf = NULL;
+	f->algorithm = end_htole16(OPEN_SYSTEM);
+	f->sequence = end_htole16(1);
+	f->status = 0;
 
-	buf = malloc(sizeof(struct authentication_management_frame));
-	if(buf)
-	{
-		*len = sizeof(struct authentication_management_frame);
-		memset((void *) buf, 0, *len);
-		frame = (struct authentication_management_frame *) buf;
-
-		frame->algorithm = end_htole16(OPEN_SYSTEM);
-		frame->sequence = end_htole16(1);
-		frame->status = 0;
-	}
-	
-	return buf;
+	return sizeof *f;
 }
 
 size_t build_association_management_frame(struct association_request_management_frame *f)
