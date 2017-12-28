@@ -73,7 +73,6 @@ void *build_eap_header(uint8_t id, uint8_t code, uint8_t type, uint16_t payload_
 void *build_eapol_start_packet(size_t *len);
 void *build_eap_packet(const void *payload, uint16_t payload_len, size_t *len);
 void *build_eap_failure_packet(size_t *len);
-void *build_tagged_parameter(uint8_t number, uint8_t size, size_t *len);
 void *build_ssid_tagged_parameter(size_t *len);
 void *build_wps_tagged_parameter(size_t *len);
 void *build_htcaps_parameter(size_t *len);

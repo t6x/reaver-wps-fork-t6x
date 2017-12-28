@@ -402,44 +402,36 @@ void *build_eap_failure_packet(size_t *len)
 	return buf;
 }
 
-void *build_tagged_parameter(uint8_t number, uint8_t size, size_t *len)
+static size_t build_tagged_parameter(struct tagged_parameter *tag, uint8_t number, uint8_t size)
 {
-	struct tagged_parameter *param = malloc(sizeof(struct tagged_parameter));
-        if(param)
-        {
-                *len = sizeof(struct tagged_parameter);
-                param->number = number;
-                param->len = size;
-	}
-	return param;
+	tag->number = number;
+	tag->len = size;
+
+	return sizeof *tag;
 }
 
 void *build_ssid_tagged_parameter(size_t *len)
 {
-	void *buf = NULL, *ssid_param = NULL;
+	void *buf = NULL;
 	size_t ssid_len = 0, ssid_param_len = 0, buf_len = 0;
+	struct tagged_parameter ssid_param;
 
 	if(get_ssid())
 	{
 		ssid_len = strlen(get_ssid());
 	}
 
-	ssid_param = build_tagged_parameter(SSID_TAG_NUMBER, ssid_len, &ssid_param_len);
+	ssid_param_len = build_tagged_parameter(&ssid_param, SSID_TAG_NUMBER, ssid_len);
 
-	if(ssid_param)
+	buf_len = ssid_param_len + ssid_len;
+	buf = malloc(buf_len);
+	if(buf)
 	{
-		buf_len = ssid_param_len + ssid_len;
-		buf = malloc(buf_len);
-		if(buf)
-		{
-			*len = buf_len;
-			memset((void *) buf, 0, buf_len);
-	
-			memcpy((void *) buf, ssid_param, ssid_param_len);
-			memcpy((void *) ((char *) buf+ssid_param_len), get_ssid(), ssid_len);
-		}
+		*len = buf_len;
+		memset((void *) buf, 0, buf_len);
 
-		free((void *) ssid_param);
+		memcpy((void *) buf, &ssid_param, ssid_param_len);
+		memcpy((void *) ((char *) buf+ssid_param_len), get_ssid(), ssid_len);
 	}
 
 	return buf;
@@ -447,25 +439,21 @@ void *build_ssid_tagged_parameter(size_t *len)
 
 void *build_wps_tagged_parameter(size_t *len)
 {
-	void *buf = NULL, *wps_param = NULL;
+	void *buf = NULL;
 	size_t buf_len = 0, wps_param_len = 0;
+	struct tagged_parameter wps_param;
 
-	wps_param = build_tagged_parameter(WPS_TAG_NUMBER, WPS_TAG_SIZE, &wps_param_len);
+	wps_param_len = build_tagged_parameter(&wps_param, WPS_TAG_NUMBER, WPS_TAG_SIZE);
 
-	if(wps_param)
+	buf_len = wps_param_len + WPS_TAG_SIZE;
+	buf = malloc(buf_len);
+	if(buf)
 	{
-		buf_len = wps_param_len + WPS_TAG_SIZE;
-		buf = malloc(buf_len);
-		if(buf)
-		{
-			*len = buf_len;
-			memset((void *) buf, 0, buf_len);
+		*len = buf_len;
+		memset((void *) buf, 0, buf_len);
 
-			memcpy((void *) buf, wps_param, wps_param_len);
-			memcpy((void *) ((char *) buf+wps_param_len), WPS_REGISTRAR_TAG, WPS_TAG_SIZE);
-		}
-		
-		free((void *) wps_param);
+		memcpy((void *) buf, &wps_param, wps_param_len);
+		memcpy((void *) ((char *) buf+wps_param_len), WPS_REGISTRAR_TAG, WPS_TAG_SIZE);
 	}
 
 	return buf;
@@ -473,11 +461,12 @@ void *build_wps_tagged_parameter(size_t *len)
 
 void *build_supported_rates_tagged_parameter(size_t *len)
 {
-	char *buf = NULL, *supported_rates = NULL, *extended_rates = NULL;
+	char *buf = NULL;
 	unsigned char *erates = NULL;
 	int srates_tag_size = 0, erates_tag_size = 0, i, dummy;
         size_t buf_len = 0, srates_len = 0, erates_len = 0, offset = 0;
 	unsigned char srates[128];
+	struct tagged_parameter supported_rates, extended_rates;
 
 	(void) get_ap_rates(&srates_tag_size);
 	assert(srates_tag_size < sizeof srates);
@@ -486,29 +475,23 @@ void *build_supported_rates_tagged_parameter(size_t *len)
 		srates[i] = srates[i] & 0x7f; // remove (B) bit
 
 	erates = get_ap_ext_rates(&erates_tag_size);
-        supported_rates = build_tagged_parameter(SRATES_TAG_NUMBER, srates_tag_size, &srates_len);
-	extended_rates = build_tagged_parameter(ERATES_TAG_NUMBER, erates_tag_size, &erates_len);
+        srates_len = build_tagged_parameter(&supported_rates, SRATES_TAG_NUMBER, srates_tag_size);
+	erates_len = build_tagged_parameter(&extended_rates, ERATES_TAG_NUMBER, erates_tag_size);
 
-        if(supported_rates && extended_rates)
-        {
-                buf_len = srates_len + erates_len + srates_tag_size + erates_tag_size;
-                buf = malloc(buf_len);
-                if(buf)
-                {
-                        *len = buf_len;
+	buf_len = srates_len + erates_len + srates_tag_size + erates_tag_size;
+	buf = malloc(buf_len);
+	if(buf) {
+		*len = buf_len;
 
-                        memcpy(buf, supported_rates, srates_len);
-			offset += srates_len;
-			memcpy(buf+offset, srates, srates_tag_size);
-			offset += srates_tag_size;
-			memcpy(buf+offset, extended_rates, erates_len);
-			offset += erates_len;
-                        memcpy(buf+offset, erates, erates_tag_size);
-                }
+		memcpy(buf, &supported_rates, srates_len);
+		offset += srates_len;
+		memcpy(buf+offset, srates, srates_tag_size);
+		offset += srates_tag_size;
+		memcpy(buf+offset, &extended_rates, erates_len);
+		offset += erates_len;
+		memcpy(buf+offset, erates, erates_tag_size);
         }
 
-	if(supported_rates) free(supported_rates);
-	if(extended_rates) free(extended_rates);
 	return buf;
 }
 
@@ -519,11 +502,13 @@ void *build_htcaps_parameter(size_t *len)
 	int htlen; size_t taglen;
 	if((htcaps = get_ap_htcaps(&htlen)) == NULL)
 		return NULL;
-	void *tag_htcaps = build_tagged_parameter(HT_CAPS_TAG_NUMBER, htlen, &taglen);
+	struct tagged_parameter tag_htcaps;
+	taglen = build_tagged_parameter(&tag_htcaps, HT_CAPS_TAG_NUMBER, htlen);
 	*len = taglen + htlen;
 	void* buf = malloc(*len);
-	memcpy(buf, tag_htcaps, taglen);
-	memcpy(buf + taglen, htcaps, htlen);
-	free(tag_htcaps);
+	if(buf) {
+		memcpy(buf, &tag_htcaps, taglen);
+		memcpy(buf + taglen, htcaps, htlen);
+	}
 	return buf;
 }
