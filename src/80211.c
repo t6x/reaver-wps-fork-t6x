@@ -37,6 +37,7 @@
 #include "utils/radiotap.h"
 #include "crc.h"
 #include <libwps.h>
+#include <assert.h>
 
 /* define NO_REPLAY_HTCAPS to 1 if you want to disable sending
    ht caps in association request for testing */
@@ -334,8 +335,7 @@ static void deauthenticate(void)
 /* Authenticate ourselves with the AP */
 static void authenticate(void)
 {
-	const void *packet = NULL;
-	size_t radio_tap_len = 0, dot11_frame_len = 0, management_frame_len = 0, packet_len = 0;
+	size_t radio_tap_len, dot11_frame_len, management_frame_len, packet_len, offset;
 	struct radio_tap_header radio_tap;
 	struct dot11_frame_header dot11_frame;
 	struct authentication_management_frame management_frame;
@@ -346,21 +346,21 @@ static void authenticate(void)
 
 	packet_len = radio_tap_len + dot11_frame_len + management_frame_len;
 
-	packet = malloc(packet_len);
-	if(packet)
-	{
-		memset((void *) packet, 0, packet_len);
+	unsigned char packet[ sizeof (struct radio_tap_header)
+			    + sizeof (struct dot11_frame_header)
+			    + sizeof (struct authentication_management_frame)];
 
-		memcpy((void *) packet, &radio_tap, radio_tap_len);
-		memcpy((void *) ((char *) packet+radio_tap_len), &dot11_frame, dot11_frame_len);
-		memcpy((void *) ((char *) packet+radio_tap_len+dot11_frame_len), &management_frame, management_frame_len);
+	assert(packet_len == sizeof packet);
 
-		send_packet(packet, packet_len, 1);
+	offset = 0;
 
-		free((void *) packet);
-	}
+	memcpy(packet + offset, &radio_tap, radio_tap_len);
+	offset += radio_tap_len;
+	memcpy(packet + offset, &dot11_frame, dot11_frame_len);
+	offset += dot11_frame_len;
+	memcpy(packet + offset, &management_frame, management_frame_len);
 
-	return;
+	send_packet(packet, packet_len, 1);
 }
 
 /* Associate with the AP */
