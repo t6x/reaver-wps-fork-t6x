@@ -36,6 +36,8 @@
 #include "utils/vendor.h"
 #include "send.h"
 
+static void wash_usage(char *prog);
+
 int show_all_aps = 0;
 int json_mode = 0;
 
@@ -97,7 +99,7 @@ static unsigned char *get_ap_vendor(char* bssid) {
 		return seen_list[x].vendor_oui+1;
 	return 0;
 }
-int main(int argc, char *argv[])
+int wash_main(int argc, char *argv[])
 {
 	int c = 0;
 	FILE *fp = NULL;
@@ -176,7 +178,7 @@ int main(int argc, char *argv[])
 				show_all_aps = 1;
 				break;
 			default:
-				usage(argv[0]);
+				wash_usage(argv[0]);
 				goto end;
 		}
 
@@ -195,7 +197,7 @@ int main(int argc, char *argv[])
 	/* The interface value won't be set if capture files were specified; else, there should have been an interface specified */
 	if(!get_iface() && source != PCAP_FILE)
 	{
-		usage(argv[0]);
+		wash_usage(argv[0]);
 		goto end;
 	}
 	else if(get_iface())
@@ -207,7 +209,7 @@ int main(int argc, char *argv[])
 	if(get_iface() && source == PCAP_FILE)
 	{
 		cprintf(CRITICAL, "[X] ERROR: -i and -f options cannot be used together.\n");
-		usage(argv[0]);
+		wash_usage(argv[0]);
 		goto end;
 	}
 
@@ -499,7 +501,7 @@ void sigalrm_handler(int x)
 	next_channel();
 }
 
-void usage(char *prog)
+static void wash_usage(char *prog)
 {
 	fprintf(stderr, "Required Arguments:\n");
 	fprintf(stderr, "\t-i, --interface=<iface>              Interface to capture packets on\n");

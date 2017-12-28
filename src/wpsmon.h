@@ -103,6 +103,5 @@ int is_dup(unsigned char *bssid);
 void mark_bssid(unsigned char *bssid);
 void free_bssid_list(unsigned char **list, int count);
 void sigalrm_handler(int x);
-void usage(char *prog);
 
 #endif

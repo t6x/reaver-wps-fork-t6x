@@ -1,5 +1,5 @@
 /*
- * Reaver - Main and usage functions
+ * Reaver - Main and reaver_usage functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,9 @@
 #include "wpscrack.h"
 #include "iface.h"
 
-int main(int argc, char **argv)
+static int reaver_usage(char *prog_name);
+
+int reaver_main(int argc, char **argv)
 {
 	int ret_val = EXIT_FAILURE, r = 0;
 	time_t start_time = 0, end_time = 0;
@@ -48,21 +50,21 @@ int main(int argc, char **argv)
 
 	if(argc < 2)
 	{
-		ret_val = usage(argv[0]);
+		ret_val = reaver_usage(argv[0]);
 		goto end;
 	}
 
 	/* Process the command line arguments */
 	if(process_arguments(argc, argv) == EXIT_FAILURE)
 	{
-		ret_val = usage(argv[0]);
+		ret_val = reaver_usage(argv[0]);
 		goto end;
 	}
 
-	/* Double check usage */
+	/* Double check reaver_usage */
 	if(!get_iface() || (memcmp(get_bssid(), NULL_MAC, MAC_ADDR_LEN) == 0))
 	{
-		usage(argv[0]);
+		reaver_usage(argv[0]);
 		goto end;
 	}
 
@@ -135,7 +137,7 @@ end:
 	return ret_val;
 }
 
-int usage(char *prog_name)
+static int reaver_usage(char *prog_name)
 {
         float fail_timeout = 0;
 

@@ -43,6 +43,5 @@
 #define BELL_COUNT	4
 
 void parse_recurring_delay(char *arg);
-int usage(char *prog_name);
 
 #endif

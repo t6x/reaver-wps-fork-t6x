@@ -92,11 +92,9 @@ LIB_OBJS=libwps/libwps.o $(WPS_OBJS) $(UTILS_OBJS) \
 	$(TLS_OBJS) $(CRYPTO_OBJS) $(LWE_OBJS)
 
 
-WASH_OBJS=globule.o init.o misc.o 80211.o iface.o \
- builder.o crc.o pixie.o send.o sigalrm.o wpsmon.o
-REAVER_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
+PROG_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
  misc.o cracker.o session.o send.o pins.o 80211.o exchange.o builder.o \
- keys.o crc.o pixie.o wpscrack.o
+ keys.o crc.o pixie.o wpscrack.o wpsmon.o main.o
 
 # Version of the Wireless Tools
 WT_VERSION := $(shell sed -ne "/WT_VERSION/{s:\([^0-9]*\)::;p;q;}" < lwe/iwlib.h )
@@ -114,16 +112,16 @@ $(CRYPTO_OBJS): CFLAGS += -I. -Iutils -DCONFIG_TLS_INTERNAL_CLIENT \
  -DCONFIG_TLS_INTERNAL_SERVER -fno-strict-aliasing
 
 
-wash: $(WASH_OBJS) $(LIB_OBJS)
-	$(CC) $(CFLAGS) $(INC) $(WASH_OBJS) $(LIB_OBJS) $(LDFLAGS) -o wash
+wash: reaver
+	ln -sf ./reaver wash
 
-reaver: $(REAVER_OBJS) $(LIB_OBJS)
-	$(CC) $(CFLAGS) $(INC) $(REAVER_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
+reaver: $(PROG_OBJS) $(LIB_OBJS)
+	$(CC) $(CFLAGS) $(INC) $(PROG_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
 
 lwe/wireless.h: $(WEXT_HEADER)
 	cp $(WEXT_HEADER) lwe/wireless.h
 
-$(WASH_OBJS) $(REAVER_OBJS) $(LWE_OBJS): lwe/wireless.h
+$(PROG_OBJS) $(LWE_OBJS): lwe/wireless.h
 
 install: wash reaver
 	$(INSTALL) -D -m 755 wash $(DESTDIR)$(exec_prefix)/bin/wash
