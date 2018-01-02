@@ -34,6 +34,7 @@
 #include "wpscrack.h"
 #include "iface.h"
 
+extern const char* get_version(void);
 static int reaver_usage(char *prog_name);
 
 int reaver_main(int argc, char **argv)
@@ -45,7 +46,7 @@ int reaver_main(int argc, char **argv)
 	globule_init();
 	init_default_settings();
 
-	fprintf(stderr, "\nReaver v%s WiFi Protected Setup Attack Tool\n", PACKAGE_VERSION);
+	fprintf(stderr, "\nReaver v%s WiFi Protected Setup Attack Tool\n", get_version());
 	fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n\n");
 
 	if(argc < 2)

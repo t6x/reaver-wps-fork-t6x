@@ -36,6 +36,7 @@
 #include "utils/vendor.h"
 #include "send.h"
 
+extern const char* get_version(void);
 static void wash_usage(char *prog);
 
 int show_all_aps = 0;
@@ -125,7 +126,7 @@ int wash_main(int argc, char *argv[])
                 { 0, 0, 0, 0 }
         };
 
-	fprintf(stderr, "\nWash v%s WiFi Protected Setup Scan Tool\n", PACKAGE_VERSION);
+	fprintf(stderr, "\nWash v%s WiFi Protected Setup Scan Tool\n", get_version());
         fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner\n\n");
 
 	globule_init();

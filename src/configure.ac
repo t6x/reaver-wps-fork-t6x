@@ -1,4 +1,5 @@
-AC_INIT(reaver, 1.6.3)
+define(VERSION_STRING, esyscmd(sh version.sh | tr -d '\n'))
+AC_INIT(reaver, VERSION_STRING)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([config.mak])
 AC_PROG_CC

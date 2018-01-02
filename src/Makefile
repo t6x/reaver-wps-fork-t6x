@@ -1,3 +1,4 @@
+srcdir = .
 INSTALL = ./install.sh
 MKDIRP = mkdir -p
 
@@ -94,7 +95,7 @@ LIB_OBJS=libwps/libwps.o $(WPS_OBJS) $(UTILS_OBJS) \
 
 PROG_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
  misc.o cracker.o session.o send.o pins.o 80211.o exchange.o builder.o \
- keys.o crc.o pixie.o wpscrack.o wpsmon.o main.o
+ keys.o crc.o pixie.o wpscrack.o wpsmon.o main.o version.o
 
 # Version of the Wireless Tools
 WT_VERSION := $(shell sed -ne "/WT_VERSION/{s:\([^0-9]*\)::;p;q;}" < lwe/iwlib.h )
@@ -103,6 +104,7 @@ WE_VERSION := $(shell sed -ne "/WE_VERSION/{s:\([^0-9]*\)::;p;q;}" < lwe/iwlib.h
 # Always use local header for wireless extensions
 WEXT_HEADER = lwe/wireless.$(WE_VERSION).h
 
+GENH = lwe/wireless.h version.h
 
 all: wash reaver
 
@@ -118,6 +120,10 @@ wash: reaver
 reaver: $(PROG_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) $(PROG_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
 
+version.o: version.h
+version.h: $(wildcard $(srcdir)/VERSION $(srcdir)/../.git)
+	printf '#define R_VERSION "%s"\n' "$$(cd $(srcdir); sh version.sh)"  > $@
+
 lwe/wireless.h: $(WEXT_HEADER)
 	cp $(WEXT_HEADER) lwe/wireless.h
 
@@ -131,10 +137,9 @@ install: wash reaver
 	$(MKDIRP) $(DESTDIR)$(CONFDIR)
 
 clean:
-	rm -f *~ *.o reaver wash
-	rm -rf *.cache config.status config.log
-	rm -f $(LIB_OBJS)
-	rm -f lwe/wireless.h
+	rm -f reaver wash
+	rm -f $(LIB_OBJS) $(PROG_OBJS)
+	rm -f $(GENH)
 
 cleanbin: 
 	rm -f @bindir@/reaver @bindir@/wash @bindir@/walsh
