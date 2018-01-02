@@ -141,11 +141,8 @@ clean:
 	rm -f $(LIB_OBJS) $(PROG_OBJS)
 	rm -f $(GENH)
 
-cleanbin: 
-	rm -f @bindir@/reaver @bindir@/wash @bindir@/walsh
-
-distclean: cleanbin clean
+distclean: clean
 	rm -rf $(CONFDIR)
 
-.PHONY: all clean cleanbin distclean install
+.PHONY: all clean distclean install
 
