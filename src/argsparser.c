@@ -37,7 +37,6 @@
 #include "globule.h"
 #include "defs.h"
 #include "iface.h"
-#include "config.h"
 #include "argsparser.h"
 #include "pixie.h"
 #include "misc.h"

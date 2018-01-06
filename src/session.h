@@ -39,7 +39,6 @@
 #include "defs.h"
 #include "misc.h"
 #include "globule.h"
-#include "config.h"
 
 #ifndef CONF_DIR
 #define CONF_DIR	"/etc/reaver"

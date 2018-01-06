@@ -46,7 +46,6 @@
 #include "iface.h"
 #include "80211.h"
 #include "builder.h"
-#include "config.h"
 
 #define INTERFACE       	0
 #define PCAP_FILE       	1
