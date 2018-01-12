@@ -474,6 +474,7 @@ enum encryption_type supported_encryption(const unsigned char *packet, size_t le
 static int get_next_ie(const unsigned char *data, size_t len, size_t *currpos) {
 	if(*currpos + 2 >= len) return 0;
 	*currpos = *currpos + 2 + data[*currpos + 1];
+	if(*currpos >= len) return 0;
 	return 1;
 }
 
