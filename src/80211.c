@@ -553,8 +553,8 @@ int parse_beacon_tags(const unsigned char *packet, size_t len)
 			// check for the length of the tag, and that its not microsoft
 			if(tag[0] == VENDOR_SPECIFIC_TAG &&
 			   ie_iterator+2+3 < tag_len &&
-			   (tag[1] < 11 || (tag[1] == 30 && !(memcmp(tag+2, "\x00\x26\x86", 3)))) &&
-			   memcmp(tag+2, "\x00\x50\xf2", 3)) {
+			   ((tag[1] < 11 && memcmp(tag+2, "\x00\x14\x6c", 3) && memcmp(tag+2, "\x00\x50\xf2", 3)) ||
+			    (tag[1] == 30 && !(memcmp(tag+2, "\x00\x26\x86", 3))))) {
 				set_vendor(1, tag + 2);
 				break;
 			}
