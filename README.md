@@ -109,7 +109,7 @@ Advanced Options:
 	-Z                              Run pixiedust attack
 
 Example:
-	./reaver -i wlan0mon -b 00:90:4C:C1:AC:21 -vv
+	reaver -i wlan0mon -b 00:90:4C:C1:AC:21 -vv
  ```  
  
 Options description and examples of use can be found in the [Readme from Craig Heffner](https://github.com/t6x/reaver-wps-fork-t6x/blob/master/docs/README.REAVER). Here comes a description of the new options introduced since then:  
