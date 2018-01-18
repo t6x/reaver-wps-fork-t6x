@@ -115,7 +115,6 @@ int wash_main(int argc, char *argv[])
                 { "channel", required_argument, NULL, 'c' },
 		{ "out-file", required_argument, NULL, 'o' },
 		{ "probes", required_argument, NULL, 'n' },
-		{ "daemonize", no_argument, NULL, 'D' },
 		{ "file", no_argument, NULL, 'f' },
 		{ "5ghz", no_argument, NULL, '5' },
 		{ "scan", no_argument, NULL, 's' },
@@ -171,9 +170,6 @@ int wash_main(int argc, char *argv[])
 				break;
 			case 'u':
 				mode = SURVEY;
-				break;
-			case 'D':
-				daemonize();
 				break;
 			case 'a':
 				show_all_aps = 1;
@@ -512,7 +508,6 @@ static void wash_usage(char *prog)
 	fprintf(stderr, "\t-c, --channel=<num>                  Channel to listen on [auto]\n");
 	fprintf(stderr, "\t-o, --out-file=<file>                Write data to file\n");
 	fprintf(stderr, "\t-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [%d]\n", DEFAULT_MAX_NUM_PROBES);
-	fprintf(stderr, "\t-D, --daemonize                      Daemonize wash\n");
 	fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
 	fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
 	fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");

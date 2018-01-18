@@ -86,26 +86,6 @@ void cprintf(enum debug_level level, const char *fmt, ...)
 	fflush(get_log_file());
 }
 
-/* Daemonizes the process */
-void daemonize(void)
-{
-	if(fork() > 0)
-	{
-		exit(EXIT_SUCCESS);
-	}
-
-	if(chdir("/") == 0)
-	{
-		setsid();
-		umask(0);
-
-		if(fork() > 0)
-		{
-			exit(EXIT_SUCCESS);
-		}
-	}
-}
-
 /* Closes libpcap during sleep period to avoid stale packet data in pcap buffer */
 void pcap_sleep(int seconds)
 {

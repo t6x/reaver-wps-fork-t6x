@@ -74,7 +74,6 @@ int process_arguments(int argc, char **argv)
 		{ "eap-terminate", no_argument, NULL, 'E' },
 		{ "dh-small", no_argument, NULL, 'S' },
 		{ "fixed", no_argument, NULL, 'f' },
-		{ "daemonize", no_argument, NULL, 'D' },
 		{ "5ghz", no_argument, NULL, '5' },
 		{ "repeat-m6", no_argument, NULL, '6' },
 		{ "nack", no_argument, NULL, 'n' },
@@ -160,9 +159,6 @@ int process_arguments(int argc, char **argv)
                         case 'g':
                                 set_max_pin_attempts(atoi(optarg));
                                 break;
-                        case 'D':
-				daemonize();
-				break;
 			case 'E':
                                 set_eap_terminate(1);
                                 break;

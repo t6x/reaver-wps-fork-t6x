@@ -155,7 +155,6 @@ static int reaver_usage(char *prog_name)
 	fprintf(stderr, "\t-o, --out-file=<file>           Send output to a log file [stdout]\n");
 	fprintf(stderr, "\t-s, --session=<file>            Restore a previous session file\n");
 	fprintf(stderr, "\t-C, --exec=<command>            Execute the supplied command upon successful pin recovery\n");
-	fprintf(stderr, "\t-D, --daemonize                 Daemonize reaver\n");
         fprintf(stderr, "\t-f, --fixed                     Disable channel hopping\n");
         fprintf(stderr, "\t-5, --5ghz                      Use 5GHz 802.11 channels\n");
         //fprintf(stderr, "\t-6, --repeat-m6                 Send M6 again upon duplicated M5 reception\n");
