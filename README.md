@@ -68,7 +68,7 @@ or
 
 # Reaver Usage
 
-```Reaver v1.6.3 WiFi Protected Setup Attack Tool
+```Reaver v1.6.4 WiFi Protected Setup Attack Tool
 Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
 
 Required Arguments:
@@ -85,7 +85,7 @@ Optional Arguments:
 	-D, --daemonize                 Daemonize reaver
 	-f, --fixed                     Disable channel hopping
 	-5, --5ghz                      Use 5GHz 802.11 channels
-	-v, --verbose                   Display non-critical warnings (-vv for more)
+	-v, --verbose                   Display non-critical warnings (-vv or -vvv for more)
 	-q, --quiet                     Only display critical messages
 	-h, --help                      Show help
 
@@ -96,20 +96,20 @@ Advanced Options:
 	-g, --max-attempts=<num>        Quit after num pin attempts
 	-x, --fail-wait=<seconds>       Set the time to sleep after 10 unexpected failures [0]
 	-r, --recurring-delay=<x:y>     Sleep for y seconds every x pin attempts
-	-t, --timeout=<seconds>         Set the receive timeout period [5]
-	-T, --m57-timeout=<seconds>     Set the M5/M7 timeout period [0.20]
+	-t, --timeout=<seconds>         Set the receive timeout period [10]
+	-T, --m57-timeout=<seconds>     Set the M5/M7 timeout period [0.40]
 	-A, --no-associate              Do not associate with the AP (association must be done by another application)
 	-N, --no-nacks                  Do not send NACK messages when out of order packets are received
 	-S, --dh-small                  Use small DH keys to improve crack speed
 	-L, --ignore-locks              Ignore locked state reported by the target AP
 	-E, --eap-terminate             Terminate each WPS session with an EAP FAIL packet
-	-n, --nack                      Target AP always sends a NACK [Auto]
+	-J, --timeout-is-nack           Treat timeout as NACK (DIR-300/320)
 	-w, --win7                      Mimic a Windows 7 registrar [False]
 	-K, --pixie-dust                Run pixiedust attack
 	-Z                              Run pixiedust attack
 
 Example:
-	reaver -i wlan0mon -b 00:90:4C:C1:AC:21 -vv
+	./reaver -i wlan0mon -b 00:90:4C:C1:AC:21 -vv
  ```  
  
 Options description and examples of use can be found in the [Readme from Craig Heffner](https://github.com/t6x/reaver-wps-fork-t6x/blob/master/docs/README.REAVER). Here comes a description of the new options introduced since then:  
