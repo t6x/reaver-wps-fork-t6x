@@ -18,8 +18,8 @@ char *get_vendor_string(const unsigned char* oui) {
 		{"\x00\x0c\xe7", "Mediatek"}, /* Mediatek MediaTek Inc. */
 		{"\x00\x1c\x51", "CelenoCo"}, /* Celeno Communications */
 		{"\x00\x50\x43", "MarvellS"}, /* Marvell Semiconductor, Inc. */
-		{"\x00\x26\x86", "Quantenn"},  /* Quantenna */
-		{"\x00\x50\xf2", "Microsof"}  /* Microsoft */ 
+		{"\x00\x26\x86", "Quantenn"}, /* Quantenna */
+		{"\x00\x50\xf2", "Microsof"}  /* Microsoft */
 	};
 
 	#define VENDOR_LIST_SIZE (sizeof(vendors)/sizeof(vendors[0]))
