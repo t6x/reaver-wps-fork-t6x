@@ -1,4 +1,4 @@
-define(VERSION_STRING, esyscmd(sh version.sh | tr -d '\n'))
+define(VERSION_STRING, esyscmd(cat VERSION | tr -d '\n'))
 AC_INIT(reaver, VERSION_STRING)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([config.mak])
