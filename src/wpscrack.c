@@ -182,7 +182,7 @@ static int reaver_usage(char *prog_name)
 	fprintf(stderr, "\t-K, --pixie-dust                Run pixiedust attack\n");
 	fprintf(stderr, "\t-Z                              Run pixiedust attack\n");
 
-        fprintf(stderr, "\nExample:\n\t%s -i mon0 -b 00:90:4C:C1:AC:21 -vv\n\n", prog_name);
+        fprintf(stderr, "\nExample:\n\t%s -i wlan0mon -b 00:90:4C:C1:AC:21 -vv\n\n", prog_name);
 
         return EXIT_FAILURE;
 }
