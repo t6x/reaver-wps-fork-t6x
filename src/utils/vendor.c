@@ -20,6 +20,7 @@ char *get_vendor_string(const unsigned char* oui) {
 		{"\x00\x50\x43", "MarvellS"}, /* Marvell Semiconductor, Inc. */
 		{"\x00\x26\x86", "Quantenn"}, /* Quantenna */
 		{"\x00\x50\xf2", "Microsof"}  /* Microsoft */
+		{"\x00\x09\x86", "LantiqME"}  /* Lantiq & Metalink  */
 	};
 
 	#define VENDOR_LIST_SIZE (sizeof(vendors)/sizeof(vendors[0]))
