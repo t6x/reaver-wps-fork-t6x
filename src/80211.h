@@ -82,7 +82,6 @@ enum encryption_type supported_encryption(const unsigned char *packet, size_t le
 int parse_beacon_tags(const unsigned char *data, size_t len);
 unsigned char *parse_ie_data(const unsigned char *data, size_t len, uint8_t tag_number, size_t *ie_len, size_t *ie_offset);
 int is_target(struct dot11_frame_header *frame_header);
-int check_fcs(const unsigned char *packet, size_t len);
 int has_rt_header(void);
 unsigned char *radio_header(const unsigned char *packet, size_t len);
 
