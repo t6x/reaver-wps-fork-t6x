@@ -49,7 +49,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:KZA5ELfnqvDShwN6J";
+	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:o:p:s:C:KZA5ELfnqvDShwN6JF";
 	struct option long_options[] = {
 		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
@@ -82,6 +82,7 @@ int process_arguments(int argc, char **argv)
 		{ "win7", no_argument, NULL, 'w' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "timeout-is-nack", no_argument, NULL, 'J' },
+		{ "ignore-fcs", no_argument, NULL, 'F' },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -186,6 +187,8 @@ int process_arguments(int argc, char **argv)
 			case 'N':
 				set_oo_send_nack(0);
 				break;
+			case 'F':
+				set_validate_fcs(0);
                         default:
                                 ret_val = EXIT_FAILURE;
                 }

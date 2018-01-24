@@ -108,7 +108,7 @@ int wash_main(int argc, char *argv[])
 	int source = INTERFACE, ret_val = EXIT_FAILURE;
 	struct bpf_program bpf = { 0 };
 	char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
-	char *short_options = "i:c:n:o:b:5sfuDhaj";
+	char *short_options = "i:c:n:o:b:5sfuFDhaj";
         struct option long_options[] = {
 		{ "bssid", required_argument, NULL, 'b' },
                 { "interface", required_argument, NULL, 'i' },
@@ -116,6 +116,7 @@ int wash_main(int argc, char *argv[])
 		{ "out-file", required_argument, NULL, 'o' },
 		{ "probes", required_argument, NULL, 'n' },
 		{ "file", no_argument, NULL, 'f' },
+		{ "ignore-fcs", no_argument, NULL, 'F' },
 		{ "5ghz", no_argument, NULL, '5' },
 		{ "scan", no_argument, NULL, 's' },
 		{ "survey", no_argument, NULL, 'u' },
@@ -170,6 +171,9 @@ int wash_main(int argc, char *argv[])
 				break;
 			case 'u':
 				mode = SURVEY;
+				break;
+			case 'F':
+				set_validate_fcs(0);
 				break;
 			case 'a':
 				show_all_aps = 1;
@@ -508,6 +512,7 @@ static void wash_usage(char *prog)
 	fprintf(stderr, "\t-c, --channel=<num>                  Channel to listen on [auto]\n");
 	fprintf(stderr, "\t-o, --out-file=<file>                Write data to file\n");
 	fprintf(stderr, "\t-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [%d]\n", DEFAULT_MAX_NUM_PROBES);
+	fprintf(stderr, "\t-F, --ignore-fcs                     Ignore frame checksum errors\n");
 	fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
 	fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
 	fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
