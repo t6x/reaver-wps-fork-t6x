@@ -189,6 +189,7 @@ int process_arguments(int argc, char **argv)
 				break;
 			case 'F':
 				set_validate_fcs(0);
+				break;
                         default:
                                 ret_val = EXIT_FAILURE;
                 }
