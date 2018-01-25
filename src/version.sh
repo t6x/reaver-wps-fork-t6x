@@ -1,6 +1,7 @@
 #!/bin/sh
 
-BINDIR=$(dirname $(readlink -f "$0"))
+argv0=$(echo "$0" | sed -e 's,\\,/,g')
+BINDIR=$(dirname "$(readlink "$0" || echo "$argv0")")
 
 if test -d "$BINDIR"/../.git ; then
 if type git >/dev/null 2>&1 ; then
