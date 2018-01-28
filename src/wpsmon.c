@@ -117,6 +117,7 @@ int wash_main(int argc, char *argv[])
 		{ "probes", required_argument, NULL, 'n' },
 		{ "file", no_argument, NULL, 'f' },
 		{ "ignore-fcs", no_argument, NULL, 'F' },
+		{ "2ghz", no_argument, NULL, '2' },
 		{ "5ghz", no_argument, NULL, '5' },
 		{ "scan", no_argument, NULL, 's' },
 		{ "survey", no_argument, NULL, 'u' },
@@ -131,7 +132,7 @@ int wash_main(int argc, char *argv[])
 
 	globule_init();
 	set_auto_channel_select(0);
-	set_wifi_band(BG_BAND);
+	set_wifi_band(0);
 	set_debug(INFO);
 	set_validate_fcs(1);
 	set_log_file(stdout);
@@ -155,7 +156,10 @@ int wash_main(int argc, char *argv[])
 				set_fixed_channel(1);
 				break;
 			case '5':
-				set_wifi_band(AN_BAND);
+				set_wifi_band(get_wifi_band() | AN_BAND);
+				break;
+			case '2':
+				set_wifi_band(get_wifi_band() | BG_BAND);
 				break;
 			case 'n':
 				set_max_num_probes(atoi(optarg));
@@ -194,6 +198,8 @@ int wash_main(int argc, char *argv[])
 			last_optarg = strdup(optarg);
 		}
 	}
+
+	if(get_wifi_band() == 0) set_wifi_band(BG_BAND);
 
 	/* The interface value won't be set if capture files were specified; else, there should have been an interface specified */
 	if(!get_iface() && source != PCAP_FILE)
@@ -513,6 +519,7 @@ static void wash_usage(char *prog)
 	fprintf(stderr, "\t-o, --out-file=<file>                Write data to file\n");
 	fprintf(stderr, "\t-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [%d]\n", DEFAULT_MAX_NUM_PROBES);
 	fprintf(stderr, "\t-F, --ignore-fcs                     Ignore frame checksum errors\n");
+	fprintf(stderr, "\t-2, --2ghz                           Use 2.4GHz 802.11 channels\n");
 	fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
 	fprintf(stderr, "\t-s, --scan                           Use scan mode\n");
 	fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");

@@ -99,7 +99,7 @@ int read_iface_mac()
 }
 #endif
 
-/* 
+/*
  * Goes to the next 802.11 channel.
  * This is mostly required for APs that hop channels, which usually hop between channels 1, 6, and 11.
  * We just hop channels until we successfully associate with the AP.
@@ -107,37 +107,36 @@ int read_iface_mac()
  */
 int next_channel()
 {
-        static int i;
-	int n = 0;
-        int bg_channels[] = BG_CHANNELS;
-	int an_channels[] = AN_CHANNELS;
-	int *channels = NULL;
+#define BG_CHANNELS	14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+#define AN_CHANNELS	16, 34, 36, 38, 40, 42, 44, 46, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 149, 153, 157, 161, 165, 183, 184, 185, 187, 188, 189, 192, 196
 
-	/* Select the appropriate channels for the target 802.11 band */
-	if(get_wifi_band() == AN_BAND)
-	{
-		channels = (int *) &an_channels;
-		n = sizeof(an_channels) / sizeof(int);
-	}
-	else
-	{
-		channels = (int *) &bg_channels;
-		n = sizeof(bg_channels) / sizeof(int);
-	}
+        static int i;
+        static const short bg_channels[] = {BG_CHANNELS};
+	static const short an_channels[] = {AN_CHANNELS};
+	static const short bgan_channels[] = {BG_CHANNELS, AN_CHANNELS};
+	static const int band_chan_count[] = {
+		[BG_BAND] = sizeof(bg_channels)/sizeof(bg_channels[0]),
+		[AN_BAND] = sizeof(an_channels)/sizeof(an_channels[0]),
+		[BG_BAND|AN_BAND] = sizeof(bgan_channels)/sizeof(bgan_channels[0]),
+	};
+	static const short* band_select[] = {
+		[BG_BAND] = bg_channels,
+		[AN_BAND] = an_channels,
+		[BG_BAND|AN_BAND] = bgan_channels,
+	};
+
+	int band = get_wifi_band();
+	const short *channels = band_select[band];
+	int n = band_chan_count[band];
 
 	/* Only switch channels if fixed channel operation is disabled */
 	if(!get_fixed_channel())
 	{
-        	i++;
-
-        	if((i >= n) || i < 0)
-        	{
-        	        i = 0;
-        	}
-
-        	return change_channel(channels[i]);
+		i++;
+		if((i >= n) || i < 0) i = 0;
+		return change_channel(channels[i]);
 	}
-	
+
 	return 0;
 }
 
