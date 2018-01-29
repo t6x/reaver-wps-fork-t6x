@@ -1,0 +1,101 @@
+.TH Reaver "1" "29 December, 2011" "1.3"
+.SH NAME
+.P
+.B Reaver
+- WPS Cracker
+.SH SYNOPSIS
+.P
+.B reaver -i <interface> -b <target bssid> -vv
+.SH DESCRIPTION
+.P
+Reaver implements a brute force attack against WiFi Protected Setup which can crack the WPS pin of an access point in a matter of hours and subsequently recover the WPA/WPA2 passphrase.
+.P
+Specifically, Reaver targets the registrar functionality of WPS, which is flawed in that it only takes 11,000 attempts to guess the correct WPS pin in order to become a WPS registrar. Once registred as a registrar with the access point, the access point will give you the WPA passphrase.
+.SH OPTIONS
+.P
+.RS
+.B -m, --mac=<mac>
+.RS
+MAC of the host system (should be resolved automatically)
+.RE
+.RE
+.P
+.RS
+.B -e, --essid=<ssid>
+.RS
+ESSID of the target AP. Unless cloaked, this will be resolved automatically.
+.RE
+.RE
+.P
+.RS
+.B -c, --channel=<channel>
+.RS
+Set the 802.11 channel for the interface (implies -f)
+.RE
+.RE
+.P
+.RS
+.B -o, --out-file=<file>
+.RS
+Send output to a log file [default: stdout]
+.RE
+.RE
+.P
+.RS
+.B -f, --fixed
+.RS
+Disable channel hopping
+.RE
+.RE
+.P
+.RS
+.B -5, --5ghz
+.RS
+Use 5GHz 802.11 channels
+.RE
+.RE
+.P
+.RS
+.B -v, --verbose
+.RS
+Display non-critical warnings (-vv for more)
+.RE
+.RE
+.P
+.RS
+.B -q, --quiet
+.RS
+Only display critical messages
+.RE
+.RE
+.P
+.RS
+.B -i, --interface=<wlan>
+.RS
+Name of the monitor-mode interface to use
+.RE
+.RE
+.P
+.RS
+.B -b, --bssid=<mac>
+.RS
+BSSID of the target AP
+.RE
+.RE
+.P
+.RS
+.B -p, --pin=<wps pin>
+.RS
+Use the specified WPS pin
+.RE
+.RE
+.P
+.RS
+.B -h, --help
+.RS
+Show help
+.RE
+.RE
+.SH AUTHOR
+.P
+This manual page was written by Craig Heffner <cheffner@tacnetsol.com>, Tactical Network Solutions. Permission  is  granted  to  copy,  distribute and/or  modify  this  document  under the terms of the GNU General Public License, Version 2 or any later version published by the Free Software Foundation, the complete text of the GNU General Public License can be found in /usr/share/common-licenses/GPL.
