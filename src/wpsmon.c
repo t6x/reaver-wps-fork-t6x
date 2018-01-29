@@ -108,7 +108,7 @@ int wash_main(int argc, char *argv[])
 	int source = INTERFACE, ret_val = EXIT_FAILURE;
 	struct bpf_program bpf = { 0 };
 	char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
-	char *short_options = "i:c:n:o:b:5sfuFDhaj";
+	char *short_options = "i:c:n:o:b:25sfuFDhaj";
         struct option long_options[] = {
 		{ "bssid", required_argument, NULL, 'b' },
                 { "interface", required_argument, NULL, 'i' },
