@@ -134,7 +134,8 @@ int wash_main(int argc, char *argv[])
 	set_wifi_band(0);
 	set_debug(INFO);
 	set_validate_fcs(1);
-	set_log_file(stdout);
+	/* send all warnings, etc to stderr */
+	set_log_file(stderr);
 	set_max_num_probes(DEFAULT_MAX_NUM_PROBES);
 
 	while((c = getopt_long(argc, argv, short_options, long_options, &long_opt_index)) != -1)
@@ -323,9 +324,9 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 	if(!header_printed)
 	{
 		if(!json_mode) {
-			cprintf  (INFO, "BSSID               Ch  dBm  WPS  Lck  Vendor    ESSID\n");
-			//cprintf(INFO, "00:11:22:33:44:55  104  -77  1.0  Yes  Bloatcom  0123456789abcdef0123456789abcdef\n");
-			cprintf  (INFO, "--------------------------------------------------------------------------------\n");
+			fprintf  (stdout, "BSSID               Ch  dBm  WPS  Lck  Vendor    ESSID\n");
+			//fprintf(stdout, "00:11:22:33:44:55  104  -77  1.0  Yes  Bloatcom  0123456789abcdef0123456789abcdef\n");
+			fprintf  (stdout, "--------------------------------------------------------------------------------\n");
 		}
 		header_printed = 1;
 	}
@@ -428,9 +429,9 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					char* vendor = get_vendor_string(get_ap_vendor(bssid));
 					char* sane_ssid = sanitize_string(ssid);
 					if(wps->version > 0)
-						cprintf(INFO, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
+						fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
 					else
-						cprintf(INFO, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", sane_ssid);
+						fprintf(stdout, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", sane_ssid);
 					free(sane_ssid);
 				}
 
@@ -448,8 +449,8 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					mark_ap_complete(bssid);
 					if(json_mode && (show_all_aps || wps->version > 0)) {
 						char *json_string = wps_data_to_json(bssid, ssid, channel, rssi, get_ap_vendor(bssid), wps);
-						fprintf(get_log_file(), "%s\n", json_string);
-						fflush(get_log_file());
+						fprintf(stdout, "%s\n", json_string);
+						fflush(stdout);
 						free(json_string);
 					}
 				}
