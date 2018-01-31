@@ -100,6 +100,7 @@ static unsigned char *get_ap_vendor(char* bssid) {
 		return seen_list[x].vendor_oui+1;
 	return 0;
 }
+
 int wash_main(int argc, char *argv[])
 {
 	int c = 0;
@@ -125,9 +126,6 @@ int wash_main(int argc, char *argv[])
                 { "help", no_argument, NULL, 'h' },
                 { 0, 0, 0, 0 }
         };
-
-	fprintf(stderr, "\nWash v%s WiFi Protected Setup Scan Tool\n", get_version());
-        fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner\n\n");
 
 	globule_init();
 	set_auto_channel_select(0);
@@ -491,8 +489,15 @@ void sigalrm_handler(int x)
 	next_channel();
 }
 
+static void print_header(void) {
+	fprintf(stderr, "\nWash v%s WiFi Protected Setup Scan Tool\n", get_version());
+        fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner\n\n");
+}
+
 static void wash_usage(char *prog)
 {
+	print_header();
+
 	fprintf(stderr, "Required Arguments:\n");
 	fprintf(stderr, "\t-i, --interface=<iface>              Interface to capture packets on\n");
 	fprintf(stderr, "\t-f, --file [FILE1 FILE2 FILE3 ...]   Read packets from capture files\n");
