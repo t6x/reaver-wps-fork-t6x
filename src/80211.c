@@ -632,7 +632,7 @@ static int check_fcs(const unsigned char *packet, size_t len)
 				memcpy(&flags, packet + offset, 4);
 				flags = end_le32toh(flags);
 				if(flags & IEEE80211_RADIOTAP_F_BADFCS)
-					return 1;
+					return 0;
 				if(!(flags & IEEE80211_RADIOTAP_F_FCS))
 					return 1;
 			}
