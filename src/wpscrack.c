@@ -152,7 +152,6 @@ static int reaver_usage(char *prog_name)
         fprintf(stderr, "\t-m, --mac=<mac>                 MAC of the host system\n");
         fprintf(stderr, "\t-e, --essid=<ssid>              ESSID of the target AP\n");
         fprintf(stderr, "\t-c, --channel=<channel>         Set the 802.11 channel for the interface (implies -f)\n");
-	fprintf(stderr, "\t-o, --out-file=<file>           Send output to a log file [stdout]\n");
 	fprintf(stderr, "\t-s, --session=<file>            Restore a previous session file\n");
 	fprintf(stderr, "\t-C, --exec=<command>            Execute the supplied command upon successful pin recovery\n");
         fprintf(stderr, "\t-f, --fixed                     Disable channel hopping\n");

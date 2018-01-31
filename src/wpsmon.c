@@ -107,13 +107,12 @@ int wash_main(int argc, char *argv[])
 	int long_opt_index = 0, i = 0, channel = 0, passive = 0, mode = 0;
 	int source = INTERFACE, ret_val = EXIT_FAILURE;
 	struct bpf_program bpf = { 0 };
-	char *out_file = NULL, *last_optarg = NULL, *target = NULL, *bssid = NULL;
-	char *short_options = "i:c:n:o:b:25sfuFDhaj";
+	char *last_optarg = NULL, *target = NULL, *bssid = NULL;
+	char *short_options = "i:c:n:b:25sfuFDhaj";
         struct option long_options[] = {
 		{ "bssid", required_argument, NULL, 'b' },
                 { "interface", required_argument, NULL, 'i' },
                 { "channel", required_argument, NULL, 'c' },
-		{ "out-file", required_argument, NULL, 'o' },
 		{ "probes", required_argument, NULL, 'n' },
 		{ "file", no_argument, NULL, 'f' },
 		{ "ignore-fcs", no_argument, NULL, 'F' },
@@ -163,9 +162,6 @@ int wash_main(int argc, char *argv[])
 				break;
 			case 'n':
 				set_max_num_probes(atoi(optarg));
-				break;
-			case 'o':
-				out_file = strdup(optarg);
 				break;
 			case 'j':
 				json_mode = 1;
@@ -226,19 +222,6 @@ int wash_main(int argc, char *argv[])
 		passive = 1;
 	}
 
-	/* Open the output file, if any. If none, write to stdout. */
-	if(out_file)
-	{
-		fp = fopen(out_file, "wb");
-		if(!fp)
-		{
-			cprintf(CRITICAL, "[X] ERROR: Failed to open '%s' for writing\n", out_file);
-			goto end;
-		}
-
-		set_log_file(fp);
-	}
-
 	/* 
 	 * Loop through all of the specified capture sources. If an interface was specified, this will only loop once and the
 	 * call to monitor() will block indefinitely. If capture files were specified, this will loop through each file specified
@@ -297,7 +280,6 @@ int wash_main(int argc, char *argv[])
 end:
 	globule_deinit();
 	if(bssid) free(bssid);
-	if(out_file) free(out_file);
 	if(wpsmon.fp) fclose(wpsmon.fp);
 	return ret_val;
 }
@@ -516,7 +498,6 @@ static void wash_usage(char *prog)
 
 	fprintf(stderr, "\nOptional Arguments:\n");
 	fprintf(stderr, "\t-c, --channel=<num>                  Channel to listen on [auto]\n");
-	fprintf(stderr, "\t-o, --out-file=<file>                Write data to file\n");
 	fprintf(stderr, "\t-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [%d]\n", DEFAULT_MAX_NUM_PROBES);
 	fprintf(stderr, "\t-F, --ignore-fcs                     Ignore frame checksum errors\n");
 	fprintf(stderr, "\t-2, --2ghz                           Use 2.4GHz 802.11 channels\n");
