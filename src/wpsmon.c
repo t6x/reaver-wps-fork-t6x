@@ -136,6 +136,9 @@ int wash_main(int argc, char *argv[])
 	set_log_file(stderr);
 	set_max_num_probes(DEFAULT_MAX_NUM_PROBES);
 
+	setvbuf(stdout, 0, _IONBF, 0);
+	setvbuf(stderr, 0, _IONBF, 0);
+
 	while((c = getopt_long(argc, argv, short_options, long_options, &long_opt_index)) != -1)
         {
                 switch(c)
