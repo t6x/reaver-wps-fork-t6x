@@ -612,6 +612,8 @@ unsigned char *parse_ie_data(const unsigned char *data, size_t len, uint8_t tag_
 /* Validates a packet's reported FCS value */
 static int check_fcs(const unsigned char *packet, size_t len)
 {
+	if(!has_rt_header()) return 1;
+
 	uint32_t offset = 0, match = 0;
 	uint32_t fcs = 0, fcs_calc = 0;
 	struct radio_tap_header *rt_header = NULL;
@@ -620,7 +622,7 @@ static int check_fcs(const unsigned char *packet, size_t len)
 	{
 
 		/* FCS is not calculated over the radio tap header */
-		if(has_rt_header() && len >= sizeof(*rt_header))
+		if(len >= sizeof(*rt_header))
 		{
 			uint32_t presentflags, flags;
 			if(!rt_get_presentflags(packet, len, &presentflags, &offset))
