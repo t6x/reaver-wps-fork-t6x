@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 
 char *get_vendor_string(const unsigned char* oui) {
 	#define VENDOR_STR_SIZE (8 + 1)
@@ -20,18 +21,22 @@ char *get_vendor_string(const unsigned char* oui) {
 		{"\x00\x50\x43", "MarvellS"}, /* Marvell Semiconductor, Inc. */
 		{"\x00\x26\x86", "Quantenn"}, /* Quantenna */
 		{"\x00\x09\x86", "LantiqML"}, /* Lantiq/MetaLink */
-		{"\x00\x50\xf2", "Microsof"}  /* Microsoft */
+		{"\x00\x50\xf2", "Microsof"}, /* Microsoft */
+		{"\x00\x0a\xeb", "TP-LINKT"}  /* TP-LINK TECHNOLOGIES CO.,LTD. */
 	};
 
 	#define VENDOR_LIST_SIZE (sizeof(vendors)/sizeof(vendors[0]))
 
-	if(!oui) return 0;
+	if(!oui) return "Unknown ";
 
 	int i;
 	for (i = 0; i < VENDOR_LIST_SIZE; i++)
 		if (!memcmp(oui, vendors[i].id, 3))
 			return (void*) vendors[i].name;
 
-	return "Unknown ";
+	static char str_oui[VENDOR_STR_SIZE];
+	sprintf(str_oui,"0x%02X%02X%02X",oui[0],oui[1],oui[2]);
+
+	return str_oui; 
 
 }
