@@ -41,6 +41,7 @@ static void wash_usage(char *prog);
 
 int show_all_aps = 0;
 int json_mode = 0;
+int show_utf8_ssid = 0;
 
 static struct mac {
 	unsigned char mac[6];
@@ -109,7 +110,7 @@ int wash_main(int argc, char *argv[])
 	int source = INTERFACE, ret_val = EXIT_FAILURE;
 	struct bpf_program bpf = { 0 };
 	char *last_optarg = NULL, *target = NULL, *bssid = NULL;
-	char *short_options = "i:c:n:b:25sfuFDhaj";
+	char *short_options = "i:c:n:b:25sfuFDhajU";
         struct option long_options[] = {
 		{ "bssid", required_argument, NULL, 'b' },
                 { "interface", required_argument, NULL, 'i' },
@@ -123,6 +124,7 @@ int wash_main(int argc, char *argv[])
 		{ "survey", no_argument, NULL, 'u' },
 		{ "all", no_argument, NULL, 'a' },
 		{ "json", no_argument, NULL, 'j' },
+		{ "utf8", no_argument, NULL, 'U' },
                 { "help", no_argument, NULL, 'h' },
                 { 0, 0, 0, 0 }
         };
@@ -179,6 +181,9 @@ int wash_main(int argc, char *argv[])
 				break;
 			case 'a':
 				show_all_aps = 1;
+				break;
+			case 'U':
+				show_utf8_ssid = 1;
 				break;
 			default:
 				wash_usage(argv[0]);
@@ -429,6 +434,11 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 					char* vendor = get_vendor_string(get_ap_vendor(bssid));
 					char* sane_ssid = sanitize_string(ssid);
+					if(show_utf8_ssid)
+					    {
+					        if(verifyssid(ssid))
+					            strcpy(sane_ssid,ssid);
+					    }
 					if(wps->version > 0)
 						fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
 					else
@@ -515,6 +525,7 @@ static void wash_usage(char *prog)
 	fprintf(stderr, "\t-u, --survey                         Use survey mode [default]\n");
 	fprintf(stderr, "\t-a, --all                            Show all APs, even those without WPS\n");
 	fprintf(stderr, "\t-j, --json                           print extended WPS info as json\n");
+	fprintf(stderr, "\t-U, --utf8                           Show UTF8-SSID\n");
 	fprintf(stderr, "\t-h, --help                           Show help\n");
 	
 	fprintf(stderr, "\nExample:\n");
