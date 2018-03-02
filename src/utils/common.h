@@ -439,6 +439,8 @@ typedef u64 __bitwise le64;
 #endif /* __GNUC__ */
 #endif /* __must_check */
 
+#include "verifyssid.h"
+
 int hwaddr_aton(const char *txt, u8 *addr);
 int hwaddr_aton2(const char *txt, u8 *addr);
 int hexstr2bin(const char *hex, u8 *buf, size_t len);
