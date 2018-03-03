@@ -435,10 +435,10 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					char* vendor = get_vendor_string(get_ap_vendor(bssid));
 					char* sane_ssid = sanitize_string(ssid);
 					if(show_utf8_ssid)
-					    {
-					        if(verifyssid(ssid))
-					            strcpy(sane_ssid,ssid);
-					    }
+						{
+							if(verifyssid(ssid))
+							strcpy(sane_ssid,ssid);
+						}
 					if(wps->version > 0)
 						fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
 					else
