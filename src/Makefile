@@ -27,7 +27,6 @@ UTILS_OBJS= \
         utils/wpabuf.o \
 	utils/os_unix.o \
 	utils/vendor.o \
-	utils/verifyssid.o \
 	utils/eloop.o
 
 
