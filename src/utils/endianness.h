@@ -127,6 +127,15 @@
 # error "Sorry, we couldn't detect endiannes for your system! Please set -DENDIANNESS_LE=1 or 0 using your CPPFLAGS/CFLAGS and open an issue for your system on https://github.com/rofl0r/endianness.h - Thanks!"
 #endif
 
+#ifdef ENDIANNESS_DEBUG
+# if ENDIANNESS_LE == 1
+#  warning "Detected Little Endian target CPU"
+# endif
+# if ENDIANNESS_BE == 1
+#  warning "Detected BIG Endian target CPU"
+# endif
+#endif
+
 #include <stdint.h>
 #include <limits.h>
 
@@ -211,7 +220,7 @@ static __inline uint64_t end_host2net64(uint64_t native_number)
 	return result;
 }
 
-#ifdef ENDIANNESS_LE
+#if ENDIANNESS_LE+0 == 1
 # define end_htobe16(x) end_bswap16(x)
 # define end_be16toh(x) end_bswap16(x)
 # define end_htobe32(x) end_bswap32(x)
@@ -224,7 +233,7 @@ static __inline uint64_t end_host2net64(uint64_t native_number)
 # define end_le32toh(x) (uint32_t)(x)
 # define end_htole64(x) (uint64_t)(x)
 # define end_le64toh(x) (uint64_t)(x)
-#elif ENDIANNESS_BE
+#elif ENDIANNESS_BE+0 == 1
 # define end_htobe16(x) (uint16_t)(x)
 # define end_be16toh(x) (uint16_t)(x)
 # define end_htobe32(x) (uint32_t)(x)
