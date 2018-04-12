@@ -26,8 +26,7 @@ void pixie_attack(void) {
 		p->pke, p->ehash1, p->ehash2, p->authkey, p->enonce,
 		dh_small ? "-S" : "-r" , dh_small ? "" : p->pkr);
 		printf("executing %s\n", cmd);
-		system(cmd);
-		exit(0);
+		exit(system(cmd));
 	}
 	PIXIE_FREE(authkey);
 	PIXIE_FREE(pkr);
