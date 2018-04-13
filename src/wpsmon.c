@@ -58,9 +58,9 @@ static int list_insert(char *bssid) {
 	unsigned i;
 	unsigned char mac[6];
 	str2mac(bssid, mac);
-	if(seen_count >= 256) return -1;
 	for(i=0; i<seen_count; i++)
 		if(!memcmp(seen_list[i].mac, mac, 6)) return i;
+	if(seen_count >= 256) return -1;
 	memcpy(seen_list[seen_count].mac, mac, 6);
 	return seen_count++;
 }
