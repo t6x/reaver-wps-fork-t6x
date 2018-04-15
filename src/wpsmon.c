@@ -96,10 +96,9 @@ static void set_ap_vendor(char *bssid) {
 	if(x >= 0 && x < 256) memcpy(seen_list[x].vendor_oui, globule->vendor_oui, sizeof(seen_list[x].vendor_oui));
 }
 static unsigned char *get_ap_vendor(char* bssid) {
-	int x = list_insert(bssid);
-	if(x >= 0 && x < 256 && seen_list[x].vendor_oui[0])
-		return seen_list[x].vendor_oui+1;
-	return 0;
+	static unsigned char vend[6]="\x00\x00\x00\x00\x00\x00";
+	str2mac(bssid,vend);
+	return vend;
 }
 
 int wash_main(int argc, char *argv[])
