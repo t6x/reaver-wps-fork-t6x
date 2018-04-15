@@ -58,9 +58,9 @@ static int list_insert(char *bssid) {
 	unsigned i;
 	unsigned char mac[6];
 	str2mac(bssid, mac);
-	if(seen_count >= 256) return -1;
 	for(i=0; i<seen_count; i++)
 		if(!memcmp(seen_list[i].mac, mac, 6)) return i;
+	if(seen_count >= 256) return -1;
 	memcpy(seen_list[seen_count].mac, mac, 6);
 	return seen_count++;
 }
@@ -96,10 +96,9 @@ static void set_ap_vendor(char *bssid) {
 	if(x >= 0 && x < 256) memcpy(seen_list[x].vendor_oui, globule->vendor_oui, sizeof(seen_list[x].vendor_oui));
 }
 static unsigned char *get_ap_vendor(char* bssid) {
-	int x = list_insert(bssid);
-	if(x >= 0 && x < 256 && seen_list[x].vendor_oui[0])
-		return seen_list[x].vendor_oui+1;
-	return 0;
+	static unsigned char vend[6]="\x00\x00\x00\x00\x00\x00";
+	str2mac(bssid,vend);
+	return vend;
 }
 
 int wash_main(int argc, char *argv[])
@@ -128,6 +127,7 @@ int wash_main(int argc, char *argv[])
                 { "help", no_argument, NULL, 'h' },
                 { 0, 0, 0, 0 }
         };
+	struct sigaction term_handler;
 
 	globule_init();
 	set_auto_channel_select(0);
@@ -276,6 +276,12 @@ int wash_main(int argc, char *argv[])
 			cprintf(CRITICAL, "[X] ERROR: Failed to set packet filter\n");
 			goto end;
 		}
+
+		/* Setting a signal handler for handling termination through Ctrl-C, Ctrl-\ */
+		term_handler.sa_handler = wash_exit;
+		sigaction (SIGTERM, &term_handler, 0);
+		sigaction (SIGINT, &term_handler, 0);
+		sigaction (SIGQUIT, &term_handler, 0);
 
 		/* Do it. */
 		monitor(bssid, passive, source, channel, mode);
@@ -531,4 +537,17 @@ static void wash_usage(char *prog)
 	fprintf(stderr, "\t%s -i wlan0mon\n\n", prog);
 
 	return;
+}
+
+/**
+ * wash_exit() serves as a signal handler to exit the program cleanly
+ * @param signum signal received
+ */
+void wash_exit(int signum) {
+	fprintf(stderr,"Exiting cleanly..\n");
+	fflush(stderr);
+	globule_deinit();
+	if(wpsmon.fp) fclose(wpsmon.fp);
+	signal(signum,SIG_DFL);
+	raise(signum);
 }
