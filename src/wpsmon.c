@@ -127,6 +127,7 @@ int wash_main(int argc, char *argv[])
                 { "help", no_argument, NULL, 'h' },
                 { 0, 0, 0, 0 }
         };
+	struct sigaction term_handler;
 
 	globule_init();
 	set_auto_channel_select(0);
@@ -275,6 +276,12 @@ int wash_main(int argc, char *argv[])
 			cprintf(CRITICAL, "[X] ERROR: Failed to set packet filter\n");
 			goto end;
 		}
+
+		/* Setting a signal handler for handling termination through Ctrl-C, Ctrl-\ */
+		term_handler.sa_handler = wash_exit;
+		sigaction (SIGTERM, &term_handler, 0);
+		sigaction (SIGINT, &term_handler, 0);
+		sigaction (SIGQUIT, &term_handler, 0);
 
 		/* Do it. */
 		monitor(bssid, passive, source, channel, mode);
@@ -530,4 +537,17 @@ static void wash_usage(char *prog)
 	fprintf(stderr, "\t%s -i wlan0mon\n\n", prog);
 
 	return;
+}
+
+/**
+ * wash_exit() serves as a signal handler to exit the program cleanly
+ * @param signum signal received
+ */
+void wash_exit(int signum) {
+	fprintf(stderr,"Exiting cleanly..\n");
+	fflush(stderr);
+	globule_deinit();
+	if(wpsmon.fp) fclose(wpsmon.fp);
+	signal(signum,SIG_DFL);
+	raise(signum);
 }
