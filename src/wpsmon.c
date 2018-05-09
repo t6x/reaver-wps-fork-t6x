@@ -36,6 +36,8 @@
 #include "utils/vendor.h"
 #include "send.h"
 
+#define MAX_APS 256
+
 extern const char* get_version(void);
 static void wash_usage(char *prog);
 
@@ -48,7 +50,7 @@ static struct mac {
 	unsigned char vendor_oui[1+3];
 	unsigned char probes;
 	unsigned char flags;
-} seen_list[256];
+} seen_list[MAX_APS];
 enum seen_flags {
 	SEEN_FLAG_PRINTED = 1,
 	SEEN_FLAG_COMPLETE = 2,
@@ -58,7 +60,7 @@ static int list_insert(char *bssid) {
 	unsigned i;
 	unsigned char mac[6];
 	str2mac(bssid, mac);
-	if(seen_count >= 256) return -1;
+	if(seen_count >= MAX_APS) return -1;
 	for(i=0; i<seen_count; i++)
 		if(!memcmp(seen_list[i].mac, mac, 6)) return i;
 	memcpy(seen_list[seen_count].mac, mac, 6);
@@ -66,7 +68,7 @@ static int list_insert(char *bssid) {
 }
 static int was_printed(char* bssid) {
 	int x = list_insert(bssid);
-	if(x >= 0 && x < 256) {
+	if(x >= 0 && x < MAX_APS) {
 		unsigned f = seen_list[x].flags;
 		seen_list[x].flags |= SEEN_FLAG_PRINTED;
 		return f & SEEN_FLAG_PRINTED;
@@ -75,29 +77,29 @@ static int was_printed(char* bssid) {
 }
 static void mark_ap_complete(char *bssid) {
 	int x = list_insert(bssid);
-	if(x >= 0 && x < 256) seen_list[x].flags |= SEEN_FLAG_COMPLETE;
+	if(x >= 0 && x < MAX_APS) seen_list[x].flags |= SEEN_FLAG_COMPLETE;
 }
 static int is_done(char *bssid) {
 	int x = list_insert(bssid);
-	if(x >= 0 && x < 256) return seen_list[x].flags & SEEN_FLAG_COMPLETE;
+	if(x >= 0 && x < MAX_APS) return seen_list[x].flags & SEEN_FLAG_COMPLETE;
 	return 1;
 }
 static int should_probe(char *bssid) {
 	int x = list_insert(bssid);
-        if(x >= 0 && x < 256) return seen_list[x].probes < get_max_num_probes();
+        if(x >= 0 && x < MAX_APS) return seen_list[x].probes < get_max_num_probes();
 	return 0;
 }
 static void update_probe_count(char *bssid) {
 	int x = list_insert(bssid);
-	if(x >= 0 && x < 256) seen_list[x].probes++;
+	if(x >= 0 && x < MAX_APS) seen_list[x].probes++;
 }
 static void set_ap_vendor(char *bssid) {
 	int x = list_insert(bssid);
-	if(x >= 0 && x < 256) memcpy(seen_list[x].vendor_oui, globule->vendor_oui, sizeof(seen_list[x].vendor_oui));
+	if(x >= 0 && x < MAX_APS) memcpy(seen_list[x].vendor_oui, globule->vendor_oui, sizeof(seen_list[x].vendor_oui));
 }
 static unsigned char *get_ap_vendor(char* bssid) {
 	int x = list_insert(bssid);
-	if(x >= 0 && x < 256 && seen_list[x].vendor_oui[0])
+	if(x >= 0 && x < MAX_APS && seen_list[x].vendor_oui[0])
 		return seen_list[x].vendor_oui+1;
 	return 0;
 }
