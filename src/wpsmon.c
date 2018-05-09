@@ -36,7 +36,7 @@
 #include "utils/vendor.h"
 #include "send.h"
 
-#define MAX_APS 256
+#define MAX_APS 512
 
 extern const char* get_version(void);
 static void wash_usage(char *prog);
