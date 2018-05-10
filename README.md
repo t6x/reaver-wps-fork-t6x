@@ -14,7 +14,7 @@ The first version of **reaver-wps** (reaver 1.0) was created by **Craig Heffner*
 Reaver versioning was updated to **1.6.x** in order to identify the new cycle.  
 All stable relases since the first beta version of reaver 1.6 can be downloaded from our [Releases](https://github.com/t6x/reaver-wps-fork-t6x/releases) page.  
 * More information about the Pixie Dust attack (including **which APs are vulnerable**) can be found in [pixiewps repository](https://github.com/wiire/pixiewps), 
-[pixie dust thread in Kali forum)](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack) &                                                                    [Dominique Bongard's full disclosure](https://docs.google.com/spreadsheets/d/1tSlbqVQ59kGn8hgmwcPTHUECQ3o9YhXR91A_p7Nnj5Y/edit?usp=sharing)
+[pixie dust thread (in Kali forum)](https://forums.kali.org/showthread.php?24286-WPS-Pixie-Dust-Attack-(Offline-WPS-Attack)) & [Dominique Bongard's full disclosure](https://docs.google.com/spreadsheets/d/1tSlbqVQ59kGn8hgmwcPTHUECQ3o9YhXR91A_p7Nnj5Y/edit?usp=sharing)
 
 - - -
 
@@ -146,12 +146,14 @@ Example:
 ```
 
 A detailed description of the options with  concrete syntax examples can be found in [Craig Heffner's wash readme](https://github.com/t6x/reaver-wps-fork-t6x/blob/master/docs/README.WASH).  
-About the new options: 
+About the new options and features: 
 ## -a  //  --all  
 The option `-a` of Wash will list all access points, including those without WPS enabled.  
 ## -j  //  --json  
 The extended WPS information (serial, model...) from the AP probe answer will be printed in the terminal (in json format)  
-
+## "Vendor" column  
+Wash now displays the manufacturer of the wifi chipset from the Acces Points in order to know if they are vulnerable to pixie dust attack.  
+## Stdout can be piped  
 Notice that wash output can be piped into other commands. For more information see the wiki article [Everything about the new options from wash](https://github.com/t6x/reaver-wps-fork-t6x/wiki/Everything-about-the-new-options-from-wash)  
   
 # Acknowledgements
