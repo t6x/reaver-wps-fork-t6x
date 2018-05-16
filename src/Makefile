@@ -141,8 +141,5 @@ clean:
 	rm -f $(LIB_OBJS) $(PROG_OBJS)
 	rm -f $(GENH)
 
-distclean: clean
-	rm -rf $(CONFDIR)
-
-.PHONY: all clean distclean install
+.PHONY: all clean install
 
