@@ -104,6 +104,13 @@ static unsigned char *get_ap_vendor(char* bssid) {
 	return 0;
 }
 
+static volatile int got_sigint;
+static void sigint_handler(int x) {
+	(void) x;
+	got_sigint = 1;
+	pcap_breakloop(get_handle());
+}
+
 int wash_main(int argc, char *argv[])
 {
 	int c = 0;
@@ -327,6 +334,13 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 				startchan = 34;
 			change_channel(startchan);
 		}
+
+		memset(&act, 0, sizeof(struct sigaction));
+		sigaction (SIGINT, 0, &act);
+		act.sa_flags &= ~SA_RESTART;
+		act.sa_handler = sigint_handler;
+		sigaction (SIGINT, &act, 0);
+
 	}
 
 	if(!header_printed)
@@ -339,10 +353,11 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 		header_printed = 1;
 	}
 
-	while((packet = next_packet(&header)))
-	{
-		parse_wps_settings(packet, &header, bssid, passive, mode, source);
-		memset((void *) packet, 0, header.len);
+	while(!got_sigint) {
+		while(packet = next_packet(&header)) {
+			parse_wps_settings(packet, &header, bssid, passive, mode, source);
+			memset((void *) packet, 0, header.len);
+		}
 	}
 
 	return;
