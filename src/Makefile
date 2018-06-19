@@ -93,9 +93,11 @@ LIB_OBJS=libwps/libwps.o $(WPS_OBJS) $(UTILS_OBJS) \
 	$(TLS_OBJS) $(CRYPTO_OBJS) $(LWE_OBJS)
 
 
-PROG_OBJS=argsparser.o globule.o init.o sigint.o iface.o sigalrm.o \
- misc.o cracker.o session.o send.o pins.o 80211.o exchange.o builder.o \
- keys.o crc.o pixie.o wpscrack.o wpsmon.o main.o version.o
+MAIN_OBJS=globule.o init.o sigint.o iface.o sigalrm.o \
+ misc.o session.o send.o pins.o 80211.o builder.o \
+ keys.o crc.o pixie.o version.o
+
+PROG_OBJS=$(MAIN_OBJS) exchange.o argsparser.o wpscrack.o wpsmon.o cracker.o main.o
 
 # Version of the Wireless Tools
 WT_VERSION := $(shell sed -ne "/WT_VERSION/{s:\([^0-9]*\)::;p;q;}" < lwe/iwlib.h )
@@ -119,6 +121,11 @@ wash: reaver
 
 reaver: $(PROG_OBJS) $(LIB_OBJS)
 	$(CC) $(CFLAGS) $(INC) $(PROG_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
+
+extest.o: exchange.c
+	$(CC) $(CFLAGS) -g3 -O0 -DEX_TEST -c exchange.c -o extest.o
+extest: extest.o $(LIB_OBJS) $(MAIN_OBJS)
+	$(CC) $(LIB_OBJS) extest.o $(MAIN_OBJS) $(LDFLAGS) -o extest
 
 version.o: version.h
 version.h: $(wildcard $(srcdir)/VERSION $(srcdir)/../.git)

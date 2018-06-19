@@ -512,3 +512,58 @@ int parse_nack(const void *data, size_t data_size)
 
 	return ret_val;
 }
+
+
+#ifdef EX_TEST
+
+#include "wpsmon.h"
+
+int main(int argc, char** argv) {
+	globule_init();
+	// arg 1: filename of cap
+	set_handle(capture_init(argv[1]));
+	if(!get_handle()) {
+		cprintf(CRITICAL, "[X] ERROR: Failed to open '%s' for capturing\n", get_iface());
+		goto end;
+	}
+	struct bpf_program bpf = { 0 };
+	if(pcap_compile(get_handle(), &bpf, PACKET_FILTER, 0, 0) != 0) {
+		cprintf(CRITICAL, "[X] ERROR: Failed to compile packet filter\n");
+		cprintf(CRITICAL, "[X] PCAP: %s\n", pcap_geterr(get_handle()));
+		goto end;
+	}
+
+	//arg 2: "our" mac for testing
+	unsigned char mac[6];
+	str2mac(argv[2], mac);
+	set_mac(mac);
+
+	//arg 3: bssid of "target" AP
+	str2mac(argv[3], mac);
+	set_bssid(mac);
+
+	struct pcap_pkthdr header;
+	const unsigned char *packet;
+	enum wps_type packet_type = UNKNOWN;
+
+	unsigned long packet_number = 0;
+
+	while((packet = next_packet(&header))) {
+		packet_number++;
+		packet_type = process_packet(packet, &header);
+		switch(packet_type) {
+			case UNKNOWN:
+				dprintf(2, "UNK\n");
+				break;
+			case WPS_PT_DEAUTH:
+				dprintf(2, "DEAUTH\n");
+				break;
+		}
+	}
+
+	end:
+	globule_deinit();
+	return 0;
+}
+
+#endif
