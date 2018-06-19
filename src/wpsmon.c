@@ -353,11 +353,9 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 		header_printed = 1;
 	}
 
-	while(!got_sigint) {
-		while(packet = next_packet(&header)) {
-			parse_wps_settings(packet, &header, bssid, passive, mode, source);
-			memset((void *) packet, 0, header.len);
-		}
+	while(!got_sigint && (packet = next_packet(&header))) {
+		parse_wps_settings(packet, &header, bssid, passive, mode, source);
+		memset((void *) packet, 0, header.len);
 	}
 
 	return;
