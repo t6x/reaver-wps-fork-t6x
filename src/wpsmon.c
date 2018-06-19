@@ -361,6 +361,8 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 	return;
 }
 
+#define wps_active(W) (((W)->version) || ((W)->locked != 2) || ((W)->state))
+
 void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *target, int passive, int mode, int source)
 {
 	struct radio_tap_header *rt_header = NULL;
@@ -434,9 +436,9 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					probe_sent = 1;
 				}
 		
-				if(!json_mode && (!was_printed(bssid) && (wps->version > 0 || show_all_aps == 1)))
+				if(!json_mode && (!was_printed(bssid) && (wps_active(wps) || show_all_aps == 1)))
 				{
-					if(wps->version > 0) switch(wps->locked)
+					if(wps_active(wps)) switch(wps->locked)
 					{
 						case WPSLOCKED:
 							lock_display = YES;
@@ -453,7 +455,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					if(show_utf8_ssid && verifyssid(ssid))
 						strcpy(sane_ssid,ssid);
 
-					if(wps->version > 0)
+					if(wps_active(wps))
 						fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
 					else
 						fprintf(stdout, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", sane_ssid);
@@ -472,7 +474,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				if(!wps_parsed || is_probe_resp)
 				{
 					mark_ap_complete(bssid);
-					if(json_mode && (show_all_aps || wps->version > 0)) {
+					if(json_mode && (show_all_aps || wps_active(wps))) {
 						char *json_string = wps_data_to_json(bssid, ssid, channel, rssi, get_ap_vendor(bssid), wps);
 						fprintf(stdout, "%s\n", json_string);
 						fflush(stdout);
