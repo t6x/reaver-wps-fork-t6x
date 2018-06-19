@@ -43,6 +43,7 @@ enum wps_result do_wps_exchange()
 	int premature_timeout = 0, terminated = 0, got_nack = 0;
 	int id_response_sent = 0, tx_type = 0;
 	int m2_sent = 0, m4_sent = 0, m6_sent = 0;
+	int deauth_flag = 0;
 
 	/* Initialize settings for this WPS exchange */
 	set_last_wps_state(0);
@@ -66,7 +67,7 @@ enum wps_result do_wps_exchange()
 	{
 		tx_type = 0;
 
-		if(packet_type > last_msg)
+		if(packet_type != WPS_PT_DEAUTH && packet_type > last_msg)
 		{
 			last_msg = packet_type;
 		}
@@ -80,6 +81,11 @@ enum wps_result do_wps_exchange()
 		if(packet_type != UNKNOWN)
 		switch(packet_type)
 		{
+			case WPS_PT_DEAUTH:
+				if(!deauth_flag)
+					cprintf(VERBOSE, "[+] Received deauth request\n");
+				deauth_flag = 1;
+				break;
 			case IDENTITY_REQUEST:
 				cprintf(VERBOSE, "[+] Received identity request\n");
 				tx_type = IDENTITY_RESPONSE;
@@ -154,6 +160,10 @@ enum wps_result do_wps_exchange()
 				terminated = 1;
 				break;
 		}
+		if(packet_type != UNKNOWN && packet_type != WPS_PT_DEAUTH)
+			deauth_flag = 0;
+		else if(packet_type == WPS_PT_DEAUTH)
+			continue;
 
 		if(tx_type == IDENTITY_RESPONSE)
 		{
@@ -189,6 +199,7 @@ enum wps_result do_wps_exchange()
 				}
 
 				send_eapol_start();
+				deauth_flag = 0;
 			}
 			else
 			{
@@ -293,6 +304,12 @@ static int is_packet_for_us(struct dot11_frame_header *frame_header)
 		);
 }
 
+static int is_deauth_packet(struct dot11_frame_header *frame_header)
+{
+	int fcstype = frame_header->fc & end_htole16(IEEE80211_FCTL_STYPE);
+	return (fcstype == end_htole16(IEEE80211_STYPE_DEAUTH));
+}
+
 /* 
  * Processes incoming packets looking for EAP and WPS messages.
  * Responsible for stopping the timer when a valid EAP packet is received.
@@ -332,6 +349,9 @@ enum wps_type process_packet(const u_char *packet, struct pcap_pkthdr *header)
 	/* Is this a packet sent to our MAC address? */
 	if(!is_packet_for_us(frame_header))
 		return UNKNOWN;
+
+	if(is_deauth_packet(frame_header))
+		return WPS_PT_DEAUTH;
 
 	int data_pkt_type;
 

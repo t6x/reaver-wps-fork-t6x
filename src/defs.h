@@ -168,7 +168,8 @@ enum wps_type
         M7 = 0x0B,
         M8 = 0x0C,
         DONE = 0x0F,
-        NACK = 0x0E
+        NACK = 0x0E,
+        WPS_PT_DEAUTH = 0xFF
 };
 
 enum wfa_elements
