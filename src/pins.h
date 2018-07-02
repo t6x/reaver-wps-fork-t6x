@@ -37,6 +37,7 @@
 #include "defs.h"
 #include "globule.h"
 #include "keys.h"
+#include "macpins.h"
 
 #define PIN_SIZE	8
 

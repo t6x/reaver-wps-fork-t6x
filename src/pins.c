@@ -100,16 +100,38 @@ char *build_next_pin()
 /* Generate the p1 and p2 pin arrays */
 void generate_pins()
 {
+	int *mac_pins = NULL, len = 0, j;
+	char *bssid = NULL;
+	char half_pin[12];
         int i = 0, index = 0;
 
+	bssid = mac2str(get_bssid(), '\0');
+	if (bssid) {
+		mac_pins = build_mac_pins(bssid, &len);
+	}
 	/* If the first half of the pin was not specified, generate a list of possible pins */
 	if(!get_static_p1())
 	{
+		index = 0;
+		/* 
+		 * Set first the defaulfs P1 key generated with bssid and set priority to 2.
+		 */
+		for (i=0; i<len; ++i)
+		{
+			j = mac_pins[i]/1000;
+			sprintf(half_pin, "%04d", j);
+			if(strcmp(k1[j].key, half_pin) == 0 && k1[j].priority != 2)
+			{
+				k1[j].priority = 2;
+				set_p1(index, k1[j].key);
+				index++;
+			}
+		}
 		/* 
 		 * Look for P1 keys marked as priority. These are pins that have been 
 		 * reported to be commonly used on some APs and should be tried first. 
 		 */
-		for(index=0, i=0; i<P1_SIZE; i++)
+		for(i=0; i<P1_SIZE; i++)
 		{
 			if(k1[i].priority == 1)
 			{
@@ -140,11 +162,26 @@ void generate_pins()
 	/* If the second half of the pin was not specified, generate a list of possible pins */
 	if(!get_static_p2())
 	{
+		index = 0;
+		/* 
+		 * Set first the defaulfs P2 key generated with bssid and set priority to 2.
+		 */
+		for (i=0; i<len; ++i)
+		{
+			j = mac_pins[i]%1000;
+			sprintf(half_pin, "%03d", j);
+			if(strcmp(k2[j].key, half_pin) == 0 && k2[j].priority != 2)
+			{
+				k2[j].priority = 2;
+				set_p2(index, k2[j].key);
+				index++;
+			}
+		}
 		/* 
 		 * Look for P2 keys statically marked as priority. These are pins that have been 
 		 * reported to be commonly used on some APs and should be tried first. 
 		 */
-		for(index=0, i=0; i<P2_SIZE; i++)
+		for(i=0; i<P2_SIZE; i++)
 		{
 			if(k2[i].priority == 1)
 			{
@@ -171,6 +208,8 @@ void generate_pins()
 			set_p2(index, get_static_p2());
 		}
 	}
+	if(bssid) free(bssid);
+	if(mac_pins) free(mac_pins);
 
         return;
 }
