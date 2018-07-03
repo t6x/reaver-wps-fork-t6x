@@ -149,6 +149,7 @@ void generate_pins()
 	                        index++;
 			}
 		}
+		cprintf(INFO, "[+] Add MAC Pins for P1 keys\n");
         }
 	else
 	{
@@ -199,6 +200,7 @@ void generate_pins()
                 	        index++;
 			}
                 }
+		cprintf(INFO, "[+] Add MAC Pins for P2 keys\n");
         }
 	else
 	{
@@ -212,5 +214,118 @@ void generate_pins()
 	if(mac_pins) free(mac_pins);
 
         return;
+}
+
+/* Generate default pins with MAC of AP and serial number, after reset the p1 and p2 pin arrays */
+void add_mac_sn_pins()
+{
+	int *mac_pins = NULL, len = 0, j;
+	char *bssid = NULL;
+	char half_pin[12];
+	int i = 0, index = 0;
+
+	bssid = mac2str(get_bssid(), '\0');
+	if (bssid && get_serial_status() == SERIAL_SET) {
+		mac_pins = build_mac_sn_pins(bssid, get_serial_number(), &len);
+
+		/* If the first half of the pin was not specified, generate a list of possible pins */
+		if(!get_static_p1())
+		{
+			/* Found last P1 key with priority == 2 */
+			index = get_p1_index()+1;
+			while(k1[atoi(get_p1(index))].priority == 2 && index < P1_SIZE) {
+				++index;
+			}
+			/* 
+			 * Set first the defaulfs P1 key generated with bssid and set priority to 2.
+			 */
+			for (i=0; i<len && index < P1_SIZE; ++i)
+			{
+				j = mac_pins[i]/1000;
+				sprintf(half_pin, "%04d", j);
+				if(strcmp(k1[j].key, half_pin) == 0 && k1[j].priority != 2)
+				{
+					k1[j].priority = 2;
+					set_p1(index, k1[j].key);
+					index++;
+				}
+			}
+			/* 
+			 * Look for P1 keys marked as priority. These are pins that have been 
+			 * reported to be commonly used on some APs and should be tried first. 
+			 */
+			for(i=0; i<P1_SIZE; i++)
+			{
+				if(k1[i].priority == 1)
+				{
+					set_p1(index, k1[i].key);
+					index++;
+				}
+			}
+
+			/* Randomize the rest of the P1 keys */
+			for(i=0; index < P1_SIZE; i++)
+			{
+				if(!k1[i].priority)
+				{
+					set_p1(index, k1[i].key);
+					index++;
+				}
+			}
+			cprintf(INFO, "[+] Add MAC and Serial Number Pins for P1 keys\n");
+		}
+
+		/* If the second half of the pin was not specified, generate a list of possible pins */
+		if(!get_static_p2())
+		{
+			/* Found last P2 key with priority == 2 */
+			index = get_p2_index()+1;
+			while(k2[atoi(get_p2(index))].priority == 2 && index < P2_SIZE) {
+				++index;
+			}
+			/* 
+			 * Set first the defaulfs P2 key generated with bssid and set priority to 2.
+			 */
+			for (i=0; i<len && index < P2_SIZE; ++i)
+			{
+				j = mac_pins[i]%1000;
+				sprintf(half_pin, "%03d", j);
+				if(strcmp(k2[j].key, half_pin) == 0 && k2[j].priority != 2)
+				{
+					k2[j].priority = 2;
+					set_p2(index, k2[j].key);
+					index++;
+				}
+			}
+			/* 
+			 * Look for P2 keys statically marked as priority. These are pins that have been 
+			 * reported to be commonly used on some APs and should be tried first. 
+			 */
+			for(i=0; i<P2_SIZE; i++)
+			{
+				if(k2[i].priority == 1)
+				{
+					set_p2(index, k2[i].key);
+					index++;
+				}
+			}
+
+			/* Randomize the rest of the P2 keys */
+			for(i=0; index < P2_SIZE; i++)
+			{
+				if(!k2[i].priority)
+				{
+					set_p2(index, k2[i].key);
+					index++;
+				}
+			}
+			cprintf(INFO, "[+] Add MAC and Serial Number Pins for P2 keys\n");
+		}
+	}
+
+	if(bssid) free(bssid);
+	if(mac_pins) free(mac_pins);
+
+	return;
 }
 

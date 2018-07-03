@@ -152,6 +152,8 @@ struct globals
 					 * wpa_supplicant's wps_data structure, needed for almost all wpa_supplicant
                                          * function calls.
                                          */
+	char *serial_number;                      /* Pointer to the serial number of AP */
+	enum serial_state serial_status;      /* Indicates the status of the serial number of AP: SERIAL_INIT | SERIAL_SET | SERIAL_DONE */
 };
 
 extern struct globals *globule;
@@ -262,4 +264,8 @@ void set_vendor(int, const unsigned char*);
 unsigned char *get_vendor(void);
 void set_repeat_m6(int);
 int get_repeat_m6(void);
+void set_serial_number(char *value);
+char *get_serial_number();
+void set_serial_status(enum serial_state status);
+enum serial_state get_serial_status();
 #endif

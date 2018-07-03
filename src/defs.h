@@ -112,6 +112,13 @@ enum key_state
 	KEY_DONE = 2
 };
 
+enum serial_state
+{
+	SERIAL_INIT = 0,
+	SERIAL_SET = 1,
+	SERIAL_DONE = 2
+};
+
 enum eap_codes
 {
 	EAP_REQUEST = 1,

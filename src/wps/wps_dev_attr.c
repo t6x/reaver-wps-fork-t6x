@@ -243,6 +243,8 @@ static int wps_process_model_number(struct wps_device_data *dev, const u8 *str,
 static int wps_process_serial_number(struct wps_device_data *dev,
 				     const u8 *str, size_t str_len)
 {
+	char serial[64];
+	int i, j;
 	if (str == NULL) {
 		wpa_printf(MSG_DEBUG, "WPS: No Serial Number received");
 		return -1;
@@ -256,6 +258,22 @@ static int wps_process_serial_number(struct wps_device_data *dev,
 		return -1;
 	os_memcpy(dev->serial_number, str, str_len);
 	dev->serial_number[str_len] = '\0';
+
+	if (get_serial_status() == SERIAL_INIT) {
+		for (j=i=0; i<str_len && j<64; ++i)
+		{
+			if ((dev->serial_number[i]>='a' && dev->serial_number[i]<='z')
+				|| (dev->serial_number[i]>='A' && dev->serial_number[i]<='Z')
+				|| (dev->serial_number[i]>='0' && dev->serial_number[i]<='9')) {
+				serial[j++] = dev->serial_number[i];
+			}
+		}
+		serial[j] = '\0';
+		set_serial_number(serial);
+		set_serial_status(SERIAL_SET);
+		cprintf(INFO, "[+] Serial Number set: %s\n", serial);
+		// wpa_printf(MSG_INFO, "Serial Number set: %s", serial);
+	}
 
 	return 0;
 }

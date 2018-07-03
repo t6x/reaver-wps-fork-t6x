@@ -637,4 +637,18 @@ int get_repeat_m6(void) {
 	return globule->repeat_m6;
 }
 
+void set_serial_number(char *value) {
+	globule->serial_number = strdup(value);
+}
+char *get_serial_number() {
+	return globule->serial_number;
+}
+
+void set_serial_status(enum serial_state status) {
+	globule->serial_status = status;
+}
+enum serial_state get_serial_status() {
+	return globule->serial_status;
+}
+
 

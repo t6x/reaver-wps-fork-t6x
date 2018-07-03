@@ -40,6 +40,7 @@ void crack()
 	char *bssid = NULL;
 	char *pin = NULL;
 	int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
+	int session_restored = 0;
 	float pin_count = 0;
 	time_t start_time = 0;
 	enum wps_result result = 0;
@@ -61,11 +62,16 @@ void crack()
 	if(get_handle() != NULL)
 	{
 		generate_pins();
+		set_serial_status(SERIAL_INIT);
 
 		/* Restore any previously saved session */
 		if(get_static_p1() == NULL)
 		{
-			restore_session();
+			session_restored = restore_session();
+			if (session_restored) {
+				set_serial_number("");
+				set_serial_status(SERIAL_DONE);
+			}
 		}
 
 		/* Convert BSSID to a string */
@@ -194,6 +200,14 @@ void crack()
 			 * WPS transaction has completed or failed.
 			 */
 			result = do_wps_exchange();
+
+			/*
+			 * Reset P1 keys and P2 keys with default pins generated from MAC and serial number
+			 */
+			if (!session_restored && get_serial_status() == SERIAL_SET) {
+				add_mac_sn_pins();
+				set_serial_status(SERIAL_DONE);
+			}
 
 			switch(result)
 			{

@@ -48,5 +48,6 @@ extern struct key k2[P2_SIZE];
 char *build_wps_pin();
 char *build_next_pin();
 void generate_pins();
+void add_mac_sn_pins();
 
 #endif
