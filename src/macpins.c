@@ -1,3 +1,8 @@
+/*
+ * Functions to generate default WPS PIN with BSSID and Serial Number of AP
+ * 
+ * Reference: https://3wifi.stascorp.com/wpspin
+ */
 
 #include "macpins.h"
 
@@ -7,9 +12,12 @@
  */
 
 /**
- * generate default pin with last 24-bit, 28-bit, 32-bit, 36-bit, 40-bit, 44-bit, 48-bit of mac
- * @params: MAC, last x bytes of MAC
- * @return: pin
+ * Generate default pin with last 24-bit, 28-bit, 32-bit, 36-bit, 40-bit, 44-bit, 48-bit of mac
+ * 
+ * @params char* The BSSID without ':'
+ * @params int   Last x hex character of BSSID to calculate
+ * 
+ * @return int   7-digit pin
  */
 int mac_byte_pin(char *mac, int last)
 {
@@ -29,9 +37,12 @@ int mac_byte_pin(char *mac, int last)
 }
 
 /**
- * generate default pin with last Reverse byte from 24-bit, 32-bit, 48-bit of mac
- * @params: MAC, last x bytes of MAC
- * @return: pin
+ * Generate default pin with Reverse byte from last 24-bit, 32-bit, 48-bit of mac
+ * 
+ * @params char* The BSSID without ':'
+ * @params int   Last x hex character of BSSID to calculate
+ * 
+ * @return int   7-digit pin
  */
 int mac_reverse_byte_pin(char *mac, int last)
 {
@@ -53,9 +64,12 @@ int mac_reverse_byte_pin(char *mac, int last)
 }
 
 /**
- * generate default pin with last Reverse nibble from 24-bit, 32-bit, 48-bit of mac
- * @params: MAC, last x bytes of MAC
- * @return: pin
+ * Generate default pin with Reverse nibble from last 24-bit, 32-bit, 48-bit of mac
+ * 
+ * @params char* The BSSID without ':'
+ * @params int   Last x hex character of BSSID to calculate
+ * 
+ * @return int   7-digit pin
  */
 int mac_reverse_nibble_pin(char *mac, int last)
 {
@@ -76,9 +90,12 @@ int mac_reverse_nibble_pin(char *mac, int last)
 }
 
 /**
- * generate default pin with last Reverse bits from 24-bit, 32-bit, 48-bit of mac
- * @params: MAC, last x bytes of MAC
- * @return: pin
+ * Generate default pin with Reverse bits from last 24-bit, 32-bit, 48-bit of mac
+ * 
+ * @params char* The BSSID without ':'
+ * @params int   Last x hex character of BSSID to calculate
+ * 
+ * @return int   7-digit pin
  */
 int mac_reverse_bit_pin(char *mac, int last)
 {
@@ -111,9 +128,11 @@ int mac_reverse_bit_pin(char *mac, int last)
 }
 
 /**
- * generate default pin for ASUS router
- * @params: MAC
- * @return: pin
+ * Generate default pin for ASUS router
+ * 
+ * @params char* The BSSID without ':'
+ * 
+ * @return int   7-digit pin
  */
 int mac_asus_pin(char *mac)
 {
@@ -136,9 +155,12 @@ int mac_asus_pin(char *mac)
 }
 
 /**
- * generate default pin for D-Link router
- * @params: MAC, add number
- * @return: pin
+ * Generate default pin for D-Link router
+ * 
+ * @params char* The BSSID without ':'
+ * @params int   The addicional number to calculate, default is 0 or 1
+ * 
+ * @return int   7-digit pin
  */
 int mac_dlink_pin(char *mac, int add)
 {
@@ -165,9 +187,11 @@ int mac_dlink_pin(char *mac, int add)
 }
 
 /**
- * generate default pin for Airocon Realtek router
- * @params: MAC
- * @return: pin
+ * Generate default pin for Airocon Realtek router
+ * 
+ * @params char* The BSSID without ':'
+ * 
+ * @return int   7-digit pin
  */
 int mac_airocon_pin(char *mac)
 {
@@ -194,9 +218,11 @@ int mac_airocon_pin(char *mac)
 }
 
 /**
- * generate default pin with Inv NIC to PIN
- * @params: MAC
- * @return: pin
+ * Generate default pin with Inv NIC
+ * 
+ * @params char* The BSSID without ':'
+ * 
+ * @return int   7-digit pin
  */
 int mac_inv_nic_pin(char *mac)
 {
@@ -211,9 +237,12 @@ int mac_inv_nic_pin(char *mac)
 }
 
 /**
- * generate default pin with NIC * 2 or NIC * 3
- * @params: MAC, x times
- * @return: pin
+ * Generate default pin with NIC * 2 or NIC * 3
+ * 
+ * @params char* The BSSID without ':'
+ * @params int   The addicional number to calculate, default is 2 or 3
+ * 
+ * @return int   7-digit pin
  */
 int mac_nicx_pin(char *mac, int x)
 {
@@ -228,9 +257,11 @@ int mac_nicx_pin(char *mac, int x)
 }
 
 /**
- * generate default pin with OUI + NIC
- * @params: MAC
- * @return: pin
+ * Generate default pin with OUI + NIC
+ * 
+ * @params char* The BSSID without ':'
+ * 
+ * @return int   7-digit pin
  */
 int mac_oui_add_nic_pin(char *mac)
 {
@@ -248,9 +279,11 @@ int mac_oui_add_nic_pin(char *mac)
 }
 
 /**
- * generate default pin with OUI - NIC
- * @params: MAC
- * @return: pin
+ * Generate default pin with OUI - NIC
+ * 
+ * @params char* The BSSID without ':'
+ * 
+ * @return int   7-digit pin
  */
 int mac_oui_sub_nic_pin(char *mac)
 {
@@ -275,9 +308,11 @@ int mac_oui_sub_nic_pin(char *mac)
 }
 
 /**
- * generate default pin with OUI ^ NIC
- * @params: MAC
- * @return: pin
+ * Generate default pin with OUI ^ NIC
+ * 
+ * @params char* The BSSID without ':'
+ * 
+ * @return int   7-digit pin
  */
 int mac_oui_xor_nic_pin(char *mac)
 {
@@ -424,9 +459,12 @@ int mac_sn_pin(char *mac, char *serial, int *init_bx, int add)
 }
 
 /**
- * generate default pin for Belkin router
- * @params: MAC, Serial Number
- * @return: pin
+ * Generate default pin for Belkin router
+ * 
+ * @params char* The BSSID without ':'
+ * @params char* The serial number of AP
+ * 
+ * @return int   7-digit pin
  */
 int mac_belkin_pin(char *mac, char *serial) {
 	int bx[7] = {66, 129, 209, 10, 24, 3, 39};
@@ -434,9 +472,12 @@ int mac_belkin_pin(char *mac, char *serial) {
 }
 
 /**
- * generate default pin for Vodafone EasyBox router
- * @params: MAC, Serial Number
- * @return: pin
+ * Generate default pin for Vodafone EasyBox router
+ * 
+ * @params char* The BSSID without ':'
+ * @params char* The serial number of AP
+ * 
+ * @return int   7-digit pin
  */
 int mac_vodafone_easybox_pin(char *mac, char *serial) {
 	char key[13];
@@ -453,14 +494,17 @@ int mac_vodafone_easybox_pin(char *mac, char *serial) {
 	} else {
 		ser = serial;
 	}
-	//serial = serial/mac
+
 	return mac_sn_pin(mac, ser, bx, 0);
 }
 
 /**
- * generate default pin for Livebox Arcadyan router
- * @params: MAC, Serial Number
- * @return: pin
+ * Generate default pin for Livebox Arcadyan router
+ * 
+ * @params char* The BSSID without ':'
+ * @params char* The serial number of AP
+ * 
+ * @return int   7-digit pin
  */
 int mac_livebox_arcadyan_pin(char *mac, char *serial) {
 	int bx[7] = {129, 65, 6, 10, 136, 80, 33};
@@ -469,14 +513,17 @@ int mac_livebox_arcadyan_pin(char *mac, char *serial) {
 }
 
 /**
- * generate all default pins with MAC
- * @params: MAC, length of array by reference
- * @return: list of pins
+ * Generate various defaults pins with MAC
+ * 
+ * @params char* The BSSID without ':'
+ * @params int*  Length of array by reference
+ * 
+ * @return int*  Pointer to all 7-digit pin in an array
  */
 int *build_mac_pins(char *mac, int *len)
 {
 	int mac_pins[MAC_PIN_SIZE];
-	int static_pins[DEFAULT_PIN_SIZE] = {
+	int static_pins[STATIC_PIN_SIZE] = {
 		1234567, /* Cisco */
 		2017252, /* Broadcom 1 */
 		4626484, /* Broadcom 2 */
@@ -532,7 +579,7 @@ int *build_mac_pins(char *mac, int *len)
 	mac_pins[index++] = mac_vodafone_easybox_pin(mac, ""); /* Vodafone EasyBox without serial */
 	mac_pins[index++] = mac_livebox_arcadyan_pin(mac, ""); /* Livebox Arcadyan without serial */
 
-	*len = index + DEFAULT_PIN_SIZE;
+	*len = index + STATIC_PIN_SIZE;
 	pins = malloc(sizeof(mac_pins) + sizeof(static_pins));
 	if (pins)
 	{
@@ -540,7 +587,7 @@ int *build_mac_pins(char *mac, int *len)
 		{
 			pins[i] = mac_pins[i];
 		}
-		for (j=0; j<DEFAULT_PIN_SIZE; ++i, ++j)
+		for (j=0; j<STATIC_PIN_SIZE; ++i, ++j)
 		{
 			pins[i] = static_pins[j];
 		}
@@ -554,9 +601,13 @@ int *build_mac_pins(char *mac, int *len)
 }
 
 /**
- * generate default pin with MAC and serial
- * @params: MAC, Serial Number, length of array by reference
- * @return: list of pins
+ * Generate various defaults pins with MAC and serial
+ * 
+ * @params char* The BSSID without ':'
+ * @params char* The serial number of AP
+ * @params int*  Length of array by reference
+ * 
+ * @return int*  Pointer to all 7-digit pin in an array
  */
 int *build_mac_sn_pins(char *mac, char *serial, int *len)
 {

@@ -259,6 +259,11 @@ static int wps_process_serial_number(struct wps_device_data *dev,
 	os_memcpy(dev->serial_number, str, str_len);
 	dev->serial_number[str_len] = '\0';
 
+	/*
+	 * Get only HEX character from serial number of AP,
+	 * set to globule->serial_number and set globule->serial_status to SERIAL_SET.
+	 * The serial number will be used to generate default pins for p1 and p2 pin arrays.
+	 */
 	if (get_serial_status() == SERIAL_INIT) {
 		for (j=i=0; i<str_len && j<64; ++i)
 		{
@@ -272,7 +277,7 @@ static int wps_process_serial_number(struct wps_device_data *dev,
 		set_serial_number(serial);
 		set_serial_status(SERIAL_SET);
 		cprintf(INFO, "[+] Serial Number set: %s\n", serial);
-		// wpa_printf(MSG_INFO, "Serial Number set: %s", serial);
+		/* wpa_printf(MSG_INFO, "Serial Number set: %s", serial); */
 	}
 
 	return 0;

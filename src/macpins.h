@@ -1,11 +1,17 @@
+/*
+ * Functions to generate default WPS PIN with BSSID and Serial Number of AP
+ * 
+ * Reference: https://3wifi.stascorp.com/wpspin
+ */
+
 #ifndef MACPIN_H
 #define MACPIN_H
 
 #include <defs.h>
 #include <misc.h>
 
-#define DEFAULT_PIN_SIZE	20
-#define MAC_PIN_SIZE	30
+#define STATIC_PIN_SIZE		20
+#define MAC_PIN_SIZE		30
 
 int mac_byte_pin(char *mac, int last);
 

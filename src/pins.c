@@ -107,6 +107,7 @@ void generate_pins()
 
 	bssid = mac2str(get_bssid(), '\0');
 	if (bssid) {
+		/* Get the defaults pins with BSSID of AP */
 		mac_pins = build_mac_pins(bssid, &len);
 	}
 	/* If the first half of the pin was not specified, generate a list of possible pins */
@@ -114,7 +115,7 @@ void generate_pins()
 	{
 		index = 0;
 		/* 
-		 * Set first the defaulfs P1 key generated with bssid and set priority to 2.
+		 * Set P1 key first with the defaulf pins generated with bssid and set priority to 2.
 		 */
 		for (i=0; i<len; ++i)
 		{
@@ -165,7 +166,7 @@ void generate_pins()
 	{
 		index = 0;
 		/* 
-		 * Set first the defaulfs P2 key generated with bssid and set priority to 2.
+		 * Set P2 key first with the defaulf pins generated with bssid and set priority to 2.
 		 */
 		for (i=0; i<len; ++i)
 		{
@@ -216,7 +217,7 @@ void generate_pins()
         return;
 }
 
-/* Generate default pins with MAC of AP and serial number, after reset the p1 and p2 pin arrays */
+/* Add the defaults pins generated with MAC of AP and serial number, after reset the p1 and p2 pin arrays */
 void add_mac_sn_pins()
 {
 	int *mac_pins = NULL, len = 0, j;
@@ -226,6 +227,7 @@ void add_mac_sn_pins()
 
 	bssid = mac2str(get_bssid(), '\0');
 	if (bssid && get_serial_status() == SERIAL_SET) {
+		/* Get the defaults pins with BSSID and Serial Number of AP */
 		mac_pins = build_mac_sn_pins(bssid, get_serial_number(), &len);
 
 		/* If the first half of the pin was not specified, generate a list of possible pins */
@@ -237,7 +239,7 @@ void add_mac_sn_pins()
 				++index;
 			}
 			/* 
-			 * Set first the defaulfs P1 key generated with bssid and set priority to 2.
+			 * Add the news pins in P1 keys after last pin with priority==2 and set priority to 2.
 			 */
 			for (i=0; i<len && index < P1_SIZE; ++i)
 			{
@@ -250,10 +252,7 @@ void add_mac_sn_pins()
 					index++;
 				}
 			}
-			/* 
-			 * Look for P1 keys marked as priority. These are pins that have been 
-			 * reported to be commonly used on some APs and should be tried first. 
-			 */
+			/* Reset the rest of the P1 keys with priority==1 and priority==0 */
 			for(i=0; i<P1_SIZE; i++)
 			{
 				if(k1[i].priority == 1)
@@ -262,8 +261,6 @@ void add_mac_sn_pins()
 					index++;
 				}
 			}
-
-			/* Randomize the rest of the P1 keys */
 			for(i=0; index < P1_SIZE; i++)
 			{
 				if(!k1[i].priority)
@@ -284,7 +281,7 @@ void add_mac_sn_pins()
 				++index;
 			}
 			/* 
-			 * Set first the defaulfs P2 key generated with bssid and set priority to 2.
+			 * Add the news pins in P2 keys after last pin with priority==2 and set priority to 2.
 			 */
 			for (i=0; i<len && index < P2_SIZE; ++i)
 			{
@@ -297,10 +294,7 @@ void add_mac_sn_pins()
 					index++;
 				}
 			}
-			/* 
-			 * Look for P2 keys statically marked as priority. These are pins that have been 
-			 * reported to be commonly used on some APs and should be tried first. 
-			 */
+			/* Reset the rest of the P2 keys with priority==1 and priority==0 */
 			for(i=0; i<P2_SIZE; i++)
 			{
 				if(k2[i].priority == 1)
@@ -309,8 +303,6 @@ void add_mac_sn_pins()
 					index++;
 				}
 			}
-
-			/* Randomize the rest of the P2 keys */
 			for(i=0; index < P2_SIZE; i++)
 			{
 				if(!k2[i].priority)
