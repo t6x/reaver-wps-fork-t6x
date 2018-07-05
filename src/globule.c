@@ -135,6 +135,7 @@ void set_p1(int index, char *value)
 {
 	if(index < P1_SIZE)
 	{
+		if(globule->p1[index]) free(globule->p1[index]);
 		globule->p1[index] = strdup(value);
 	}
 }
@@ -151,6 +152,7 @@ void set_p2(int index, char *value)
 {
 	if(index < P2_SIZE)
 	{
+		if(globule->p2[index]) free(globule->p2[index]);
 		globule->p2[index] = strdup(value);
 	}
 }
@@ -636,5 +638,4 @@ void set_repeat_m6(int val) {
 int get_repeat_m6(void) {
 	return globule->repeat_m6;
 }
-
 

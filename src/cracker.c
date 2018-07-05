@@ -40,9 +40,11 @@ void crack()
 	char *bssid = NULL;
 	char *pin = NULL;
 	int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
+	int session_restored = 0, mac_sn_set = 0;
 	float pin_count = 0;
 	time_t start_time = 0;
 	enum wps_result result = 0;
+	struct wps_data *wps = NULL;
 
 	if(!get_iface())
 	{
@@ -65,7 +67,10 @@ void crack()
 		/* Restore any previously saved session */
 		if(get_static_p1() == NULL)
 		{
-			restore_session();
+			session_restored = restore_session();
+			if (session_restored) {
+				mac_sn_set = 1;
+			}
 		}
 
 		/* Convert BSSID to a string */
@@ -103,6 +108,11 @@ void crack()
 			}
                 }
 		#endif
+
+		/* Add the default pins with BSSID and WPS Device Data of AP to current index of P1 and P2 keys */
+		if (!session_restored) {
+			add_mac_pins(0);
+		}
 
 		/* Used to calculate pin attempt rates */
 		start_time = time(NULL);
@@ -194,6 +204,12 @@ void crack()
 			 * WPS transaction has completed or failed.
 			 */
 			result = do_wps_exchange();
+			wps = get_wps();
+			/* Reset the default pins with BSSID and WPS Device Data of AP to next index of P1 and P2 keys */
+			if (!session_restored && !mac_sn_set && wps && wps->peer_dev.serial_number) {
+				add_mac_pins(1);
+				mac_sn_set = 1;
+			}
 
 			switch(result)
 			{

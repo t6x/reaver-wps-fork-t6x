@@ -19,6 +19,7 @@
 *.aes
 *.gpg
 src/version.h
+src/lwe/wireless.h
 src/wash
 src/reaver
 src/config.log
