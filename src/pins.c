@@ -175,3 +175,125 @@ void generate_pins()
         return;
 }
 
+/**
+ * Generate the default pins with MAC and WPS Device Data of AP, after reset the p1 and p2 pin arrays
+ * 
+ * @params int* add The index to reset p1 and p2 pin arrays (0=current, 1=next, 2...)
+ * 
+ * @return void
+ */
+void add_mac_pins(int add)
+{
+	int *mac_pins = NULL;
+	int i, j, len, index;
+	char half_pin[15];
+
+	len = 0;
+	/* Get the defaults pins with BSSID and WPS Device Data of AP */
+	mac_pins = build_mac_pins(&len);
+	if(mac_pins) {
+		/* If the first half of the pin was not specified, generate a list of possible pins */
+		if(!get_static_p1())
+		{
+			/* Set the priority of p1 key processed to 2 */
+			j = get_p1_index();
+			for(i=0; i < P1_SIZE && i <= j; ++i){
+				k1[i].priority = 2;
+			}
+			/* Get start index */
+			i = index = get_p1_index() + add;
+			/* Found last P1 key with priority == 2 and set to 1 */
+			while(i < P1_SIZE && k1[atoi(get_p1(i))].priority == 2) {
+				k1[atoi(get_p1(i))].priority = 1;
+				++i;
+			}
+			/* Add the news pins in P1 keys after start index and set priority to 2. */
+			for (i=0; index < P1_SIZE && i < len; ++i)
+			{
+				/* Check empty pin (-1) */
+				if (mac_pins[i] >= 0) {
+					j = mac_pins[i]/1000;
+					sprintf(half_pin, "%04d", j);
+					if(strcmp(k1[j].key, half_pin) == 0 && k1[j].priority != 2)
+					{
+						k1[j].priority = 2;
+						set_p1(index, k1[j].key);
+						index++;
+					}
+				}
+			}
+			/* Reset the rest of the P1 keys with priority==1 and priority==0 */
+			for(i=0; i < P1_SIZE && index < P1_SIZE; i++)
+			{
+				if(k1[i].priority == 1)
+				{
+					set_p1(index, k1[i].key);
+					index++;
+				}
+			}
+			for(i=0; index < P1_SIZE; i++)
+			{
+				if(!k1[i].priority)
+				{
+					set_p1(index, k1[i].key);
+					index++;
+				}
+			}
+			cprintf(INFO, "[+] Add MAC Pins%s to P1 keys\n", (get_wps())?" with WPS Device Data":"");
+		}
+
+		/* If the second half of the pin was not specified, generate a list of possible pins */
+		if(!get_static_p2())
+		{
+			/* Set the priority of p2 key processed to 2 */
+			j = get_p2_index();
+			for(i=0; i < P2_SIZE && i <= j; ++i){
+				k2[i].priority = 2;
+			}
+			/* Get start index */
+			i = index = get_p2_index() + add;
+			/* Found last P2 key with priority == 2 and set to 1 */
+			while(i < P2_SIZE && k2[atoi(get_p2(i))].priority == 2) {
+				k2[atoi(get_p2(i))].priority = 1;
+				++i;
+			}
+			/* Add the news pins in P2 keys after last pin with priority==2 and set priority to 2. */
+			for (i=0; index < P2_SIZE && i < len; ++i)
+			{
+				/* Check empty pin (-1) */
+				if (mac_pins[i] >= 0) {
+					j = mac_pins[i]%1000;
+					sprintf(half_pin, "%03d", j);
+					if(strcmp(k2[j].key, half_pin) == 0 && k2[j].priority != 2)
+					{
+						k2[j].priority = 2;
+						set_p2(index, k2[j].key);
+						index++;
+					}
+				}
+			}
+			/* Reset the rest of the P2 keys with priority==1 and priority==0 */
+			for(i=0; i < P2_SIZE && index < P2_SIZE; i++)
+			{
+				if(k2[i].priority == 1)
+				{
+					set_p2(index, k2[i].key);
+					index++;
+				}
+			}
+			for(i=0; index < P2_SIZE; i++)
+			{
+				if(!k2[i].priority)
+				{
+					set_p2(index, k2[i].key);
+					index++;
+				}
+			}
+			cprintf(INFO, "[+] Add MAC Pins%s to P2 keys\n", (get_wps())?" with WPS Device Data":"");
+		}
+	}
+	if(mac_pins) free(mac_pins);
+
+	return;
+}
+

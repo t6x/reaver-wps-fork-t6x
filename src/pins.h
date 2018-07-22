@@ -37,6 +37,7 @@
 #include "defs.h"
 #include "globule.h"
 #include "keys.h"
+#include "macpins.h"
 
 #define PIN_SIZE	8
 
@@ -47,5 +48,6 @@ extern struct key k2[P2_SIZE];
 char *build_wps_pin();
 char *build_next_pin();
 void generate_pins();
+void add_mac_pins(int add);
 
 #endif
