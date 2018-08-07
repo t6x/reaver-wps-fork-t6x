@@ -23,7 +23,7 @@ All stable relases since the first beta version of reaver 1.6 can be downloaded 
 ## Build-time dependencies
 
  - libpcap-dev  
- - build-essentials  
+ - build-essential  
 
 ## Runtime-time dependencies  
 
