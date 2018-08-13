@@ -49,7 +49,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:p:s:C:KZA5ELfnqvDShwN6JF";
+	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:p:s:C:KZA5ELfnqvDShwN6JFP";
 	struct option long_options[] = {
 		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
@@ -66,6 +66,7 @@ int process_arguments(int argc, char **argv)
 		{ "recurring-delay", required_argument, NULL, 'r' },
 		{ "max-attempts", required_argument, NULL, 'g' },
 		{ "pin", required_argument, NULL, 'p' },
+		{ "pingen", no_argument, NULL, 'P' },
 		{ "exec", required_argument, NULL, 'C' },
 		{ "no-associate", no_argument, NULL, 'A' },
 		{ "ignore-locks", no_argument, NULL, 'L' },
@@ -134,6 +135,9 @@ int process_arguments(int argc, char **argv)
                                 break;
 			case 'p':
 				parse_static_pin(optarg);
+				break;
+			case 'P':
+				set_pingen(1);
 				break;
 			case 's':       
 				set_session(optarg);   

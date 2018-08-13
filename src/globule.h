@@ -152,6 +152,8 @@ struct globals
 					 * wpa_supplicant's wps_data structure, needed for almost all wpa_supplicant
                                          * function calls.
                                          */
+
+	int use_pingen;			/* Use default pins with bssid */
 };
 
 extern struct globals *globule;
@@ -262,4 +264,8 @@ void set_vendor(int, const unsigned char*);
 unsigned char *get_vendor(void);
 void set_repeat_m6(int);
 int get_repeat_m6(void);
+
+void set_pingen(int value);
+int get_pingen();
+
 #endif

@@ -162,7 +162,8 @@ static int reaver_usage(char *prog_name)
         fprintf(stderr, "\t-h, --help                      Show help\n");
         
         fprintf(stderr, "\nAdvanced Options:\n");
-	fprintf(stderr, "\t-p, --pin=<wps pin>             Use the specified pin (may be arbitrary string or 4/8 digit WPS pin)\n");
+	fprintf(stderr, "\t-p, --pin=<wps pin>             Use the specified pin (may be arbitrary string or 4/7/8 digit WPS pin)\n");
+	fprintf(stderr, "\t-P, --pingen                    Generate some default pins\n");
 	fprintf(stderr, "\t-d, --delay=<seconds>           Set the delay between pin attempts [%d]\n", DEFAULT_DELAY);
         fprintf(stderr, "\t-l, --lock-delay=<seconds>      Set the time to wait if the AP locks WPS pin attempts [%d]\n", DEFAULT_LOCK_DELAY);
         fprintf(stderr, "\t-g, --max-attempts=<num>        Quit after num pin attempts\n");

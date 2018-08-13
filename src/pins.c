@@ -71,6 +71,14 @@ char *build_next_pin()
         wps_registrar_invalidate_pin(wps->wps->registrar, wps->uuid_e);
 
         int add_result = 0;
+        if (get_pingen())
+        {
+                /* Use a default pin */
+                pin = strdup(get_pin());
+                /* Add the new pin */
+                add_result = wps_registrar_add_pin(wps->wps->registrar, NULL, (const u8 *) pin, strlen(pin), 0);
+        }
+        else
         if (get_pin_string_mode())
         {
                 /* Use an arbitrary string as WPS pin */

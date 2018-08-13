@@ -41,12 +41,14 @@
 #include "init.h"
 #include "exchange.h"
 #include "pins.h"
+#include "pingen.h"
 #include "argsparser.h"
 
 #define DISPLAY_PIN_COUNT	5
 #define TIME_FORMAT		"%F %T"
 
 void crack();
+int pingen_crack();
 void advance_pin_count();
 void display_status(float pin_count, time_t start_time);
 

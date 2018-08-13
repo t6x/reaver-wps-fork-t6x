@@ -55,11 +55,13 @@ int restore_session()
 	struct stat wpstat = { 0 };
 	char line[MAX_LINE_SIZE] = { 0 };
 	char temp[P1_READ_LEN] = { 0 };
+	char pin_temp[P1_READ_LEN] = { 0 };
 	char file[FILENAME_MAX];
 	char *bssid = NULL;
 	char answer = 0;
 	FILE *fp = NULL;
 	int ret_val = 0, i = 0;
+	int is_static_p1, is_static_p2;
 
 	/* 
 	 * If a session file was explicitly specified, use that; else, check for the 
@@ -126,6 +128,7 @@ int restore_session()
 						if(fgets(line, MAX_LINE_SIZE, fp) != NULL)
 						{
 							set_key_status(atoi(line));
+							is_static_p1 = is_static_p2 = 1;
 
 							/* Read in all p1 values */
 							for(i=0; i<P1_SIZE; i++)
@@ -137,6 +140,15 @@ int restore_session()
 									/* NULL out the new line character */
 									temp[P1_STR_LEN] = 0;
 									set_p1(i, temp);
+								}
+								/* check static p1 */
+								if(i == 0)
+								{
+									strcpy(pin_temp, temp);
+								}
+								else if(is_static_p1 && strcmp(pin_temp, temp) != 0)
+								{
+									is_static_p1 = 0;
 								}
 							}
 
@@ -150,6 +162,15 @@ int restore_session()
 									/* NULL out the new line character */
 									temp[P2_STR_LEN] = 0;
 									set_p2(i, temp);
+								}
+								/* check static p2 */
+								if(i == 0)
+								{
+									strcpy(pin_temp, temp);
+								}
+								else if(is_static_p2 && strcmp(pin_temp, temp) != 0)
+								{
+									is_static_p2 = 0;
 								}
 							}
 
@@ -174,6 +195,17 @@ int restore_session()
 		set_key_status(KEY1_WIP);
 	} else {
 		cprintf(INFO, "[+] Restored previous session\n");
+		/* Check session restored is static pin and set its */
+		if(is_static_p1)
+		{
+			set_static_p1(get_p1(0));
+			cprintf(VERBOSE, "[+] Restored static P1\n");
+		}
+		if(is_static_p2)
+		{
+			set_static_p2(get_p2(0));
+			cprintf(VERBOSE, "[+] Restored static P2\n");
+		}
 	}
 
 	return ret_val;
@@ -190,11 +222,13 @@ int save_session()
         int attempts = 0, ret_val = 0, i = 0;
 	struct wps_data *wps = NULL;
 	int pin_string;
+	int pin_empty;
 
 	wps = get_wps();
 	bssid = mac2str(get_bssid(), '\0');
 	pretty_bssid = mac2str(get_bssid(), ':');
 	pin_string = get_pin_string_mode();
+	pin_empty = (get_pin() && strlen(get_pin())==0);
 
 	if(wps)
 	{
@@ -202,9 +236,9 @@ int save_session()
 		essid = wps->essid;
 	}
 	
-	if(!bssid || !pretty_bssid || pin_string)
+	if(!bssid || !pretty_bssid || pin_string || pin_empty)
 	{
-		if (pin_string)
+		if (pin_string || pin_empty)
 		{
 			cprintf(VERBOSE, "[*] String pin was specified, nothing to save.\n");
 		}
@@ -229,7 +263,7 @@ int save_session()
 		}
 
 		/* Don't bother saving anything if nothing has been done */
-		if((get_p1_index() > 0) || (get_p2_index() > 0))
+		if((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() == KEY_DONE))
 		{
 			if((fp = fopen(file_name, "w")))
 			{

@@ -88,7 +88,8 @@ Optional Arguments:
 	-h, --help                      Show help
 
 Advanced Options:
-	-p, --pin=<wps pin>             Use the specified pin (may be arbitrary string or 4/8 digit WPS pin)
+	-p, --pin=<wps pin>             Use the specified pin (may be arbitrary string or 4/7/8 digit WPS pin)
+	-P, --pingen                    Generate some default pins
 	-d, --delay=<seconds>           Set the delay between pin attempts [1]
 	-l, --lock-delay=<seconds>      Set the time to wait if the AP locks WPS pin attempts [60]
 	-g, --max-attempts=<num>        Quit after num pin attempts
