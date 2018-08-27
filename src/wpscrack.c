@@ -180,6 +180,7 @@ static int reaver_usage(char *prog_name)
 	fprintf(stderr, "\t-w, --win7                      Mimic a Windows 7 registrar [False]\n");
 	fprintf(stderr, "\t-K, --pixie-dust                Run pixiedust attack\n");
 	fprintf(stderr, "\t-Z                              Run pixiedust attack\n");
+        fprintf(stderr, "\t-O, --output-file=<filename>    Write packets of interest into pcap file\n");
 
         fprintf(stderr, "\nExample:\n\t%s -i wlan0mon -b 00:90:4C:C1:AC:21 -vv\n\n", prog_name);
 

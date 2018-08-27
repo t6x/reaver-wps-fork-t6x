@@ -95,7 +95,7 @@ LIB_OBJS=libwps/libwps.o $(WPS_OBJS) $(UTILS_OBJS) \
 
 MAIN_OBJS=globule.o init.o sigint.o iface.o sigalrm.o \
  misc.o session.o send.o pins.o 80211.o builder.o \
- keys.o crc.o pixie.o version.o
+ keys.o crc.o pixie.o version.o pcapfile.o
 
 PROG_OBJS=$(MAIN_OBJS) exchange.o argsparser.o wpscrack.o wpsmon.o cracker.o main.o
 

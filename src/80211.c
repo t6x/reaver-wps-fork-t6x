@@ -36,6 +36,7 @@
 #include "send.h"
 #include "utils/radiotap.h"
 #include "crc.h"
+#include "pcapfile.h"
 #include <libwps.h>
 #include <assert.h>
 
@@ -70,6 +71,9 @@ unsigned char *next_packet(struct pcap_pkthdr *header)
 			if(!warning_shown)
 				cprintf(INFO, "[!] Found packet with bad FCS, skipping...\n");
 			warning_shown = 1;
+			int fd;
+			if((fd = get_output_fd()) != -1)
+				pcapfile_write_packet(fd, header, packet);
 			continue;
 		}
 

@@ -75,7 +75,9 @@ void globule_deinit()
 		if(globule->static_p2) free(globule->static_p2);
 		if(globule->fp) fclose(globule->fp);
 		if(globule->exec_string) free(globule->exec_string);
-	
+
+		if(globule->output_fd != -1) close(globule->output_fd);
+
 		free(globule);
 	}
 }
@@ -639,4 +641,10 @@ int get_repeat_m6(void) {
 	return globule->repeat_m6;
 }
 
+int get_output_fd(void) { return globule->output_fd; }
 
+#include "pcapfile.h"
+void set_output_fd(int fd) {
+	globule->output_fd = fd;
+	if (fd != -1) pcapfile_write_header(fd);
+}

@@ -148,6 +148,8 @@ struct globals
 
         pcap_t *handle;                 /* Pcap handle */
 
+	int output_fd;			/* handle for output pcap file */
+
         struct wps_data *wps;           /* 
 					 * wpa_supplicant's wps_data structure, needed for almost all wpa_supplicant
                                          * function calls.
@@ -262,4 +264,6 @@ void set_vendor(int, const unsigned char*);
 unsigned char *get_vendor(void);
 void set_repeat_m6(int);
 int get_repeat_m6(void);
+void set_output_fd(int fd);
+int get_output_fd(void);
 #endif

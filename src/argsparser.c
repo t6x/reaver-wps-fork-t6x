@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <ctype.h>
+#include <fcntl.h>
 #include "globule.h"
 #include "defs.h"
 #include "iface.h"
@@ -49,7 +50,7 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:p:s:C:KZA5ELfnqvDShwN6JF";
+	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:p:s:C:O:KZA5ELfnqvDShwN6JF";
 	struct option long_options[] = {
 		{ "pixie-dust", no_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
@@ -82,8 +83,11 @@ int process_arguments(int argc, char **argv)
 		{ "help", no_argument, NULL, 'h' },
 		{ "timeout-is-nack", no_argument, NULL, 'J' },
 		{ "ignore-fcs", no_argument, NULL, 'F' },
+		{ "output-file", required_argument, NULL, 'O'},
 		{ 0, 0, 0, 0 }
 	};
+
+	set_output_fd(-1);
 
 	/* Since this function may be called multiple times, be sure to set opt index to 0 each time */
 	optind = 0;
@@ -92,6 +96,13 @@ int process_arguments(int argc, char **argv)
         {
                 switch(c)
                 {
+			case 'O':
+				{
+					int ofd = open(optarg, O_WRONLY|O_CREAT|O_TRUNC, 0660);
+					set_output_fd(ofd);
+					if(ofd == -1) perror("open outputfile failed: ");
+				}
+				break;
                         case 'Z':
                         case 'K':
                                 pixie.do_pixie = 1;
