@@ -629,10 +629,14 @@ static int check_fcs(const unsigned char *packet, size_t len)
 		if(len >= sizeof(*rt_header))
 		{
 			uint32_t presentflags, flags;
+			/* only check FCS if the flag IEEE80211_RADIOTAP_F_FCS is set in
+			   in IEEE80211_RADIOTAP_FLAGS. the packets we generate ourselves
+			   do not have any of these flags set and would cause false positives
+			*/
 			if(!rt_get_presentflags(packet, len, &presentflags, &offset))
-				goto skip;
+				return 1;
 			if(!(presentflags & (1U << IEEE80211_RADIOTAP_FLAGS)))
-				goto skip;
+				return 1;
 			offset = rt_get_flag_offset(presentflags, IEEE80211_RADIOTAP_FLAGS, offset);
 			if(offset < len) {
 				memcpy(&flags, packet + offset, 4);
@@ -643,7 +647,6 @@ static int check_fcs(const unsigned char *packet, size_t len)
 					return 1;
 			}
 
-			skip:
 			rt_header = (struct radio_tap_header *) packet;
 			offset = end_le16toh(rt_header->len);
 
