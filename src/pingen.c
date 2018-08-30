@@ -623,21 +623,22 @@ int get_k2_key_index(int value)
 }
 
 /**
- * Insert some default pins processed in the p1 arrays
+ * Insert some default pins into p1 arrays, before p1 index
  * 
  * @params int* List of pins
  * @params int  Length of the list of pins
+ * @params int  Is list of pins processed or not
  * 
  * @return void
  */
-void insert_pingen_p1(int *pins, int len)
+void pingen_prepend_p1(int *pins, int len, int processed)
 {
-	int i, j, index, stop;
+	int i, j, index, p1_len;
+	int p1[P1_SIZE];
 
 	if(pins && len>0) {
 		if(!get_static_p1() && get_key_status() < KEY2_WIP)
 		{
-			stop = 0;
 			/* Get the p1 index */
 			index = get_p1_index();
 			/* Set the priority of p1 key up until the p1 index to 2 */
@@ -646,6 +647,18 @@ void insert_pingen_p1(int *pins, int len)
 				if (j >= 0) {
 					k1[j].priority = 2;
 				}
+			}
+			/* Find last P1 key with priority == 2 and set to 1 */
+			i = index;
+			j = get_k1_key_index(atoi(get_p1(i)));
+			while(j >= 0 && i < P1_SIZE && k1[j].priority == 2) {
+				k1[j].priority = 1;
+				j = get_k1_key_index(atoi(get_p1(++i)));
+			}
+			/* Copy rest P1 keys starting from p1 index */
+			for (p1_len=0, i=index; i < P1_SIZE; ++i, ++p1_len)
+			{
+				p1[p1_len] = atoi(get_p1(i));
 			}
 			/* Add the news pins in P1 keys starting on the p1 index and set priority to 2. */
 			for (i=0; index < P1_SIZE && i < len; ++i)
@@ -662,32 +675,18 @@ void insert_pingen_p1(int *pins, int len)
 				}
 			}
 			/* Update the p1 index */
-			set_p1_index(index);
-			/* Reset the rest of the P1 keys with priority==1 and priority==0 */
-			for(i=0; i < P1_SIZE && index < P1_SIZE; i++)
+			if (processed) set_p1_index(index);
+			/* Reset the rest of the P1 keys with local p1 */
+			for(i=0; i < p1_len && index < P1_SIZE; i++)
 			{
-				if(k1[i].priority == 1)
+				j = get_k1_key_index(p1[i]);
+				if(j >= 0 && k1[j].priority != 2)
 				{
-					if (strcmp(get_p1(index), k1[i].key) == 0) {
-						stop = 1;
+					if (strcmp(get_p1(index), k1[j].key) == 0) {
 						break;
-					} else {
-						set_p1(index, k1[i].key);
-						index++;
 					}
-				}
-			}
-			for(i=0; !stop && index < P1_SIZE; i++)
-			{
-				if(!k1[i].priority)
-				{
-					if (strcmp(get_p1(index), k1[i].key) == 0) {
-						stop = 1;
-						break;
-					} else {
-						set_p1(index, k1[i].key);
-						index++;
-					}
+					set_p1(index, k1[j].key);
+					index++;
 				}
 			}
 			cprintf(INFO, "[+] Updated P1 keys array with the default pins\n");
@@ -698,21 +697,22 @@ void insert_pingen_p1(int *pins, int len)
 }
 
 /**
- * Insert some default pins processed in the p2 arrays
+ * Insert some default pins into p2 arrays, before p2 index
  * 
  * @params int* List of pins
  * @params int  Length of the list of pins
+ * @params int  Is list of pins processed or not
  * 
  * @return void
  */
-void insert_pingen_p2(int *pins, int len)
+void pingen_prepend_p2(int *pins, int len, int processed)
 {
-	int i, j, index, stop;
+	int i, j, index, p2_len;
+	int p2[P2_SIZE];
 
 	if(pins && len>0) {
 		if(!get_static_p2() && get_key_status() < KEY_DONE)
 		{
-			stop = 0;
 			/* Get the p2 index */
 			index = get_p2_index();
 			/* Set the priority of p2 key up until the p2 index to 2 */
@@ -721,6 +721,18 @@ void insert_pingen_p2(int *pins, int len)
 				if(j >= 0) {
 					k2[j].priority = 2;
 				}
+			}
+			/* Find last P2 key with priority == 2 and set to 1 */
+			i = index;
+			j = get_k2_key_index(atoi(get_p2(i)));
+			while(j >= 0 && i < P2_SIZE && k2[j].priority == 2) {
+				k2[j].priority = 1;
+				j = get_k2_key_index(atoi(get_p2(++i)));
+			}
+			/* Copy rest P2 keys starting from p2 index */
+			for (p2_len=0, i=index; i < P2_SIZE; ++i, ++p2_len)
+			{
+				p2[p2_len] = atoi(get_p2(i));
 			}
 			/* Add the news pins in P2 keys starting on the p2 index and set priority to 2. */
 			for (i=0; index < P2_SIZE && i < len; ++i)
@@ -737,32 +749,18 @@ void insert_pingen_p2(int *pins, int len)
 				}
 			}
 			/* Update the p2 index */
-			set_p2_index(index);
-			/* Reset the rest of the P2 keys with priority==1 and priority==0 */
-			for(i=0; i < P2_SIZE && index < P2_SIZE; i++)
+			if(processed) set_p2_index(index);
+			/* Reset the rest of the P2 keys with local p2 */
+			for(i=0; i < p2_len && index < P2_SIZE; i++)
 			{
-				if(k2[i].priority == 1)
+				j = get_k2_key_index(p2[i]);
+				if(j >= 0 && k2[j].priority != 2)
 				{
-					if (strcmp(get_p2(index), k2[i].key) == 0) {
-						stop = 1;
+					if (strcmp(get_p2(index), k2[j].key) == 0) {
 						break;
-					} else {
-						set_p2(index, k2[i].key);
-						index++;
 					}
-				}
-			}
-			for(i=0; !stop && index < P2_SIZE; i++)
-			{
-				if(!k2[i].priority)
-				{
-					if (strcmp(get_p2(index), k2[i].key) == 0) {
-						stop = 1;
-						break;
-					} else {
-						set_p2(index, k2[i].key);
-						index++;
-					}
+					set_p2(index, k2[j].key);
+					index++;
 				}
 			}
 			cprintf(INFO, "[+] Updated P2 keys array with the default pins\n");
@@ -910,7 +908,7 @@ int *build_pingen(int *len)
 		{pingen_static, 20, 0, 0, "E46F13|EC2280|1062EB|10BEF5|1C5F2B|802689|A0AB1B|74DADA|9CD643|68A0F6|0C96BF|20F3A3|ACE215|C8D15E|000E8F|D42122|788102|7894B4|D460E3|E06066|004A77|2C957F|64136C|74A78E|88D274|702E22|74B57E|789682|D476EA|38D82F|54BE53|709F2D|94A7B7|981333|CAA366|D0608C|",
 		"D-LINK|HUAWEI|ZTE|SERCOMM",
 		"B683-24V|DIR-620|DIR-825/AC|DIR-825/AC/G1|DIR-825AC|DIR-825ACG1|DSL-2640U|H108N|H118N|H218N|H298N|HG658C|RV6688BCM|S1010|WIFIRE|ZXHN",
-		"Empty PIN"} /* <empty> (49) */
+		"Empty PIN"}
 	};
 
 	*len = sizeof(func)/sizeof(struct pingen_function);

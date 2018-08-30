@@ -82,9 +82,9 @@ int get_k1_key_index(int value);
 
 int get_k2_key_index(int value);
 
-void insert_pingen_p1(int *pins, int len);
+void pingen_prepend_p1(int *pins, int len, int processed);
 
-void insert_pingen_p2(int *pins, int len);
+void pingen_prepend_p2(int *pins, int len, int processed);
 
 int *build_pingen(int *len);
 

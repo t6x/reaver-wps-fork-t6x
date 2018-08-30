@@ -467,7 +467,7 @@ int pingen_crack()
 		/* Check key status */
 		if (get_key_status() == KEY1_WIP){
 			/* Add used pins to P1 keys */
-			insert_pingen_p1(mac_pins, pingen_len);
+			pingen_prepend_p1(mac_pins, pingen_len, 1);
 			set_pin(NULL);
 		}
 		else if (get_key_status() == KEY2_WIP){
@@ -499,7 +499,7 @@ int pingen_crack()
 			}
 			/* Add used pin to P2 keys */
 			i = atoi(p2);
-			insert_pingen_p2(&i, 1);
+			pingen_prepend_p2(&i, 1, 1);
 			set_pin(NULL);
 			cprintf(INFO, "[+] Found first half pin '%s'\n", p1);
 		}
