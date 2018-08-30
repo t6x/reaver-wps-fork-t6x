@@ -176,7 +176,7 @@ int pingen_dlink(char *mac, int add)
 	int nic=0, pin=0;
 	char buff[10];
 
-	nic = strtol(strncpy(buff, mac+6, sizeof(buff)), NULL, 16);
+	nic = strtol(strncpy(buff, mac+6, 7), NULL, 16);
 	nic = nic + add;
 
 	pin = nic ^ 0x55AA55;
