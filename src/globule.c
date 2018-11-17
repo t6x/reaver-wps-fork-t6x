@@ -102,7 +102,8 @@ int get_last_wps_state()
 
 void set_session(char *value)  
 { 
-	globule->session = strdup(value);     
+	if(globule->session) free(globule->session);
+	globule->session = (value) ? strdup(value) : NULL;
 }
 char *get_session()    
 {
@@ -138,7 +139,7 @@ void set_p1(int index, char *value)
 	if(index < P1_SIZE)
 	{
 		if(globule->p1[index]) free(globule->p1[index]);
-		globule->p1[index] = strdup(value);
+		globule->p1[index] = (value) ? strdup(value) : NULL;
 	}
 }
 char *get_p1(int index)
@@ -155,7 +156,7 @@ void set_p2(int index, char *value)
 	if(index < P2_SIZE)
 	{
 		if(globule->p2[index]) free(globule->p2[index]);
-		globule->p2[index] = strdup(value);
+		globule->p2[index] = (value) ? strdup(value) : NULL;
 	}
 }
 char *get_p2(int index)
@@ -447,7 +448,8 @@ char *get_iface()
 
 void set_pin(char *value)
 {
-	globule->pin = strdup(value);
+	if(globule->pin) free(globule->pin);
+	globule->pin = (value) ? strdup(value) : NULL;
 }
 char *get_pin()
 {
@@ -456,7 +458,8 @@ char *get_pin()
 
 void set_static_p1(char *value)
 {
-	globule->static_p1 = strdup(value);
+	if(globule->static_p1) free(globule->static_p1);
+	globule->static_p1 = (value) ? strdup(value) : NULL;
 }
 
 char *get_static_p1(void)
@@ -466,7 +469,8 @@ char *get_static_p1(void)
 
 void set_static_p2(char *value)
 {
-	globule->static_p2 = strdup(value);
+	if(globule->static_p2) free(globule->static_p2);
+	globule->static_p2 = (value) ? strdup(value) : NULL;
 }
 
 char *get_static_p2(void)
