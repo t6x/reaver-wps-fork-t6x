@@ -11040,3 +11040,59 @@ struct key k2[P2_SIZE] = {
 		{ "998", 0 },
 		{ "999", 1 }
 };
+
+/**
+ * Return the index of k1[].key of p1 values
+ * 
+ * @params int* value The value of p1 key
+ * 
+ * @return int        The index of value in k1
+ */
+int get_k1_key_index(int value)
+{
+	int i;
+	int indexs[3];
+	char str_pin[12];
+
+	indexs[0] = value; /* In k1, value == index is 87.66% */
+	indexs[1] = value+1; /* In k1, value+1 == index is 12.33% */
+	indexs[2] = 0; /* In k1, value in index 0 is 0.01% (1234) */
+	for (i=0; i<3; ++i){
+		if (indexs[i] >= 0 && indexs[i] < P1_SIZE){
+			sprintf(str_pin, "%04d", value);
+			if (strcmp(k1[indexs[i]].key, str_pin) == 0) {
+				return indexs[i];
+			}
+		}
+	}
+
+	return -1; /* not found */
+}
+
+/**
+ * Return the index of k2[].key of p2 values
+ * 
+ * @params int* value The value of p2 key
+ * 
+ * @return int        The index of k2
+ */
+int get_k2_key_index(int value)
+{
+	int i;
+	int indexs[3];
+	char str_pin[12];
+
+	indexs[0] = value+1; /* In k2, value+1 == index is 56.6% */
+	indexs[1] = value; /* In k2, value == index is 43.3% */
+	indexs[2] = 0; /* In k2, value in index 0 is 0.1% (567) */
+	for (i=0; i<3; ++i){
+		if (indexs[i] >= 0 && indexs[i] < P2_SIZE){
+			sprintf(str_pin, "%03d", value);
+			if (strcmp(k2[indexs[i]].key, str_pin) == 0) {
+				return indexs[i];
+			}
+		}
+	}
+
+	return -1; /* not found */
+}
