@@ -63,7 +63,7 @@ void crack()
 		generate_pins();
 
 		/* Restore any previously saved session */
-		if(get_static_p1() == NULL)
+		if(get_static_p1() == NULL || !get_pin_string_mode())
 		{
 			restore_session();
 		}
