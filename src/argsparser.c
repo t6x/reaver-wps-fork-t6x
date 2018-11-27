@@ -285,7 +285,6 @@ void parse_static_pin(char *pin)
 		{
 			memcpy((void *) &p1, pin, sizeof(p1)-1);
 			set_static_p1((char *) &p1);
-			set_key_status(KEY2_WIP);
 
 			if(len > 4)
 			{
