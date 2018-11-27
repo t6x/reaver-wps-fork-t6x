@@ -233,6 +233,11 @@ int restore_session()
 							/* Print warning message if the specified first or second half PIN was ignored */
 							if (get_static_p1())
 							{
+								/* Check the specified 4/8 digit WPS PIN has been already tried */
+								if (p1_tried || p2_tried)
+								{
+									ret_val = -1;
+								}
 								/* Print message what first half pin ignored if former key status >= KEY2_WIP */
 								if (get_key_status() >= KEY2_WIP && strcmp(get_static_p1(), get_p1(get_p1_index())) != 0)
 								{
@@ -262,6 +267,10 @@ int restore_session()
 		set_p1_index(0);
 		set_p2_index(0);
 		set_key_status(KEY1_WIP);
+	}
+	else if(ret_val == -1)
+	{
+		cprintf(CRITICAL, "[!] The PIN has already been tested\n");
 	} else {
 		cprintf(INFO, "[+] Restored previous session\n");
 	}

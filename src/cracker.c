@@ -40,6 +40,7 @@ void crack()
 	char *bssid = NULL;
 	char *pin = NULL;
 	int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
+	int session_restored;
 	float pin_count = 0;
 	time_t start_time = 0;
 	enum wps_result result = 0;
@@ -65,7 +66,12 @@ void crack()
 		/* Restore any previously saved session */
 		if(get_static_p1() == NULL || !get_pin_string_mode())
 		{
-			restore_session();
+			session_restored = restore_session();
+			/* Check the specified 4/8 digit WPS PIN has been already tried */
+			if (session_restored == -1)
+			{
+				return;
+			}
 		}
 
 		/* Convert BSSID to a string */
