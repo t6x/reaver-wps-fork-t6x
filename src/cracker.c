@@ -65,7 +65,8 @@ void crack()
 		/* Restore any previously saved session */
 		if(get_static_p1() == NULL || !get_pin_string_mode())
 		{
-			restore_session();
+			/* Check the specified 4/8 digit WPS PIN has been already tried */
+			if (restore_session() == -1) return;
 		}
 
 		/* Convert BSSID to a string */
