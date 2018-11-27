@@ -229,7 +229,8 @@ int save_session()
 		}
 
 		/* Don't bother saving anything if nothing has been done */
-		if((get_p1_index() > 0) || (get_p2_index() > 0))
+		/* Save .wpc file when the first pin is correct */
+		if((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() == KEY_DONE))
 		{
 			if((fp = fopen(file_name, "w")))
 			{
