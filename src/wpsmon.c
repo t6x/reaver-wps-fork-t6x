@@ -44,6 +44,7 @@ static void wash_usage(char *prog);
 int show_all_aps = 0;
 int json_mode = 0;
 int show_utf8_ssid = 0;
+int show_crack_progress = 0;
 
 static struct mac {
 	unsigned char mac[6];
@@ -119,7 +120,7 @@ int wash_main(int argc, char *argv[])
 	int source = INTERFACE, ret_val = EXIT_FAILURE;
 	struct bpf_program bpf = { 0 };
 	char *last_optarg = NULL, *target = NULL, *bssid = NULL;
-	char *short_options = "i:c:n:b:25sfuFDhajU";
+	char *short_options = "i:c:n:b:25sfuFDhajUp";
         struct option long_options[] = {
 		{ "bssid", required_argument, NULL, 'b' },
                 { "interface", required_argument, NULL, 'i' },
@@ -134,6 +135,7 @@ int wash_main(int argc, char *argv[])
 		{ "all", no_argument, NULL, 'a' },
 		{ "json", no_argument, NULL, 'j' },
 		{ "utf8", no_argument, NULL, 'U' },
+		{ "progress", no_argument, NULL, 'p' },
                 { "help", no_argument, NULL, 'h' },
                 { 0, 0, 0, 0 }
         };
@@ -193,6 +195,9 @@ int wash_main(int argc, char *argv[])
 				break;
 			case 'U':
 				show_utf8_ssid = 1;
+				break;
+			case 'p':
+				show_crack_progress = 1;
 				break;
 			default:
 				wash_usage(argv[0]);
@@ -346,7 +351,11 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 	if(!header_printed)
 	{
 		if(!json_mode) {
+			if (show_crack_progress) {
+				fprintf  (stdout, "BSSID              Ch dBm WPS Lck Vendor       %% ESSID\n");
+			} else {
 			fprintf  (stdout, "BSSID               Ch  dBm  WPS  Lck  Vendor    ESSID\n");
+			}
 			//fprintf(stdout, "00:11:22:33:44:55  104  -77  1.0  Yes  Bloatcom  0123456789abcdef0123456789abcdef\n");
 			fprintf  (stdout, "--------------------------------------------------------------------------------\n");
 		}
@@ -370,6 +379,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 	struct libwps_data *wps = NULL;
 	enum encryption_type encryption = NONE;
 	char *bssid = NULL, *ssid = NULL, *lock_display = NULL;
+	char *crack_progress = NULL;
 	int wps_parsed = 0, probe_sent = 0, channel = 0, rssi = 0;
 	static int channel_changed = 0;
 
@@ -449,6 +459,10 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 							break;
 					} else lock_display = NO;
 
+					if (show_crack_progress) {
+						crack_progress = get_crack_progress(frame_header->addr3);
+					}
+
 					char* vendor = get_vendor_string(get_ap_vendor(bssid));
 					char* sane_ssid = sanitize_string(ssid);
 
@@ -456,10 +470,22 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						strcpy(sane_ssid,ssid);
 
 					if(wps_active(wps))
+					{
+						if (show_crack_progress)
+							fprintf(stdout, "%17s %3d %.2d %d.%d %3s %8s %5s %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", crack_progress ? crack_progress : "-", sane_ssid);
+						else
 						fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
+					}
 					else
+					{
+						if (show_crack_progress)
+							fprintf(stdout, "%17s %3d %.2d         %8s %5s %s\n", bssid, channel, rssi, vendor ? vendor : "        ", crack_progress ? crack_progress : "-", sane_ssid);
+						else
 						fprintf(stdout, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", sane_ssid);
+					}
 					free(sane_ssid);
+
+					if (crack_progress) free(crack_progress);
 				}
 
 				if(probe_sent)
@@ -475,10 +501,15 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				{
 					mark_ap_complete(bssid);
 					if(json_mode && (show_all_aps || wps_active(wps))) {
-						char *json_string = wps_data_to_json(bssid, ssid, channel, rssi, get_ap_vendor(bssid), wps);
+						if (show_crack_progress) {
+							crack_progress = get_crack_progress(frame_header->addr3);
+						}
+						char *json_string = wps_data_to_json(bssid, ssid, channel, rssi, get_ap_vendor(bssid), wps, crack_progress);
 						fprintf(stdout, "%s\n", json_string);
 						fflush(stdout);
 						free(json_string);
+
+						if (crack_progress) free(crack_progress);
 					}
 				}
 	
@@ -542,6 +573,7 @@ static void wash_usage(char *prog)
 	fprintf(stderr, "\t-a, --all                            Show all APs, even those without WPS\n");
 	fprintf(stderr, "\t-j, --json                           print extended WPS info as json\n");
 	fprintf(stderr, "\t-U, --utf8                           Show UTF8 ESSID (does not sanitize ESSID, dangerous)\n");
+	fprintf(stderr, "\t-p, --progress                       Show percentage of crack progress\n");
 	fprintf(stderr, "\t-h, --help                           Show help\n");
 	
 	fprintf(stderr, "\nExample:\n");

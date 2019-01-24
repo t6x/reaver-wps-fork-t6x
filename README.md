@@ -139,6 +139,7 @@ Optional Arguments:
 	-u, --survey                         Use survey mode [default]
 	-a, --all                            Show all APs, even those without WPS
 	-j, --json                           print extended WPS info as json
+	-p, --progress                       Show percentage of crack progress
 	-h, --help                           Show help
 
 Example:
