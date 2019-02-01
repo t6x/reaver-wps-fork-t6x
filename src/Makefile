@@ -143,6 +143,9 @@ install: wash reaver
 	@# if not found defaults to "." i.e. current dir
 	$(MKDIRP) $(DESTDIR)$(CONFDIR)
 
+uninstall:
+	rm -rf $(DESTDIR)$(CONFDIR) $(DESTDIR)$(exec_prefix)/bin/wash $(DESTDIR)$(exec_prefix)/bin/reaver
+
 clean:
 	rm -f reaver wash
 	rm -f $(LIB_OBJS) $(PROG_OBJS)
