@@ -354,7 +354,7 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 			if (show_crack_progress) {
 				fprintf  (stdout, "BSSID              Ch dBm WPS Lck Vendor       %% ESSID\n");
 			} else {
-			fprintf  (stdout, "BSSID               Ch  dBm  WPS  Lck  Vendor    ESSID\n");
+				fprintf  (stdout, "BSSID               Ch  dBm  WPS  Lck  Vendor    ESSID\n");
 			}
 			//fprintf(stdout, "00:11:22:33:44:55  104  -77  1.0  Yes  Bloatcom  0123456789abcdef0123456789abcdef\n");
 			fprintf  (stdout, "--------------------------------------------------------------------------------\n");
@@ -474,14 +474,14 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 						if (show_crack_progress)
 							fprintf(stdout, "%17s %3d %.2d %d.%d %3s %8s %5s %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", crack_progress ? crack_progress : "-", sane_ssid);
 						else
-						fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
+							fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
 					}
 					else
 					{
 						if (show_crack_progress)
 							fprintf(stdout, "%17s %3d %.2d         %8s %5s %s\n", bssid, channel, rssi, vendor ? vendor : "        ", crack_progress ? crack_progress : "-", sane_ssid);
 						else
-						fprintf(stdout, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", sane_ssid);
+							fprintf(stdout, "%17s  %3d  %.2d            %8s  %s\n", bssid, channel, rssi, vendor ? vendor : "        ", sane_ssid);
 					}
 					free(sane_ssid);
 

@@ -422,7 +422,7 @@ char *get_crack_progress(unsigned char *mac)
 	struct stat wpstat = { 0 };
 	FILE *fp = NULL;
 	char file[FILENAME_MAX];
-	int p1, p2, p1_idx, p2_idx, i, num, attempts;
+	int p1_idx, p2_idx, num, attempts;
 	char *bssid = NULL, *crack_progress = NULL;
 	enum key_state key_status;
 
@@ -440,21 +440,6 @@ char *get_crack_progress(unsigned char *mac)
 				fscanf(fp, "%d", &num);
 				key_status = num;
 
-				p1 = p2 = 0;
-				for (i = 0; i < P1_SIZE; ++i) {
-					if (i == p1_idx) {
-						fscanf(fp, "%d", &p1);
-					} else {
-						fscanf(fp, "%d", &num);
-					}
-				}
-				for (i = 0; i < P2_SIZE; ++i) {
-					if (i == p2_idx) {
-						fscanf(fp, "%d", &p2);
-					} else {
-						fscanf(fp, "%d", &num);
-					}
-				}
 				fclose(fp);
 
 				if (key_status == KEY1_WIP) {
@@ -464,8 +449,7 @@ char *get_crack_progress(unsigned char *mac)
 					attempts = P1_SIZE + p2_idx + 1;
 					sprintf(crack_progress, "%.2lf", (attempts*100.0)/(P1_SIZE + P2_SIZE));
 				} else {
-					attempts = P1_SIZE + P2_SIZE;
-					sprintf(crack_progress, "%.1lf", (attempts*100.0)/(P1_SIZE + P2_SIZE));
+					sprintf(crack_progress, "%.1lf", 100.0);
 				}
 			} else {
 				if (crack_progress) {
