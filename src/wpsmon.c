@@ -352,7 +352,7 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 	{
 		if(!json_mode) {
 			if (show_crack_progress) {
-				fprintf  (stdout, "BSSID               Ch  dBm  WPS  Lck  Vendor    Prcnt  ESSID\n");
+				fprintf  (stdout, "BSSID               Ch  dBm  WPS  Lck  Vendor    Progr  ESSID\n");
 			} else {
 				fprintf  (stdout, "BSSID               Ch  dBm  WPS  Lck  Vendor    ESSID\n");
 			}
