@@ -443,12 +443,12 @@ int wps_parse_msg(const struct wpabuf *msg, struct wps_parse_attr *attr)
 			 * Mac OS X 10.6 seems to be adding 0x00 padding to the
 			 * end of M1. Skip those to avoid interop issues.
 			 */
-			int i;
-			for (i = 0; i < end - pos; i++) {
+			uintptr_t i, left = end - pos;
+			for (i = 0; i < left; i++) {
 				if (pos[i])
 					break;
 			}
-			if (i == end - pos) {
+			if (i == left) {
 				wpa_printf(MSG_DEBUG, "WPS: Workaround - skip "
 					   "unexpected message padding");
 				break;
