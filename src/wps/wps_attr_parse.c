@@ -444,7 +444,7 @@ int wps_parse_msg(const struct wpabuf *msg, struct wps_parse_attr *attr)
 			 * end of M1. Skip those to avoid interop issues.
 			 */
 			int i;
-			for (i = 0; i < end - pos; i++) {
+			for (i = 0; i < (u8)(end - pos); i++) {
 				if (pos[i])
 					break;
 			}
