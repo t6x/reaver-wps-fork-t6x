@@ -54,5 +54,6 @@
 
 int restore_session();
 int save_session();
+char *get_crack_progress(unsigned char *mac);
 
 #endif

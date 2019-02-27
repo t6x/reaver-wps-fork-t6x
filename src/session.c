@@ -410,3 +410,57 @@ int save_session()
 	return ret_val;
 }
 
+/**
+ * Return the percentage of crack progress
+ * 
+ * @params unsigned char* mac The MAC address
+ * 
+ * @return char*              x.xx, xx.xx or xxx.x
+ */
+char *get_crack_progress(unsigned char *mac)
+{
+	struct stat wpstat = { 0 };
+	FILE *fp = NULL;
+	char file[FILENAME_MAX];
+	int p1_idx, p2_idx, num, attempts;
+	char *bssid = NULL, *crack_progress = NULL;
+	enum key_state key_status;
+
+	bssid = (char *) mac2str(mac, '\0');
+
+	if (bssid) {
+		gen_sessionfile_name(bssid, file);
+
+		if(stat(file, &wpstat) == 0) {
+			crack_progress = (char*) malloc(10);
+			if((fp = fopen(file, "r")) && crack_progress) {
+				crack_progress[0] = '\0';
+				fscanf(fp, "%d", &p1_idx);
+				fscanf(fp, "%d", &p2_idx);
+				fscanf(fp, "%d", &num);
+				key_status = num;
+
+				fclose(fp);
+
+				if (key_status == KEY1_WIP) {
+					attempts = p1_idx + 1;
+					sprintf(crack_progress, "%.2lf", (attempts*100.0)/(P1_SIZE + P2_SIZE));
+				} else if (key_status == KEY2_WIP) {
+					attempts = P1_SIZE + p2_idx + 1;
+					sprintf(crack_progress, "%.2lf", (attempts*100.0)/(P1_SIZE + P2_SIZE));
+				} else {
+					sprintf(crack_progress, "%.1lf", 100.0);
+				}
+			} else {
+				if (crack_progress) {
+					free(crack_progress);
+					crack_progress = NULL;
+				}
+			}
+		}
+	}
+	if (bssid) free(bssid);
+
+	return crack_progress;
+}
+

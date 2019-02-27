@@ -37,7 +37,7 @@ static char* append_and_free(char* s1, char *s2, int who) {
 	return new;
 }
 
-char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi, const unsigned char* vendor, struct libwps_data *wps) {
+char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi, const unsigned char* vendor, struct libwps_data *wps, const char *progress) {
 	size_t ol = 0, nl = 0, ns = 0;
 	char *json_str = 0, *old = strdup("{"), *tmp;
 	char buf[1024];
@@ -169,6 +169,11 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		tmp = sanitize_string(wps->rf_bands);
 		nl = snprintf(buf, sizeof buf, "\"wps_rf_bands\" : \"%s\", ", tmp);
 		free(tmp);
+		json_str = append_and_free(old, buf, 1);
+		old = json_str;
+	}
+	if(progress) {
+		nl = snprintf(buf, sizeof buf, "\"progress\" : \"%s\", ", progress);
 		json_str = append_and_free(old, buf, 1);
 		old = json_str;
 	}
