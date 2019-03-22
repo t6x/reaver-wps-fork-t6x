@@ -121,6 +121,7 @@ pcap_t *capture_init(char *capture_source)
 	pcap_t *handle;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
 	int status;
+	int activate_rfmon = 0;
 
 	handle = pcap_open_offline(capture_source, errbuf);
 	if(handle) return handle;
@@ -133,13 +134,14 @@ pcap_t *capture_init(char *capture_source)
 		execve("/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport", argv, NULL);
 	}
 	waitpid(pid,&status,0);
+	activate_rfmon = 1;
 #endif
 
 	handle = pcap_create(capture_source, errbuf);
 	if (handle) {
 		pcap_set_snaplen(handle, 65536);
 		pcap_set_timeout(handle, 50);
-		pcap_set_rfmon(handle, 1);
+		pcap_set_rfmon(handle, activate_rfmon);
 		pcap_set_promisc(handle, 1);
 		if(!(status = pcap_activate(handle)))
 			return handle;
