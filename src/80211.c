@@ -148,23 +148,64 @@ void read_ap_beacon()
         }
 }
 
+int freq_to_chan (uint16_t freq) {
+	if (freq >= 2412 && freq <= 2472) {
+		return (freq - 2407) / 5;
+	} else if (freq == 2484) {
+		return 14;
+	} else if (freq >= 4900 && freq < 5000) {
+		return (freq - 4000) / 5;
+	} else if (freq >= 5000 && freq < 5900) {
+		return (freq - 5000) / 5;
+	} else if (freq >= 56160 + 2160 * 1 && freq <= 56160 + 2160 * 4) {
+		return (freq - 56160) / 2160;
+	}
+	return 0;
+}
+
 #include "radiotap_flags.h"
 
-/* Extracts the signal strength field (if any) from the packet's radio tap header */
-int8_t signal_strength(const unsigned char *packet, size_t len)
+/* readbuf must be of sufficient len to read the full flag, maximal 4 chars. */
+static int get_radiotap_flag(const unsigned char *packet, size_t len, unsigned flagnumber, unsigned char* readbuf)
 {
 	if(has_rt_header() && (len > (sizeof(struct radio_tap_header))))
 	{
 		uint32_t offset, presentflags;
 		if(!rt_get_presentflags(packet, len, &presentflags, &offset))
 			return 0;
-		if(!(presentflags & (1U << IEEE80211_RADIOTAP_DBM_ANTSIGNAL)))
+		if(!(presentflags & (1U << flagnumber)))
 			return 0;
-		offset = rt_get_flag_offset(presentflags, IEEE80211_RADIOTAP_DBM_ANTSIGNAL, offset);
-		if (offset < len)
-			return (int8_t) packet[offset];
+		offset = rt_get_flag_offset(presentflags, flagnumber, offset);
+		if (offset + ieee80211_radiotap_type_size[flagnumber] < len) {
+			memcpy(readbuf, packet+offset, ieee80211_radiotap_type_size[flagnumber]);
+			return 1;
+		}
 	}
 
+	return 0;
+}
+
+
+/* Extracts the channel frequency from the packet's radio tap header */
+uint16_t rt_channel_freq(const unsigned char *packet, size_t len)
+{
+	unsigned char readbuf[4];
+	/* the lower 2 byte of the channel flag seems to contain channel type, i.e. ABG.
+	   but we need to read all 4. */
+	uint16_t result;
+	if(get_radiotap_flag(packet, len, IEEE80211_RADIOTAP_CHANNEL, readbuf)) {
+		memcpy(&result, readbuf, 2);
+		return end_le32toh(result);
+	}
+	return 0;
+}
+
+/* Extracts the signal strength field (if any) from the packet's radio tap header */
+int8_t signal_strength(const unsigned char *packet, size_t len)
+{
+	unsigned char readbuf[1];
+	if(get_radiotap_flag(packet, len, IEEE80211_RADIOTAP_DBM_ANTSIGNAL, readbuf))
+		return (int8_t) readbuf[0];
 	return 0;
 }
 

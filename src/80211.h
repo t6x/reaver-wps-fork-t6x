@@ -75,6 +75,8 @@
 
 unsigned char *next_packet(struct pcap_pkthdr *header);
 void read_ap_beacon();
+int freq_to_chan (uint16_t freq);
+uint16_t rt_channel_freq(const unsigned char *packet, size_t len);
 int8_t signal_strength(const unsigned char *packet, size_t len);
 int is_wps_locked();
 int reassociate(void);
