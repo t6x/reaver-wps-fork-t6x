@@ -208,7 +208,9 @@ static inline unsigned int wpa_swap_32(unsigned int v)
 #endif /* __LITTLE_ENDIAN */
 #endif /* __BYTE_ORDER */
 
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#include "endianness.h"
+
+#if ENDIANNESS_LE+0 == 1
 #define le_to_host16(n) ((__force u16) (le16) (n))
 #define host_to_le16(n) ((__force le16) (u16) (n))
 #define be_to_host16(n) bswap_16((__force u16) (be16) (n))
@@ -221,7 +223,7 @@ static inline unsigned int wpa_swap_32(unsigned int v)
 #define host_to_le64(n) ((__force le64) (u64) (n))
 #define be_to_host64(n) bswap_64((__force u64) (be64) (n))
 #define host_to_be64(n) ((__force be64) bswap_64((n)))
-#elif __BYTE_ORDER == __BIG_ENDIAN
+#elif ENDIANNESS_BE+0 == 1
 #define le_to_host16(n) bswap_16(n)
 #define host_to_le16(n) bswap_16(n)
 #define be_to_host16(n) (n)
