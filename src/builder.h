@@ -43,8 +43,6 @@
 #define WPS_TAG_SIZE            14
 #define WPS_REGISTRAR_TAG       "\x00\x50\xF2\x04\x10\x4A\x00\x01\x10\x10\x3A\x00\x01\x02"
 
-#define DEFAULT_DURATION        52
-
 #define DOT1X_VERSION           0x01
 #define DOT1X_START             0x01
 
