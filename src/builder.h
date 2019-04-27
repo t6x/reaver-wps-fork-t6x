@@ -62,7 +62,7 @@
 #define IW_ESSID_MAX_SIZE 32
 #endif
 
-size_t build_radio_tap_header(struct radio_tap_header *rt_header);
+size_t build_radio_tap_header(void *rt_header);
 size_t build_dot11_frame_header(struct dot11_frame_header *fh, uint16_t fc);
 size_t build_association_management_frame(struct association_request_management_frame *f);
 size_t build_authentication_management_frame(struct authentication_management_frame *f);

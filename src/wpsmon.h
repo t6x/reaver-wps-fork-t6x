@@ -66,7 +66,6 @@
 #define YES			"Yes"
 #define NO			"No "
 
-#define FAKE_RADIO_TAP_HEADER	"\x00\x00\x00\x00\x00\x00\x00\x00"
 #define PACKET_FILTER		"type mgt and (subtype beacon or subtype proberesp)"
 
 enum tag_type

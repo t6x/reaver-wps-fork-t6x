@@ -66,7 +66,7 @@
 #define FC_ORDER                0x80
 
 #define RADIO_TAP_VERSION	0x00
-#define FAKE_RADIO_TAP_HEADER	"\x00\x00\x00\x00\x00\x00\x00\x00"
+#define FAKE_RADIO_TAP_HEADER	"\0\0\0\0" "\0\0\0\0" "\0\0\0\0" "\0\0\0\0" "\0\0\0\0"
 
 #define MIN_AUTH_SIZE           (sizeof(struct radio_tap_header) + sizeof(struct dot11_frame_header) + sizeof(struct authentication_management_frame))
 

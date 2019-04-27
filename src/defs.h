@@ -337,6 +337,11 @@ struct radio_tap_header
 	uint8_t pad;
 	le16 len;
 	le32 flags;
+#ifdef RADIOTAP_HEADER_WITH_RATE
+	uint8_t rate;
+	uint8_t pad2;
+#endif
+	le16 txflags;
 };
 
 struct dot11_frame_header

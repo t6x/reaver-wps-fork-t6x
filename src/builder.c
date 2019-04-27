@@ -34,10 +34,32 @@
 #include "builder.h"
 #include <assert.h>
 
-size_t build_radio_tap_header(struct radio_tap_header *rt_header)
+size_t build_radio_tap_header(void *rt_header)
 {
-	memcpy(rt_header, "\0\0" "\x08\0" "\0\0\0\0", 8);
-	return sizeof(*rt_header);
+#ifdef RADIOTAP_HEADER_WITH_RATE
+	#define RADIOTAP_HEADER_LENGTH \
+	"\x0c\0" /* header length */
+	#define RADIOTAP_HEADER_PRESENT_FLAGS \
+	"\x04\x80\0\0" /* present flags: rate & tx flags */
+	#define RADIOTAP_HEADER_RATE_OPTION \
+	"\0\0" /* rate, padding */
+#else
+	#define RADIOTAP_HEADER_LENGTH \
+	"\x0a\0" /* header length */
+	#define RADIOTAP_HEADER_PRESENT_FLAGS \
+	"\x00\x80\0\0" /* present flags: tx flags */
+	#define RADIOTAP_HEADER_RATE_OPTION ""
+#endif
+
+	#define RADIOTAP_HEADER \
+	"\0\0" /* version */ \
+	RADIOTAP_HEADER_LENGTH \
+	RADIOTAP_HEADER_PRESENT_FLAGS \
+	RADIOTAP_HEADER_RATE_OPTION \
+	"\x18\0" /* TX flags: F_TX_NOACK | F_TX_NOSEQ */
+
+	memcpy(rt_header, RADIOTAP_HEADER, sizeof(RADIOTAP_HEADER)-1);
+	return sizeof(RADIOTAP_HEADER)-1;
 }
 
 static size_t build_dot11_frame_header_m(struct dot11_frame_header *fh, uint16_t fc, unsigned char dstmac[6])
