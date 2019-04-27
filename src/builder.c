@@ -44,7 +44,7 @@ size_t build_dot11_frame_header_m(struct dot11_frame_header *fh, uint16_t fc, un
 {
 	static uint16_t frag_seq;
 
-	frag_seq += SEQ_MASK;
+	frag_seq += 0x10; /* SEQ_MASK */
 
 	fh->duration = end_htole16(DEFAULT_DURATION);
 	fh->fc = end_htole16(fc);
