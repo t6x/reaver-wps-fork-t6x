@@ -40,7 +40,7 @@ size_t build_radio_tap_header(struct radio_tap_header *rt_header)
 	return sizeof(*rt_header);
 }
 
-size_t build_dot11_frame_header_m(struct dot11_frame_header *fh, uint16_t fc, unsigned char dstmac[6])
+static size_t build_dot11_frame_header_m(struct dot11_frame_header *fh, uint16_t fc, unsigned char dstmac[6])
 {
 	static uint16_t frag_seq;
 
