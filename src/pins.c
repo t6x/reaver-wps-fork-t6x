@@ -107,10 +107,13 @@ void generate_pins()
 	 */
 	if(get_static_p1() && !get_pin_string_mode())
 	{
-		i = get_k1_key_index(atoi(get_static_p1()));
-		set_p1(index, k1[i].key);
-		k1[i].priority = 2;
-		index++;
+		i = get_k1_key_index(get_static_p1());
+		/* check first half pin index was found */
+		if (i>=0) {
+			set_p1(index, k1[i].key);
+			k1[i].priority = 2;
+			index++;
+		}
 	}
 		/* 
 		 * Look for P1 keys marked as priority. These are pins that have been 
@@ -141,10 +144,13 @@ void generate_pins()
 	index = 0;
 	if(get_static_p2() && !get_pin_string_mode())
 	{
-		i = get_k2_key_index(atoi(get_static_p2()));
-		set_p2(index, k2[i].key);
-		k2[i].priority = 2;
-		index++;
+		i = get_k2_key_index(get_static_p2());
+		/* check second half pin index was found */
+		if (i>=0) {
+			set_p2(index, k2[i].key);
+			k2[i].priority = 2;
+			index++;
+		}
 	}
 		/* 
 		 * Look for P2 keys statically marked as priority. These are pins that have been 
