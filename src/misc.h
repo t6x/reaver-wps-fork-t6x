@@ -43,6 +43,7 @@
 #include "globule.h"
 #include "cprintf.h"
 
+void mac2str_buf(unsigned char *mac, char delim, char* buf);
 char *mac2str(unsigned char *mac, char delim);
 void str2mac(char *str, unsigned char *mac);
 void daemonize(void);
