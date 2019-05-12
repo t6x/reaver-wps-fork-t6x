@@ -282,23 +282,13 @@ int restore_session()
 int save_session()
 {
 	char bssid[6*3];
-	char *wpa_key = NULL;
         char file_name[FILENAME_MAX] = { 0 };
         FILE *fp = NULL;
         int ret_val = 0, i = 0;
-	struct wps_data *wps = NULL;
-	int pin_string;
 
-	wps = get_wps();
 	mac2str_buf(get_bssid(), '\0', bssid);
-	pin_string = get_pin_string_mode();
 
-	if(wps)
-	{
-		wpa_key = wps->key;
-	}
-
-	if(pin_string) {
+	if(get_pin_string_mode()) {
 		cprintf(VERBOSE, "[*] String pin was specified, nothing to save.\n");
 		return 0;
 	}
