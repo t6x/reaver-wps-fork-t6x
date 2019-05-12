@@ -281,8 +281,8 @@ int restore_session()
 
 int save_session()
 {
-	char *bssid = NULL;
-	char *wpa_key = NULL, *essid = NULL, *pretty_bssid = NULL;
+	char bssid[6*3];
+	char *wpa_key = NULL;
         char file_name[FILENAME_MAX] = { 0 };
         FILE *fp = NULL;
         int ret_val = 0, i = 0;
@@ -290,80 +290,60 @@ int save_session()
 	int pin_string;
 
 	wps = get_wps();
-	bssid = mac2str(get_bssid(), '\0');
-	pretty_bssid = mac2str(get_bssid(), ':');
+	mac2str_buf(get_bssid(), '\0', bssid);
 	pin_string = get_pin_string_mode();
 
 	if(wps)
 	{
 		wpa_key = wps->key;
-		essid = wps->essid;
 	}
-	
-	if(!bssid || !pretty_bssid || pin_string)
+
+	if(pin_string) {
+		cprintf(VERBOSE, "[*] String pin was specified, nothing to save.\n");
+		return 0;
+	}
+	/* 
+	 * If a session file was explicitly specified, use that; else, check for the 
+	 * default session file name for this BSSID.
+	 */
+	if(get_session())
 	{
-		if (pin_string)
-		{
-			cprintf(VERBOSE, "[*] String pin was specified, nothing to save.\n");
-		}
-		else
-		{
-			cprintf(CRITICAL, "[X] ERROR: Failed to save session data (memory error).\n");
-		}
+		strcpy(file_name, get_session());
 	}
 	else
 	{
-		/* 
-		 * If a session file was explicitly specified, use that; else, check for the 
-		 * default session file name for this BSSID.
-		 */
-		if(get_session())
-		{
-			strcpy(file_name, get_session());
+		gen_sessionfile_name(bssid, file_name);
+	}
+
+	/* Don't bother saving anything if nothing has been done */
+	/* Save .wpc file if the first half of first pin is correct */
+	if((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() >= KEY2_WIP))
+	{
+		if(!(fp = fopen(file_name, "w"))) {
+			dprintf(2, "errror: fopen %s: %s\n", file_name, strerror(errno));
+			return 0;
 		}
-		else
-		{
-			gen_sessionfile_name(bssid, file_name);
-		}
+		/* Save key1 index value */
+		fprintf(fp, "%d\n", get_p1_index());
 
-		/* Don't bother saving anything if nothing has been done */
-		/* Save .wpc file if the first half of first pin is correct */
-		if((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() >= KEY2_WIP))
-		{
-			if(!(fp = fopen(file_name, "w"))) {
-				dprintf(2, "errror: fopen %s: %s\n", file_name, strerror(errno));
-				return 0;
-			}
-			/* Save key1 index value */
-			fprintf(fp, "%d\n", get_p1_index());
+		/* Save key2 index value */
+		fprintf(fp, "%d\n", get_p2_index());
 
-			/* Save key2 index value */
-			fprintf(fp, "%d\n", get_p2_index());
+		/* Save key status value */
+		fprintf(fp, "%d\n", get_key_status());
 
-			/* Save key status value */
-			fprintf(fp, "%d\n", get_key_status());
+		/* Save all the p1 values */
+		for(i=0; i<P1_SIZE; i++) fprintf(fp, "%s\n", get_p1(i));
 
-			/* Save all the p1 values */
-			for(i=0; i<P1_SIZE; i++) fprintf(fp, "%s\n", get_p1(i));
+		/* Save all the p2 values */
+		for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
 
-			/* Save all the p2 values */
-			for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
-
-			/* If we got an SSID from the WPS data, then use that; else, use whatever was used to associate with the AP */
-			if(!essid || strlen(essid) == 0)
-			{
-				essid = get_ssid();
-			}
-			ret_val = 1;
-			fclose(fp);
-		}
-		else
-		{
-			cprintf(VERBOSE, "[+] Nothing done, nothing to save.\n");
-		}
-		
-		free(bssid);
-		free(pretty_bssid);
+		ret_val = 1;
+		fclose(fp);
+	}
+	else
+	{
+		cprintf(VERBOSE, "[+] Nothing done, nothing to save.\n");
 	}
 
 	return ret_val;
