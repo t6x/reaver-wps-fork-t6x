@@ -281,62 +281,58 @@ int restore_session()
 
 int save_session()
 {
-	char bssid[6*3];
-        char file_name[FILENAME_MAX] = { 0 };
-        FILE *fp = NULL;
-        int ret_val = 0, i = 0;
-
-	mac2str_buf(get_bssid(), '\0', bssid);
-
 	if(get_pin_string_mode()) {
 		cprintf(VERBOSE, "[*] String pin was specified, nothing to save.\n");
 		return 0;
 	}
-	/* 
-	 * If a session file was explicitly specified, use that; else, check for the 
+
+	/* Don't bother saving anything if nothing has been done */
+	/* Save .wpc file if the first half of first pin is correct */
+	if(!((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() >= KEY2_WIP))) {
+		cprintf(VERBOSE, "[+] Nothing done, nothing to save.\n");
+		return 0;
+	}
+
+	/*
+	 * If a session file was explicitly specified, use that; else, check for the
 	 * default session file name for this BSSID.
 	 */
+        char file_name[FILENAME_MAX];
 	if(get_session())
 	{
 		strcpy(file_name, get_session());
 	}
 	else
 	{
+		char bssid[6*3];
+		mac2str_buf(get_bssid(), '\0', bssid);
 		gen_sessionfile_name(bssid, file_name);
 	}
 
-	/* Don't bother saving anything if nothing has been done */
-	/* Save .wpc file if the first half of first pin is correct */
-	if((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() >= KEY2_WIP))
-	{
-		if(!(fp = fopen(file_name, "w"))) {
-			dprintf(2, "errror: fopen %s: %s\n", file_name, strerror(errno));
-			return 0;
-		}
-		/* Save key1 index value */
-		fprintf(fp, "%d\n", get_p1_index());
+        FILE *fp;
 
-		/* Save key2 index value */
-		fprintf(fp, "%d\n", get_p2_index());
-
-		/* Save key status value */
-		fprintf(fp, "%d\n", get_key_status());
-
-		/* Save all the p1 values */
-		for(i=0; i<P1_SIZE; i++) fprintf(fp, "%s\n", get_p1(i));
-
-		/* Save all the p2 values */
-		for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
-
-		ret_val = 1;
-		fclose(fp);
+	if(!(fp = fopen(file_name, "w"))) {
+		dprintf(2, "errror: fopen %s: %s\n", file_name, strerror(errno));
+		return 0;
 	}
-	else
-	{
-		cprintf(VERBOSE, "[+] Nothing done, nothing to save.\n");
-	}
+	/* Save key1 index value */
+	fprintf(fp, "%d\n", get_p1_index());
 
-	return ret_val;
+	/* Save key2 index value */
+	fprintf(fp, "%d\n", get_p2_index());
+
+	/* Save key status value */
+	fprintf(fp, "%d\n", get_key_status());
+
+	int i;
+	/* Save all the p1 values */
+	for(i=0; i<P1_SIZE; i++) fprintf(fp, "%s\n", get_p1(i));
+
+	/* Save all the p2 values */
+	for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
+
+	fclose(fp);
+	return 1;
 }
 
 /**
