@@ -32,6 +32,7 @@
  */
 
 #include "session.h"
+#include <errno.h>
 
 /* Does the configuration directory exist? Returns 1 for yes, 0 for no. */
 static int configuration_directory_exists()
@@ -331,72 +332,74 @@ int save_session()
 		/* Save .wpc file if the first half of first pin is correct */
 		if((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() >= KEY2_WIP))
 		{
-			if((fp = fopen(file_name, "w")))
+			if(!(fp = fopen(file_name, "w"))) {
+				dprintf(2, "errror: fopen %s: %s\n", file_name, strerror(errno));
+				return 0;
+			}
+
+			snprintf(line, MAX_LINE_SIZE, "%d\n", get_p1_index());
+			write_size = strlen(line);
+
+			/* Save key1 index value */
+			if(fwrite(line, 1, write_size, fp) == write_size)
 			{
-				snprintf(line, MAX_LINE_SIZE, "%d\n", get_p1_index());
+				memset(line, 0, MAX_LINE_SIZE);
+				snprintf(line, MAX_LINE_SIZE, "%d\n", get_p2_index());
 				write_size = strlen(line);
 
-				/* Save key1 index value */
+				/* Save key2 index value */
 				if(fwrite(line, 1, write_size, fp) == write_size)
 				{
 					memset(line, 0, MAX_LINE_SIZE);
-					snprintf(line, MAX_LINE_SIZE, "%d\n", get_p2_index());
-					write_size = strlen(line);
+       		                	snprintf(line, MAX_LINE_SIZE, "%d\n", get_key_status());
+       		                	write_size = strlen(line);
 
-					/* Save key2 index value */
+					/* Save key status value */
 					if(fwrite(line, 1, write_size, fp) == write_size)
 					{
-						memset(line, 0, MAX_LINE_SIZE);
-        		                	snprintf(line, MAX_LINE_SIZE, "%d\n", get_key_status());
-        		                	write_size = strlen(line);
-	
-						/* Save key status value */
-						if(fwrite(line, 1, write_size, fp) == write_size)
+						/* Save all the p1 values */
+						for(i=0; i<P1_SIZE; i++)
 						{
-							/* Save all the p1 values */
-							for(i=0; i<P1_SIZE; i++)
-							{
-								fwrite(get_p1(i), 1, strlen(get_p1(i)), fp);
-								fwrite("\n", 1, 1, fp);
-							}
-
-							/* Save all the p2 values */
-							for(i=0; i<P2_SIZE; i++)
-							{
-								fwrite(get_p2(i), 1, strlen(get_p2(i)), fp);
-								fwrite("\n", 1, 1, fp);
-							}
-
-							/* If we have the WPA key, then we've exhausted all attempts, and the UI should reflect that */
-							if(wpa_key && strlen(wpa_key) > 0)
-							{
-								attempts = P1_SIZE + P2_SIZE;
-							}
-							else
-							{
-								if(get_key_status() == KEY1_WIP)
-								{
-									attempts = get_p1_index() + get_p2_index();
-								}
-								else if(get_key_status() == KEY2_WIP)
-								{
-									attempts = P1_SIZE + get_p2_index();
-								}
-							}
-
-							/* If we got an SSID from the WPS data, then use that; else, use whatever was used to associate with the AP */
-							if(!essid || strlen(essid) == 0)
-							{
-								essid = get_ssid();
-							}
-
-							ret_val = 1;
+							fwrite(get_p1(i), 1, strlen(get_p1(i)), fp);
+							fwrite("\n", 1, 1, fp);
 						}
+
+						/* Save all the p2 values */
+						for(i=0; i<P2_SIZE; i++)
+						{
+							fwrite(get_p2(i), 1, strlen(get_p2(i)), fp);
+							fwrite("\n", 1, 1, fp);
+						}
+
+						/* If we have the WPA key, then we've exhausted all attempts, and the UI should reflect that */
+						if(wpa_key && strlen(wpa_key) > 0)
+						{
+							attempts = P1_SIZE + P2_SIZE;
+						}
+						else
+						{
+							if(get_key_status() == KEY1_WIP)
+							{
+								attempts = get_p1_index() + get_p2_index();
+							}
+							else if(get_key_status() == KEY2_WIP)
+							{
+								attempts = P1_SIZE + get_p2_index();
+							}
+						}
+
+						/* If we got an SSID from the WPS data, then use that; else, use whatever was used to associate with the AP */
+						if(!essid || strlen(essid) == 0)
+						{
+							essid = get_ssid();
+						}
+
+						ret_val = 1;
 					}
 				}
-				
-				fclose(fp);
 			}
+
+			fclose(fp);
 		}
 		else
 		{
