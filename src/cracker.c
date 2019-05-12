@@ -84,6 +84,7 @@ void crack()
 	char *vendor;
 	if((vendor = get_vendor_string(get_vendor())))
 		cprintf(INFO, "[+] Vendor: %s\n", vendor);
+
 	/* I'm fairly certian there's a reason I put this in twice. Can't remember what it was now though... */	
 	if(get_max_pin_attempts() == -1)
 	{
@@ -93,18 +94,17 @@ void crack()
 
 	#if 0
 	/* This initial association is just to make sure we can successfully associate */
-             while(!reassociate())
-             {
+	while(!reassociate()) {
 		if(assoc_fail_count == MAX_ASSOC_FAILURES)
 		{
 			assoc_fail_count = 0;
-                	cprintf(CRITICAL, "[!] WARNING: Failed to associate with %s (ESSID: %s)\n", bssid, get_ssid());
+			cprintf(CRITICAL, "[!] WARNING: Failed to associate with %s (ESSID: %s)\n", bssid, get_ssid());
 		}
 		else
 		{
 			assoc_fail_count++;
 		}
-             }
+	}
 	#endif
 
 	/* Used to calculate pin attempt rates */
@@ -145,12 +145,10 @@ void crack()
 		 * Some APs identify brute force attempts and lock themselves for a short period of time (typically 5 minutes).
 		 * Verify that the AP is not locked before attempting the next pin.
 		 */
-		while(get_ignore_locks() == 0 && is_wps_locked())
-                     {
-                             cprintf(WARNING, "[!] WARNING: Detected AP rate limiting, waiting %d seconds before re-checking\n", get_lock_delay());
+		while(get_ignore_locks() == 0 && is_wps_locked()) {
+			cprintf(WARNING, "[!] WARNING: Detected AP rate limiting, waiting %d seconds before re-checking\n", get_lock_delay());
 			pcap_sleep(get_lock_delay());
-			
-                     }
+		}
 
 		/* Initialize wps structure */
 		set_wps(initialize_wps_data());
@@ -177,8 +175,7 @@ void crack()
 		 * severely limit our pin attempt rate if we do not.
 		 */
 		assoc_fail_count = 0;
-		while(!reassociate())
-             	{
+		while(!reassociate()) {
 			if(assoc_fail_count == MAX_ASSOC_FAILURES)
 			{
 				assoc_fail_count = 0;
@@ -188,7 +185,7 @@ void crack()
 			{
 				assoc_fail_count++;
 			}
-             	}
+		}
 		cprintf(INFO, "[+] Associated with %s (ESSID: %s)\n", bssid, get_ssid());
 
 
@@ -263,7 +260,7 @@ void crack()
 		}
 	}
 
-             if(bssid) free(bssid);
+	if(bssid) free(bssid);
 	if(get_handle())
 	{
 		pcap_close(get_handle());
