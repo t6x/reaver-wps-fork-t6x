@@ -285,7 +285,7 @@ int save_session()
 	char *wpa_key = NULL, *essid = NULL, *pretty_bssid = NULL;
         char file_name[FILENAME_MAX] = { 0 };
         FILE *fp = NULL;
-        int attempts = 0, ret_val = 0, i = 0;
+        int ret_val = 0, i = 0;
 	struct wps_data *wps = NULL;
 	int pin_string;
 
@@ -348,23 +348,6 @@ int save_session()
 
 			/* Save all the p2 values */
 			for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
-
-			/* If we have the WPA key, then we've exhausted all attempts, and the UI should reflect that */
-			if(wpa_key && strlen(wpa_key) > 0)
-			{
-				attempts = P1_SIZE + P2_SIZE;
-			}
-			else
-			{
-				if(get_key_status() == KEY1_WIP)
-				{
-					attempts = get_p1_index() + get_p2_index();
-				}
-				else if(get_key_status() == KEY2_WIP)
-				{
-					attempts = P1_SIZE + get_p2_index();
-				}
-			}
 
 			/* If we got an SSID from the WPS data, then use that; else, use whatever was used to associate with the AP */
 			if(!essid || strlen(essid) == 0)
