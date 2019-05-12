@@ -284,9 +284,7 @@ int save_session()
 	char *bssid = NULL;
 	char *wpa_key = NULL, *essid = NULL, *pretty_bssid = NULL;
         char file_name[FILENAME_MAX] = { 0 };
-        char line[MAX_LINE_SIZE] = { 0 };
         FILE *fp = NULL;
-	size_t write_size = 0;
         int attempts = 0, ret_val = 0, i = 0;
 	struct wps_data *wps = NULL;
 	int pin_string;
@@ -346,18 +344,10 @@ int save_session()
 			fprintf(fp, "%d\n", get_key_status());
 
 			/* Save all the p1 values */
-			for(i=0; i<P1_SIZE; i++)
-			{
-				fwrite(get_p1(i), 1, strlen(get_p1(i)), fp);
-				fwrite("\n", 1, 1, fp);
-			}
+			for(i=0; i<P1_SIZE; i++) fprintf(fp, "%s\n", get_p1(i));
 
 			/* Save all the p2 values */
-			for(i=0; i<P2_SIZE; i++)
-			{
-				fwrite(get_p2(i), 1, strlen(get_p2(i)), fp);
-				fwrite("\n", 1, 1, fp);
-			}
+			for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
 
 			/* If we have the WPA key, then we've exhausted all attempts, and the UI should reflect that */
 			if(wpa_key && strlen(wpa_key) > 0)
