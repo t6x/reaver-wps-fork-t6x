@@ -341,13 +341,13 @@ char *get_crack_progress(unsigned char *mac)
 	char *bssid = NULL, *crack_progress = NULL;
 	enum key_state key_status;
 
-	bssid = (char *) mac2str(mac, '\0');
+	bssid = mac2str(mac, '\0');
 
 	if (bssid) {
 		gen_sessionfile_name(bssid, file);
 
 		if(stat(file, &wpstat) == 0) {
-			crack_progress = (char*) malloc(10);
+			crack_progress = malloc(10);
 			if((fp = fopen(file, "r")) && crack_progress) {
 				crack_progress[0] = '\0';
 				fscanf(fp, "%d", &p1_idx);
