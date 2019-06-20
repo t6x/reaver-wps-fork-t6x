@@ -37,6 +37,7 @@
 int process_arguments(int argc, char **argv);
 void init_default_settings(void);
 void parse_recurring_delay(char *arg);
+int is_valid_pin(char *pin);
 void parse_static_pin(char *pin);
 
 #endif

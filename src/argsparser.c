@@ -249,16 +249,18 @@ void parse_recurring_delay(char *arg)
 
 int is_valid_pin(char *pin)
 {
-    if(!pin)
-        return 0;
+	int len, i;
 
-    int i;
-    for (i = 0; i < strlen(pin); i++)
-    {
-         if(!isdigit(pin[i]))
-             return 0;
-    }
-    if(strlen(pin) == 8)
+	if(!pin) return 0;
+
+	len = strlen(pin);
+	if(len != 4 && len != 7 && len != 8) return 0;
+
+	for (i = 0; i < len; i++)
+	{
+		if(!isdigit(pin[i])) return 0;
+	}
+    if(len == 8)
     {
         char pin7[8] = { 0 };
         char pin8[9] = { 0 };
@@ -273,20 +275,17 @@ int is_valid_pin(char *pin)
 /* Parse the WPS pin to use into p1 and p2 */
 void parse_static_pin(char *pin)
 {
-	int len = 0;
 	char p1[5] = { 0 };
 	char p2[4] = { 0 };
 
 	if(pin)
 	{
-		len = strlen(pin);
-
-		if((len == 4 || len == 7 || len == 8) && is_valid_pin(pin) != 0)
+		if(is_valid_pin(pin))
 		{
 			memcpy((void *) &p1, pin, sizeof(p1)-1);
 			set_static_p1((char *) &p1);
 
-			if(len > 4)
+			if(strlen(pin) > 4)
 			{
 				memcpy((void *) &p2, pin+sizeof(p1)-1, sizeof(p2)-1);
 				set_static_p2((char *) &p2);
