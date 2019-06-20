@@ -40,6 +40,7 @@ void crack()
 	char *bssid = NULL;
 	char *pin = NULL;
 	int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
+	int jump_val;
 	float pin_count = 0;
 	time_t start_time = 0;
 	enum wps_result result = 0;
@@ -69,6 +70,29 @@ void crack()
 	{
 		/* Check the specified 4/8 digit WPS PIN has been already tried */
 		if (restore_session() == -1) return;
+		/* If the specified pin was specified, then insert into current index of p1 and p2 array */
+		if (get_static_p1()) {
+			jump_val = jump_p1_queue(get_static_p1());
+			switch (jump_val) {
+				case -1:
+					cprintf(CRITICAL, "[!] The PIN has already been tested\n");
+					return;
+				case -2:
+					cprintf(INFO, "[!] First half PIN ignored, it was cracked\n");
+					break;
+			}
+			if (get_static_p2()) {
+				jump_val = jump_p2_queue(get_static_p2());
+				switch (jump_val) {
+					case -1:
+						cprintf(CRITICAL, "[!] The PIN has already been tested\n");
+						return;
+					case -2:
+						cprintf(INFO, "[!] Second half PIN ignored, it was cracked\n");
+						break;
+				}
+			}
+		}
 	}
 
 	/* Convert BSSID to a string */
