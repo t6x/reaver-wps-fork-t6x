@@ -211,7 +211,7 @@ int8_t signal_strength(const unsigned char *packet, size_t len)
 
 /* 
  * Determines if the target AP has locked its WPS state or not.
- * Returns 0 if not locked, 1 if locked.
+ * Returns 0 if not locked, 1 if locked, -1 if wps has been turned off
  */
 int is_wps_locked()
 {
@@ -248,6 +248,8 @@ int is_wps_locked()
 							locked = 1;
 						}
 						break;
+					} else {
+						return -1;
 					}
 				}
 
