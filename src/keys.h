@@ -42,7 +42,4 @@ struct key
         int priority;
 };
 
-int get_k1_key_index(int value);
-int get_k2_key_index(int value);
-
 #endif
