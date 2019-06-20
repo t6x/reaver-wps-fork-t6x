@@ -61,7 +61,6 @@ int restore_session()
 	char answer = 0;
 	FILE *fp = NULL;
 	int ret_val = 0, i = 0;
-	int add, p1_tried, p2_tried;
 
 	/* 
 	 * If a session file was explicitly specified, use that; else, check for the 
@@ -128,7 +127,6 @@ int restore_session()
 	set_key_status(atoi(line));
 
 	/* Read in all p1 values */
-	add = p1_tried = 0;
 	for(i=0; i<P1_SIZE; i++)
 	{
 		memset(temp, 0, P1_READ_LEN);
@@ -137,48 +135,11 @@ int restore_session()
 		{
 			/* NULL out the new line character */
 			temp[P1_STR_LEN] = 0;
-			/* check has first half pin was specified and yet is KEY1_WIP */
-			if (get_static_p1() && get_key_status() < KEY2_WIP)
-			{
-				if (i < get_p1_index())
-				{
-					/* Check the first half has been already tried */
-					if (strcmp(get_static_p1(), temp) == 0)
-					{
-						p1_tried = 1;
-					}
-				}
-				else if (i == get_p1_index())
-				{
-					/* Check current index of first half is the specified pin
-					 * Yes: do nothing
-					 * No: insert into current index and set add to 1
-					 */
-					if (!p1_tried && strcmp(get_static_p1(), temp) != 0)
-					{
-						set_p1(i, get_static_p1());
-						add = 1;
-					}
-				}
-				else
-				{
-					/* Check former index of first half
-					 * Yes: set add to 0 and continue to next loop;
-					 * No: do nothing
-					 */
-					if (strcmp(get_static_p1(), temp) == 0)
-					{
-						add = 0;
-						continue;
-					}
-				}
-			}
-			set_p1(i+add, temp);
+			set_p1(i, temp);
 		}
 	}
 
 	/* Read in all p2 values */
-	add = p2_tried = 0;
 	for(i=0; i<P2_SIZE; i++)
 	{
 		memset(temp, 0, P1_READ_LEN);
@@ -187,67 +148,11 @@ int restore_session()
 		{
 			/* NULL out the new line character */
 			temp[P2_STR_LEN] = 0;
-			/* check has second half pin was specified and yet not KEY_DONE */
-			if (get_static_p2() && get_key_status() != KEY_DONE)
-			{
-				if (i < get_p2_index())
-				{
-					/* Check the second half has been already tried */
-					if (strcmp(get_static_p2(), temp) == 0)
-					{
-						p2_tried = 1;
-					}
-				}
-				else if (i == get_p2_index())
-				{
-					/* Check current index of second half is the specified pin
-					 * Yes: do nothing
-					 * No: insert into current index and set add to 1
-					 */
-					if (!p2_tried && strcmp(get_static_p2(), temp) != 0)
-					{
-						set_p2(i, get_static_p2());
-						add = 1;
-					}
-				}
-				else
-				{
-					/* Check former index of second half
-					 * Yes: set add to 0 and continue to next loop;
-					 * No: do nothing
-					 */
-					if (strcmp(get_static_p2(), temp) == 0)
-					{
-						add = 0;
-						continue;
-					}
-				}
-			}
-			set_p2(i+add, temp);
+			set_p2(i, temp);
 		}
 	}
 
 	ret_val = 1;
-
-	/* Print warning message if the specified first or second half PIN was ignored */
-	if (get_static_p1())
-	{
-		/* Check the specified 4/8 digit WPS PIN has been already tried */
-		if (p1_tried || p2_tried)
-		{
-			ret_val = -1;
-		}
-		/* Print message what first half pin ignored if former key status >= KEY2_WIP */
-		if (get_key_status() >= KEY2_WIP && strcmp(get_static_p1(), get_p1(get_p1_index())) != 0)
-		{
-			cprintf(INFO, "[!] First half PIN ignored, it was cracked\n");
-		}
-		/* Print message what second half pin ignored if former key status == KEY_DONE */
-		if (get_key_status() == KEY_DONE && strcmp(get_static_p2(), get_p2(get_p2_index())) != 0)
-		{
-			cprintf(INFO, "[!] Second half PIN ignored, it was cracked\n");
-		}
-	}
 	
 fout:
 	fclose(fp);
@@ -259,10 +164,7 @@ out:
 		set_p2_index(0);
 		set_key_status(KEY1_WIP);
 	}
-	else if(ret_val == -1)
-	{
-		cprintf(CRITICAL, "[!] The PIN has already been tested\n");
-	} else {
+	else {
 		cprintf(INFO, "[+] Restored previous session\n");
 	}
 

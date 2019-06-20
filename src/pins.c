@@ -102,21 +102,11 @@ void generate_pins()
 {
         int i = 0, index = 0;
 
-	/* If the first half of the pin was specified,
-	 * generate a list of possible pins with the specified first half pin first
-	 */
-	if(get_static_p1() && !get_pin_string_mode())
-	{
-		i = get_k1_key_index(atoi(get_static_p1()));
-		set_p1(index, k1[i].key);
-		k1[i].priority = 2;
-		index++;
-	}
 		/* 
 		 * Look for P1 keys marked as priority. These are pins that have been 
 		 * reported to be commonly used on some APs and should be tried first. 
 		 */
-		for(i=0; i<P1_SIZE; i++)
+		for(index=i=0; i<P1_SIZE; i++)
 		{
 			if(k1[i].priority == 1)
 			{
@@ -135,22 +125,11 @@ void generate_pins()
 			}
 		}
 
-	/* If the second half of the pin was specified,
-	 * generate a list of possible pins with the specified second half pin first
-	 */
-	index = 0;
-	if(get_static_p2() && !get_pin_string_mode())
-	{
-		i = get_k2_key_index(atoi(get_static_p2()));
-		set_p2(index, k2[i].key);
-		k2[i].priority = 2;
-		index++;
-	}
 		/* 
 		 * Look for P2 keys statically marked as priority. These are pins that have been 
 		 * reported to be commonly used on some APs and should be tried first. 
 		 */
-		for(i=0; i<P2_SIZE; i++)
+		for(index=i=0; i<P2_SIZE; i++)
 		{
 			if(k2[i].priority == 1)
 			{

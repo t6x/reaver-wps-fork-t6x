@@ -66,10 +66,9 @@ void crack()
 	generate_pins();
 
 	/* Restore any previously saved session */
-	if(get_static_p1() == NULL || !get_pin_string_mode())
+	if(!get_pin_string_mode())
 	{
-		/* Check the specified 4/8 digit WPS PIN has been already tried */
-		if (restore_session() == -1) return;
+		restore_session();
 		/* If the specified pin was specified, then insert into current index of p1 and p2 array */
 		if (get_static_p1()) {
 			jump_val = jump_p1_queue(get_static_p1());
