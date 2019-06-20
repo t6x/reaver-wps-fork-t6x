@@ -266,4 +266,7 @@ void set_repeat_m6(int);
 int get_repeat_m6(void);
 void set_output_fd(int fd);
 int get_output_fd(void);
+int jump_p1_queue(char* value);
+int jump_p2_queue(char* value);
+
 #endif
