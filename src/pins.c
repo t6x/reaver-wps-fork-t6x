@@ -100,54 +100,54 @@ char *build_next_pin()
 /* Generate the p1 and p2 pin arrays */
 void generate_pins()
 {
-        int i = 0, index = 0;
+	int i = 0, index = 0;
 
-		/* 
-		 * Look for P1 keys marked as priority. These are pins that have been 
-		 * reported to be commonly used on some APs and should be tried first. 
-		 */
-		for(index=i=0; i<P1_SIZE; i++)
+	/* 
+	 * Look for P1 keys marked as priority. These are pins that have been 
+	 * reported to be commonly used on some APs and should be tried first. 
+	 */
+	for(index=i=0; i<P1_SIZE; i++)
+	{
+		if(k1[i].priority == 1)
 		{
-			if(k1[i].priority == 1)
-			{
-				set_p1(index, k1[i].key);
-				index++;
-			}
+			set_p1(index, k1[i].key);
+			index++;
 		}
-        
-		/* Randomize the rest of the P1 keys */
-		for(i=0; index < P1_SIZE; i++)
-        	{
-	                if(!k1[i].priority)
-	                {
-	                        set_p1(index, k1[i].key);
-	                        index++;
-			}
-		}
+	}
 
-		/* 
-		 * Look for P2 keys statically marked as priority. These are pins that have been 
-		 * reported to be commonly used on some APs and should be tried first. 
-		 */
-		for(index=i=0; i<P2_SIZE; i++)
+	/* Randomize the rest of the P1 keys */
+	for(i=0; index < P1_SIZE; i++)
+	{
+		if(!k1[i].priority)
 		{
-			if(k2[i].priority == 1)
-			{
-				set_p2(index, k2[i].key);
-				index++;
-			}
+			set_p1(index, k1[i].key);
+			index++;
 		}
+	}
 
-		/* Randomize the rest of the P2 keys */
-        	for(i=0; index < P2_SIZE; i++)
-        	{
-                	if(!k2[i].priority)
-                	{
-                	        set_p2(index, k2[i].key);
-                	        index++;
-			}
-                }
+	/* 
+	 * Look for P2 keys statically marked as priority. These are pins that have been 
+	 * reported to be commonly used on some APs and should be tried first. 
+	 */
+	for(index=i=0; i<P2_SIZE; i++)
+	{
+		if(k2[i].priority == 1)
+		{
+			set_p2(index, k2[i].key);
+			index++;
+		}
+	}
 
-        return;
+	/* Randomize the rest of the P2 keys */
+	for(i=0; index < P2_SIZE; i++)
+	{
+		if(!k2[i].priority)
+		{
+			set_p2(index, k2[i].key);
+			index++;
+		}
+	}
+
+	return;
 }
 
