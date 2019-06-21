@@ -153,6 +153,7 @@ enum wps_result do_wps_exchange()
 				got_nack = 1;
 				break;
 			case TERMINATE:
+				cprintf(VERBOSE, "[+] Received EAP_FAILURE message\n");
 				terminated = 1;
 				break;
 			default:
