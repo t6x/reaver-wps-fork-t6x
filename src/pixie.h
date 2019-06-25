@@ -36,6 +36,7 @@ void pixie_format(const unsigned char *key, unsigned len, char *outbuf);
 void pixie_attack(void);
 void pixie_free();
 int pixie_wrapper(char *cmd);
+int pixie_is_avoid_ap_lock();
 
 #endif
 

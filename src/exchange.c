@@ -32,6 +32,7 @@
  */
 
 #include "exchange.h"
+#include "pixie.h"
 
 /* Main loop to listen for packets on a wireless card in monitor mode. */
 enum wps_result do_wps_exchange()
@@ -113,6 +114,11 @@ enum wps_result do_wps_exchange()
 				}
 				else if(get_oo_send_nack())
 				{
+					tx_type = SEND_WSC_NACK;
+					terminated = 1;
+				}
+				/* For -K option, force return to avoid AP lock */
+				if (pixie.do_pixie && pixie_is_avoid_ap_lock()) {
 					tx_type = SEND_WSC_NACK;
 					terminated = 1;
 				}

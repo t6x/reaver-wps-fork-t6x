@@ -113,3 +113,14 @@ int pixie_wrapper(char *cmd) {
 
 	return ret_val;
 }
+
+/* Check the pixie attack is need to avoid AP lock status */
+int pixie_is_avoid_ap_lock() {
+	if (pixie.do_pixie) {
+		if (pixie.pin && strcmp(get_pin(), pixie.pin) != 0) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
