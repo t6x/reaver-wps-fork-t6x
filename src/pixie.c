@@ -22,7 +22,8 @@ void pixie_attack(void) {
 	if(p->do_pixie) {
 		char cmd[4096];
 		snprintf(cmd, sizeof cmd,
-		"pixiewps -e %s -s %s -z %s -a %s -n %s %s %s",
+		"%s -e %s -s %s -z %s -a %s -n %s %s %s",
+		((p->do_pixie == 2) ? p->wrapper : "pixiewps"),
 		p->pke, p->ehash1, p->ehash2, p->authkey, p->enonce,
 		dh_small ? "-S" : "-r" , dh_small ? "" : p->pkr);
 		printf("executing %s\n", cmd);
@@ -34,4 +35,5 @@ void pixie_attack(void) {
 	PIXIE_FREE(enonce);
 	PIXIE_FREE(ehash1);
 	PIXIE_FREE(ehash2);
+	PIXIE_FREE(wrapper);
 }

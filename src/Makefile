@@ -139,6 +139,8 @@ $(PROG_OBJS) $(LWE_OBJS): lwe/wireless.h
 install: wash reaver
 	$(INSTALL) -D -m 755 wash $(DESTDIR)$(exec_prefix)/bin/wash
 	$(INSTALL) -D -m 755 reaver $(DESTDIR)$(exec_prefix)/bin/reaver
+	@# shell script to run pixiewps (-K option without argument)
+	$(INSTALL) -D -m 755 pixie-wrapper $(DESTDIR)$(exec_prefix)/bin/pixie-wrapper
 	@# create directory used to store *.wpc files;
 	@# if not found defaults to "." i.e. current dir
 	$(MKDIRP) $(DESTDIR)$(CONFDIR)

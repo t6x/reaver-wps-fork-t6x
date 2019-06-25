@@ -13,6 +13,7 @@ struct pixie {
 	char *enonce;
 	char *ehash1;
 	char *ehash2;
+	char *wrapper;
 	int do_pixie;
 };
 

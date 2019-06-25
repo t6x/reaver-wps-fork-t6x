@@ -50,9 +50,9 @@ int process_arguments(int argc, char **argv)
 	int long_opt_index = 0;
 	char bssid[MAC_ADDR_LEN] = { 0 };
 	char mac[MAC_ADDR_LEN] = { 0 };
-	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:p:s:C:O:KZA5ELfnqvDShwN6JF";
+	char *short_options = "b:e:m:i:t:d:c:T:x:r:g:l:p:s:C:O:K::ZA5ELfnqvDShwN6JF";
 	struct option long_options[] = {
-		{ "pixie-dust", no_argument, NULL, 'K' },
+		{ "pixie-dust", optional_argument, NULL, 'K' },
 		{ "interface", required_argument, NULL, 'i' },
 		{ "bssid", required_argument, NULL, 'b' },
 		{ "essid", required_argument, NULL, 'e' },
@@ -104,9 +104,19 @@ int process_arguments(int argc, char **argv)
 				}
 				break;
                         case 'Z':
-                        case 'K':
                                 pixie.do_pixie = 1;
                                 break;
+			case 'K':
+			/* Run Pixiewps with a wrapper */
+				/* check has argument */
+				if (optarg) {
+					PIXIE_SET(wrapper, optarg);
+				}
+				else {
+					PIXIE_SET(wrapper, "pixie-wrapper");
+				}
+				pixie.do_pixie = 2;
+				break;
                         case 'i':
                                 set_iface(optarg);
                                 break;

