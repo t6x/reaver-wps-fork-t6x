@@ -14,6 +14,7 @@ struct pixie {
 	char *ehash1;
 	char *ehash2;
 	char *wrapper;
+	char *pin;
 	int do_pixie;
 };
 
@@ -33,6 +34,8 @@ extern struct pixie pixie;
 
 void pixie_format(const unsigned char *key, unsigned len, char *outbuf);
 void pixie_attack(void);
+void pixie_free();
+int pixie_wrapper(char *cmd);
 
 #endif
 

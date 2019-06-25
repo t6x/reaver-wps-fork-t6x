@@ -178,7 +178,7 @@ static int reaver_usage(char *prog_name)
         fprintf(stderr, "\t-J, --timeout-is-nack           Treat timeout as NACK (DIR-300/320)\n");
         fprintf(stderr, "\t-F, --ignore-fcs                Ignore frame checksum errors\n");
 	fprintf(stderr, "\t-w, --win7                      Mimic a Windows 7 registrar [False]\n");
-	fprintf(stderr, "\t-K, --pixie-dust                Run pixiedust attack\n");
+	fprintf(stderr, "\t-K, --pixie-dust[=wrapper]      Run pixiedust attack with a wrapper and auto retrieve WPA password if attack is successful\n");
 	fprintf(stderr, "\t-Z                              Run pixiedust attack\n");
         fprintf(stderr, "\t-O, --output-file=<filename>    Write packets of interest into pcap file\n");
 

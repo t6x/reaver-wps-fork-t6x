@@ -104,7 +104,7 @@ Advanced Options:
 	-J, --timeout-is-nack           Treat timeout as NACK (DIR-300/320)
 	-F, --ignore-fcs                Ignore frame checksum errors
 	-w, --win7                      Mimic a Windows 7 registrar [False]
-	-K, --pixie-dust                Run pixiedust attack
+	-K, --pixie-dust[=wrapper]      Run pixiedust attack with a wrapper and auto retrieve WPA password if attack is successful
 	-Z                              Run pixiedust attack
 
 Example:

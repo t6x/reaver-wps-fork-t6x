@@ -27,8 +27,18 @@ void pixie_attack(void) {
 		p->pke, p->ehash1, p->ehash2, p->authkey, p->enonce,
 		dh_small ? "-S" : "-r" , dh_small ? "" : p->pkr);
 		printf("executing %s\n", cmd);
-		exit(system(cmd));
+		if (p->do_pixie == 2) {
+			if (pixie_wrapper(cmd) != EXIT_SUCCESS) {
+				exit(EXIT_FAILURE);
+			}
+		}
+		else {
+			exit(system(cmd));
+		}
 	}
+}
+
+void pixie_free() {
 	PIXIE_FREE(authkey);
 	PIXIE_FREE(pkr);
 	PIXIE_FREE(pke);
@@ -36,4 +46,70 @@ void pixie_attack(void) {
 	PIXIE_FREE(ehash1);
 	PIXIE_FREE(ehash2);
 	PIXIE_FREE(wrapper);
+	PIXIE_FREE(pin);
+}
+
+/**
+ * Call a wrapper to run pixiewps, set the discovered pin to pixie.pin if pixiewps attack is successful
+ * 
+ * The wrapper could be implemented in any language which needs to follow the following conventions:
+ * 1) arguments are passed precisely as for pixiewps
+ * 2) on failure, non-zero exit status is returned
+ * 3) on success, exactly one line is printed to stdout, containing the found pin and a trailing newline character,
+ *    in case of null pin, only a newline character '\n' would be returned and exit status 0 is returned.
+ * 
+ * @params char* cmd The command line to call a wrapper with the arguments
+ * 
+ * @return int
+ */
+int pixie_wrapper(char *cmd) {
+	FILE *fp;
+	char *str_pin = NULL;
+	char msg[256];
+	int ret_val = EXIT_FAILURE;
+	int len;
+
+	fp = popen(cmd, "r");
+	if (fp != NULL) {
+		while (fgets(msg, 256, fp) != NULL) {
+			printf("%s", msg);
+			/* Capture pin if the wrapper not following the specifications */
+			if(strstr(msg, "[+] WPS pin: ") != NULL) {
+				str_pin = malloc(10);
+				if (str_pin) {
+					str_pin[0] = '\0';
+					if (strstr(msg, "empty") == NULL) {
+						strncpy(str_pin, msg+15, 8);
+						str_pin[8] = '\0';
+					}
+				}
+			}
+		}
+		ret_val = pclose(fp);
+	}
+	else {
+		perror("popen");
+	}
+
+	if(ret_val == EXIT_SUCCESS) {
+		/* In case of the wrapper not following the specifications */
+		if (str_pin) {
+			strcpy(msg, str_pin);
+		}
+		/* pin found, remove '\r' or '\n' */
+		len = strlen(msg);
+		while(len>0 && (msg[len-1]=='\n' || msg[len-1]=='\r')){
+			msg[--len] = '\0';
+		}
+		PIXIE_SET(pin, msg);
+		printf("[+] Pin found: \"%s\"\n", pixie.pin);
+	}
+	else {
+		pixie.do_pixie = 0;
+		pixie_free();
+		printf("[-] WPS pin not found!\n");
+	}
+	if (str_pin) free(str_pin);
+
+	return ret_val;
 }
