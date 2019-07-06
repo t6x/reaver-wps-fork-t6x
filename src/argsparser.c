@@ -234,6 +234,7 @@ void init_default_settings(void)
         set_wifi_band(BG_BAND);
 	set_validate_fcs(1);
 	pixie.do_pixie = 0;
+	set_do_pixie_status(0);
 	set_pin_string_mode(0);
 }
 

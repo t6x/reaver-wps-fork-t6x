@@ -28,6 +28,14 @@ void pixie_attack(void) {
 		dh_small ? "-S" : "-r" , dh_small ? "" : p->pkr);
 		printf("executing %s\n", cmd);
 		if (p->do_pixie == 2) {
+			/* check pixiewps attack (--force option) was executed */
+			if (p->do_pixie == get_do_pixie_status() && strcmp(p->wrapper, "pixie-wrapper")==0) {
+				/* Cancel pixiewps attack */
+				p->do_pixie = 0;
+				pixie_free();
+				printf("[!] Ignoring pixiewps attack (pixie-wrapper)\n");
+				return;
+			}
 			if (pixie_wrapper(cmd) != EXIT_SUCCESS) {
 				exit(EXIT_FAILURE);
 			}
@@ -84,6 +92,9 @@ int pixie_wrapper(char *cmd) {
 					}
 				}
 			}
+		}
+		if (get_do_pixie_status() < pixie.do_pixie) {
+			set_do_pixie_status(pixie.do_pixie);
 		}
 		ret_val = pclose(fp);
 	}

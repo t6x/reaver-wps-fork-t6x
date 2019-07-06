@@ -56,6 +56,8 @@ struct globals
 
         enum key_state key_status;      /* Indicates the status of the key cracking: KEY1_WIP | KEY2_WIP | KEY_DONE */
 
+	int do_pixie_status;			/* Indicates the status of pixie.do_pixie that was executed */
+
 	int dh_small;			/* Use small DH keys to improve WPS speed */
 
 	int external_association;	/* Use an external application to perform AP association  */
@@ -176,6 +178,8 @@ void set_p2(int index, char *value);
 char *get_p2(int index);
 void set_key_status(enum key_state status);
 enum key_state get_key_status();
+void set_do_pixie_status(int status);
+int get_do_pixie_status();
 void set_delay(int delay);
 int get_delay();
 void set_fail_delay(int delay);

@@ -178,6 +178,15 @@ enum key_state get_key_status()
 	return globule->key_status;
 }
 
+void set_do_pixie_status(int status)
+{
+	globule->do_pixie_status = status;
+}
+int get_do_pixie_status()
+{
+	return globule->do_pixie_status;
+}
+
 void set_delay(int delay)
 {
 	globule->delay = delay;

@@ -227,6 +227,11 @@ int restore_session()
 		}
 	}
 
+	/* Get the do_pixie status value */
+	if(fgets(line, MAX_LINE_SIZE, fp) != NULL) {
+		set_do_pixie_status(atoi(line));
+	}
+
 	ret_val = 1;
 
 	/* Print warning message if the specified first or second half PIN was ignored */
@@ -320,6 +325,9 @@ int save_session()
 
 	/* Save all the p2 values */
 	for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
+
+	/* Save do_pixie status value */
+	fprintf(fp, "%d\n", get_do_pixie_status());
 
 	fclose(fp);
 	return 1;
