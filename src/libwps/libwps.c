@@ -478,6 +478,7 @@ int libwps_has_rt_header(const u_char *packet, size_t len)
  * Returns a pointer to the radio tap header. If there is no radio tap header,
  * it returns a pointer to a dummy radio tap header.
  */
+#define FAKE_RADIO_TAP_HEADER "\0\0\0\0" "\0\0\0\0" "\0\0\0\0" "\0\0\0\0" "\0\0\0\0"
 const u_char *libwps_radio_header(const u_char *packet, size_t len)
 {
         if(libwps_has_rt_header(packet, len))
@@ -486,7 +487,7 @@ const u_char *libwps_radio_header(const u_char *packet, size_t len)
         }
         else
         {
-                return (u_char *) FAKE_RADIO_TAP_HEADER;
+                return FAKE_RADIO_TAP_HEADER;
         }
 
 }

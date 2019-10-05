@@ -63,7 +63,6 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 #define WPS_VERSION2_ID         0
 
 #define RADIO_TAP_VERSION       0
-#define FAKE_RADIO_TAP_HEADER   "\x00\x00\x00\x00\x00\x00\x00\x00"
 
 #define TIMESTAMP_LEN		8
 #define MAC_ADDR_LEN		6
@@ -136,9 +135,18 @@ struct management_frame
 int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps);
 unsigned char *get_wps_data(const u_char *data, size_t len, size_t *tag_len);
 unsigned char *get_wps_data_element(const u_char *data, size_t len, uint16_t type, size_t *el_len);
+char *hex2str(unsigned char *hex, int len);
+/* these functions are duplicates of the ones in 80211.h
+   the difference here is that libwps_has_rt_header() uses a
+   heuristic to determine whether a radiotap header is present,
+   since this is meant to be library code (not relying on
+   global state), whereas 80211.h's version queries the pcap
+   driver whether it supplies the header.
+   the latter is safer, but as we only pass pre-filtered 802.11
+   packets to the functions here, that's OK - they should all pass
+   through the heuristics. */
 int libwps_has_rt_header(const u_char *packet, size_t len);
 const u_char *libwps_radio_header(const u_char *packet, size_t len);
-char *hex2str(unsigned char *hex, int len);
 
 #endif
 #endif

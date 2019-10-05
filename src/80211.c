@@ -749,9 +749,10 @@ int has_rt_header(void)
  * Returns a pointer to the radio tap header. If there is no radio tap header,
  * it returns a pointer to a dummy radio tap header.
  */
+#define FAKE_RADIO_TAP_HEADER "\0\0\0\0" "\0\0\0\0" "\0\0\0\0" "\0\0\0\0" "\0\0\0\0"
 unsigned char *radio_header(const unsigned char *packet, size_t len)
 {
-        if(has_rt_header())
+        if(len >= 8 && has_rt_header())
         {
                 return (void*)packet;
         }
