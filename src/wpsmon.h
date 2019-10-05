@@ -66,8 +66,6 @@
 #define YES			"Yes"
 #define NO			"No "
 
-#define PACKET_FILTER		"type mgt and (subtype beacon or subtype proberesp)"
-
 enum tag_type
 {
         HEX = 0,

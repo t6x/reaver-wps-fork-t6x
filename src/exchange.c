@@ -527,12 +527,6 @@ int main(int argc, char** argv) {
 		cprintf(CRITICAL, "[X] ERROR: Failed to open '%s' for capturing\n", get_iface());
 		goto end;
 	}
-	struct bpf_program bpf = { 0 };
-	if(pcap_compile(get_handle(), &bpf, PACKET_FILTER, 0, 0) != 0) {
-		cprintf(CRITICAL, "[X] ERROR: Failed to compile packet filter\n");
-		cprintf(CRITICAL, "[X] PCAP: %s\n", pcap_geterr(get_handle()));
-		goto end;
-	}
 
 	//arg 2: "our" mac for testing
 	unsigned char mac[6];

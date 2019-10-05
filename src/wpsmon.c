@@ -287,19 +287,6 @@ int wash_main(int argc, char *argv[])
 			goto end;
 		}
 
-		if(pcap_compile(get_handle(), &bpf, PACKET_FILTER, 0, 0) != 0)
-		{
-			cprintf(CRITICAL, "[X] ERROR: Failed to compile packet filter\n");
-			cprintf(CRITICAL, "[X] PCAP: %s\n", pcap_geterr(get_handle()));
-			goto end;
-		}
-		
-		if(pcap_setfilter(get_handle(), &bpf) != 0)
-		{
-			cprintf(CRITICAL, "[X] ERROR: Failed to set packet filter\n");
-			goto end;
-		}
-
 		/* Do it. */
 		monitor(bssid, passive, source, channel, mode);
 		printf("\n");
@@ -381,10 +368,13 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 
 #define wps_active(W) (((W)->version) || ((W)->locked != 2) || ((W)->state))
 
+#define BEACON_SIZE(rth_len) (rth_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame))
+/* probe responses, just like beacons, start their management frame packet with the same
+   fixed parameters of size 12 */
+#define PROBE_RESP_SIZE(rth_len) BEACON_SIZE(rth_len)
+
 void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *target, int passive, int mode, int source)
 {
-	struct radio_tap_header *rt_header = NULL;
-	struct dot11_frame_header *frame_header = NULL;
 	struct libwps_data *wps = NULL;
 	enum encryption_type encryption = NONE;
 	char *bssid = NULL, *ssid = NULL, *lock_display = NULL;
@@ -392,23 +382,32 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 	int wps_parsed = 0, probe_sent = 0, channel = 0, rssi = 0;
 	static int channel_changed = 0;
 
+	if(packet == NULL || header == NULL) goto end;
+
+	struct radio_tap_header *rt_header = (void *) radio_header(packet, header->len);
+	size_t rt_header_len = end_le16toh(rt_header->len);
+	if(header->len < rt_header_len + sizeof(struct dot11_frame_header)) goto end;
+
+	struct dot11_frame_header *frame_header = (void *) (packet + rt_header_len);
+
+	unsigned f_type = frame_header->fc & end_htole16(IEEE80211_FCTL_FTYPE);
+	unsigned fsub_type = frame_header->fc & end_htole16(IEEE80211_FCTL_STYPE);
+
+	int is_management_frame = f_type == end_htole16(IEEE80211_FTYPE_MGMT);
+	int is_beacon = is_management_frame && fsub_type == end_htole16(IEEE80211_STYPE_BEACON);
+	int is_probe_resp = is_management_frame && fsub_type == end_htole16(IEEE80211_STYPE_PROBE_RESP);
+
+	if(!(is_probe_resp || is_beacon)) goto end;
+
+	if(is_beacon && header->len < BEACON_SIZE(rt_header_len)) goto end;
+	if(is_probe_resp && header->len < PROBE_RESP_SIZE(rt_header_len)) goto end;
+
+	/* If a specific BSSID was specified, only parse packets from that BSSID */
+	if(!is_target(frame_header)) goto end;
+
 	wps = malloc(sizeof(struct libwps_data));
 	memset(wps, 0, sizeof(struct libwps_data));
 
-	if(packet == NULL || header == NULL || header->len < MIN_BEACON_SIZE)
-        {
-                goto end;
-        }
-
-	rt_header = (struct radio_tap_header *) radio_header(packet, header->len);
-	size_t rt_header_len = end_le16toh(rt_header->len);
-	frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
-
-	/* If a specific BSSID was specified, only parse packets from that BSSID */
-	if(!is_target(frame_header))
-	{
-		goto end;
-	}
 
 	set_ssid(NULL);
 	bssid = (char *) mac2str(frame_header->addr3, ':');
@@ -434,11 +433,6 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				change_channel(channel);
 				channel_changed = 1;
 			}
-
-			unsigned fsub_type = frame_header->fc & end_htole16(IEEE80211_FCTL_STYPE);
-
-			int is_beacon = fsub_type == end_htole16(IEEE80211_STYPE_BEACON);
-			int is_probe_resp = fsub_type == end_htole16(IEEE80211_STYPE_PROBE_RESP);
 
 			if(is_probe_resp || is_beacon) {
 				wps_parsed = parse_wps_parameters(packet, header->len, wps);
