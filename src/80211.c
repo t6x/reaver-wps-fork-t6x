@@ -67,13 +67,14 @@ unsigned char *next_packet(struct pcap_pkthdr *header)
 
 		memcpy(header, pkt_header, sizeof(*header));
 
+		int fd;
+		if((fd = get_output_fd()) != -1)
+			pcapfile_write_packet(fd, header, packet);
+
 		if(get_validate_fcs() && !check_fcs(packet, header->len)) {
 			if(!warning_shown)
 				cprintf(INFO, "[!] Found packet with bad FCS, skipping...\n");
 			warning_shown = 1;
-			int fd;
-			if((fd = get_output_fd()) != -1)
-				pcapfile_write_packet(fd, header, packet);
 			continue;
 		}
 
