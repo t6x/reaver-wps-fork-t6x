@@ -35,6 +35,7 @@
 #include "utils/file.h"
 #include "utils/vendor.h"
 #include "send.h"
+#include <fcntl.h>
 
 #define MAX_APS 512
 
@@ -120,12 +121,13 @@ int wash_main(int argc, char *argv[])
 	int source = INTERFACE, ret_val = EXIT_FAILURE;
 	struct bpf_program bpf = { 0 };
 	char *last_optarg = NULL, *target = NULL, *bssid = NULL;
-	char *short_options = "i:c:n:b:25sfuFDhajUp";
+	char *short_options = "i:c:n:b:O:25sfuFDhajUp";
         struct option long_options[] = {
 		{ "bssid", required_argument, NULL, 'b' },
                 { "interface", required_argument, NULL, 'i' },
                 { "channel", required_argument, NULL, 'c' },
 		{ "probes", required_argument, NULL, 'n' },
+		{ "output-file", required_argument, NULL, 'O'},
 		{ "file", no_argument, NULL, 'f' },
 		{ "ignore-fcs", no_argument, NULL, 'F' },
 		{ "2ghz", no_argument, NULL, '2' },
@@ -168,6 +170,13 @@ int wash_main(int argc, char *argv[])
 			case 'c':
 				channel = atoi(optarg);
 				set_fixed_channel(1);
+				break;
+			case 'O':
+				{
+					int ofd = open(optarg, O_WRONLY|O_CREAT|O_TRUNC, 0660);
+					set_output_fd(ofd);
+					if(ofd == -1) perror("open outputfile failed: ");
+				}
 				break;
 			case '5':
 				set_wifi_band(get_wifi_band() | AN_BAND);
@@ -565,6 +574,7 @@ static void wash_usage(char *prog)
 	fprintf(stderr, "\nOptional Arguments:\n");
 	fprintf(stderr, "\t-c, --channel=<num>                  Channel to listen on [auto]\n");
 	fprintf(stderr, "\t-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [%d]\n", DEFAULT_MAX_NUM_PROBES);
+	fprintf(stderr, "\t-O, --output-file=<filename>         Write packets of interest into pcap file\n");
 	fprintf(stderr, "\t-F, --ignore-fcs                     Ignore frame checksum errors\n");
 	fprintf(stderr, "\t-2, --2ghz                           Use 2.4GHz 802.11 channels\n");
 	fprintf(stderr, "\t-5, --5ghz                           Use 5GHz 802.11 channels\n");
