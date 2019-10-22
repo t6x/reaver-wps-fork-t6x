@@ -277,28 +277,24 @@ void parse_static_pin(char *pin)
 	char p1[5] = { 0 };
 	char p2[4] = { 0 };
 
-	if(pin)
+	len = strlen(pin);
+
+	if((len == 4 || len == 7 || len == 8) && is_valid_pin(pin) != 0)
 	{
-		len = strlen(pin);
+		memcpy((void *) &p1, pin, sizeof(p1)-1);
+		set_static_p1((char *) &p1);
 
-		if((len == 4 || len == 7 || len == 8) && is_valid_pin(pin) != 0)
+		if(len > 4)
 		{
-			memcpy((void *) &p1, pin, sizeof(p1)-1);
-			set_static_p1((char *) &p1);
-
-			if(len > 4)
-			{
-				memcpy((void *) &p2, pin+sizeof(p1)-1, sizeof(p2)-1);
-				set_static_p2((char *) &p2);
-			}
+			memcpy((void *) &p2, pin+sizeof(p1)-1, sizeof(p2)-1);
+			set_static_p2((char *) &p2);
 		}
-		else
-		{
-			//cprintf(CRITICAL, "[X] ERROR: Invalid pin specified! Ignoring '%s'.\n", pin);
-			set_max_pin_attempts(1);
-			set_pin_string_mode(1);
-			set_static_p1(pin);
-		}
+	}
+	else
+	{
+		set_max_pin_attempts(1);
+		set_pin_string_mode(1);
+		set_static_p1(pin);
 	}
 }
 
