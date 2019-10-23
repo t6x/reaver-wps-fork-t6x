@@ -145,6 +145,7 @@ int process_arguments(int argc, char **argv)
                                 break;
 			case 'p':
 				parse_static_pin(optarg);
+				set_max_pin_attempts(1);
 				break;
 			case 's':       
 				set_session(optarg);   
@@ -292,7 +293,6 @@ void parse_static_pin(char *pin)
 	}
 	else
 	{
-		set_max_pin_attempts(1);
 		set_pin_string_mode(1);
 		set_static_p1(pin);
 	}
