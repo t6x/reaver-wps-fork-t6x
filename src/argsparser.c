@@ -105,8 +105,9 @@ int process_arguments(int argc, char **argv)
 				break;
                         case 'Z':
                         case 'K':
-                                pixie.do_pixie = 1;
-                                break;
+				pixie.do_pixie = 1;
+				set_max_pin_attempts(1);
+				break;
                         case 'i':
                                 set_iface(optarg);
                                 break;
