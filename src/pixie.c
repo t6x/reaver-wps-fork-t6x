@@ -27,7 +27,7 @@ void pixie_attack(void) {
 		p->pke, p->ehash1, p->ehash2, p->authkey, p->enonce,
 		dh_small ? "-S" : "-r" , dh_small ? "" : p->pkr);
 		printf("executing %s\n", cmd);
-		if (p->do_pixie == 2) {
+		if (p->do_pixie) {
 			/* check pixiewps attack (--force option) was executed */
 			if (p->do_pixie == get_do_pixie_status() && strcmp(p->wrapper, "pixie-wrapper")==0) {
 				/* Cancel pixiewps attack */
@@ -37,11 +37,8 @@ void pixie_attack(void) {
 				return;
 			}
 			if (pixie_wrapper(cmd) != EXIT_SUCCESS) {
-				exit(EXIT_FAILURE);
+				/* exit(EXIT_FAILURE); */
 			}
-		}
-		else {
-			exit(system(cmd));
 		}
 	}
 }
