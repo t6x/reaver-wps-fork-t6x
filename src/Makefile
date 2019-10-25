@@ -120,7 +120,7 @@ wash: reaver
 	ln -sf ./reaver wash
 
 reaver: $(PROG_OBJS) $(LIB_OBJS)
-	$(CC) $(CFLAGS) $(INC) $(PROG_OBJS) $(LIB_OBJS) $(LDFLAGS) -o reaver
+	$(CC) $(CFLAGS) $(INC) $(PROG_OBJS) $(LIB_OBJS) $(LDFLAGS) -lpthread -o reaver
 
 extest.o: exchange.c
 	$(CC) $(CFLAGS) -g3 -O0 -DEX_TEST -c exchange.c -o extest.o

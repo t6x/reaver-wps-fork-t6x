@@ -32,6 +32,7 @@
  */
 
 #include "cracker.h"
+#include "pixie.h"
 #include "utils/vendor.h"
 
 /* Brute force all possible WPS pins for a given access point */
@@ -250,7 +251,8 @@ void crack()
 		/* If we have cracked the pin, save a copy */
 		else
 		{
-			set_pin(pin);
+			/* pixie already sets the pin if successful */
+			if(!pixie.do_pixie) set_pin(pin);
 		}
 		free(pin);
 		pin = NULL;
