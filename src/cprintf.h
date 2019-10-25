@@ -11,5 +11,8 @@ enum debug_level
 };
 
 void cprintf(enum debug_level level, const char *fmt, ...);
+void cprintf_mute();
+void cprintf_unmute();
+int cprintf_ismuted();
 
 #endif

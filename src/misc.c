@@ -77,12 +77,21 @@ void str2mac(char *str, unsigned char *mac)
 	return;
 }
 
+static int cprintf_muted;
+void cprintf_mute() {
+	cprintf_muted = 1;
+}
+void cprintf_unmute() {
+	cprintf_muted = 0;
+}
+int cprintf_ismuted() { return cprintf_muted; }
+
 /* Conditional printf wrapper */
 void cprintf(enum debug_level level, const char *fmt, ...)
 {
 	va_list arg;
 
-	if(level <= get_debug())
+	if(!cprintf_muted && (level <= get_debug()))
 	{
 		va_start(arg, fmt);
 		vfprintf(get_log_file(), fmt, arg);

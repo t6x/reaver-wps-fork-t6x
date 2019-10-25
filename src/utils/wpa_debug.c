@@ -98,6 +98,7 @@ static int syslog_priority(int level)
  *
  * Note: New line '\n' is added to the end of the text when printing to stdout.
  */
+extern int cprintf_ismuted();
 void wpa_printf(int level, const char *fmt, ...)
 {
 	va_list ap;
@@ -105,7 +106,7 @@ void wpa_printf(int level, const char *fmt, ...)
 //wpa_debug_level = MSG_MSGDUMP;
 
 	va_start(ap, fmt);
-	if (level >= wpa_debug_level) {
+	if (!cprintf_ismuted() && (level >= wpa_debug_level)) {
 #ifdef CONFIG_DEBUG_SYSLOG
 		if (wpa_debug_syslog) {
 			vsyslog(syslog_priority(level), fmt, ap);
