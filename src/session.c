@@ -379,3 +379,129 @@ char *get_crack_progress(unsigned char *mac)
 	return crack_progress;
 }
 
+
+/**
+ * Insert the value to current p1 index (jump the queue)
+ * Return value:
+ * -2 = value tried because KEY2_WIP/KEY_DONE, array nothing done
+ * -1 = value tried, array nothing done
+ *  0 = value is the same as current index, nothing done
+ *  1 = array reorganized
+ * 
+ * @params char* value The first half WPS pin
+ * 
+ * @return int
+ */
+int jump_p1_queue(char* value)
+{
+	int i, index, v_index, found;
+	int ret_val = 0;
+	char *pch;
+
+	if (!value || strcmp(value, get_p1(get_p1_index())) == 0) {
+		return 0;
+	}
+
+	if(get_key_status() < KEY2_WIP) {
+		found = 0;
+		/* Get the p1 index */
+		index = get_p1_index();
+		/* Check the value was tried */
+		for(i=0; i < P1_SIZE && i < index; ++i) {
+			if (strcmp(get_p1(i), value) == 0) {
+				found = 1;
+				ret_val = -1;
+				break;
+			}
+		}
+		if (!found) {
+			/* Find the p1 index of the value */
+			for(i=index; i < P1_SIZE; ++i) {
+				if (strcmp(get_p1(i), value) == 0) {
+					found = 1;
+					v_index = i;
+					if (v_index != index) {
+						ret_val = 1;
+					}
+					break;
+				}
+			}
+			if (found) {
+				/* Reorganize p1 array */
+				pch = globule->p1[v_index];
+				for (i=v_index; i > index; --i) {
+					globule->p1[i] = globule->p1[i-1];
+				}
+				globule->p1[index] = pch;
+			}
+		}
+	}
+	else if (strcmp(value, get_p1(get_p1_index())) != 0) {
+		ret_val = -2;
+	}
+
+	return ret_val;
+}
+
+/**
+ * Insert the value to current p2 index (jump the queue)
+ * Return value:
+ * -2 = value tried because KEY_DONE, array nothing done
+ * -1 = value tried, array nothing done
+ *  0 = value is the same as current index, nothing done
+ *  1 = array reorganized
+ * 
+ * @params char* value The second half WPS pin
+ * 
+ * @return int
+ */
+int jump_p2_queue(char* value)
+{
+	int i, index, v_index, found;
+	int ret_val = 0;
+	char *pch;
+
+	if (!value || strcmp(value, get_p2(get_p2_index())) == 0) {
+		return 0;
+	}
+
+	if(get_key_status() < KEY_DONE) {
+		found = 0;
+		/* Get the p2 index */
+		index = get_p2_index();
+		/* Check the value was tried */
+		for(i=0; i < P2_SIZE && i < index; ++i) {
+			if (strcmp(get_p2(i), value) == 0) {
+				found = 1;
+				ret_val = -1;
+				break;
+			}
+		}
+		if (!found) {
+			/* Find the p2 index of the value */
+			for(i=index; i < P2_SIZE; ++i) {
+				if (strcmp(get_p2(i), value) == 0) {
+					found = 1;
+					v_index = i;
+					if (v_index != index) {
+						ret_val = 1;
+					}
+					break;
+				}
+			}
+			if (found) {
+				/* Reorganize p2 array */
+				pch = globule->p2[v_index];
+				for (i=v_index; i > index; --i) {
+					globule->p2[i] = globule->p2[i-1];
+				}
+				globule->p2[index] = pch;
+			}
+		}
+	}
+	else if (strcmp(value, get_p2(get_p2_index())) != 0) {
+		ret_val = -2;
+	}
+
+	return ret_val;
+}

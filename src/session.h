@@ -55,5 +55,7 @@
 int restore_session();
 int save_session();
 char *get_crack_progress(unsigned char *mac);
+int jump_p1_queue(char* value);
+int jump_p2_queue(char* value);
 
 #endif
