@@ -324,11 +324,14 @@ enum wfa_elements
 #define IEEE80211_STYPE_QOS_CFACKPOLL		0x00F0
 
 /* these types denote that the values are stored in a specific byte order */
+#ifndef LE16_DEFINED
+#define LE16_DEFINED
 typedef uint16_t le16;
 typedef uint32_t le32;
 
 typedef uint16_t be16;
 typedef uint32_t be32;
+#endif
 
 #pragma pack(1)
 struct radio_tap_header

@@ -426,10 +426,13 @@ void perror(const char *s);
 # endif
 #endif
 
+#ifndef LE16_DEFINED
+#define LE16_DEFINED
 typedef u16 __bitwise be16;
 typedef u16 __bitwise le16;
 typedef u32 __bitwise be32;
 typedef u32 __bitwise le32;
+#endif
 typedef u64 __bitwise be64;
 typedef u64 __bitwise le64;
 
