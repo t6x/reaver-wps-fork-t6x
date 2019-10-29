@@ -111,6 +111,8 @@ static int pixie_run_thread(void *ptr) {
 	return (unsigned long)thread_ret;
 }
 
+extern void update_wpc_from_pin(void);
+
 void pixie_attack(void) {
 	struct wps_data *wps = get_wps();
 	struct pixie *p = &pixie;
@@ -127,16 +129,17 @@ void pixie_attack(void) {
 		ptd.pinbuf[0] = 0;
 		if(pixie_run_thread(&ptd)) {
 			cprintf(INFO, "[+] Pixiewps: success: setting pin to %s\n", ptd.pinbuf);
+			set_pin(ptd.pinbuf);
 			if(timeout_hit) {
 				cprintf(VERBOSE, "[+] Pixiewps timeout hit, sent WSC NACK\n");
 				cprintf(INFO, "[+] Pixiewps timeout, exiting. Send pin with -p\n");
+				update_wpc_from_pin();
 				exit(0);
 			}
 			free(wps->dev_password);
 			wps->dev_password = malloc(ptd.pinlen+1);
 			memcpy(wps->dev_password, ptd.pinbuf, ptd.pinlen+1);
 			wps->dev_password_len = ptd.pinlen;
-			set_pin(ptd.pinbuf);
 		} else {
 			cprintf(INFO, "[-] Pixiewps fail, sending WPS NACK\n");
 			send_wsc_nack();

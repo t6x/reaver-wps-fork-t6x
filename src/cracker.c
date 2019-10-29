@@ -35,6 +35,32 @@
 #include "pixie.h"
 #include "utils/vendor.h"
 
+void update_wpc_from_pin(void) {
+	/* update WPC file with found pin */
+	pixie.do_pixie = 0;
+	/* reset string pin mode if -p "" was used */
+	set_pin_string_mode(0);
+	/* clean static pin if -p [PIN] was used */
+	set_static_p2(NULL);
+	parse_static_pin(get_pin());
+
+	/* check the pin is valid WPS pin, if exist static p2 then is valid WPS pin */
+	if (get_static_p2()) {
+		enum key_state key_status = get_key_status();
+		/* reset key status for sort p1 and p2 */
+		set_key_status(KEY1_WIP);
+		/* sort pin into current index of p1 and p2 array */
+		if (jump_p1_queue(get_static_p1()) > 0) {
+			cprintf(VERBOSE, "[+] Updated P1 array\n");
+		}
+		if (jump_p2_queue(get_static_p2()) > 0) {
+			cprintf(VERBOSE, "[+] Updated P2 array\n");
+		}
+		/* restore key status after sorted p1 and p2 */
+		set_key_status((key_status == KEY_DONE)?KEY_DONE:KEY2_WIP);
+	}
+}
+
 /* Brute force all possible WPS pins for a given access point */
 void crack()
 {
@@ -254,32 +280,17 @@ void crack()
 			/* pixie already sets the pin if successful */
 			if(!pixie.do_pixie) set_pin(pin);
 		}
-		/* pixie successful */
-		if (pixie.do_pixie && get_pin()) {
-			pixie.do_pixie = 0;
-			/* reset string pin mode if -p "" was used */
-			set_pin_string_mode(0);
-			/* clean static pin if -p [PIN] was used */
-			set_static_p2(NULL);
-			parse_static_pin(get_pin());
-			/* check the pin is valid WPS pin, if exist static p2 then is valid WPS pin */
-			if (get_static_p2()) {
-				enum key_state key_status = get_key_status();
-				/* reset key status for sort p1 and p2 */
-				set_key_status(KEY1_WIP);
-				/* sort pin into current index of p1 and p2 array */
-				if (jump_p1_queue(get_static_p1()) > 0) {
-					cprintf(VERBOSE, "[+] Updated P1 array\n");
-				}
-				if (jump_p2_queue(get_static_p2()) > 0) {
-					cprintf(VERBOSE, "[+] Updated P2 array\n");
-				}
-				/* restore key status after sorted p1 and p2 */
-				set_key_status((key_status == KEY_DONE)?KEY_DONE:KEY2_WIP);
-			}
-		}
+
 		free(pin);
 		pin = NULL;
+
+		if(pixie.do_pixie && get_pin()) {
+			/* if we get here it means pixiewps process was successful,
+			   but getting the pin may or may not have worked. */
+			update_wpc_from_pin();
+			cprintf(VERBOSE, "[+] Quitting after pixiewps attack\n");
+			break;
+		}
 
 		/* If we've hit our max number of pin attempts, quit */
 		if((get_max_pin_attempts() > 0) && 
