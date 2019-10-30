@@ -248,27 +248,16 @@ int8_t signal_strength(const unsigned char *packet, size_t len)
 /* 
  * Determines if the target AP has locked its WPS state or not.
  * Returns 0 if not locked, 1 if locked, -1 if wps has been turned off
+ * pass data of a valid beacon packet
  */
-int is_wps_locked()
+int is_wps_locked(const struct pcap_pkthdr *header, const unsigned char *packet)
 {
 	struct libwps_data wps = { 0 };
-	struct pcap_pkthdr header;
-	const unsigned char *packet;
-	const struct dot11_frame_header *frame_header;
-	const struct beacon_management_frame *beacon;
-
-	while((packet = next_beacon(&header, &frame_header, &beacon)))
-	{
-		if(!is_target(frame_header)) continue;
-		if(parse_wps_parameters(packet, header.len, &wps)) {
-			if(wps.locked == WPSLOCKED) return 1;
-			break;
-		} else {
-			return -1;
-		}
+	if(parse_wps_parameters(packet, header->len, &wps)) {
+		if(wps.locked == WPSLOCKED) return 1;
+		return 0;
 	}
-
-	return 0;
+	return -1;
 }
 
 

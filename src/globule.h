@@ -150,6 +150,8 @@ struct globals
 
 	int output_fd;			/* handle for output pcap file */
 
+	uint64_t uptime;		/* uptime of AP */
+
         struct wps_data *wps;           /* 
 					 * wpa_supplicant's wps_data structure, needed for almost all wpa_supplicant
                                          * function calls.

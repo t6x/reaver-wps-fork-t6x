@@ -61,6 +61,13 @@ void update_wpc_from_pin(void) {
 	}
 }
 
+static void extract_uptime(const struct beacon_management_frame *beacon)
+{
+	uint64_t timestamp;
+	memcpy(&timestamp, beacon->timestamp, 8);
+	globule->uptime = end_le64toh(timestamp);
+}
+
 /* Brute force all possible WPS pins for a given access point */
 void crack()
 {
@@ -173,9 +180,25 @@ void crack()
 		 * Verify that the AP is not locked before attempting the next pin.
 		 */
 		int locked_status = 0;
-		while(get_ignore_locks() == 0 && (locked_status = is_wps_locked()) == 1) {
-			cprintf(WARNING, "[!] WARNING: Detected AP rate limiting, waiting %d seconds before re-checking\n", get_lock_delay());
-			pcap_sleep(get_lock_delay());
+		while(1) {
+			struct pcap_pkthdr header;
+			const unsigned char *packet;
+			const struct dot11_frame_header *frame_header;
+			const struct beacon_management_frame *beacon;
+			while((packet = next_beacon(&header, &frame_header, &beacon))) {
+				if(is_target(frame_header)) break;
+			}
+			if(!packet) break;
+			/* since we have to wait for a beacon anyway, we also
+			   use it to update the router's timeout */
+			locked_status = is_wps_locked(&header, packet);
+			extract_uptime(beacon);
+			if(locked_status == 1 && get_ignore_locks() == 0) {
+				cprintf(WARNING, "[!] WARNING: Detected AP rate limiting, waiting %d seconds before re-checking\n", get_lock_delay());
+				pcap_sleep(get_lock_delay());
+				continue;
+			}
+			break;
 		}
 		if(locked_status == -1) {
 			cprintf(WARNING, "[!] AP seems to have WPS turned off\n");
