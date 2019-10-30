@@ -729,17 +729,7 @@ static int check_fcs(const unsigned char *packet, size_t len)
 /* Checks a given BSSID to see if it's on our target list */
 int is_target(const struct dot11_frame_header *frame_header)
 {
-        int yn = 1;
-
-        if(memcmp(get_bssid(), NULL_MAC, MAC_ADDR_LEN) != 0)
-        {
-                if(memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN) != 0)
-                {
-                        yn = 0;
-                }
-        }
-
-        return yn;
+	return !memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN);
 }
 
 /* Make best guess to determine if a radio tap header is present */

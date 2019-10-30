@@ -403,7 +403,8 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 	if(is_probe_resp && header->len < PROBE_RESP_SIZE(rt_header_len)) goto end;
 
 	/* If a specific BSSID was specified, only parse packets from that BSSID */
-	if(!is_target(frame_header)) goto end;
+	if(memcmp(get_bssid(), NULL_MAC, MAC_ADDR_LEN) &&
+	   !is_target(frame_header)) goto end;
 
 	wps = malloc(sizeof(struct libwps_data));
 	memset(wps, 0, sizeof(struct libwps_data));
