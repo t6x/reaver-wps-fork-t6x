@@ -84,68 +84,103 @@ unsigned char *next_packet(struct pcap_pkthdr *header)
 	return (void*)packet;
 }
 
+#define BEACON_SIZE(rth_len) (rth_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame))
+/* probe responses, just like beacons, start their management frame packet with the same
+   fixed parameters of size 12 */
+#define PROBE_RESP_SIZE(rth_len) BEACON_SIZE(rth_len)
+
+/* return 1 if beacon, -1 if probe response */
+/* additionally populates frameheader and management frame pointers */
+int is_management_frame(
+	/* input params */
+	const struct pcap_pkthdr *header,
+	unsigned const char *packet,
+	/* output */
+	const struct dot11_frame_header **fh,
+	const struct beacon_management_frame **mf
+) {
+	struct radio_tap_header *rt_header = (void *) radio_header(packet, header->len);
+	size_t rt_header_len = end_le16toh(rt_header->len);
+	if(header->len < BEACON_SIZE(rt_header_len))
+			return 0;
+
+	*fh = (void *) (packet + rt_header_len);
+	unsigned f_type = (*fh)->fc & end_htole16(IEEE80211_FCTL_FTYPE);
+	unsigned fsub_type = (*fh)->fc & end_htole16(IEEE80211_FCTL_STYPE);
+
+	int is_management_frame = f_type == end_htole16(IEEE80211_FTYPE_MGMT);
+	int is_beacon = is_management_frame && fsub_type == end_htole16(IEEE80211_STYPE_BEACON);
+	int is_probe_resp = is_management_frame && fsub_type == end_htole16(IEEE80211_STYPE_PROBE_RESP);
+
+	if(is_management_frame) *mf = (void *) (packet + rt_header_len + sizeof(struct dot11_frame_header));
+
+	if(is_beacon) return 1;
+	if(is_probe_resp) return -1;
+	return 0;
+}
+
+unsigned char* next_management_frame(
+	struct pcap_pkthdr *header,
+	const struct dot11_frame_header **fh,
+	const struct beacon_management_frame **mf,
+	int *type
+) {
+	unsigned char *packet;
+	while((packet = next_packet(header))) {
+		if((*type = is_management_frame(header, packet, fh, mf))) break;
+	}
+	return packet;
+}
+unsigned char* next_beacon(
+	struct pcap_pkthdr *header,
+	const struct dot11_frame_header **fh,
+	const struct beacon_management_frame **mf
+) {
+	unsigned char *packet; int type;
+	while((packet = next_management_frame(header, fh, mf, &type))) {
+		if(type == 1) break;
+	}
+	return packet;
+}
+
+
 /* 
  * Waits for a beacon packet from the target AP and populates the globule->ap_capabilities field.
  * This is used for obtaining the capabilities field and AP SSID.
  */
 void read_ap_beacon()
 {
-        struct pcap_pkthdr header;
-        const unsigned char *packet = NULL;
-        struct radio_tap_header *rt_header = NULL;
-        struct dot11_frame_header *frame_header = NULL;
-        struct beacon_management_frame *beacon = NULL;
-	int channel = 0;
-	size_t tag_offset = 0;
-	time_t start_time = 0;
+	struct pcap_pkthdr header;
+	const unsigned char *packet;
+	const struct dot11_frame_header *frame_header;
+	const struct beacon_management_frame *beacon;
+	time_t start_time = time(NULL);
 
 	set_ap_capability(0);
-	start_time = time(NULL);
-	
-        while(get_ap_capability() == 0)
-        {
-                packet = next_packet(&header);
-                if(packet == NULL)
-                {
-                        break;
-                }
 
-                if(header.len >= MIN_BEACON_SIZE)
-                {
-                        rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-			size_t rt_header_len = end_le16toh(rt_header->len);
-			frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
-			
-			if(is_target(frame_header))
+	while((packet = next_packet(&header))) {
+		int type = is_management_frame(&header, packet, &frame_header, &beacon);
+		if(type != 1 || !is_target(frame_header)) {
+			/* If we haven't seen any beacon packets from the target within BEACON_WAIT_TIME seconds, try another channel */
+			if((time(NULL) - start_time) >= BEACON_WAIT_TIME)
 			{
-                                if((frame_header->fc & end_htole16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
-				   end_htole16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
-                                {
-                                       	beacon = (struct beacon_management_frame *) (packet + rt_header_len + sizeof(struct dot11_frame_header));
-                                       	set_ap_capability(end_le16toh(beacon->capability));
-
-					/* Obtain the SSID and channel number from the beacon packet */
-					tag_offset = rt_header_len + sizeof(struct dot11_frame_header) + sizeof(struct beacon_management_frame);
-					channel = parse_beacon_tags(packet, header.len);
-					
-					/* If no channel was manually specified, switch to the AP's current channel */
-					if(!get_fixed_channel() && get_auto_channel_select() && channel > 0 && channel != get_channel())
-					{
-						change_channel(channel);
-						set_channel(channel);
-					}
-
-                                       	break;
-				}
+				next_channel();
+				start_time = time(NULL);
 			}
-                }
-
-		/* If we haven't seen any beacon packets from the target within BEACON_WAIT_TIME seconds, try another channel */
-		if((time(NULL) - start_time) >= BEACON_WAIT_TIME)
-		{
-			next_channel();
-			start_time = time(NULL);
+			continue;
 		}
+
+		set_ap_capability(end_le16toh(beacon->capability));
+
+		/* Obtain the SSID and channel number from the beacon packet */
+		int channel = parse_beacon_tags(packet, header.len);
+		/* If no channel was manually specified, switch to the AP's current channel */
+		if(!get_fixed_channel() && get_auto_channel_select() && channel > 0 && channel != get_channel())
+		{
+			change_channel(channel);
+			set_channel(channel);
+		}
+		break;
         }
 }
 
@@ -216,49 +251,24 @@ int8_t signal_strength(const unsigned char *packet, size_t len)
  */
 int is_wps_locked()
 {
-	int locked = 0;
 	struct libwps_data wps = { 0 };
 	struct pcap_pkthdr header;
-        const unsigned char *packet = NULL;
-        struct radio_tap_header *rt_header = NULL;
-        struct dot11_frame_header *frame_header = NULL;
+	const unsigned char *packet;
+	const struct dot11_frame_header *frame_header;
+	const struct beacon_management_frame *beacon;
 
-	while(1)
+	while((packet = next_beacon(&header, &frame_header, &beacon)))
 	{
-		packet = next_packet(&header);
-        	if(packet == NULL)
-		{
+		if(!is_target(frame_header)) continue;
+		if(parse_wps_parameters(packet, header.len, &wps)) {
+			if(wps.locked == WPSLOCKED) return 1;
 			break;
-		}
-
-		if(header.len >= MIN_BEACON_SIZE)
-		{
-			rt_header = (struct radio_tap_header *) radio_header(packet, header.len);
-			size_t rt_header_len = end_le16toh(rt_header->len);
-			frame_header = (struct dot11_frame_header *) (packet + rt_header_len);
-
-			if(memcmp(frame_header->addr3, get_bssid(), MAC_ADDR_LEN) == 0)
-			{
-                                if((frame_header->fc & end_htole16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
-				   end_htole16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON))
-				{
-					if(parse_wps_parameters(packet, header.len, &wps))
-					{
-						if(wps.locked == WPSLOCKED)
-						{
-							locked = 1;
-						}
-						break;
-					} else {
-						return -1;
-					}
-				}
-
-                        }
+		} else {
+			return -1;
 		}
 	}
 
-	return locked;
+	return 0;
 }
 
 
@@ -717,7 +727,7 @@ static int check_fcs(const unsigned char *packet, size_t len)
 }
 
 /* Checks a given BSSID to see if it's on our target list */
-int is_target(struct dot11_frame_header *frame_header)
+int is_target(const struct dot11_frame_header *frame_header)
 {
         int yn = 1;
 
