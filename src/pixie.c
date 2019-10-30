@@ -119,9 +119,12 @@ void pixie_attack(void) {
 	int dh_small = get_dh_small();
 
 	if(p->do_pixie) {
-		char cmd[4096];
+		char uptime_str[64];
+		snprintf(uptime_str, sizeof(uptime_str), "-u %llu ",
+			(unsigned long long) globule->uptime);
 		snprintf(ptd.cmd, sizeof (ptd.cmd),
-		"pixiewps -e %s -s %s -z %s -a %s -n %s %s %s",
+		"pixiewps %s-e %s -s %s -z %s -a %s -n %s %s %s",
+		(p->use_uptime ? uptime_str : ""),
 		p->pke, p->ehash1, p->ehash2, p->authkey, p->enonce,
 		dh_small ? "-S" : "-r" , dh_small ? "" : p->pkr);
 		printf("executing %s\n", ptd.cmd);

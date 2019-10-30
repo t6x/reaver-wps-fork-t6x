@@ -14,6 +14,7 @@ struct pixie {
 	char *ehash1;
 	char *ehash2;
 	int do_pixie;
+	int use_uptime;
 };
 
 extern struct pixie pixie;
