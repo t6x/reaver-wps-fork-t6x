@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # this is a filter meant to be used with a logfile containing
 # debug output from wpa_supplicant or reaver, which extracts
