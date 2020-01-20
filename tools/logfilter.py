@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 # this is a filter meant to be used with a logfile containing
 # debug output from wpa_supplicant or reaver, which extracts
@@ -80,11 +80,11 @@ if __name__ == '__main__':
 		if line == '': break
 		process_wpa_supplicant_line(data, line.rstrip('\n'))
 
-	print data
+	print(data)
 
 	if got_all_pixie_data(data):
 		pixiecmd = get_pixie_cmd(data)
 
-		print "running %s" % pixiecmd
+		print(("running %s" % pixiecmd))
 		os.execlp('/bin/sh', '/bin/sh', '-c', pixiecmd)
 
