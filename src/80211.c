@@ -346,7 +346,7 @@ int reassociate(void)
 				state++;
 				break;
 			case 4:
-				ret = process_authenticate_associate_resp(0);
+				ret = process_authenticate_associate_resp(1);
 				if(ret) state++;
 				else return 0;
 				break;
