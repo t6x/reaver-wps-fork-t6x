@@ -143,30 +143,27 @@ pcap_t *capture_init(char *capture_source)
 		pcap_set_timeout(handle, 50);
 		pcap_set_rfmon(handle, activate_rfmon);
 		pcap_set_promisc(handle, 1);
-		if(!(status = pcap_activate(handle)))
+		status = pcap_activate(handle);
+		if(status >= 0) {
+			// Complete success, or success with warning.
+			// XXX - report warning?
 			return handle;
+		}
 		if(status == PCAP_ERROR_RFMON_NOTSUP) {
 			pcap_set_rfmon(handle, 0);
 			status = pcap_activate(handle);
-			if(!status) return handle;
+			if(status >= 0) {
+				// Complete success, or success with warning.
+				// XXX - report warning?
+				return handle;
+			}
 		}
-		cprintf(CRITICAL, "[X] ERROR: pcap_activate status %d\n", status);
-		static const char *pcap_errmsg[] = {
-			[1] = "generic error code",
-			[2] = "loop terminated by pcap_breakloop",
-			[3] = "the capture needs to be activated",
-			[4] = "the operation can't be performed on already activated captures",
-			[5] = "no such device exists",
-			[6] = "this device doesn't support rfmon (monitor) mode",
-			[7] = "operation supported only in monitor mode",
-			[8] = "no permission to open the device",
-			[9] = "interface isn't up",
-			[10]= "this device doesn't support setting the time stamp type",
-			[11]= "you don't have permission to capture in promiscuous mode",
-			[12]= "the requested time stamp precision is not supported",
-		};
-		if(status < 0 && status > -13)
-			cprintf(CRITICAL, "[X] PCAP: %s\n", pcap_errmsg[-status]);
+		if(status < 0) {
+			if(status == PCAP_ERROR)
+				cprintf(CRITICAL, "[X] ERROR: pcap_activate status %d - %s, %s\n", status, pcap_statustostr(status), pcap_geterr(handle));
+			else
+				cprintf(CRITICAL, "[X] ERROR: pcap_activate status %d - %s\n", status, pcap_statustostr(status));
+		}
 		pcap_close(handle);
 		handle = 0;
 	}
