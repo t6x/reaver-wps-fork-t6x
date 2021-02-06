@@ -329,11 +329,7 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 		{
         		act.sa_handler = sigalrm_handler;
         		sigaction (SIGALRM, &act, 0);
-			struct itimerval timer;
-            timer.it_value.tv_sec = 0;
-			timer.it_value.tv_usec = CHANNEL_INTERVAL;
-            timer.it_interval.tv_sec = 0;
-			timer.it_interval.tv_usec = CHANNEL_INTERVAL;
+			struct itimerval timer = {.it_value.tv_usec = CHANNEL_INTERVAL, .it_interval.tv_usec = CHANNEL_INTERVAL};
 			setitimer(ITIMER_REAL, &timer, NULL);
 			int startchan = 1;
 			if(get_wifi_band() == AN_BAND)
@@ -435,11 +431,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 			if(target != NULL && channel_changed == 0)
 			{
-				struct itimerval timeroff;
-                timeroff.it_value.tv_sec = 0;
-				timeroff.it_value.tv_usec = 0;
-                timeroff.it_interval.tv_sec = 0;
-				timeroff.it_interval.tv_usec = 0;
+				struct itimerval timeroff = {0};
 				setitimer(ITIMER_REAL, &timeroff, NULL);
 				change_channel(channel);
 				channel_changed = 1;
