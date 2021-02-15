@@ -33,8 +33,6 @@
 
 #include "globule.h"
 
-struct globals *globule;
-
 int globule_init()
 {
 	int ret = 0;
@@ -44,9 +42,6 @@ int globule_init()
 	{
 		memset(globule, 0, sizeof(struct globals));
 		ret = 1;
-		globule->resend_timeout_usec = 200000;
-		globule->output_fd = -1;
-
 	}
 
 	return ret;
@@ -76,9 +71,7 @@ void globule_deinit()
 		if(globule->static_p2) free(globule->static_p2);
 		if(globule->fp) fclose(globule->fp);
 		if(globule->exec_string) free(globule->exec_string);
-
-		if(globule->output_fd != -1) close(globule->output_fd);
-
+	
 		free(globule);
 	}
 }
@@ -103,8 +96,7 @@ int get_last_wps_state()
 
 void set_session(char *value)  
 { 
-	if(globule->session) free(globule->session);
-	globule->session = (value) ? strdup(value) : NULL;
+	globule->session = strdup(value);     
 }
 char *get_session()    
 {
@@ -139,8 +131,7 @@ void set_p1(int index, char *value)
 {
 	if(index < P1_SIZE)
 	{
-		if(globule->p1[index]) free(globule->p1[index]);
-		globule->p1[index] = (value) ? strdup(value) : NULL;
+		globule->p1[index] = strdup(value);
 	}
 }
 char *get_p1(int index)
@@ -156,8 +147,7 @@ void set_p2(int index, char *value)
 {
 	if(index < P2_SIZE)
 	{
-		if(globule->p2[index]) free(globule->p2[index]);
-		globule->p2[index] = (value) ? strdup(value) : NULL;
+		globule->p2[index] = strdup(value);
 	}
 }
 char *get_p2(int index)
@@ -307,7 +297,6 @@ int get_out_of_time()
 void set_debug(enum debug_level value)
 {
 	globule->debug = value;
-	if(value == DEBUG) wpa_debug_level = MSG_DEBUG;
 }
 enum debug_level get_debug()
 {
@@ -339,6 +328,15 @@ void set_auto_channel_select(int value)
 int get_auto_channel_select()
 {
 	return globule->auto_channel_select;
+}
+
+void set_auto_detect_options(int value)
+{
+	globule->auto_detect_options = value;
+}
+int get_auto_detect_options()
+{
+	return globule->auto_detect_options;
 }
 
 void set_wifi_band(int value)
@@ -388,20 +386,20 @@ int get_channel(void)
 
 void set_bssid(unsigned char *value)
 {
-	memcpy(globule->bssid, value, MAC_ADDR_LEN);
+	memcpy((unsigned char *) &globule->bssid, value, MAC_ADDR_LEN);
 }
 unsigned char *get_bssid()
 {
-	return globule->bssid;
+	return (unsigned char *) &globule->bssid;
 }
 
 void set_mac(unsigned char *value)
 {
-	memcpy(globule->mac, value, MAC_ADDR_LEN);
+	memcpy((unsigned char *) &globule->mac, value, MAC_ADDR_LEN);
 }
 unsigned char *get_mac()
 {
-	return globule->mac;
+	return (unsigned char *) &globule->mac;
 }
 
 void set_ssid(char *value)
@@ -449,8 +447,7 @@ char *get_iface()
 
 void set_pin(char *value)
 {
-	if(globule->pin) free(globule->pin);
-	globule->pin = (value) ? strdup(value) : NULL;
+	globule->pin = strdup(value);
 }
 char *get_pin()
 {
@@ -459,8 +456,7 @@ char *get_pin()
 
 void set_static_p1(char *value)
 {
-	if(globule->static_p1) free(globule->static_p1);
-	globule->static_p1 = (value) ? strdup(value) : NULL;
+	globule->static_p1 = strdup(value);
 }
 
 char *get_static_p1(void)
@@ -470,23 +466,12 @@ char *get_static_p1(void)
 
 void set_static_p2(char *value)
 {
-	if(globule->static_p2) free(globule->static_p2);
-	globule->static_p2 = (value) ? strdup(value) : NULL;
+	globule->static_p2 = strdup(value);
 }
 
 char *get_static_p2(void)
 {
 	return globule->static_p2;
-}
-
-void set_pin_string_mode(int value)
-{
-	globule->use_pin_string = value;
-}
-
-int get_pin_string_mode(void)
-{
-	return globule->use_pin_string;
 }
 
 void set_win7_compat(int value)
@@ -544,25 +529,12 @@ struct wps_data *get_wps()
 	return globule->wps;
 }
 
-void set_ap_htcaps(unsigned char *value, int len)
-{
-	free(globule->htcaps);
-	globule->htcaps = malloc(len);
-	globule->htcaps_len = len;
-	memcpy(globule->htcaps, value, len);
-}
-
-unsigned char *get_ap_htcaps(int *len)
-{
-	*len = globule->htcaps_len;
-	return globule->htcaps;
-}
-
 void set_ap_rates(unsigned char *value, int len)
 {
 	if(globule->ap_rates)
 	{
 		free(globule->ap_rates);
+		globule->ap_rates = NULL;
 		globule->ap_rates_len = 0;
 	}
 
@@ -578,28 +550,6 @@ unsigned char *get_ap_rates(int *len)
 {
 	*len = globule->ap_rates_len;
 	return globule->ap_rates;
-}
-
-void set_ap_ext_rates(unsigned char *value, int len)
-{
-	if(globule->ap_ext_rates)
-	{
-		free(globule->ap_ext_rates);
-		globule->ap_ext_rates_len = 0;
-	}
-
-	globule->ap_ext_rates = malloc(len);
-	if(globule->ap_ext_rates)
-	{
-		memcpy(globule->ap_ext_rates, value, len);
-		globule->ap_ext_rates_len = len;
-	}
-}
-
-unsigned char *get_ap_ext_rates(int *len)
-{
-	*len = globule->ap_ext_rates_len;
-	return globule->ap_ext_rates;
 }
 
 void set_exec_string(char *string)
@@ -629,27 +579,11 @@ int get_oo_send_nack(void)
 	return globule->oo_send_nack;
 }
 
-void set_vendor(int is_set, const unsigned char* v) {
-	globule->vendor_oui[0] = is_set;
-	if(is_set) memcpy(globule->vendor_oui+1, v, 3);
+void set_mac_changer(int value)
+{
+	globule->mac_changer = value;
 }
-unsigned char *get_vendor(void) {
-	if(!globule->vendor_oui[0]) return 0;
-	return globule->vendor_oui+1;
-}
-
-void set_repeat_m6(int val) {
-	globule->repeat_m6 = val;
-}
-
-int get_repeat_m6(void) {
-	return globule->repeat_m6;
-}
-
-int get_output_fd(void) { return globule->output_fd; }
-
-#include "pcapfile.h"
-void set_output_fd(int fd) {
-	globule->output_fd = fd;
-	if (fd != -1) pcapfile_write_header(fd);
+int get_mac_changer()
+{
+	return globule->mac_changer;
 }
