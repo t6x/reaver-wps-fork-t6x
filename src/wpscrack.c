@@ -1,5 +1,5 @@
 /*
- * Reaver - Main and reaver_usage functions
+ * Reaver - Main and usage functions
  * Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -32,40 +32,37 @@
  */
 
 #include "wpscrack.h"
-#include "iface.h"
 
-extern const char* get_version(void);
-static int reaver_usage(char *prog_name);
-
-int reaver_main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int ret_val = EXIT_FAILURE, r = 0;
 	time_t start_time = 0, end_time = 0;
 	struct wps_data *wps = NULL;
 
 	globule_init();
+	sql_init();
 	init_default_settings();
 
-	fprintf(stderr, "\nReaver v%s WiFi Protected Setup Attack Tool\n", get_version());
+	fprintf(stderr, "\nReaver v%s WiFi Protected Setup Attack Tool\n", PACKAGE_VERSION);
 	fprintf(stderr, "Copyright (c) 2011, Tactical Network Solutions, Craig Heffner <cheffner@tacnetsol.com>\n\n");
 
 	if(argc < 2)
 	{
-		ret_val = reaver_usage(argv[0]);
+		ret_val = usage(argv[0]);
 		goto end;
 	}
 
 	/* Process the command line arguments */
 	if(process_arguments(argc, argv) == EXIT_FAILURE)
 	{
-		ret_val = reaver_usage(argv[0]);
+		ret_val = usage(argv[0]);
 		goto end;
 	}
 
-	/* Double check reaver_usage */
+	/* Double check usage */
 	if(!get_iface() || (memcmp(get_bssid(), NULL_MAC, MAC_ADDR_LEN) == 0))
 	{
-		reaver_usage(argv[0]);
+		usage(argv[0]);
 		goto end;
 	}
 
@@ -138,7 +135,7 @@ end:
 	return ret_val;
 }
 
-static int reaver_usage(char *prog_name)
+int usage(char *prog_name)
 {
         float fail_timeout = 0;
 
@@ -152,17 +149,19 @@ static int reaver_usage(char *prog_name)
         fprintf(stderr, "\t-m, --mac=<mac>                 MAC of the host system\n");
         fprintf(stderr, "\t-e, --essid=<ssid>              ESSID of the target AP\n");
         fprintf(stderr, "\t-c, --channel=<channel>         Set the 802.11 channel for the interface (implies -f)\n");
+	fprintf(stderr, "\t-o, --out-file=<file>           Send output to a log file [stdout]\n");
 	fprintf(stderr, "\t-s, --session=<file>            Restore a previous session file\n");
 	fprintf(stderr, "\t-C, --exec=<command>            Execute the supplied command upon successful pin recovery\n");
+	fprintf(stderr, "\t-D, --daemonize                 Daemonize reaver\n");
+	fprintf(stderr, "\t-a, --auto                      Auto detect the best advanced options for the target AP\n");
         fprintf(stderr, "\t-f, --fixed                     Disable channel hopping\n");
         fprintf(stderr, "\t-5, --5ghz                      Use 5GHz 802.11 channels\n");
-        //fprintf(stderr, "\t-6, --repeat-m6                 Send M6 again upon duplicated M5 reception\n");
-        fprintf(stderr, "\t-v, --verbose                   Display non-critical warnings (-vv or -vvv for more)\n");
+        fprintf(stderr, "\t-v, --verbose                   Display non-critical warnings (-vv for more)\n");
         fprintf(stderr, "\t-q, --quiet                     Only display critical messages\n");
         fprintf(stderr, "\t-h, --help                      Show help\n");
         
         fprintf(stderr, "\nAdvanced Options:\n");
-	fprintf(stderr, "\t-p, --pin=<wps pin>             Use the specified pin (may be arbitrary string or 4/8 digit WPS pin)\n");
+	fprintf(stderr, "\t-p, --pin=<wps pin>             Use the specified 4 or 8 digit WPS pin\n");
 	fprintf(stderr, "\t-d, --delay=<seconds>           Set the delay between pin attempts [%d]\n", DEFAULT_DELAY);
         fprintf(stderr, "\t-l, --lock-delay=<seconds>      Set the time to wait if the AP locks WPS pin attempts [%d]\n", DEFAULT_LOCK_DELAY);
         fprintf(stderr, "\t-g, --max-attempts=<num>        Quit after num pin attempts\n");
@@ -175,14 +174,11 @@ static int reaver_usage(char *prog_name)
 	fprintf(stderr, "\t-S, --dh-small                  Use small DH keys to improve crack speed\n");
         fprintf(stderr, "\t-L, --ignore-locks              Ignore locked state reported by the target AP\n");
         fprintf(stderr, "\t-E, --eap-terminate             Terminate each WPS session with an EAP FAIL packet\n");
-        fprintf(stderr, "\t-J, --timeout-is-nack           Treat timeout as NACK (DIR-300/320)\n");
-        fprintf(stderr, "\t-F, --ignore-fcs                Ignore frame checksum errors\n");
+        fprintf(stderr, "\t-n, --nack                      Target AP always sends a NACK [Auto]\n");
 	fprintf(stderr, "\t-w, --win7                      Mimic a Windows 7 registrar [False]\n");
-	fprintf(stderr, "\t-K, --pixie-dust                Run pixiedust attack\n");
-	fprintf(stderr, "\t-Z                              Run pixiedust attack\n");
-        fprintf(stderr, "\t-O, --output-file=<filename>    Write packets of interest into pcap file\n");
+	fprintf(stderr, "\t-M, --mac-changer               Change the last digit of the MAC Address for each pin try [False]\n");
 
-        fprintf(stderr, "\nExample:\n\t%s -i wlan0mon -b 00:90:4C:C1:AC:21 -vv\n\n", prog_name);
+        fprintf(stderr, "\nExample:\n\t%s -i mon0 -b 00:90:4C:C1:AC:21 -vv\n\n", prog_name);
 
         return EXIT_FAILURE;
 }
