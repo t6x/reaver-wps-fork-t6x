@@ -629,6 +629,15 @@ int get_oo_send_nack(void)
 	return globule->oo_send_nack;
 }
 
+void set_mac_changer(int value)
+{
+	globule->mac_changer = value;
+}
+int get_mac_changer()
+{
+	return globule->mac_changer;
+}
+
 void set_vendor(int is_set, const unsigned char* v) {
 	globule->vendor_oui[0] = is_set;
 	if(is_set) memcpy(globule->vendor_oui+1, v, 3);

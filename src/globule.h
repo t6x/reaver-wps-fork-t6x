@@ -156,6 +156,8 @@ struct globals
 					 * wpa_supplicant's wps_data structure, needed for almost all wpa_supplicant
                                          * function calls.
                                          */
+    int mac_changer;        /* Use MAC changer */
+
 };
 
 extern struct globals *globule;
@@ -268,4 +270,6 @@ void set_repeat_m6(int);
 int get_repeat_m6(void);
 void set_output_fd(int fd);
 int get_output_fd(void);
+void set_mac_changer(int value);
+int get_mac_changer(void);
 #endif
