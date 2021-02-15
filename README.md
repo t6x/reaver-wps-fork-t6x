@@ -105,7 +105,9 @@ Advanced Options:
 	-F, --ignore-fcs                Ignore frame checksum errors
 	-w, --win7                      Mimic a Windows 7 registrar [False]
 	-K, --pixie-dust                Run pixiedust attack
-	-Z                              Run pixiedust attack
+	-Z,                             Run pixiedust attack
+	-O, --output-file=<filename>	Write packets of interest into pcap file
+	-M, --mac-changer		Change the last digit of the MAC Address for each pin try [False]
 
 Example:
 	reaver -i wlan0mon -b 00:90:4C:C1:AC:21 -vv
@@ -132,6 +134,7 @@ Required Arguments:
 Optional Arguments:
 	-c, --channel=<num>                  Channel to listen on [auto]
 	-n, --probes=<num>                   Maximum number of probes to send to each AP in scan mode [15]
+	-O, --output-file=<filename>	     Write packets of interest into pcap file
 	-F, --ignore-fcs                     Ignore frame checksum errors
 	-2, --2ghz                           Use 2.4GHz 802.11 channels
 	-5, --5ghz                           Use 5GHz 802.11 channels
@@ -139,6 +142,7 @@ Optional Arguments:
 	-u, --survey                         Use survey mode [default]
 	-a, --all                            Show all APs, even those without WPS
 	-j, --json                           print extended WPS info as json
+	-U, --utf8			     Show UTF8 ESSID (does not sanitize ESSID, dangerous)
 	-p, --progress                       Show percentage of crack progress
 	-h, --help                           Show help
 
@@ -167,7 +171,7 @@ Main developer since version 1.6b:
 `rofl0r`  
 
 Modifications made by:
-`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho`, `binarymaster`, `Ǹotaz`  
+`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho`, `binarymaster`, `Ǹotaz` `Adde88`  
 
 Some ideas made by:
 `nuroo`, `kcdtv`
