@@ -68,6 +68,18 @@ static void extract_uptime(const struct beacon_management_frame *beacon)
 	globule->uptime = end_le64toh(timestamp);
 }
 
+void set_next_mac() {
+	unsigned char newmac[6];
+
+	memcpy(newmac, get_mac(), 6);
+	/* increments by 1 and preventing the last byte from being 0 and or 255 */
+	do {
+		++newmac[5];
+	} while ((newmac[5] & 0xff) == 0 || (newmac[5] & 0xff) == 0xff);
+	set_mac(newmac);
+	cprintf(WARNING, "[+] Using MAC %s\n", mac2str(get_mac(), ':'));
+}
+
 /* Brute force all possible WPS pins for a given access point */
 void crack()
 {
@@ -77,11 +89,6 @@ void crack()
 	float pin_count = 0;
 	time_t start_time = 0;
 	enum wps_result result = 0;
-	int mac_changer_counter = 0;
-	char mac[MAC_ADDR_LEN] = { 0 };
-	unsigned char mac_string [] = "ZZ:ZZ:ZZ:ZZ:ZZ:ZZ";
-	unsigned char* new_mac = &mac_string[0];
-	char last_digit = '0';
 
 	if(!get_iface())
 	{
@@ -163,77 +170,13 @@ void crack()
 		set_key_status(KEY2_WIP);
 	}
 
-		/* Copy the current mac to the new_mac variable for mac changer */
-		if (get_mac_changer() == 1) {
-			strncpy(new_mac, mac2str(get_mac(), ':'), 16);
-		}
-
 	/* Main cracking loop */
 	for(loop_count=0, sleep_count=0; get_key_status() != KEY_DONE; loop_count++, sleep_count++)
 	{
-			/* MAC Changer switch/case to define the last MAC address digit */
-			if (get_mac_changer() == 1) {			
-				switch (mac_changer_counter) {
-					case 0:
-						last_digit = '0';
-						break;
-					case 1:
-						last_digit = '1';
-						break;
-					case 2:
-						last_digit = '2';
-						break;
-					case 3:
-						last_digit = '3';
-						break;
-					case 4:
-						last_digit = '4';
-						break;
-					case 5:
-						last_digit = '5';
-						break;
-					case 6:
-						last_digit = '6';
-						break;
-					case 7:
-						last_digit = '7';
-						break;
-					case 8:
-						last_digit = '8';
-						break;
-					case 9:
-						last_digit = '9';
-						break;
-					case 10:
-						last_digit = 'A';
-						break;
-					case 11:
-						last_digit = 'B';
-						break;
-					case 12:
-						last_digit = 'C';
-						break;
-					case 13:
-						last_digit = 'D';
-						break;
-					case 14:
-						last_digit = 'E';
-						break;
-					case 15:
-						last_digit = 'F';
-						mac_changer_counter = -1;
-						break;
-				}
-
-				mac_changer_counter++;
-
-				new_mac[16] = last_digit;
-				//transform the string to a MAC and define the MAC
-				str2mac((unsigned char *) new_mac, (unsigned char *) &mac);
-				set_mac((unsigned char *) &mac);
-			
-				cprintf(WARNING, "[+] Using MAC %s \n", mac2str(get_mac(), ':'));
-			}			
+		/* MAC Changer */
+		if (get_mac_changer()) {
+			set_next_mac();
+		}
 
 		/* 
 		 * Some APs may do brute force detection, or might not be able to handle an onslaught of WPS
