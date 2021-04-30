@@ -34,6 +34,7 @@
 #include "cracker.h"
 #include "pixie.h"
 #include "utils/vendor.h"
+#include "utils/endianness.h"
 
 void update_wpc_from_pin(void) {
 	/* update WPC file with found pin */
@@ -68,14 +69,16 @@ static void extract_uptime(const struct beacon_management_frame *beacon)
 	globule->uptime = end_le64toh(timestamp);
 }
 
-void set_next_mac() {
+static void set_next_mac() {
 	unsigned char newmac[6];
-
+	uint32_t l4b;
 	memcpy(newmac, get_mac(), 6);
-	/* increments by 1 and preventing the last byte from being 0 and or 255 */
-	do {
-		++newmac[5];
-	} while ((newmac[5] & 0xff) == 0 || (newmac[5] & 0xff) == 0xff);
+	memcpy(&l4b, newmac+2, 4);
+	l4b = end_be32toh(l4b);
+	do ++l4b;
+	while ((l4b & 0xff) == 0 || (l4b & 0xff) == 0xff);
+	l4b = end_htobe32(l4b);
+	memcpy(newmac+2, &l4b, 4);
 	set_mac(newmac);
 	cprintf(WARNING, "[+] Using MAC %s\n", mac2str(get_mac(), ':'));
 }

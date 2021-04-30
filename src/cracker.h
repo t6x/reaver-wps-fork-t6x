@@ -46,7 +46,6 @@
 #define DISPLAY_PIN_COUNT	5
 #define TIME_FORMAT		"%F %T"
 
-void set_next_mac();
 void crack();
 void advance_pin_count();
 void display_status(float pin_count, time_t start_time);
