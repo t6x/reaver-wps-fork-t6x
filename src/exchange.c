@@ -149,7 +149,7 @@ enum wps_result do_wps_exchange()
 				tx_type = SEND_WSC_NACK;
 				break;
 			case NACK:
-				cprintf(VERBOSE, "[+] Received WSC NACK\n");
+				cprintf(VERBOSE, "[+] Received WSC NACK (reason: 0x%04X)\n", get_nack_reason());
 				got_nack = 1;
 				break;
 			case TERMINATE:
@@ -472,6 +472,11 @@ enum wps_type process_wps_message(const void *data, size_t data_size)
                                         case MESSAGE_TYPE:
                                                 type = (uint8_t) element_data[0];
                                                 break;
+					case CONFIGURATION_ERROR:
+						/* Check element_data length */
+						if (element.length == 2)
+							set_nack_reason(WPA_GET_BE16(element_data));
+						break;
                                         default:
                                                 break;
                                 }
