@@ -231,6 +231,17 @@ enum wps_result do_wps_exchange()
 			set_timeout_is_nack(0);
 
 			ret_val = KEY_REJECTED;
+
+			/* Check the reason code for the received NACK message */
+			if (get_nack_reason() == MESSAGE_TIMEOUT) {
+				ret_val = UNKNOWN_ERROR;
+				cprintf(WARNING, "[!] WARNING: Potential FAKE NACK!\n");
+			}
+			/* Got NACK instead of an M5 message, when cracking second half */
+			else if (!get_pin_string_mode() && last_msg == M3 && get_key_status() == KEY2_WIP) {
+				ret_val = UNKNOWN_ERROR;
+				cprintf(WARNING, "[!] WARNING: Potential first half pin has changed!\n");
+			}
 		}
 		else
 		{
