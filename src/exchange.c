@@ -260,6 +260,11 @@ enum wps_result do_wps_exchange()
 		  (last_msg == M3 || last_msg == M5))
 		{
 			ret_val = KEY_REJECTED;
+			/* Got timeout instead of an M5 message, when cracking second half */
+			if (!get_pin_string_mode() && last_msg == M3 && get_key_status() == KEY2_WIP) {
+				ret_val = UNKNOWN_ERROR;
+				cprintf(WARNING, "[!] WARNING: Potential first half pin has changed!\n");
+			}
 		}
 		else
 		{
