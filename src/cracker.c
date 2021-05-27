@@ -89,7 +89,7 @@ void crack()
 	char *bssid = NULL;
 	char *pin = NULL;
 	int fail_count = 0, loop_count = 0, sleep_count = 0, assoc_fail_count = 0;
-	float pin_count = 0;
+	int pin_count = 0;
 	time_t start_time = 0;
 	enum wps_result result = 0;
 
@@ -339,7 +339,7 @@ void crack()
 		if((get_max_pin_attempts() > 0) && 
 		   (pin_count == get_max_pin_attempts()))
 		{
-			cprintf(VERBOSE, "[+] Quitting after %d crack attempts\n", get_max_pin_attempts());
+			cprintf(VERBOSE, "[+] Quitting after %d crack attempts\n", pin_count);
 			break;
 		}
 	}
@@ -370,7 +370,7 @@ void advance_pin_count()
 }
 
 /* Displays the status and rate of cracking */
-void display_status(float pin_count, time_t start_time)
+void display_status(int pin_count, time_t start_time)
 {
 	float percentage = 0;
 	int attempts = 0, average = 0;
