@@ -247,6 +247,13 @@ enum wps_result do_wps_exchange()
 		{
 			ret_val = UNKNOWN_ERROR;
 		}
+		/* WPS locked or ISPs that had vulnerable routers in the past opted
+		to "fix" them by simply not completing any more WPS transactions */
+		if (get_nack_reason() == SETUP_LOCKED) {
+			/* set maximum number of pin attempts to 0 for quit */
+			set_max_pin_attempts(0);
+			cprintf(WARNING, "[!] WARNING: Detected AP has WPS setup locked!\n");
+		}
 	}
 	else if(premature_timeout)
 	{
