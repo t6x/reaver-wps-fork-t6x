@@ -336,8 +336,7 @@ void crack()
 		}
 
 		/* If we've hit our max number of pin attempts, quit */
-		if((get_max_pin_attempts() > 0) && 
-		   (pin_count == get_max_pin_attempts()))
+		if (pin_count >= get_max_pin_attempts())
 		{
 			cprintf(VERBOSE, "[+] Quitting after %d crack attempts\n", pin_count);
 			break;
