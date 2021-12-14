@@ -17,6 +17,13 @@ AC_HELP_STRING([--enable-savetocurrent],
   [saves the current session file to the directory reaver was started from])
 , [ CFLAGS="$CFLAGS -DSAVETOCURRENT" ])
 
+AC_ARG_ENABLE(libnl3,
+AC_HELP_STRING([--enable-libnl3],
+  [compiles with the libnl3 instead of the wext])
+, [ CFLAGS="$CFLAGS -DLIBNL3 $(pkg-config --cflags libnl-3.0 libnl-genl-3.0)"; LIB_NL3="$(pkg-config --libs libnl-3.0 libnl-genl-3.0)" ])
+
+AC_SUBST(LIB_NL3)
+
 DESIRED_FLAGS="-Werror-unknown-warning-option -Wno-unused-but-set-variable"
 for flag in $DESIRED_FLAGS; do
   AS_COMPILER_FLAG([$flag], [CFLAGS="$CFLAGS $flag"])

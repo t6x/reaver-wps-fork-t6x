@@ -5,4 +5,4 @@ CONFDIR=@localstatedir@/lib/@target@
 CC=@CC@
 CFLAGS_USER=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-
+LIB_NL3=@LIB_NL3@
