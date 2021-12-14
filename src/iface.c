@@ -32,10 +32,18 @@
  */
 
 #include "iface.h"
-#include "lwe/iwlib.h"
 #include "globule.h"
 #include <net/if.h>
 #include <netinet/in.h>
+#ifdef LIBNL3
+#include <net/ethernet.h>
+#include <netlink/netlink.h>
+#include <netlink/genl/genl.h>
+#include <netlink/genl/ctrl.h>
+#include <linux/nl80211.h>
+#else
+#include "lwe/iwlib.h"
+#endif
 #include <sys/ioctl.h>
 #include <stdlib.h>
 
@@ -159,6 +167,56 @@ int change_channel(int channel)
 	return 0;
 }
 #else
+#ifdef LIBNL3
+/* took from the Aircrack-ng */
+static int ieee80211_channel_to_frequency(int chan)
+{
+	if (chan < 14) return 2407 + chan * 5;
+
+	if (chan == 14) return 2484;
+
+	/* FIXME: dot11ChannelStartingFactor (802.11-2007 17.3.8.3.2) */
+	return (chan + 1000) * 5;
+}
+
+int change_channel(int channel)
+{
+	int skfd = 0, ret_val = 0;
+	unsigned int freq;
+
+	cprintf(VERBOSE, "[+] Switching %s to channel %d\n", get_iface(), channel);
+
+/* Modified example from the stackoverflow probably inspired by the Aircrack-ng code */
+/* https://stackoverflow.com/questions/21846965/set-wireless-channel-using-netlink-api */
+	freq = ieee80211_channel_to_frequency(channel);
+	/* Create the socket and connect to it. */
+	struct nl_sock *sckt = nl_socket_alloc();
+	genl_connect(sckt);
+
+	/* Allocate a new message. */
+	struct nl_msg *mesg = nlmsg_alloc();
+
+	/* Check /usr/include/linux/nl80211.h for a list of commands and attributes. */
+	enum nl80211_commands command = NL80211_CMD_SET_WIPHY;
+
+	/* Create the message so it will send a command to the nl80211 interface. */
+	genlmsg_put(mesg, 0, 0, genl_ctrl_resolve(sckt, "nl80211"), 0, 0, command, 0);
+
+	/* Add specific attributes to change the frequency of the device. */
+	NLA_PUT_U32(mesg, NL80211_ATTR_IFINDEX, if_nametoindex(get_iface()));
+	NLA_PUT_U32(mesg, NL80211_ATTR_WIPHY_FREQ, freq);
+
+	/* Finally send it and receive the amount of bytes sent. */
+	int ret = nl_send_auto_complete(sckt, mesg);
+
+	ret_val = 1;
+
+nla_put_failure:
+	nlmsg_free(mesg);
+
+	return ret_val;
+}
+#else // !LIBNL3
 int change_channel(int channel)
 {
         int skfd = 0, ret_val = 0;
@@ -193,4 +251,5 @@ int change_channel(int channel)
 
         return ret_val;
 }
+#endif // LIBNL3
 #endif

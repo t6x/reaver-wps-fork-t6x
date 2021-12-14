@@ -12,7 +12,7 @@ DISABLED_WARNINGS= \
  -Wno-unused-function \
  -Wno-pointer-sign
 
-CFLAGS=-DCONF_DIR='"$(CONFDIR)"' $(CFLAGS_USER) $(DISABLED_WARNINGS)
+CFLAGS=-DCONF_DIR='"$(CONFDIR)"' $(CFLAGS_USER) $(DISABLED_WARNINGS) $(LIBNL_CFLAGS)
 CFLAGS += $(INC)
 CFLAGS += -DCONFIG_IPV6
 
@@ -120,7 +120,7 @@ wash: reaver
 	ln -sf ./reaver wash
 
 reaver: $(PROG_OBJS) $(LIB_OBJS)
-	$(CC) $(CFLAGS) $(INC) $(PROG_OBJS) $(LIB_OBJS) $(LDFLAGS) -lpthread -lrt -o reaver
+	$(CC) $(CFLAGS) $(INC) $(PROG_OBJS) $(LIB_OBJS) $(LDFLAGS) $(LIBNL_LDFLAGS) -lpthread -lrt -o reaver
 
 extest.o: exchange.c
 	$(CC) $(CFLAGS) -g3 -O0 -DEX_TEST -c exchange.c -o extest.o
