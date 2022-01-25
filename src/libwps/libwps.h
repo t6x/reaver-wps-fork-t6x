@@ -39,6 +39,7 @@ struct libwps_data
         char model_name[LIBWPS_MAX_STR_LEN];
         char model_number[LIBWPS_MAX_STR_LEN];
         char device_name[LIBWPS_MAX_STR_LEN];
+        char device_password_id[LIBWPS_MAX_STR_LEN];
         char ssid[LIBWPS_MAX_STR_LEN];
         char uuid[LIBWPS_MAX_STR_LEN];
         char serial[LIBWPS_MAX_STR_LEN];
@@ -77,6 +78,7 @@ enum wps_el_number
         MODEL_NAME = 0x1023,
         MODEL_NUMBER = 0x1024,
         DEVICE_NAME = 0x1011,
+        DEVICE_PASSWORD_ID = 0x1012,
         SSID = 0x1045,
         UUID = 0x1047,
         SERIAL = 0x1042,

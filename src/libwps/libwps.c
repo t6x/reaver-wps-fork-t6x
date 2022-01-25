@@ -109,6 +109,13 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		json_str = append_and_free(old, buf, 1);
 		old = json_str;
 	}
+	if(*wps->device_password_id) {
+		tmp = sanitize_string(wps->device_password_id);
+		nl = snprintf(buf, sizeof buf, "\"wps_device_password_id\" : \"%s\", ", tmp);
+		free(tmp);
+		json_str = append_and_free(old, buf, 1);
+		old = json_str;
+	}
 	if(*wps->ssid) {
 		tmp = sanitize_string(wps->ssid);
 		nl = snprintf(buf, sizeof buf, "\"wps_ssid\" : \"%s\", ", tmp);
@@ -248,6 +255,7 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 			MODEL_NAME,
 			MODEL_NUMBER,
 			DEVICE_NAME,
+			DEVICE_PASSWORD_ID,
 			SSID,
 			UUID,
 			SERIAL,
@@ -318,6 +326,10 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 					case SELECTED_REGISTRAR_CONFIG_METHODS:
 						src = hex2str(el, el_len);
 						ptr = wps->selected_registrar_config_methods;
+						break;
+					case DEVICE_PASSWORD_ID:
+						src = hex2str(el, el_len);
+						ptr = wps->device_password_id;
 						break;
 					case RESPONSE_TYPE:
 						src = hex2str(el, el_len);
