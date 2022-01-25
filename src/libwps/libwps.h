@@ -137,7 +137,6 @@ struct management_frame
 };
 
 
-int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps);
 unsigned char *get_wps_data(const u_char *data, size_t len, size_t *tag_len);
 unsigned char *get_wps_data_element(const u_char *data, size_t len, uint16_t type, size_t *el_len);
 char *hex2str(unsigned char *hex, int len);

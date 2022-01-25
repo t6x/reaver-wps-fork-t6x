@@ -199,50 +199,9 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 	return json_str;
 }
 
-/*
- * This is the only function that external code should call. 
- *
- * const u_char *packet		Pointer to a beacon or probe response packet
- * size_t len			Size of the packet
- * struct libwps_data *wps	Pointer to an allocated libwps_data structure
- *
- * Returns 1 if WPS data was found and the libwps_data structure has been populated.
- * Returns 0 if no WPS data was found.
- */
-int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *wps)
-{
-	const u_char *data = NULL;
-	size_t data_len = 0, offset = 0;
-	struct radio_tap_header *rt_header = NULL;
-	int ret_val = 0;
-
-	if(wps)
-	{
-		memset(wps, 0, sizeof(struct libwps_data));
-
-		if(len > (sizeof(struct radio_tap_header) + 
-			  sizeof(struct dot11_frame_header) + 
-		 	  sizeof(struct management_frame)))
-		{
-			rt_header = (struct radio_tap_header *) libwps_radio_header(packet, len);
-
-			offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct management_frame);
-			if(offset > len) {
-				cprintf(CRITICAL, "corrupt data received, terminating!\n");
-				exit(1);
-			}
-			data = (packet + offset);
-			data_len = (len - offset);
-
-			ret_val = parse_wps_tag(data, data_len, wps);
-		}
-	}
-
-	return ret_val;
-}
-
 /* Parse and print WPS data in beacon packets and probe responses */
-int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
+static int parse_wps_tags(const u_char *tags, size_t len,
+	struct libwps_data *wps)
 {
 	unsigned char *wps_ie_data = NULL, *el = NULL;
 	char *ptr = NULL, *src = NULL;
@@ -371,7 +330,7 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 						break;
 					default:
 						src = NULL;
-						ptr = NULL; 
+						ptr = NULL;
 				}
 
 				if(!ptr)
@@ -398,6 +357,48 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 
 		ret_val = 1;
 		free(wps_ie_data);
+	}
+
+	return ret_val;
+}
+
+/*
+ * This is the only function that external code should call. 
+ *
+ * const u_char *packet		Pointer to a beacon or probe response packet
+ * size_t len			Size of the packet
+ * struct libwps_data *wps	Pointer to an allocated libwps_data structure
+ *
+ * Returns 1 if WPS data was found and the libwps_data structure has been populated.
+ * Returns 0 if no WPS data was found.
+ */
+int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *wps)
+{
+	const u_char *data = NULL;
+	size_t data_len = 0, offset = 0;
+	struct radio_tap_header *rt_header = NULL;
+	int ret_val = 0;
+
+	if(wps)
+	{
+		memset(wps, 0, sizeof(struct libwps_data));
+
+		if(len > (sizeof(struct radio_tap_header) + 
+			  sizeof(struct dot11_frame_header) + 
+		 	  sizeof(struct management_frame)))
+		{
+			rt_header = (struct radio_tap_header *) libwps_radio_header(packet, len);
+
+			offset = rt_header->len + sizeof(struct dot11_frame_header) + sizeof(struct management_frame);
+			if(offset > len) {
+				cprintf(CRITICAL, "corrupt data received, terminating!\n");
+				exit(1);
+			}
+			data = (packet + offset);
+			data_len = (len - offset);
+
+			ret_val = parse_wps_tags(data, data_len, wps);
+		}
 	}
 
 	return ret_val;
