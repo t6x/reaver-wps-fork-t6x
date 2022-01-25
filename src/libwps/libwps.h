@@ -43,6 +43,7 @@ struct libwps_data
         char uuid[LIBWPS_MAX_STR_LEN];
         char serial[LIBWPS_MAX_STR_LEN];
         char selected_registrar[LIBWPS_MAX_STR_LEN];
+	char selected_registrar_config_methods[LIBWPS_MAX_STR_LEN];
         char response_type[LIBWPS_MAX_STR_LEN];
         char primary_device_type[LIBWPS_MAX_STR_LEN];
         char config_methods[LIBWPS_MAX_STR_LEN];
@@ -80,6 +81,7 @@ enum wps_el_number
         UUID = 0x1047,
         SERIAL = 0x1042,
         SELECTED_REGISTRAR = 0x1041,
+	SELECTED_REGISTRAR_CONFIG_METHODS = 0x1053,
         RESPONSE_TYPE = 0x103B,
         PRIMARY_DEVICE_TYPE = 0x1054,
         CONFIG_METHODS = 0x1008,

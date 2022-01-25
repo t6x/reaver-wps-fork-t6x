@@ -144,6 +144,13 @@ char *wps_data_to_json(const char*bssid, const char *ssid, int channel, int rssi
 		json_str = append_and_free(old, buf, 1);
 		old = json_str;
 	}
+	if(*wps->selected_registrar_config_methods) {
+		tmp = sanitize_string(wps->selected_registrar_config_methods);
+		nl = snprintf(buf, sizeof buf, "\"selected_registrar_config_methods\" : \"%s\", ", tmp);
+		free(tmp);
+		json_str = append_and_free(old, buf, 1);
+		old = json_str;
+	}
 	if(*wps->response_type) {
 		tmp = sanitize_string(wps->response_type);
 		nl = snprintf(buf, sizeof buf, "\"wps_response_type\" : \"%s\", ", tmp);
@@ -204,7 +211,7 @@ int parse_wps_parameters(const u_char *packet, size_t len, struct libwps_data *w
 	if(wps)
 	{
 		memset(wps, 0, sizeof(struct libwps_data));
-	
+
 		if(len > (sizeof(struct radio_tap_header) + 
 			  sizeof(struct dot11_frame_header) + 
 		 	  sizeof(struct management_frame)))
@@ -245,6 +252,7 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 			UUID,
 			SERIAL,
 			SELECTED_REGISTRAR,
+			SELECTED_REGISTRAR_CONFIG_METHODS,
 			RESPONSE_TYPE,
 			PRIMARY_DEVICE_TYPE,
 			CONFIG_METHODS,
@@ -306,6 +314,10 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 					case SELECTED_REGISTRAR:
 						src = hex2str(el, el_len);
 						ptr = wps->selected_registrar;
+						break;
+					case SELECTED_REGISTRAR_CONFIG_METHODS:
+						src = hex2str(el, el_len);
+						ptr = wps->selected_registrar_config_methods;
 						break;
 					case RESPONSE_TYPE:
 						src = hex2str(el, el_len);
