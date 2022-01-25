@@ -14,6 +14,7 @@
 #include "libwps.h"
 #include "../utils/common.h"
 #include "../cprintf.h"
+#include "../crc.h"
 #include <assert.h>
 
 static char* append(char* s1, char *s2) {
@@ -275,6 +276,8 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 
 	if(wps_ie_data)
 	{
+		wps->checksum = crc32(wps_ie_data, wps_data_len);
+
 		for(i=0; i<sizeof(elements)/sizeof(elements[0]); i++)
 		{
 			/* Search for each WPS element inside the WPS IE data blob */
@@ -395,7 +398,7 @@ int parse_wps_tag(const u_char *tags, size_t len, struct libwps_data *wps)
 
 		ret_val = 1;
 		free(wps_ie_data);
-	} 
+	}
 
 	return ret_val;
 }

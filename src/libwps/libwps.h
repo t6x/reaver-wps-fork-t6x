@@ -35,6 +35,7 @@ struct libwps_data
         uint8_t version;
         uint8_t state;
         uint8_t locked;
+	uint32_t checksum;
         char manufacturer[LIBWPS_MAX_STR_LEN];
         char model_name[LIBWPS_MAX_STR_LEN];
         char model_number[LIBWPS_MAX_STR_LEN];
