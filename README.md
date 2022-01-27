@@ -171,7 +171,7 @@ Main developer since version 1.6b:
 `rofl0r`  
 
 Modifications made by:
-`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho`, `binarymaster`, `Ǹotaz`, `Adde88`  
+`t6_x`, `DataHead`, `Soxrok2212`, `Wiire`, `AAnarchYY`, `kib0rg`, `KokoSoft`, `rofl0r`, `horrorho`, `binarymaster`, `Ǹotaz`, `Adde88`, `feitoi`
 
 Some ideas made by:
 `nuroo`, `kcdtv`
