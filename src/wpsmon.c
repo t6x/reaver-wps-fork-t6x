@@ -65,7 +65,10 @@ static int list_insert(char *bssid) {
 	str2mac(bssid, mac);
 	for(i=0; i<seen_count; i++)
 		if(!memcmp(seen_list[i].mac, mac, 6)) return i;
-	if(seen_count >= MAX_APS) return -1;
+	if(seen_count >= MAX_APS) {
+		memset(seen_list, 0, sizeof seen_list);
+		seen_count = 0;
+	}
 	memcpy(seen_list[seen_count].mac, mac, 6);
 	return seen_count++;
 }
@@ -76,7 +79,7 @@ static int was_printed(char* bssid) {
 		seen_list[x].flags |= SEEN_FLAG_PRINTED;
 		return f & SEEN_FLAG_PRINTED;
 	}
-	return 0;
+	return 1;
 }
 static void mark_ap_complete(char *bssid) {
 	int x = list_insert(bssid);
@@ -95,7 +98,7 @@ static int is_done(char *bssid, struct libwps_data *wps) {
 		}
 		return seen_list[x].flags & SEEN_FLAG_COMPLETE;
 	}
-	return 0;
+	return 1;
 }
 static int should_probe(char *bssid) {
 	int x = list_insert(bssid);
