@@ -57,6 +57,9 @@ static struct mac {
 enum seen_flags {
 	SEEN_FLAG_PRINTED = 1,
 	SEEN_FLAG_COMPLETE = 2,
+	SEEN_FLAG_PBC = 4,
+	SEEN_FLAG_LOCKED = 8,
+	SEEN_FLAG_WPS_ACTIVE = 16,
 };
 static unsigned seen_count;
 static int list_insert(char *bssid) {
@@ -72,6 +75,30 @@ static int list_insert(char *bssid) {
 	memcpy(seen_list[seen_count].mac, mac, 6);
 	return seen_count++;
 }
+static int is_pbc(struct libwps_data *wps) {
+	int active = 0;
+	if (*wps->selected_registrar && atoi(wps->selected_registrar) == 1 && *wps->device_password_id && atoi(wps->device_password_id) == 4) {
+		active = 1;
+	}
+	return active;
+}
+static void reset_flag_complete_printed(int x) {
+	seen_list[x].flags &= ~SEEN_FLAG_COMPLETE;
+	seen_list[x].flags &= ~SEEN_FLAG_PRINTED;
+}
+static void set_flag_wps(int x, int active, enum seen_flags flag) {
+	if (seen_list[x].flags & flag) {
+		if (!active) {
+			reset_flag_complete_printed(x);
+			seen_list[x].flags &= ~flag;
+		}
+	} else {
+		if (active) {
+			reset_flag_complete_printed(x);
+			seen_list[x].flags |= flag;
+		}
+	}
+}
 static int was_printed(char* bssid) {
 	int x = list_insert(bssid);
 	if(x >= 0 && x < MAX_APS) {
@@ -85,7 +112,7 @@ static void mark_ap_complete(char *bssid) {
 	int x = list_insert(bssid);
 	if(x >= 0 && x < MAX_APS) seen_list[x].flags |= SEEN_FLAG_COMPLETE;
 }
-static int is_done(char *bssid, struct libwps_data *wps) {
+static int is_done(char *bssid, struct libwps_data *wps, int is_probe_resp) {
 	int x = list_insert(bssid);
 	if(x >= 0 && x < MAX_APS) {
 		if(wps) {
@@ -93,8 +120,15 @@ static int is_done(char *bssid, struct libwps_data *wps) {
 				seen_list[x].checksum = wps->checksum;
 			if(wps->checksum != seen_list[x].checksum) {
 				seen_list[x].checksum = wps->checksum;
-				seen_list[x].flags &= ~SEEN_FLAG_COMPLETE;
+				if (is_probe_resp) {
+					seen_list[x].flags &= ~SEEN_FLAG_COMPLETE;
+				}
 			}
+			set_flag_wps(x, is_pbc(wps), SEEN_FLAG_PBC);
+			set_flag_wps(x, wps->locked == WPSLOCKED, SEEN_FLAG_LOCKED);
+			set_flag_wps(x, 1, SEEN_FLAG_WPS_ACTIVE);
+		} else {
+			set_flag_wps(x, 0, SEEN_FLAG_WPS_ACTIVE);
 		}
 		return seen_list[x].flags & SEEN_FLAG_COMPLETE;
 	}
@@ -453,7 +487,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				wps_parsed = parse_wps_parameters(packet, header->len, wps);
 				if(is_beacon || !get_ap_vendor(bssid)) set_ap_vendor(bssid);
 			}
-			if(!is_done(bssid, is_probe_resp && wps_parsed ? wps : 0) && (get_channel() == channel || source == PCAP_FILE))
+			if((get_channel() == channel || source == PCAP_FILE) && !is_done(bssid, wps_parsed ? wps : 0, is_probe_resp))
 			{
 				if(is_beacon && 
 				   mode == SCAN && 
@@ -464,7 +498,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 					probe_sent = 1;
 				}
 		
-				if(!json_mode && (!was_printed(bssid) && (wps_active(wps) || show_all_aps == 1)))
+				if(!json_mode && ((wps_active(wps) || show_all_aps == 1) && !was_printed(bssid)))
 				{
 					if(wps_active(wps)) switch(wps->locked)
 					{
@@ -489,10 +523,15 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 					if(wps_active(wps))
 					{
+						char wps_version[8];
+						snprintf(wps_version, sizeof(wps_version), "%d.%d", (wps->version >> 4), (wps->version & 0x0F));
+						if (is_pbc(wps)) {
+							strcpy(wps_version, "PBC");
+						}
 						if (show_crack_progress)
-							fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %5s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", crack_progress ? crack_progress : "-", sane_ssid);
+							fprintf(stdout, "%17s  %3d  %.2d  %s  %3s  %8s  %5s  %s\n", bssid, channel, rssi, wps_version, lock_display, vendor ? vendor : "        ", crack_progress ? crack_progress : "-", sane_ssid);
 						else
-							fprintf(stdout, "%17s  %3d  %.2d  %d.%d  %3s  %8s  %s\n", bssid, channel, rssi, (wps->version >> 4), (wps->version & 0x0F), lock_display, vendor ? vendor : "        ", sane_ssid);
+							fprintf(stdout, "%17s  %3d  %.2d  %s  %3s  %8s  %s\n", bssid, channel, rssi, wps_version, lock_display, vendor ? vendor : "        ", sane_ssid);
 					}
 					else
 					{
