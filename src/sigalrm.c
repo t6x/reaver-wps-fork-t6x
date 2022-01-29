@@ -38,21 +38,29 @@
 void sigalrm_init()
 {
         struct sigaction act;
+	struct sigevent sev;
 
         memset(&act, 0, sizeof(struct sigaction));
         act.sa_handler = alarm_handler;
 
         sigaction (SIGALRM, &act, 0);
+
+	sev.sigev_notify = SIGEV_SIGNAL;
+	sev.sigev_signo = SIGALRM;
+	sev.sigev_value.sival_ptr = &globule->timer_id;
+	timer_create(CLOCK_REALTIME, &sev, &globule->timer_id);
 }
 
 static void rewind_timer() {
-	struct itimerval timer = {0};
-
-	timer.it_value.tv_usec = globule->resend_timeout_usec;
+	struct itimerspec its;
 
 	set_out_of_time(0);
 
-	setitimer(ITIMER_REAL, &timer, 0);
+	its.it_value.tv_sec = globule->resend_timeout_usec / 1000000;
+	its.it_value.tv_nsec = (globule->resend_timeout_usec % 1000000) * 1000;
+	its.it_interval.tv_sec = its.it_value.tv_sec;
+	its.it_interval.tv_nsec = its.it_value.tv_nsec;
+	timer_settime(globule->timer_id, 0, &its, NULL);
 }
 
 static unsigned timeout_ticks;
@@ -90,13 +98,11 @@ void start_timer()
 /* Timer is stopped by process_packet() when any valid EAP packet is received */
 void stop_timer()
 {
-        struct itimerval timer;
+	struct itimerspec its = {0};
 
 	set_out_of_time(0);
 
-        memset(&timer, 0, sizeof(struct itimerval));
-
-        setitimer(ITIMER_REAL, &timer, 0);
+	timer_settime(globule->timer_id, 0, &its, NULL);
 }
 
 /* Handles SIGALRM interrupts */

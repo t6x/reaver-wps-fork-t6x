@@ -90,6 +90,8 @@ struct globals
 
 	unsigned long long resend_timeout_usec;   /* how many microsecs to wait before resending last packet */
 
+	timer_t timer_id;       /* The ID of timer */
+
         enum debug_level debug;         /* Current debug level: INFO | CRITICAL | WARNING | VERBOSE */
 
         int eapol_start_count;          /* Tracks how many times in a row we've attempted to start and EAP session */

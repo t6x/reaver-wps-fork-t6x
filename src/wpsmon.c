@@ -368,7 +368,21 @@ void monitor(char *bssid, int passive, int source, int channel, int mode)
 		{
         		act.sa_handler = sigalrm_handler;
         		sigaction (SIGALRM, &act, 0);
-			ualarm(CHANNEL_INTERVAL, CHANNEL_INTERVAL);
+
+			/* Create the timer. */
+			struct sigevent sev;
+			struct itimerspec its;
+			sev.sigev_notify = SIGEV_SIGNAL;
+			sev.sigev_signo = SIGALRM;
+			sev.sigev_value.sival_ptr = &globule->timer_id;
+			timer_create(CLOCK_REALTIME, &sev, &globule->timer_id);
+			/* Start the timer. */
+			its.it_value.tv_sec = CHANNEL_INTERVAL / 1000000;
+			its.it_value.tv_nsec = (CHANNEL_INTERVAL % 1000000) * 1000;
+			its.it_interval.tv_sec = its.it_value.tv_sec;
+			its.it_interval.tv_nsec = its.it_value.tv_nsec;
+			timer_settime(globule->timer_id, 0, &its, NULL);
+
 			int startchan = 1;
 			if(get_wifi_band() == AN_BAND)
 				startchan = 34;
@@ -469,7 +483,9 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 
 			if(target != NULL && channel_changed == 0)
 			{
-				ualarm(0, 0);
+				/* Stop the timer. */
+				struct itimerspec its = {0};
+				timer_settime(globule->timer_id, 0, &its, NULL);
 				change_channel(channel);
 				channel_changed = 1;
 			}
