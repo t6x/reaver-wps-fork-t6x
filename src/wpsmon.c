@@ -52,7 +52,6 @@ static struct mac {
 	unsigned char vendor_oui[1+3];
 	unsigned char probes;
 	unsigned char flags;
-	uint32_t checksum;
 } seen_list[MAX_APS];
 enum seen_flags {
 	SEEN_FLAG_PRINTED = 1,
@@ -112,18 +111,10 @@ static void mark_ap_complete(char *bssid) {
 	int x = list_insert(bssid);
 	if(x >= 0 && x < MAX_APS) seen_list[x].flags |= SEEN_FLAG_COMPLETE;
 }
-static int is_done(char *bssid, struct libwps_data *wps, int is_probe_resp) {
+static int is_done(char *bssid, struct libwps_data *wps) {
 	int x = list_insert(bssid);
 	if(x >= 0 && x < MAX_APS) {
 		if(wps) {
-			if(seen_list[x].checksum == 0)
-				seen_list[x].checksum = wps->checksum;
-			if(wps->checksum != seen_list[x].checksum) {
-				seen_list[x].checksum = wps->checksum;
-				if (is_probe_resp) {
-					seen_list[x].flags &= ~SEEN_FLAG_COMPLETE;
-				}
-			}
 			set_flag_wps(x, is_pbc(wps), SEEN_FLAG_PBC);
 			set_flag_wps(x, wps->locked == WPSLOCKED, SEEN_FLAG_LOCKED);
 			set_flag_wps(x, 1, SEEN_FLAG_WPS_ACTIVE);
@@ -487,7 +478,7 @@ void parse_wps_settings(const u_char *packet, struct pcap_pkthdr *header, char *
 				wps_parsed = parse_wps_parameters(packet, header->len, wps);
 				if(is_beacon || !get_ap_vendor(bssid)) set_ap_vendor(bssid);
 			}
-			if((get_channel() == channel || source == PCAP_FILE) && !is_done(bssid, wps_parsed ? wps : 0, is_probe_resp))
+			if((get_channel() == channel || source == PCAP_FILE) && !is_done(bssid, wps_parsed ? wps : 0))
 			{
 				if(is_beacon && 
 				   mode == SCAN && 
