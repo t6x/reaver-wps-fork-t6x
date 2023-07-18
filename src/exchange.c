@@ -247,12 +247,15 @@ enum wps_result do_wps_exchange()
 		{
 			ret_val = UNKNOWN_ERROR;
 		}
-		/* WPS locked or ISPs that had vulnerable routers in the past opted
-		to "fix" them by simply not completing any more WPS transactions */
-		if (get_nack_reason() == SETUP_LOCKED) {
-			/* set maximum number of pin attempts to 0 for quit */
-			set_max_pin_attempts(0);
+		/* The ISPs that had vulnerable routers in the past opted to "fix" them by simply
+		ending WPS transaction sending an WSC_NACK with reason code 0x000F after receive M2 */
+		if (get_nack_reason() == SETUP_LOCKED && last_msg == M1) {
 			cprintf(WARNING, "[!] WARNING: Detected AP has WPS setup locked!\n");
+			/* without -L (ignore locked state) will quit */
+			if (get_ignore_locks() == 0) {
+				/* set maximum number of pin attempts to 0 for quit */
+				set_max_pin_attempts(0);
+			}
 		}
 	}
 	else if(premature_timeout)
