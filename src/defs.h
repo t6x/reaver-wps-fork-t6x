@@ -79,6 +79,8 @@
 #define EAPOL_START_MAX_TRIES	10
 #define WARN_FAILURE_COUNT	10
 
+#define MAX_DEAUTH_IS_NACK_COUNT	10
+
 #define EAPOL_START		1
 #define EAP_IDENTITY 		0x01
 #define EAP_EXPANDED            0xFE

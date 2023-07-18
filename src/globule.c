@@ -526,6 +526,15 @@ enum nack_code get_nack_reason()
 	return globule->nack_reason;
 }
 
+void set_deauth_is_nack_count(int value)
+{
+	globule->deauth_is_nack_count = value;
+}
+int get_deauth_is_nack_count()
+{
+	return globule->deauth_is_nack_count;
+}
+
 void set_handle(pcap_t *value)
 {
 	globule->handle = value;

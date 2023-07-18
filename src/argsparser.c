@@ -235,6 +235,7 @@ void init_default_settings(void)
 	pixie.do_pixie = 0;
 	set_pin_string_mode(0);
 	set_mac_changer(0);
+	set_deauth_is_nack_count(0);
 }
 
 /* Parses the recurring delay optarg */

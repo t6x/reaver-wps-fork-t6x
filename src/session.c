@@ -152,6 +152,11 @@ int restore_session()
 		}
 	}
 
+	/* Get the timeout with deauth request without NACKs count value */
+	if (fgets(line, MAX_LINE_SIZE, fp) != NULL) {
+		set_deauth_is_nack_count(atoi(line));
+	}
+
 	ret_val = 1;
 	
 fout:
@@ -197,7 +202,7 @@ int save_session()
 
 	/* Don't bother saving anything if nothing has been done */
 	/* Save .wpc file if the first half of first pin is correct */
-	if(!((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() >= KEY2_WIP))) {
+	if (!(get_p1_index() > 0 || get_p2_index() > 0 || get_key_status() >= KEY2_WIP || get_deauth_is_nack_count())) {
 		cprintf(VERBOSE, "[+] Nothing done, nothing to save.\n");
 		return 0;
 	}
@@ -240,6 +245,8 @@ int save_session()
 	/* Save all the p2 values */
 	for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
 
+	/* Save timeout with deauth request without NACKs count value */
+	fprintf(fp, "%d\n", get_deauth_is_nack_count());
 	fclose(fp);
 	return 1;
 }

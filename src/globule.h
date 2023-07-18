@@ -84,6 +84,8 @@ struct globals
 
         int timeout_is_nack;            /* Treat M5/M7 receive timeouts as NACKs (only needed for shoddy WPS implementations) */
 
+	int deauth_is_nack_count;       /* Tracks how many times M5/M7 receive timeouts with deauth request without NACK. -1: AP sends NACK */
+
         int m57_timeout;                /* Timeout period for receiving an M5/M7 response (uSeconds) */
 
         int out_of_time;                /* Set to 1 when sigalrm sounds */
@@ -252,6 +254,10 @@ void set_external_association(int value);
 int get_external_association(void);
 void set_nack_reason(enum nack_code value);
 enum nack_code get_nack_reason();
+
+void set_deauth_is_nack_count(int value);
+int get_deauth_is_nack_count();
+
 void set_handle(pcap_t *value);
 pcap_t *get_handle();
 void set_wps(struct wps_data *value);

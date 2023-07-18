@@ -164,7 +164,13 @@ enum wps_result do_wps_exchange()
 		if(packet_type != UNKNOWN && packet_type != WPS_PT_DEAUTH)
 			deauth_flag = 0;
 		else if(packet_type == WPS_PT_DEAUTH)
-			continue;
+		{
+			if (last_msg == M3 || last_msg == M5 || last_msg == M7) {
+				continue;
+			} else {
+				got_nack = 1;
+			}
+		}
 
 		if(tx_type == IDENTITY_RESPONSE)
 		{
@@ -229,6 +235,7 @@ enum wps_result do_wps_exchange()
 		{
 			/* The AP is properly sending WSC_NACKs, so don't treat future timeouts as pin failures. */
 			set_timeout_is_nack(0);
+			set_deauth_is_nack_count(-1);
 
 			ret_val = KEY_REJECTED;
 
@@ -267,16 +274,31 @@ enum wps_result do_wps_exchange()
 		  (last_msg == M3 || last_msg == M5))
 		{
 			ret_val = KEY_REJECTED;
-			/* Got timeout instead of an M5 message, when cracking second half */
-			if (!get_pin_string_mode() && last_msg == M3 && get_key_status() == KEY2_WIP) {
-				ret_val = UNKNOWN_ERROR;
-				cprintf(WARNING, "[!] WARNING: Potential first half pin has changed!\n");
-			}
+		}
+		/*
+		 * Some WPS implementations sending deauth request instead of sending a NACK.
+		 * Treat the timeout as NACK if receive deauth request while waiting for M5/M7.
+		 */
+		else if (deauth_flag && (last_msg == M3 || last_msg == M5)
+			&& get_deauth_is_nack_count() >= MAX_DEAUTH_IS_NACK_COUNT)
+		{
+			ret_val = KEY_REJECTED;
 		}
 		else
 		{
 			/* If we timed out at any other point in the session, then we need to try the pin again */
 			ret_val = RX_TIMEOUT;
+			/* increase by 1 for timeout with deauth request without NACK count value */
+			if (deauth_flag && (last_msg == M3 || last_msg == M5)
+				&& get_deauth_is_nack_count() >= 0 && get_deauth_is_nack_count() < MAX_DEAUTH_IS_NACK_COUNT)
+			{
+				set_deauth_is_nack_count(get_deauth_is_nack_count() + 1);
+			}
+		}
+		/* Got timeout instead of an M5 message when cracking second half */
+		if (ret_val == KEY_REJECTED && !get_pin_string_mode() && last_msg == M3 && get_key_status() == KEY2_WIP) {
+			ret_val = UNKNOWN_ERROR;
+			cprintf(WARNING, "[!] WARNING: Potential first half pin has changed!\n");
 		}
 	}
 	/*
