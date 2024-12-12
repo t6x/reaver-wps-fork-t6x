@@ -138,6 +138,8 @@ struct globals
 
 	char *session;			/* Path to session file */
 
+	char session_signature[SESSION_SIGNATURE_LEN];		/* buffer for session signature value */
+
         char *ssid;                     /* Target SSID */
 
         char *iface;                    /* Interface name */
