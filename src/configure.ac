@@ -43,7 +43,7 @@ AC_HELP_STRING([--enable-libnl-tiny],
 AC_SUBST(LIBNL_CFLAGS)
 AC_SUBST(LIBNL_LDFLAGS)
 
-DESIRED_FLAGS="-Werror-unknown-warning-option -Wno-unused-but-set-variable"
+DESIRED_FLAGS="-Wno-unused-but-set-variable"
 for flag in $DESIRED_FLAGS; do
   AS_COMPILER_FLAG([$flag], [CFLAGS="$CFLAGS $flag"])
 done
