@@ -3313,7 +3313,7 @@ test -z "$PKGCONFIG" && PKGCONFIG=pkg-config
 if test "${enable_libnl3+set}" = set; then :
   enableval=$enable_libnl3;
     if $PKGCONFIG --cflags libnl-3.0 libnl-genl-3.0 >/dev/null 2>&1 ; then
-      LIBNL_CLAGS="$($PKGCONFIG --cflags libnl-3.0 libnl-genl-3.0) -DLIBNL3"
+      LIBNL_CFLAGS="$($PKGCONFIG --cflags libnl-3.0 libnl-genl-3.0) -DLIBNL3"
       LIBNL_LDFLAGS="$($PKGCONFIG --libs libnl-3.0 libnl-genl-3.0)"
     else
       as_fn_error $? "failed to query $PKGCONFIG --cflags libnl-3.0 libnl-genl-3.0, make sure to have both libraries installed!" "$LINENO" 5
@@ -3325,7 +3325,7 @@ fi
 if test "${enable_libnl_tiny+set}" = set; then :
   enableval=$enable_libnl_tiny;
     if $PKGCONFIG --cflags libnl-tiny >/dev/null 2>&1 ; then
-      LIBNL_CLAGS="$($PKGCONFIG --cflags libnl-tiny) -DLIBNL3"
+      LIBNL_CFLAGS="$($PKGCONFIG --cflags libnl-tiny) -DLIBNL3"
       LIBNL_LDFLAGS="$($PKGCONFIG --libs libnl-tiny)"
     else
       as_fn_error $? "failed to query $PKGCONFIG --cflags libnl-tiny, make sure to the library installed!" "$LINENO" 5

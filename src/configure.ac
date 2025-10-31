@@ -22,7 +22,7 @@ AC_HELP_STRING([--enable-libnl3],
   [compiles with libnl3 instead of wext])
 , [
     if $PKGCONFIG --cflags libnl-3.0 libnl-genl-3.0 >/dev/null 2>&1 ; then
-      LIBNL_CLAGS="$($PKGCONFIG --cflags libnl-3.0 libnl-genl-3.0) -DLIBNL3"
+      LIBNL_CFLAGS="$($PKGCONFIG --cflags libnl-3.0 libnl-genl-3.0) -DLIBNL3"
       LIBNL_LDFLAGS="$($PKGCONFIG --libs libnl-3.0 libnl-genl-3.0)"
     else
       AC_MSG_ERROR([failed to query $PKGCONFIG --cflags libnl-3.0 libnl-genl-3.0, make sure to have both libraries installed!])
@@ -33,7 +33,7 @@ AC_HELP_STRING([--enable-libnl-tiny],
   [compiles with libnl-tiny instead of wext])
 , [
     if $PKGCONFIG --cflags libnl-tiny >/dev/null 2>&1 ; then
-      LIBNL_CLAGS="$($PKGCONFIG --cflags libnl-tiny) -DLIBNL3"
+      LIBNL_CFLAGS="$($PKGCONFIG --cflags libnl-tiny) -DLIBNL3"
       LIBNL_LDFLAGS="$($PKGCONFIG --libs libnl-tiny)"
     else
       AC_MSG_ERROR([failed to query $PKGCONFIG --cflags libnl-tiny, make sure to the library installed!])
