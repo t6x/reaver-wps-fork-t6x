@@ -437,6 +437,9 @@ size_t build_ssid_tagged_parameter(unsigned char buf[IW_ESSID_MAX_SIZE+2], char 
 	struct tagged_parameter ssid_param;
 	size_t ssid_len = strlen(essid), ssid_param_len;
 
+	if(ssid_len > IW_ESSID_MAX_SIZE)
+		ssid_len = IW_ESSID_MAX_SIZE;
+
 	ssid_param_len = build_tagged_parameter(&ssid_param, SSID_TAG_NUMBER, ssid_len);
 	assert(ssid_param_len == 2);
 	assert(2 == sizeof (struct tagged_parameter));
