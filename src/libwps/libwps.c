@@ -431,7 +431,12 @@ unsigned char *get_wps_data(const u_char *data, size_t len, size_t *tag_len)
 			if(memcmp((data+i+VENDOR_ID_OFFSET), WPS_VENDOR_ID, WPS_VENDOR_ID_SIZE) == 0)
 			{
 				tag_params = (struct tagged_parameter *) (data+i);
+				if(tag_params->len < WPS_VENDOR_ID_SIZE)
+					continue;
 				tag_data_len = tag_params->len - WPS_VENDOR_ID_SIZE;
+
+				if(tag_data_len > (len - i - VENDOR_ID_OFFSET - WPS_VENDOR_ID_SIZE))
+					tag_data_len = len - i - VENDOR_ID_OFFSET - WPS_VENDOR_ID_SIZE;
 
 				tag_data = malloc(tag_data_len);
 				if(tag_data)
