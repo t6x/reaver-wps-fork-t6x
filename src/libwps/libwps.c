@@ -313,15 +313,19 @@ static int parse_wps_tags(const u_char *tags, size_t len,
 						if (memcmp(&el[0], WFA_EXTENSION_ID, 3) == 0)
 						{
 							unsigned char *pwfa = &el[3]; /* WFA subelement ID */
-							while(el_len > 0) /* Cycle through all WFA subelements */
+							if (el_len > 3) el_len -= 3; else el_len = 0;
+							while(el_len >= 2) /* Cycle through all WFA subelements */
 							{
-								if (*pwfa == WPS_VERSION2_ID)
+								size_t sub_len = (size_t)pwfa[1] + 2;
+								if (*pwfa == WPS_VERSION2_ID && el_len >= 3)
 								{
 									wps->version = (uint8_t) pwfa[2];
 									break;
 								}
-								el_len -= pwfa[1] + 2;
-								pwfa += pwfa[1] + 2;
+								if (sub_len > el_len)
+									break;
+								el_len -= sub_len;
+								pwfa += sub_len;
 							}
 						}
 						break;
