@@ -51,6 +51,12 @@ static void gen_sessionfile_name(const char* bssid, char* outbuf) {
 #endif
 }
 
+static void make_session_signature(char* out)
+{
+	snprintf(out, SESSION_SIGNATURE_LEN, "%s%s%d%04d%03d",
+		get_p1(get_p1_index()), get_p2(get_p2_index()), get_key_status(), get_p1_index(), get_p2_index());
+}
+
 int restore_session()
 {
 	struct stat wpstat = { 0 };
@@ -167,6 +173,9 @@ out:
 		cprintf(INFO, "[+] Restored previous session\n");
 	}
 
+	/* set session signature */
+	make_session_signature(globule->session_signature);
+
 	/* If the specified pin was used, then insert into current index of p1 and p2 array */
 	if (!get_pin_string_mode() && get_static_p1()) {
 		i = jump_p1_queue(get_static_p1());
@@ -199,6 +208,14 @@ int save_session()
 	/* Save .wpc file if the first half of first pin is correct */
 	if(!((get_p1_index() > 0) || (get_p2_index() > 0) || (get_key_status() >= KEY2_WIP))) {
 		cprintf(VERBOSE, "[+] Nothing done, nothing to save.\n");
+		return 0;
+	}
+
+	/* Don't rewrite .wpc file if session was not modified */
+	char session_signature[SESSION_SIGNATURE_LEN];
+	make_session_signature(session_signature);
+	if (strcmp(globule->session_signature, session_signature) == 0) {
+		cprintf(VERBOSE, "[+] The session has already been saved.\n");
 		return 0;
 	}
 
@@ -241,6 +258,10 @@ int save_session()
 	for(i=0; i<P2_SIZE; i++) fprintf(fp, "%s\n", get_p2(i));
 
 	fclose(fp);
+
+	/* set session signature */
+	strcpy(globule->session_signature, session_signature);
+
 	return 1;
 }
 

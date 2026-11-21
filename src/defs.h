@@ -76,6 +76,8 @@
 #define P1_SIZE			10000
 #define P2_SIZE			1000
 
+#define SESSION_SIGNATURE_LEN	32
+
 #define EAPOL_START_MAX_TRIES	10
 #define WARN_FAILURE_COUNT	10
 
